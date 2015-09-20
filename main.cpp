@@ -2,6 +2,7 @@
 #include <array>
 #include <cmath>
 #include <iostream>
+#include <GL/glu.h>
 
 enum Joint: uint32_t
 {
@@ -95,8 +96,8 @@ Player spring(Player const & p)
 		{
 			if (s.start == j)
 			{
-				double force = (s.length - distance(p.joints[s.end], p.joints[s.start])) / 20;
-				if (std::abs(force) > 0.0001)
+				double force = (s.length - distance(p.joints[s.end], p.joints[s.start])) / 10;
+				if (std::abs(force) > 0.001)
 				{
 					V dir = normalize(p.joints[s.end] - p.joints[s.start]);
 					r.joints[j] -= dir * force;
@@ -104,8 +105,8 @@ Player spring(Player const & p)
 			}
 			else if (s.end == j)
 			{
-				double force = (s.length - distance(p.joints[s.end], p.joints[s.start])) / 20;
-				if (std::abs(force) > 0.0001)
+				double force = (s.length - distance(p.joints[s.end], p.joints[s.start])) / 10;
+				if (std::abs(force) > 0.001)
 				{
 					V dir = normalize(p.joints[s.start] - p.joints[s.end]);
 					r.joints[j] -= dir * force;
@@ -144,6 +145,22 @@ void render(Position const & p)
 	glEnd();
 }
 
+Position position;
+V camera{};
+
+void grid()
+{
+	glBegin(GL_LINES);
+		for (int i = -10; i <= 10; ++i)
+		{
+			glVertex3f(i, -1, -10);
+			glVertex3f(i, -1, 10);
+			glVertex3f(-10, -1, i);
+			glVertex3f(10, -1, i);
+		}
+	glEnd();
+}
+
 int main()
 {
 	if (!glfwInit())
@@ -159,8 +176,6 @@ int main()
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 
-	Position position;
-
 	while (!glfwWindowShouldClose(window))
 	{
 		int width, height;
@@ -171,17 +186,35 @@ int main()
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+		gluPerspective(60, ratio, 0.1, 30);
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
+		glTranslatef(-camera.x, -camera.y, -camera.z);
+
 		glScalef(0.2,0.2,0.2);
+
+		grid();
 
 		render(position);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+			camera.y += 0.01;
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+			camera.y -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+			camera.x -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+			camera.x += 0.01;
+		if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
+			camera.z -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS)
+			camera.z += 0.01;
+
 		spring(position);
 	}
 
