@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iostream>
 #include <GL/glu.h>
+#include <vector>
 
 enum Joint: uint32_t
 {
@@ -51,35 +52,66 @@ const Segment segments[] =
   , {LeftHip, RightHip, 0.32}
   };
 
-struct V { GLdouble x, y, z; };
+struct V2 { GLdouble x, y; };
 
-double norm(V v){ return std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z); }
+struct V3 { GLdouble x, y, z; };
 
-V operator-(V a, V b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
-V operator+(V a, V b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
-V operator*(V v, double s) { return {v.x * s, v.y * s, v.z * s}; }
-V & operator+=(V & a, V b) { return a = a + b; }
-V & operator-=(V & a, V b) { return a = a - b; }
+struct V4
+{
+	GLdouble x, y, z, w;
 
-std::ostream & operator<<(std::ostream & o, V v){ return o << '{' << v.x << ',' << v.y << ',' << v.z << '}'; }
+	V4(V3 v, GLdouble w)
+	  : x(v.x), y(v.y), z(v.z), w(w)
+	{}
+};
 
-V operator/(V v, double s) { return {v.x / s, v.y / s, v.z / s}; }
-V normalize(V v){ return v / norm(v); }
+V2 xy(V3 v){ return {v.x, v.y}; }
+V3 xyz(V4 v){ return {v.x, v.y, v.z}; }
 
-inline void glVertex(V const & v) { glVertex3d(v.x, v.y, v.z); }
+using M = std::array<double, 16>;
+
+M perspective(double fovy, double aspect, double zNear, double zFar)
+{
+	auto f = 1/tan(fovy*M_PI/360);
+
+	return
+		{ f/aspect, 0,0,0
+		, 0, f, 0, 0
+		, 0,0,(zFar+zNear)/(zNear-zFar), -1,
+		0, 0, 2*zFar*zNear/(zNear-zFar), 0 };
+}
+
+double norm2(V2 v){ return v.x * v.x + v.y * v.y; }
+double norm2(V3 v){ return v.x * v.x + v.y * v.y + v.z * v.z; }
+double norm(V3 v){ return sqrt(norm2(v)); }
+
+V2 operator-(V2 a, V2 b) { return {a.x - b.x, a.y - b.y}; }
+V3 operator-(V3 a, V3 b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
+V3 operator+(V3 a, V3 b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
+V4 operator+(V4 a, V4 b) { return {{a.x + b.x, a.y + b.y, a.z + b.z}, a.w + b.w}; }
+V3 operator*(V3 v, double s) { return {v.x * s, v.y * s, v.z * s}; }
+V3 & operator+=(V3 & a, V3 b) { return a = a + b; }
+V3 & operator-=(V3 & a, V3 b) { return a = a - b; }
+
+std::ostream & operator<<(std::ostream & o, V3 v){ return o << '{' << v.x << ',' << v.y << ',' << v.z << '}'; }
+
+V3 operator/(V3 v, double s) { return {v.x / s, v.y / s, v.z / s}; }
+V3 normalize(V3 v){ return v / norm(v); }
+
+inline void glVertex(V3 const & v) { glVertex3d(v.x, v.y, v.z); }
 
 struct Player
 {
-	std::array<V, joint_count> joints;
+	std::array<V3, joint_count> joints;
 
 	Player()
 	{
-		for (auto && j : joints) j = {(rand()%20)-10, (rand()%20)-10, (rand()%20)-10};
+		for (auto && j : joints) j = {(rand()%20)-10, (rand()%20)-10, (rand()%20)-15};
 	}
 };
 
 
-double distance(V from, V to)
+double distance(V3 from, V3 to)
 {
 	return norm(to - from);
 }
@@ -99,7 +131,7 @@ Player spring(Player const & p)
 				double force = (s.length - distance(p.joints[s.end], p.joints[s.start])) / 10;
 				if (std::abs(force) > 0.001)
 				{
-					V dir = normalize(p.joints[s.end] - p.joints[s.start]);
+					V3 dir = normalize(p.joints[s.end] - p.joints[s.start]);
 					r.joints[j] -= dir * force;
 				}
 			}
@@ -108,7 +140,7 @@ Player spring(Player const & p)
 				double force = (s.length - distance(p.joints[s.end], p.joints[s.start])) / 10;
 				if (std::abs(force) > 0.001)
 				{
-					V dir = normalize(p.joints[s.start] - p.joints[s.end]);
+					V3 dir = normalize(p.joints[s.start] - p.joints[s.end]);
 					r.joints[j] -= dir * force;
 				}
 			}
@@ -145,8 +177,19 @@ void render(Position const & p)
 	glEnd();
 }
 
-Position position;
-V camera{};
+std::vector<Position> positions(1);
+unsigned current_pos = 0;
+
+V3 camera{0,0,5};
+
+V4 operator*(M const & m, V4 v)
+{
+	return
+		{{ m[0]*v.x + m[4]*v.y + m[8]*v.z + m[12]
+		, m[1]*v.x + m[5]*v.y + m[9]*v.z + m[13]
+		, m[2]*v.x + m[6]*v.y + m[10]*v.z + m[14]}
+		, m[3]*v.x + m[7]*v.y + m[11]*v.z + m[15]};
+}
 
 void grid()
 {
@@ -186,34 +229,72 @@ int main()
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		gluPerspective(60, ratio, 0.1, 30);
+
+		auto persp = perspective(90, ratio, 0.1, 30);
+		glMultMatrixd(persp.data());
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
 		glTranslatef(-camera.x, -camera.y, -camera.z);
 
-		glScalef(0.2,0.2,0.2);
+		glPointSize(10);
+
+		auto & position = positions[current_pos];
 
 		grid();
 
 		render(position);
 
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+
+		V2 cursor {((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
+
+		glBegin(GL_POINTS);
+		glColor3f(1,0,0);
+
+		double closest = 100;
+		V3 closest_joint;
+
+		for (auto && player : position.players)
+		{
+			for (auto && j : player.joints)
+			{
+				auto clipSpace = persp * V4(j - camera, 1);
+
+				V3 ndcSpacePos = xyz(clipSpace) / clipSpace.w;
+
+				double d = norm2(xy(ndcSpacePos) - cursor);
+
+				if (d < closest)
+				{
+					closest = d;
+					closest_joint = j;
+				}
+			}
+		}
+
+		glVertex(closest_joint);
+
+		glColor3f(1,1,1);
+		glEnd();
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-			camera.y += 0.01;
+			camera.y += 0.05;
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-			camera.y -= 0.01;
+			camera.y -= 0.05;
 		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-			camera.x -= 0.01;
+			camera.x -= 0.05;
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-			camera.x += 0.01;
+			camera.x += 0.05;
 		if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
-			camera.z -= 0.01;
+			camera.z -= 0.05;
 		if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS)
-			camera.z += 0.01;
+			camera.z += 0.05;
 
 		spring(position);
 	}
