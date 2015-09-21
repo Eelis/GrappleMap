@@ -75,10 +75,10 @@ M perspective(double fovy, double aspect, double zNear, double zFar)
 	auto f = 1/tan(fovy*M_PI/360);
 
 	return
-		{ f/aspect, 0,0,0
+		{ f/aspect, 0, 0, 0
 		, 0, f, 0, 0
-		, 0,0,(zFar+zNear)/(zNear-zFar), -1,
-		0, 0, 2*zFar*zNear/(zNear-zFar), 0 };
+		, 0, 0, (zFar+zNear)/(zNear-zFar), -1
+		, 0, 0, 2*zFar*zNear/(zNear-zFar), 0 };
 }
 
 double norm2(V2 v){ return v.x * v.x + v.y * v.y; }
@@ -87,6 +87,7 @@ double norm(V3 v){ return sqrt(norm2(v)); }
 
 V2 operator-(V2 a, V2 b) { return {a.x - b.x, a.y - b.y}; }
 V3 operator-(V3 a, V3 b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
+V4 operator-(V4 a, V4 b) { return {{a.x - b.x, a.y - b.y, a.z - b.z}, a.w - b.w}; }
 V3 operator+(V3 a, V3 b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
 V4 operator+(V4 a, V4 b) { return {{a.x + b.x, a.y + b.y, a.z + b.z}, a.w + b.w}; }
 V3 operator*(V3 v, double s) { return {v.x * s, v.y * s, v.z * s}; }
@@ -106,7 +107,7 @@ struct Player
 
 	Player()
 	{
-		for (auto && j : joints) j = {(rand()%20)-10, (rand()%20)-10, (rand()%20)-15};
+		for (auto && j : joints) j = {(rand()%6)-3, (rand()%6), (rand()%6)-3};
 	}
 };
 
@@ -181,6 +182,7 @@ std::vector<Position> positions(1);
 unsigned current_pos = 0;
 
 V3 camera{0,0,5};
+double rotation = 0;
 
 V4 operator*(M const & m, V4 v)
 {
@@ -194,14 +196,23 @@ V4 operator*(M const & m, V4 v)
 void grid()
 {
 	glBegin(GL_LINES);
-		for (int i = -10; i <= 10; ++i)
+		for (int i = -4; i <= 4; ++i)
 		{
-			glVertex3f(i, -1, -10);
-			glVertex3f(i, -1, 10);
-			glVertex3f(-10, -1, i);
-			glVertex3f(10, -1, i);
+			glVertex3f(i, -1, -4);
+			glVertex3f(i, -1, 4);
+			glVertex3f(-4, -1, i);
+			glVertex3f(4, -1, i);
 		}
 	glEnd();
+}
+
+M yrot(double a)
+{
+	return
+		{ cos(a), 0, sin(a), 0
+		, 0, 1, 0, 0
+		, -sin(a), 0, cos(a), 0
+		, 0, 0, 0, 1 };
 }
 
 int main()
@@ -238,12 +249,14 @@ int main()
 
 		glTranslatef(-camera.x, -camera.y, -camera.z);
 
+		glMultMatrixd(yrot(rotation).data());
+
 		glPointSize(10);
 
 		auto & position = positions[current_pos];
 
+		glColor3f(1,1,1);
 		grid();
-
 		render(position);
 
 		double xpos, ypos;
@@ -251,33 +264,43 @@ int main()
 
 		V2 cursor {((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
 
-		glBegin(GL_POINTS);
-		glColor3f(1,0,0);
-
 		double closest = 100;
 		V3 closest_joint;
+		V2 closest_off;
+		Player * closest_player = &position.players[0];
+		unsigned closest_ji = 0;
+
+		V4 dragger{{1,0,0},0};
+		dragger = yrot(-rotation) * dragger;
 
 		for (auto && player : position.players)
 		{
-			for (auto && j : player.joints)
+			for (unsigned ji = 0; ji != joint_count; ++ji)
 			{
-				auto clipSpace = persp * V4(j - camera, 1);
+				V3 j = player.joints[ji];
+
+				auto clipSpace = persp * (yrot(rotation) * V4(j, 1) - V4(camera, 0));
 
 				V3 ndcSpacePos = xyz(clipSpace) / clipSpace.w;
 
-				double d = norm2(xy(ndcSpacePos) - cursor);
+				V2 off = xy(ndcSpacePos) - cursor;
+
+				double d = norm2(off);
 
 				if (d < closest)
 				{
 					closest = d;
 					closest_joint = j;
+					closest_off = off;
+					closest_ji = ji;
+					closest_player = &player;
 				}
 			}
 		}
 
+		glColor3f(1,0,0);
+		glBegin(GL_POINTS);
 		glVertex(closest_joint);
-
-		glColor3f(1,1,1);
 		glEnd();
 
 		glfwSwapBuffers(window);
@@ -288,15 +311,24 @@ int main()
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 			camera.y -= 0.05;
 		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-			camera.x -= 0.05;
+			rotation -= 0.01;
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-			camera.x += 0.05;
+			rotation += 0.01;
 		if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
 			camera.z -= 0.05;
 		if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS)
 			camera.z += 0.05;
 
 		spring(position);
+
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		{
+			closest_player->joints[closest_ji].x -= dragger.x * closest_off.x;
+			closest_player->joints[closest_ji].z -= dragger.z * closest_off.x;
+
+			closest_player->joints[closest_ji].y -= closest_off.y;
+		}
+
 	}
 
 	glfwTerminate();
