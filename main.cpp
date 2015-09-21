@@ -4,6 +4,9 @@
 #include <iostream>
 #include <GL/glu.h>
 #include <vector>
+#include <numeric>
+#include <fstream>
+#include <algorithm>
 
 enum Joint: uint32_t
 {
@@ -12,44 +15,56 @@ enum Joint: uint32_t
 	LeftAnkle, RightAnkle,
 	LeftKnee, RightKnee,
 	LeftHip, RightHip,
-	LeftHand, RightHand,
-	LeftWrist, RightWrist,
-	LeftElbow, RightElbow,
 	LeftShoulder, RightShoulder,
-	Neck, Head
+	LeftElbow, RightElbow,
+	LeftWrist, RightWrist,
+	LeftHand, RightHand,
+	LeftFingers, RightFingers,
+	Core, Neck, Head
 };
 
-constexpr uint32_t joint_count = 18;
+constexpr uint32_t joint_count = 24;
 
 struct Segment
 {
 	Joint start, end;
 	double length; // in meters
+	bool visible;
 };
 
 const Segment segments[] =
-  { {LeftToe, LeftHeel, 0.22}
-  , {LeftToe, LeftAnkle, 0.18}
-  , {LeftHeel, LeftAnkle, 0.1}
-  , {LeftAnkle, LeftKnee, 0.42}
-  , {LeftKnee, LeftHip, 0.47}
-  , {LeftHip, LeftShoulder, 0.5}
-  , {LeftShoulder, LeftElbow, 0.29}
-  , {LeftElbow, LeftWrist, 0.26}
-  , {LeftWrist, LeftHand, 0.17}
+  { {LeftToe, LeftHeel, 0.22, false}
+  , {LeftToe, LeftAnkle, 0.18, true}
+  , {LeftHeel, LeftAnkle, 0.07, true}
+  , {LeftAnkle, LeftKnee, 0.42, true}
+  , {LeftKnee, LeftHip, 0.45, true}
+  , {LeftHip, Core, 0.3, true}
+  , {Core, LeftShoulder, 0.47, true}
+  , {LeftShoulder, LeftElbow, 0.29, true}
+  , {LeftElbow, LeftWrist, 0.26, true}
+  , {LeftWrist, LeftHand, 0.08, true}
+  , {LeftHand, LeftFingers, 0.08, true}
+  , {LeftWrist, LeftFingers, 0.14, false}
 
-  , {RightToe, RightHeel, 0.22}
-  , {RightToe, RightAnkle, 0.18}
-  , {RightHeel, RightAnkle, 0.1}
-  , {RightAnkle, RightKnee, 0.42}
-  , {RightKnee, RightHip, 0.47}
-  , {RightHip, RightShoulder, 0.5}
-  , {RightShoulder, RightElbow, 0.29}
-  , {RightElbow, RightWrist, 0.26}
-  , {RightWrist, RightHand, 0.17}
+  , {RightToe, RightHeel, 0.22, false}
+  , {RightToe, RightAnkle, 0.18, true}
+  , {RightHeel, RightAnkle, 0.07, true}
+  , {RightAnkle, RightKnee, 0.42, true}
+  , {RightKnee, RightHip, 0.45, true}
+  , {RightHip, Core, 0.3, true}
+  , {Core, RightShoulder, 0.47, true}
+  , {RightShoulder, RightElbow, 0.29, true}
+  , {RightElbow, RightWrist, 0.26, true}
+  , {RightWrist, RightHand, 0.08, true}
+  , {RightHand, RightFingers, 0.08, true}
+  , {RightWrist, RightFingers, 0.14, false}
 
-  , {LeftShoulder, RightShoulder, 0.4}
-  , {LeftHip, RightHip, 0.32}
+  , {LeftShoulder, RightShoulder, 0.4, true}
+  , {LeftHip, RightHip, 0.30, true}
+
+  , {LeftShoulder, Neck, 0.25, true}
+  , {RightShoulder, Neck, 0.25, true}
+  , {Neck, Head, 0.25, true}
   };
 
 struct V2 { GLdouble x, y; };
@@ -129,8 +144,8 @@ Player spring(Player const & p)
 		{
 			if (s.start == j)
 			{
-				double force = (s.length - distance(p.joints[s.end], p.joints[s.start])) / 10;
-				if (std::abs(force) > 0.001)
+				double force = (s.length - distance(p.joints[s.end], p.joints[s.start])) / 5;
+				if (std::abs(force) > 0.0001)
 				{
 					V3 dir = normalize(p.joints[s.end] - p.joints[s.start]);
 					r.joints[j] -= dir * force;
@@ -138,14 +153,16 @@ Player spring(Player const & p)
 			}
 			else if (s.end == j)
 			{
-				double force = (s.length - distance(p.joints[s.end], p.joints[s.start])) / 10;
-				if (std::abs(force) > 0.001)
+				double force = (s.length - distance(p.joints[s.end], p.joints[s.start])) / 5;
+				if (std::abs(force) > 0.0001)
 				{
 					V3 dir = normalize(p.joints[s.start] - p.joints[s.end]);
 					r.joints[j] -= dir * force;
 				}
 			}
 		}
+
+		r.joints[j].y = std::max(0., r.joints[j].y);
 	}
 
 	return r;
@@ -156,32 +173,61 @@ struct Position
 	Player players[2];
 };
 
+void save(std::string const filename, std::vector<Position> const & v)
+{
+	std::ofstream f(filename, std::ios::binary);
+
+	std::copy_n(reinterpret_cast<char const *>(v.data()), v.size() * sizeof(Position), std::ostreambuf_iterator<char>(f));
+}
+
+std::vector<Position> load(std::string const filename)
+{
+	std::ifstream f(filename, std::ios::binary);
+	std::istreambuf_iterator<char> i(f), e;
+	std::string s(i, e);
+
+	size_t const n = s.size() / sizeof(Position);
+
+	std::vector<Position> r(n);
+	std::copy(s.begin(), s.end(), reinterpret_cast<char *>(r.data())); // TODO: don't be evil
+	return r;
+}
+
 void spring(Position & pos)
 {
 	for (auto && p : pos.players) p = spring(p);
 }
 
-void render(Player const & p)
+void render(Position const & pos)
 {
-	for (auto && s : segments)
-	{
-		glVertex(p.joints[s.start]);
-		glVertex(p.joints[s.end]);
-	}
-}
-
-void render(Position const & p)
-{
+	glLineWidth(30);
 	glBegin(GL_LINES);
-		render(p.players[0]);
-		render(p.players[1]);
+		for (auto && p : pos.players)
+			for (auto && s : segments)
+				if (s.visible)
+				{
+					glVertex(p.joints[s.start]);
+					glVertex(p.joints[s.end]);
+				}
+	glEnd();
+
+	glPointSize(10);
+	glBegin(GL_POINTS);
+		for (auto && p : pos.players)
+			for (auto && s : segments)
+				if (s.visible)
+				{
+					glVertex(p.joints[s.start]);
+					glVertex(p.joints[s.end]);
+				}
 	glEnd();
 }
 
-std::vector<Position> positions(1);
+std::vector<Position> positions = load("positions.dat");
+Position position = positions.front();
 unsigned current_pos = 0;
 
-V3 camera{0,0,5};
+V3 camera{0,1.7,2};
 double rotation = 0;
 
 V4 operator*(M const & m, V4 v)
@@ -195,13 +241,14 @@ V4 operator*(M const & m, V4 v)
 
 void grid()
 {
+	glLineWidth(2);
 	glBegin(GL_LINES);
 		for (int i = -4; i <= 4; ++i)
 		{
-			glVertex3f(i, -1, -4);
-			glVertex3f(i, -1, 4);
-			glVertex3f(-4, -1, i);
-			glVertex3f(4, -1, i);
+			glVertex3f(i, 0, -4);
+			glVertex3f(i, 0, 4);
+			glVertex3f(-4, 0, i);
+			glVertex3f(4, 0, i);
 		}
 	glEnd();
 }
@@ -215,6 +262,26 @@ M yrot(double a)
 		, 0, 0, 0, 1 };
 }
 
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+		switch (key)
+		{
+			case GLFW_KEY_S:
+			{
+				positions.push_back(position);
+				save("positions.dat", positions);
+				break;
+			}
+			case GLFW_KEY_N:
+			{
+				++current_pos %= positions.size();
+				position = positions[current_pos];
+				break;
+			}
+		}
+}
+
 int main()
 {
 	if (!glfwInit())
@@ -226,6 +293,8 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
+
+	glfwSetKeyCallback(window, key_callback);
 
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
@@ -251,12 +320,11 @@ int main()
 
 		glMultMatrixd(yrot(rotation).data());
 
-		glPointSize(10);
-
-		auto & position = positions[current_pos];
+		glColor3f(0.5,0.5,0.5);
+		grid();
+		for (auto && p : positions) render(p);
 
 		glColor3f(1,1,1);
-		grid();
 		render(position);
 
 		double xpos, ypos;
@@ -299,6 +367,7 @@ int main()
 		}
 
 		glColor3f(1,0,0);
+		glPointSize(20);
 		glBegin(GL_POINTS);
 		glVertex(closest_joint);
 		glEnd();
@@ -311,9 +380,9 @@ int main()
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 			camera.y -= 0.05;
 		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-			rotation -= 0.01;
+			rotation -= 0.02;
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-			rotation += 0.01;
+			rotation += 0.02;
 		if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
 			camera.z -= 0.05;
 		if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS)
@@ -326,7 +395,8 @@ int main()
 			closest_player->joints[closest_ji].x -= dragger.x * closest_off.x;
 			closest_player->joints[closest_ji].z -= dragger.z * closest_off.x;
 
-			closest_player->joints[closest_ji].y -= closest_off.y;
+			auto & y = closest_player->joints[closest_ji].y;
+			y = std::max(0., y - closest_off.y);
 		}
 
 	}
