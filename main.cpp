@@ -312,7 +312,7 @@ using Moves = PerPlayerJoint<std::map<double /* distance */, unsigned /* positio
 
 std::vector<Position> positions = load("positions.dat");
 unsigned current_pos = 0; // index into positions
-V3 camera{0, -0.3, 1.5};
+V3 camera{0, -0.5, 1.5};
 	// x used for rotation over y axis, y used for rotation over x axis, z used for zoom
 PlayerJoint closest_joint = {0, LeftAnkle};
 boost::optional<PlayerJoint> chosen_joint;
@@ -566,7 +566,7 @@ int main()
 	if (!glfwInit())
 		return -1;
 
-	GLFWwindow * window = glfwCreateWindow(640, 480, "Jiu Jitsu Mapper", nullptr, nullptr);
+	window = glfwCreateWindow(640, 480, "Jiu Jitsu Mapper", nullptr, nullptr);
 	if (!window)
 	{
 		glfwTerminate();
