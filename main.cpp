@@ -340,6 +340,8 @@ std::vector<Sequence> load(std::string const filename)
 	std::vector<Sequence> r;
 	unsigned id = unsigned(-1);
 
+	unsigned total = 0;
+
 	for (auto && pod : v)
 	{
 		if (pod.id != id)
@@ -348,8 +350,11 @@ std::vector<Sequence> load(std::string const filename)
 			id = pod.id;
 		}
 
+		++total;
 		r.back().push_back(pod.pos);
 	}
+
+	std::cout << "Loaded " << total << " positions in " << r.size() << " sequences.\n";
 
 	if (r.empty()) r.emplace_back(Sequence(1));
 
@@ -557,14 +562,16 @@ constexpr unsigned candidates_shown = 5; // todo: define keys for increasing/dec
 
 void drawJoint(PlayerJoint pj)
 {
-	glColor(pj == (chosen_joint ? *chosen_joint : closest_joint)
-		? green
-		: playerDefs[pj.player].color);
+	bool const highlight = pj == (chosen_joint ? *chosen_joint : closest_joint);
+
+	glColor(highlight ? green : playerDefs[pj.player].color);
 
 	glPushMatrix();
 		glTranslate(position()[pj]);
 		GLUquadricObj * Sphere = gluNewQuadric();
+
 		gluSphere(Sphere, jointDefs[pj.joint].radius, 20, 20);
+
 		gluDeleteQuadric(Sphere);
 	glPopMatrix();
 }
@@ -624,7 +631,7 @@ void explore(F distance_to_cursor)
 
 		for (auto && candidate : candidates)
 		{
-			double d = distance_to_cursor(sequences[candidate.first][candidate.second][*chosen_joint]);
+			double const d = distance_to_cursor(sequences[candidate.first][candidate.second][*chosen_joint]);
 
 			if (d < best)
 			{
@@ -780,7 +787,7 @@ int main()
 
 		glBegin(GL_LINES);
 			for (unsigned seq = 0; seq != sequences.size(); ++seq)
-			for (unsigned pos = 0; pos <= sequences[seq].size() - 2; ++pos)
+			for (unsigned pos = 0; pos <= std::max(0, int(sequences[seq].size()) - 2); ++pos)
 			{
 				if (dist(position(), sequences[seq][pos]) > 15 ||
 					dist(position(), sequences[seq][pos + 1]) > 15) continue;
