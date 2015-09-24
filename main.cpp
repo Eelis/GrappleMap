@@ -34,10 +34,43 @@ constexpr uint32_t joint_count = sizeof(joints) / sizeof(Joint);
 
 struct PlayerJoint { unsigned player; Joint joint; };
 
+bool operator==(PlayerJoint a, PlayerJoint b)
+{
+	return a.player == b.player && a.joint == b.joint;
+}
+
 struct V3 { GLdouble x, y, z; };
 
 template<typename T> using PerPlayer = std::array<T, 2>;
 template<typename T> using PerJoint = std::array<T, joint_count>;
+
+struct JointDef { Joint joint; double radius; };
+
+PerJoint<JointDef> jointDefs =
+	{{ { LeftToe, 0.025}
+	, { RightToe, 0.025}
+	, { LeftHeel, 0.03}
+	, { RightHeel, 0.03}
+	, { LeftAnkle, 0.03}
+	, { RightAnkle, 0.03}
+	, { LeftKnee, 0.05}
+	, { RightKnee, 0.05}
+	, { LeftHip, 0.10}
+	, { RightHip, 0.10}
+	, { LeftShoulder, 0.08}
+	, { RightShoulder, 0.08}
+	, { LeftElbow, 0.045}
+	, { RightElbow, 0.045}
+	, { LeftWrist, 0.02}
+	, { RightWrist, 0.02}
+	, { LeftHand, 0.02}
+	, { RightHand, 0.02}
+	, { LeftFingers, 0.02}
+	, { RightFingers, 0.02}
+	, { Core, 0.02}
+	, { Neck, 0.02}
+	, { Head, 0.125}
+	}};
 
 template<typename T>
 struct PerPlayerJoint: PerPlayer<PerJoint<T>>
@@ -61,6 +94,12 @@ std::array<PlayerJoint, joint_count * 2> make_playerJoints()
 
 const auto playerJoints = make_playerJoints();
 
+struct PlayerDef { V3 color; };
+
+V3 const red{1,0,0}, blue{0.1, 0.1, 0.9}, grey{0.2, 0.2, 0.2}, yellow{1,1,0}, green{0,1,0};
+
+PerPlayer<PlayerDef> playerDefs = {{ {red}, {blue} }};
+
 struct Segment
 {
 	std::array<Joint, 2> ends;
@@ -73,9 +112,9 @@ const Segment segments[] =
 	, {{LeftToe, LeftAnkle}, 0.18, false}
 	, {{LeftHeel, LeftAnkle}, 0.11, false}
 	, {{LeftAnkle, LeftKnee}, 0.42, true}
-	, {{LeftKnee, LeftHip}, 0.45, true}
+	, {{LeftKnee, LeftHip}, 0.5, true}
 	, {{LeftHip, Core}, 0.3, true}
-	, {{Core, LeftShoulder}, 0.44, true}
+	, {{Core, LeftShoulder}, 0.4, true}
 	, {{LeftShoulder, LeftElbow}, 0.29, true}
 	, {{LeftElbow, LeftWrist}, 0.26, true}
 	, {{LeftWrist, LeftHand}, 0.08, true}
@@ -86,9 +125,9 @@ const Segment segments[] =
 	, {{RightToe, RightAnkle}, 0.18, false}
 	, {{RightHeel, RightAnkle}, 0.11, false}
 	, {{RightAnkle, RightKnee}, 0.42, true}
-	, {{RightKnee, RightHip}, 0.45, true}
+	, {{RightKnee, RightHip}, 0.5, true}
 	, {{RightHip, Core}, 0.3, true}
-	, {{Core, RightShoulder}, 0.44, true}
+	, {{Core, RightShoulder}, 0.4, true}
 	, {{RightShoulder, RightElbow}, 0.29, true}
 	, {{RightElbow, RightWrist}, 0.26, true}
 	, {{RightWrist, RightHand}, 0.08, true}
@@ -96,7 +135,7 @@ const Segment segments[] =
 	, {{RightWrist, RightFingers}, 0.14, false}
 
 	, {{LeftShoulder, RightShoulder}, 0.4, false}
-	, {{LeftHip, RightHip}, 0.30, true}
+	, {{LeftHip, RightHip}, 0.25, true}
 
 	, {{LeftShoulder, Neck}, 0.23, true}
 	, {{RightShoulder, Neck}, 0.23, true}
@@ -183,7 +222,7 @@ Player spring(Player const & p)
 		{
 			if (s.ends[0] == j)
 			{
-				double force = (s.length - distance(p.joints[s.ends[1]], p.joints[s.ends[0]])) / 5;
+				double force = (s.length - distance(p.joints[s.ends[1]], p.joints[s.ends[0]])) / 3;
 				if (std::abs(force) > 0.0001)
 				{
 					V3 dir = normalize(p.joints[s.ends[1]] - p.joints[s.ends[0]]);
@@ -192,7 +231,7 @@ Player spring(Player const & p)
 			}
 			else if (s.ends[1] == j)
 			{
-				double force = (s.length - distance(p.joints[s.ends[1]], p.joints[s.ends[0]])) / 5;
+				double force = (s.length - distance(p.joints[s.ends[1]], p.joints[s.ends[0]])) / 3;
 				if (std::abs(force) > 0.0001)
 				{
 					V3 dir = normalize(p.joints[s.ends[0]] - p.joints[s.ends[1]]);
@@ -201,7 +240,7 @@ Player spring(Player const & p)
 			}
 		}
 
-		r.joints[j].y = std::max(0., r.joints[j].y);
+		r.joints[j].y = std::max(jointDefs[j].radius, r.joints[j].y);
 	}
 
 	return r;
@@ -215,25 +254,11 @@ struct Position
 	V3 const & operator[](PlayerJoint pj) const { return players[pj.player].joints[pj.joint]; }
 };
 
-void save(std::string const filename, std::vector<Position> const & v)
+struct PositionOnDisk
 {
-	std::ofstream f(filename, std::ios::binary);
-
-	std::copy_n(reinterpret_cast<char const *>(v.data()), v.size() * sizeof(Position), std::ostreambuf_iterator<char>(f));
-}
-
-std::vector<Position> load(std::string const filename)
-{
-	std::ifstream f(filename, std::ios::binary);
-	std::istreambuf_iterator<char> i(f), e;
-	std::string s(i, e);
-
-	size_t const n = s.size() / sizeof(Position);
-
-	std::vector<Position> r(n);
-	std::copy(s.begin(), s.end(), reinterpret_cast<char *>(r.data())); // TODO: don't be evil
-	return r;
-}
+	unsigned id;
+	Position pos;
+};
 
 void spring(Position & pos)
 {
@@ -280,16 +305,7 @@ void renderShape(Player const & player)
 		triangle(j[LeftKnee], crotch, j[LeftHip]);
 		triangle(j[RightKnee], crotch, j[RightHip]);
 	glEnd();
-
-	glPushMatrix();
-		glTranslate(player.joints[Head]);
-		GLUquadricObj * Sphere = gluNewQuadric();
-		gluSphere(Sphere, 0.125, 20, 20);
-		gluDeleteQuadric(Sphere);
-	glPopMatrix();
 }
-
-V3 const red{1,0,0}, blue{0,0,1}, grey{0.2, 0.2, 0.2}, yellow{1,1,0}, green{0,1,0};
 
 inline void glColor(V3 v) { glColor3d(v.x, v.y, v.z); }
 
@@ -306,20 +322,54 @@ void render(Position const & pos, V3 acolor, V3 bcolor, bool ghost = false)
 	renderWires(b);
 }
 
-using Moves = PerPlayerJoint<std::map<double /* distance */, unsigned /* position */>>;
+using Moves = PerPlayerJoint<std::map<double /* distance */, std::pair<unsigned /* sequence */, unsigned /* position */>>>;
+
+using Sequence = std::vector<Position>;
+
+std::vector<Sequence> load(std::string const filename)
+{
+	std::ifstream f(filename, std::ios::binary);
+	std::istreambuf_iterator<char> i(f), e;
+	std::string s(i, e);
+
+	size_t const n = s.size() / sizeof(PositionOnDisk);
+
+	std::vector<PositionOnDisk> v(n);
+	std::copy(s.begin(), s.end(), reinterpret_cast<char *>(v.data())); // TODO: don't be evil
+
+	std::vector<Sequence> r;
+	unsigned id = unsigned(-1);
+
+	for (auto && pod : v)
+	{
+		if (pod.id != id)
+		{
+			r.emplace_back();
+			id = pod.id;
+		}
+
+		r.back().push_back(pod.pos);
+	}
+
+	if (r.empty()) r.emplace_back(Sequence(1));
+
+	return r;
+}
 
 // state
 
-std::vector<Position> positions = load("positions.dat");
-unsigned current_pos = 0; // index into positions
-V3 camera{0, -0.5, 1.5};
+std::vector<Sequence> sequences = load("positions.dat");
+unsigned current_sequence = 0;
+unsigned current_position = 0; // index into current sequence
+V3 camera{0, -0.7, 1.7};
 	// x used for rotation over y axis, y used for rotation over x axis, z used for zoom
 PlayerJoint closest_joint = {0, LeftAnkle};
 boost::optional<PlayerJoint> chosen_joint;
 GLFWwindow * window;
-Moves candidates;
+Position clipboard;
+std::vector<std::pair<unsigned /* sequence */, unsigned /* position */>> candidates;
 
-V4 operator*(M const & m, V4 v)
+V4 operator*(M const & m, V4 const v)
 {
 	return
 		{{ m[0]*v.x + m[4]*v.y + m[8]*v.z + m[12]
@@ -328,25 +378,18 @@ V4 operator*(M const & m, V4 v)
 		, m[3]*v.x + m[7]*v.y + m[11]*v.z + m[15]};
 }
 
-void renderDiff(Player const & a, Player const & b)
+void save(std::string const filename)
 {
-	glColor3f(0.5, 0.5, 0.5);
-	glLineWidth(2);
-	glBegin(GL_LINES);
+	std::vector<PositionOnDisk> v;
 
-	for (auto j : joints)
-	{
-		glVertex(a.joints[j]);
-		glVertex(b.joints[j]);
-	}
+	for (unsigned int i = 0; i != sequences.size(); ++i)
+		for (auto && pos : sequences[i])
+			v.push_back({i, pos});
 
-	glEnd();
-}
 
-void renderDiff(Position const & a, Position const & b)
-{
-	for (int i = 0; i != 2; ++i)
-		renderDiff(a.players[i], b.players[i]);
+	std::ofstream f(filename, std::ios::binary);
+
+	std::copy_n(reinterpret_cast<char const *>(v.data()), v.size() * sizeof(PositionOnDisk), std::ostreambuf_iterator<char>(f));
 }
 
 void grid()
@@ -382,36 +425,111 @@ M xrot(double a)
 		, 0, 0, 0, 1 };
 }
 
+Sequence & sequence() { return sequences[current_sequence]; }
+Position & position() { return sequence()[current_position]; }
+
+Position halfway(Position const & a, Position const & b)
+{
+	Position r;
+	for (auto j : playerJoints) r[j] = (a[j] + b[j]) / 2;
+	return r;
+}
+
+void add_position()
+{
+	if (current_position == sequence().size() - 1)
+	{
+		auto p = position();
+		sequence().push_back(p);
+		current_position = sequence().size() - 1;
+	}
+	else
+	{
+		auto p = halfway(position(), sequence()[current_position + 1]);
+		for(int i = 0; i != 6; ++i)
+			spring(position());
+		++current_position;
+		sequence().insert(sequence().begin() + current_position, p);
+	}
+}
+
+Position * prev_position()
+{
+	if (current_position != 0) return &sequence()[current_position - 1];
+	if (current_sequence != 0) return &sequences[current_sequence - 1].back();
+	return nullptr;
+}
+
+Position * next_position()
+{
+	if (current_position != sequence().size() - 1) return &sequence()[current_position + 1];
+	if (current_sequence != sequences.size() - 1) return &sequences[current_sequence + 1].front();
+	return nullptr;
+}
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	if ((mods & GLFW_MOD_CONTROL) && key == GLFW_KEY_C) // copy
+	{
+		clipboard = position();
+		return;
+	}
+
+	if ((mods & GLFW_MOD_CONTROL) && key == GLFW_KEY_V) // paste
+	{
+		position() = clipboard;
+		return;
+	}
+
 	if (action == GLFW_PRESS)
 		switch (key)
 		{
-			case GLFW_KEY_INSERT:
-			{
-				auto p = positions[current_pos];
-				positions.push_back(p);
-				current_pos = positions.size() - 1;
-			}
+			case GLFW_KEY_INSERT: add_position(); break;
 
-			case GLFW_KEY_S:
-			{
-				save("positions.dat", positions);
+			// set position to prev/next/center
+
+			case GLFW_KEY_Y: if (auto p = prev_position()) position() = *p; break;
+			case GLFW_KEY_I: if (auto p = next_position()) position() = *p; break;
+			case GLFW_KEY_U:
+				if (auto next = next_position())
+				if (auto prev = prev_position())
+				{
+					position() = halfway(*prev, *next);
+					for(int i = 0; i != 6; ++i)
+						spring(position());
+				}
 				break;
-			}
-			case GLFW_KEY_P:
-			{
-				--current_pos %= positions.size();
+
+			// set joint to prev/next/center
+
+			case GLFW_KEY_H: if (auto p = prev_position()) position()[closest_joint] = (*p)[closest_joint]; break;
+			case GLFW_KEY_K: if (auto p = next_position()) position()[closest_joint] = (*p)[closest_joint]; break;
+			case GLFW_KEY_J:
+				if (auto next = next_position())
+				if (auto prev = prev_position())
+					position()[closest_joint] = ((*prev)[closest_joint] + (*next)[closest_joint]) / 2;
 				break;
-			}
+
+			// new sequence
+
 			case GLFW_KEY_N:
 			{
-				++current_pos %= positions.size();
+				auto p = position();
+				sequences.push_back(Sequence{p});
+				current_sequence = sequences.size() - 1;
+				current_position = 0;
 				break;
 			}
+
+			case GLFW_KEY_S: save("positions.dat"); break;
 			case GLFW_KEY_DELETE:
 			{
-				positions.erase(positions.begin() + current_pos);
+				if (sequence().size() > 1)
+				{
+					sequence().erase(sequence().begin() + current_position);
+					if (current_position == sequence().size()) --current_position;
+				}
+
 				break;
 			}
 		}
@@ -435,51 +553,51 @@ double dist_via(Position const & a, Position const & b, PlayerJoint pj)
 	return dist(a, b) + norm2(b[pj] - a[pj]) * 10;
 }
 
-constexpr unsigned candidates_shown = 10; // todo: define keys for increasing/decreasing
+constexpr unsigned candidates_shown = 5; // todo: define keys for increasing/decreasing
 
-void drawCandidates()
+void drawJoint(PlayerJoint pj)
 {
-	glColor3f(0.5,0.5,0.5);
-	glLineWidth(2);
-	glBegin(GL_LINES);
-		for (auto pj : playerJoints)
-		{
-			unsigned i = 0;
-			for (auto && p : candidates[pj])
-				if (++i == candidates_shown) break;
-				else
-				{
-					glVertex(positions[current_pos][pj]);
-					glVertex(positions[p.second][pj]);
-				}
-		}
-	glEnd();
+	glColor(pj == (chosen_joint ? *chosen_joint : closest_joint)
+		? green
+		: playerDefs[pj.player].color);
+
+	glPushMatrix();
+		glTranslate(position()[pj]);
+		GLUquadricObj * Sphere = gluNewQuadric();
+		gluSphere(Sphere, jointDefs[pj.joint].radius, 20, 20);
+		gluDeleteQuadric(Sphere);
+	glPopMatrix();
 }
 
-void drawClosestJoint()
+void drawJoints()
 {
-	glColor3f(0,1,0);
-	glPointSize(20);
-	glBegin(GL_POINTS);
-	glVertex(positions[current_pos][closest_joint]);
-	glEnd();
+	for (auto pj : playerJoints) drawJoint(pj);
 }
 
-void determineCandidates()
+template<typename F>
+void determineCandidates(F distance_to_cursor)
 {
-	for (auto pj : playerJoints)
-		for (unsigned pos = 0; pos != positions.size(); ++pos)
-			candidates[pj][dist_via(positions[current_pos], positions[pos], pj)] = pos;
+	candidates.clear();
+
+	PlayerJoint const highlight_joint = chosen_joint ? *chosen_joint : closest_joint;
+
+	for (unsigned seq = 0; seq != sequences.size(); ++seq)
+	for (unsigned pos = 0; pos != sequences[seq].size(); ++pos)
+	{
+		if (dist(position(), sequences[seq][pos]) < 15 &&
+			distance_to_cursor(sequences[seq][pos][highlight_joint]) <= 0.3)
+			candidates.emplace_back(seq, pos);
+	}
 }
 
 template<typename F>
 void determineNearestJoint(F distance_to_cursor)
 {
-	double closest = 100;
+	double closest = 200;
 
 	for (int i = 0; i != 2; ++i)
 	{
-		auto & player = positions[current_pos].players[i];
+		auto & player = position().players[i];
 
 		for (auto && ji : joints)
 		{
@@ -504,28 +622,25 @@ void explore(F distance_to_cursor)
 	{
 		double best = 1000000;
 
-		unsigned u = 0;
-
-		for (auto && candidate : candidates[*chosen_joint])
+		for (auto && candidate : candidates)
 		{
-			if (++u == candidates_shown) break;
-
-			double d = distance_to_cursor(positions[candidate.second][*chosen_joint]);
+			double d = distance_to_cursor(sequences[candidate.first][candidate.second][*chosen_joint]);
 
 			if (d < best)
 			{
 				best = d;
-				current_pos = candidate.second;
+				current_sequence = candidate.first;
+				current_position = candidate.second;
 			}
 		}
 	}
 }
 
+// todo: when reading file, warn about sequences whose start/end isn't connected to anything
+
 void prepareDraw(M const & persp, int width, int height)
 {
 	glViewport(0, 0, width, height);
-	glEnable(GL_DEPTH);
-	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_PROJECTION);
@@ -541,14 +656,18 @@ void prepareDraw(M const & persp, int width, int height)
 
 void draw()
 {
+	glEnable(GL_DEPTH);
+	glEnable(GL_DEPTH_TEST);
+
 	grid();
-	render(positions[current_pos], red, blue);
+	render(position(), red, blue);
+
+	drawJoints();
 
 	glDisable(GL_DEPTH);
 	glDisable(GL_DEPTH_TEST);
 
-	drawCandidates();
-	drawClosestJoint();
+	drawJoint(chosen_joint ? *chosen_joint : closest_joint);
 }
 
 V2 world2xy(V3 v, M const & persp)
@@ -559,7 +678,7 @@ V2 world2xy(V3 v, M const & persp)
 	v4.z -= camera.z;
 	v4 = persp * v4;
 	return xy(v4) / v4.w;
-};
+}
 
 int main()
 {
@@ -580,6 +699,18 @@ int main()
 			if (action == GLFW_PRESS) chosen_joint = closest_joint;
 			if (action == GLFW_RELEASE) chosen_joint = boost::none;
 		});
+
+	glfwSetScrollCallback(window, [](GLFWwindow * window, double xoffset, double yoffset)
+		{
+			if (yoffset == -1)
+			{
+				if (current_position != 0) --current_position;
+			}
+			else if (yoffset == 1)
+			{
+				if (current_position != sequence().size() - 1) ++current_position;
+			}
+		});
 	
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
@@ -590,8 +721,8 @@ int main()
 
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) camera.y -= 0.05;
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) camera.y += 0.05;
-		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) camera.x -= 0.02;
-		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) camera.x += 0.02;
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) camera.x -= 0.03;
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) camera.x += 0.03;
 		if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) camera.z -= 0.05;
 		if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) camera.z += 0.05;
 
@@ -599,21 +730,21 @@ int main()
 		glfwGetFramebufferSize(window, &width, &height);
 		float const ratio = width / (float) height;
 
-		auto const persp = perspective(90, ratio, 0.1, 10);
+		auto const persp = perspective(90, ratio, 0.1, 8);
 
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
-		V2 const cursor {((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
+		V2 const cursor{((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
 
 		auto distance_to_cursor = [&](V3 v){ return norm2(world2xy(v, persp) - cursor); };
 
-		determineCandidates();
+		determineCandidates(distance_to_cursor);
 
 		// editing
 
 		if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		{
-			Position new_pos = positions[current_pos];
+			Position new_pos = position();
 
 			V4 const dragger = yrot(-camera.x) * V4{{1,0,0},0};
 
@@ -627,7 +758,7 @@ int main()
 
 			spring(new_pos);
 
-			positions[current_pos] = new_pos;
+			position() = new_pos;
 		}
 
 		explore(distance_to_cursor);
@@ -636,6 +767,34 @@ int main()
 		
 		prepareDraw(persp, width, height);
 		draw();
+
+		// draw sequence lines
+
+		glLineWidth(2);
+
+		PlayerJoint const highlight_joint = chosen_joint ? *chosen_joint : closest_joint;
+
+		auto j = highlight_joint;
+
+		glColor(j == highlight_joint ? green : V3{0.5,0.5,0.5});
+
+		glBegin(GL_LINES);
+			for (unsigned seq = 0; seq != sequences.size(); ++seq)
+			for (unsigned pos = 0; pos <= sequences[seq].size() - 2; ++pos)
+			{
+				if (dist(position(), sequences[seq][pos]) > 15 ||
+					dist(position(), sequences[seq][pos + 1]) > 15) continue;
+
+				auto a = sequences[seq][pos][j];
+				auto b = sequences[seq][pos + 1][j];
+
+				if (distance_to_cursor(a) <= 0.3 && distance_to_cursor(b) <= 0.3)
+				{
+					glVertex(a);
+					glVertex(b);
+				}
+			}
+		glEnd();
 
 		glfwSwapBuffers(window);
 	}
