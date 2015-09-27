@@ -638,7 +638,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				{
 					++current_sequence;
 					current_position = 0;
-					std::cout << "down" << std::endl;
 				}
 				break;
 
@@ -682,10 +681,22 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			case GLFW_KEY_S: save("positions.dat"); break;
 			case GLFW_KEY_DELETE:
 			{
-				if (sequence().size() > 2)
+				if (mods & GLFW_MOD_CONTROL)
 				{
-					sequence().erase(sequence().begin() + current_position);
-					if (current_position == sequence().size()) --current_position;
+					if (sequences.size() > 1)
+					{
+						sequences.erase(sequences.begin() + current_sequence);
+						if (current_sequence == sequences.size()) --current_sequence;
+						current_position = 0;
+					}
+				}
+				else
+				{
+					if (sequence().size() > 2)
+					{
+						sequence().erase(sequence().begin() + current_position);
+						if (current_position == sequence().size()) --current_position;
+					}
 				}
 
 				break;
