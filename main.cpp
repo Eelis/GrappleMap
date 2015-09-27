@@ -70,7 +70,7 @@ PerJoint<JointDef> jointDefs =
 	, { LeftFingers, 0.02, false}
 	, { RightFingers, 0.02, false}
 	, { Core, 0.1, true}
-	, { Neck, 0.04, true}
+	, { Neck, 0.04, false}
 	, { Head, 0.11, true}
 	}};
 
@@ -767,7 +767,7 @@ unsigned explore_forward(unsigned pos, PlayerJoint j, Sequence const & seq)
 		V3 v = seq[pos][j];
 		if (last && distanceSquared(v, *last) < 0.003) break;
 		V2 xy = camera.world2xy(v);
-		if (lastxy && distanceSquared(xy, *lastxy) < 0.005) break;
+		if (lastxy && distanceSquared(xy, *lastxy) < 0.002) break;
 		last = v;
 		lastxy = xy;
 	}
@@ -784,7 +784,7 @@ unsigned explore_backward(unsigned upos, PlayerJoint j, Sequence const & seq)
 		auto && v = seq[pos][j];
 		if (last && distanceSquared(v, *last) < 0.003) break;
 		auto xy = camera.world2xy(v);
-		if (lastxy && distanceSquared(xy, *lastxy) < 0.005) break;
+		if (lastxy && distanceSquared(xy, *lastxy) < 0.002) break;
 		last = v;
 		lastxy = xy;
 	}
@@ -822,6 +822,8 @@ void determineViables()
 				auto & s = sequences[seq];
 				if (s.front() == sequence().back())
 					vv.push_back(Viable{seq, 0, explore_forward(0, j, s)});
+				else if (s.back() == sequence().back())
+					vv.push_back(Viable{seq, explore_backward(s.size() - 1, j, s), unsigned(s.size())});
 			}
 
 		if (v.begin == 0)
@@ -829,7 +831,9 @@ void determineViables()
 			{
 				auto & s = sequences[seq];
 				if (s.back() == sequence().front())
-					vv.push_back(Viable{seq, explore_backward(s.size() - 1, j, s), s.size()});
+					vv.push_back(Viable{seq, explore_backward(s.size() - 1, j, s), unsigned(s.size())});
+				else if (s.front() == sequence().front())
+					vv.push_back(Viable{seq, 0, explore_forward(0, j, s)});
 			}
 	}
 }
