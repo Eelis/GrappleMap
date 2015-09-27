@@ -502,7 +502,7 @@ class Camera
 
 	void computeMatrices()
 	{
-		proj = perspective(90, viewportSize.x / viewportSize.y, 0.1, 4);
+		proj = perspective(90, viewportSize.x / viewportSize.y, 0.1, 6);
 		mv = translate(0, 0, -orientation.z) * xrot(orientation.y) * yrot(orientation.x);
 		full = proj * mv;
 	}
@@ -536,6 +536,8 @@ public:
 	void rotateVertical(double radians)
 	{
 		orientation.y += radians;
+		orientation.y = std::max(-M_PI/2, orientation.y);
+		orientation.y = std::min(M_PI/2, orientation.y);
 		computeMatrices();
 	}
 
@@ -1126,5 +1128,6 @@ Todo:
 	- joint rotation limits
 	- prevent joints moving through eachother (maybe, might be more annoying than useful)
 	- sticky floor
-	- show nearby keyframes
+	- transformed keyframes (so that you can end up in the same position with different offset/rotation)
+	- direction signs ("to truck", "zombie")
 */
