@@ -11,6 +11,8 @@
 
 #include <boost/optional.hpp>
 
+using boost::optional;
+
 #define JOINTS \
 	LeftToe, RightToe, \
 	LeftHeel, RightHeel, \
@@ -44,32 +46,32 @@ struct V3 { GLdouble x, y, z; };
 template<typename T> using PerPlayer = std::array<T, 2>;
 template<typename T> using PerJoint = std::array<T, joint_count>;
 
-struct JointDef { Joint joint; double radius; };
+struct JointDef { Joint joint; double radius; bool draggable; };
 
 PerJoint<JointDef> jointDefs =
-	{{ { LeftToe, 0.025}
-	, { RightToe, 0.025}
-	, { LeftHeel, 0.03}
-	, { RightHeel, 0.03}
-	, { LeftAnkle, 0.03}
-	, { RightAnkle, 0.03}
-	, { LeftKnee, 0.05}
-	, { RightKnee, 0.05}
-	, { LeftHip, 0.10}
-	, { RightHip, 0.10}
-	, { LeftShoulder, 0.08}
-	, { RightShoulder, 0.08}
-	, { LeftElbow, 0.045}
-	, { RightElbow, 0.045}
-	, { LeftWrist, 0.02}
-	, { RightWrist, 0.02}
-	, { LeftHand, 0.02}
-	, { RightHand, 0.02}
-	, { LeftFingers, 0.02}
-	, { RightFingers, 0.02}
-	, { Core, 0.02}
-	, { Neck, 0.02}
-	, { Head, 0.125}
+	{{ { LeftToe, 0.025, false}
+	, { RightToe, 0.025, false}
+	, { LeftHeel, 0.03, false}
+	, { RightHeel, 0.03, false}
+	, { LeftAnkle, 0.03, true}
+	, { RightAnkle, 0.03, true}
+	, { LeftKnee, 0.05, true}
+	, { RightKnee, 0.05, true}
+	, { LeftHip, 0.10, true}
+	, { RightHip, 0.10, true}
+	, { LeftShoulder, 0.08, true}
+	, { RightShoulder, 0.08, true}
+	, { LeftElbow, 0.045, true}
+	, { RightElbow, 0.045, true}
+	, { LeftWrist, 0.02, true}
+	, { RightWrist, 0.02, true}
+	, { LeftHand, 0.02, false}
+	, { RightHand, 0.02, false}
+	, { LeftFingers, 0.02, false}
+	, { RightFingers, 0.02, false}
+	, { Core, 0.1, true}
+	, { Neck, 0.04, true}
+	, { Head, 0.11, true}
 	}};
 
 template<typename T>
@@ -81,6 +83,7 @@ struct PerPlayerJoint: PerPlayer<PerJoint<T>>
 	T const & operator[](PlayerJoint i) const { return operator[](i.player)[i.joint]; }
 };
 
+using Position = PerPlayerJoint<V3>;
 
 std::array<PlayerJoint, joint_count * 2> make_playerJoints()
 {
@@ -96,7 +99,7 @@ const auto playerJoints = make_playerJoints();
 
 struct PlayerDef { V3 color; };
 
-V3 const red{1,0,0}, blue{0.1, 0.1, 0.9}, grey{0.2, 0.2, 0.2}, yellow{1,1,0}, green{0,1,0};
+V3 const red{1,0,0}, blue{0.1, 0.1, 0.9}, grey{0.2, 0.2, 0.2}, yellow{1,1,0}, green{0,1,0}, white{1,1,1};
 
 PerPlayer<PlayerDef> playerDefs = {{ {red}, {blue} }};
 
@@ -108,26 +111,26 @@ struct Segment
 };
 
 const Segment segments[] =
-	{ {{LeftToe, LeftHeel}, 0.25, false}
-	, {{LeftToe, LeftAnkle}, 0.18, false}
-	, {{LeftHeel, LeftAnkle}, 0.11, false}
+	{ {{LeftToe, LeftHeel}, 0.23, true}
+	, {{LeftToe, LeftAnkle}, 0.18, true}
+	, {{LeftHeel, LeftAnkle}, 0.09, true}
 	, {{LeftAnkle, LeftKnee}, 0.42, true}
-	, {{LeftKnee, LeftHip}, 0.5, true}
-	, {{LeftHip, Core}, 0.3, true}
-	, {{Core, LeftShoulder}, 0.4, true}
+	, {{LeftKnee, LeftHip}, 0.47, true}
+	, {{LeftHip, Core}, 0.28, true}
+	, {{Core, LeftShoulder}, 0.38, true}
 	, {{LeftShoulder, LeftElbow}, 0.29, true}
 	, {{LeftElbow, LeftWrist}, 0.26, true}
 	, {{LeftWrist, LeftHand}, 0.08, true}
 	, {{LeftHand, LeftFingers}, 0.08, true}
 	, {{LeftWrist, LeftFingers}, 0.14, false}
 
-	, {{RightToe, RightHeel}, 0.25, false}
-	, {{RightToe, RightAnkle}, 0.18, false}
-	, {{RightHeel, RightAnkle}, 0.11, false}
+	, {{RightToe, RightHeel}, 0.23, true}
+	, {{RightToe, RightAnkle}, 0.18, true}
+	, {{RightHeel, RightAnkle}, 0.09, true}
 	, {{RightAnkle, RightKnee}, 0.42, true}
-	, {{RightKnee, RightHip}, 0.5, true}
-	, {{RightHip, Core}, 0.3, true}
-	, {{Core, RightShoulder}, 0.4, true}
+	, {{RightKnee, RightHip}, 0.47, true}
+	, {{RightHip, Core}, 0.28, true}
+	, {{Core, RightShoulder}, 0.38, true}
 	, {{RightShoulder, RightElbow}, 0.29, true}
 	, {{RightElbow, RightWrist}, 0.26, true}
 	, {{RightWrist, RightHand}, 0.08, true}
@@ -135,15 +138,53 @@ const Segment segments[] =
 	, {{RightWrist, RightFingers}, 0.14, false}
 
 	, {{LeftShoulder, RightShoulder}, 0.4, false}
-	, {{LeftHip, RightHip}, 0.25, true}
+	, {{LeftHip, RightHip}, 0.25, false}
 
 	, {{LeftShoulder, Neck}, 0.23, true}
 	, {{RightShoulder, Neck}, 0.23, true}
-	, {{Neck, Head}, 0.175, true}
+	, {{Neck, Head}, 0.15, false}
 	};
 
 struct V2 { GLdouble x, y; };
 
+double inner_prod(V2 a, V2 b) { return a.x * b.x + a.y * b.y; }
+double inner_prod(V3 a, V3 b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+
+using M = std::array<double, 16>;
+
+M yrot(double a)
+{
+	return
+		{ cos(a), 0, sin(a), 0
+		, 0, 1, 0, 0
+		, -sin(a), 0, cos(a), 0
+		, 0, 0, 0, 1 };
+}
+
+M xrot(double a)
+{
+	return
+		{ 1, 0, 0, 0
+		, 0, cos(a), -sin(a), 0
+		, 0, sin(a), cos(a), 0
+		, 0, 0, 0, 1 };
+}
+
+M translate(double x, double y, double z)
+{
+	return {
+		{ 1, 0, 0, 0
+		, 0, 1, 0, 0
+		, 0, 0, 1, 0
+		, x, y, z, 1 }};
+}
+V3 cross(V3 a, V3 b)
+{
+	return
+		{ a.y * b.z - a.z * b.y
+		, a.z * b.x - a.x * b.z
+		, a.x * b.y - a.y * b.x };
+}
 
 struct V4
 {
@@ -158,7 +199,6 @@ V2 xy(V3 v){ return {v.x, v.y}; }
 V2 xy(V4 v){ return {v.x, v.y}; }
 V3 xyz(V4 v){ return {v.x, v.y, v.z}; }
 
-using M = std::array<double, 16>;
 
 M perspective(double fovy, double aspect, double zNear, double zFar)
 {
@@ -171,88 +211,82 @@ M perspective(double fovy, double aspect, double zNear, double zFar)
 		, 0, 0, 2*zFar*zNear/(zNear-zFar), 0 };
 }
 
-double norm2(V2 v){ return v.x * v.x + v.y * v.y; }
-double norm2(V3 v){ return v.x * v.x + v.y * v.y + v.z * v.z; }
-double norm(V3 v){ return sqrt(norm2(v)); }
+double norm2(V2 v){ return sqrt(inner_prod(v, v)); }
+double norm2(V3 v){ return sqrt(inner_prod(v, v)); }
 
 V2 operator-(V2 a, V2 b) { return {a.x - b.x, a.y - b.y}; }
 V3 operator-(V3 a, V3 b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
 V3 operator-(V3 v) { return {-v.x, -v.y, -v.z}; }
 V4 operator-(V4 a, V4 b) { return {{a.x - b.x, a.y - b.y, a.z - b.z}, a.w - b.w}; }
+V2 operator+(V2 a, V2 b) { return {a.x + b.x, a.y + b.y}; }
 V3 operator+(V3 a, V3 b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
 V4 operator+(V4 a, V4 b) { return {{a.x + b.x, a.y + b.y, a.z + b.z}, a.w + b.w}; }
+V2 operator*(V2 v, double s) { return {v.x * s, v.y * s}; }
 V3 operator*(V3 v, double s) { return {v.x * s, v.y * s, v.z * s}; }
 V3 & operator+=(V3 & a, V3 b) { return a = a + b; }
 V3 & operator-=(V3 & a, V3 b) { return a = a - b; }
 V4 & operator-=(V4 & a, V4 b) { return a = a - b; }
 
+inline bool operator==(V3 a, V3 b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
+
+std::ostream & operator<<(std::ostream & o, V2 v){ return o << '{' << v.x << ',' << v.y << '}'; }
 std::ostream & operator<<(std::ostream & o, V3 v){ return o << '{' << v.x << ',' << v.y << ',' << v.z << '}'; }
 
 V2 operator/(V2 v, double s) { return {v.x / s, v.y / s}; }
 V3 operator/(V3 v, double s) { return {v.x / s, v.y / s, v.z / s}; }
-V3 normalize(V3 v){ return v / norm(v); }
+V3 normalize(V3 v){ return v / norm2(v); }
 
 inline void glVertex(V3 const & v) { glVertex3d(v.x, v.y, v.z); }
+inline void glNormal(V3 const & v) { glNormal3d(v.x, v.y, v.z); }
 inline void glTranslate(V3 const & v) { glTranslated(v.x, v.y, v.z); }
+inline void glColor(V3 v) { glColor3d(v.x, v.y, v.z); }
 
-struct Player
+using Player = PerJoint<V3>;
+
+double distance(V3 from, V3 to) { return norm2(to - from); }
+double distanceSquared(V2 from, V2 to) { return inner_prod(to - from, to - from); }
+double distanceSquared(V3 from, V3 to) { return inner_prod(to - from, to - from); }
+
+Player spring(Player const & p, optional<Joint> fixed_joint = boost::none)
 {
-	std::array<V3, joint_count> joints;
-
-	Player()
-	{
-		for (auto && j : joints) j = {double((rand()%6)-3), double((rand()%6)), double((rand()%6)-3)};
-	}
-};
-
-double distance(V3 from, V3 to)
-{
-	return norm(to - from);
-}
-
-Player spring(Player const & p)
-{
-	Player r;
+	Player r = p;
 
 	for (auto && j : joints)
 	{
-		r.joints[j] = p.joints[j];
+		if (j == fixed_joint) continue;
+
+		auto f = [](double distance)
+			{
+				return std::max(-.3, std::min(.3, distance / 3 + distance * distance * distance));
+			};
 
 		for (auto && s : segments)
 		{
 			if (s.ends[0] == j)
 			{
-				double force = (s.length - distance(p.joints[s.ends[1]], p.joints[s.ends[0]])) / 3;
-				if (std::abs(force) > 0.0001)
+				double force = f(s.length - distance(p[s.ends[1]], p[s.ends[0]]));
+				if (std::abs(force) > 0.001)
 				{
-					V3 dir = normalize(p.joints[s.ends[1]] - p.joints[s.ends[0]]);
-					r.joints[j] -= dir * force;
+					V3 dir = normalize(p[s.ends[1]] - p[s.ends[0]]);
+					r[j] -= dir * force;
 				}
 			}
 			else if (s.ends[1] == j)
 			{
-				double force = (s.length - distance(p.joints[s.ends[1]], p.joints[s.ends[0]])) / 3;
-				if (std::abs(force) > 0.0001)
+				double force = f(s.length - distance(p[s.ends[1]], p[s.ends[0]]));
+				if (std::abs(force) > 0.001)
 				{
-					V3 dir = normalize(p.joints[s.ends[0]] - p.joints[s.ends[1]]);
-					r.joints[j] -= dir * force;
+					V3 dir = normalize(p[s.ends[0]] - p[s.ends[1]]);
+					r[j] -= dir * force;
 				}
 			}
 		}
 
-		r.joints[j].y = std::max(jointDefs[j].radius, r.joints[j].y);
+		r[j].y = std::max(jointDefs[j].radius, r[j].y);
 	}
 
 	return r;
 }
-
-struct Position
-{
-	Player players[2];
-
-	V3 & operator[](PlayerJoint pj) { return players[pj.player].joints[pj.joint]; }
-	V3 const & operator[](PlayerJoint pj) const { return players[pj.player].joints[pj.joint]; }
-};
 
 struct PositionOnDisk
 {
@@ -260,9 +294,15 @@ struct PositionOnDisk
 	Position pos;
 };
 
-void spring(Position & pos)
+void spring(Position & pos, optional<PlayerJoint> j = boost::none)
 {
-	for (auto && p : pos.players) p = spring(p);
+	for (unsigned player = 0; player != 2; ++player)
+	{
+		optional<Joint> fixed_joint;
+		if (j && j->player == player) fixed_joint = j->joint;
+
+		pos[player] = spring(pos[player], fixed_joint);
+	}
 }
 
 void triangle(V3 a, V3 b, V3 c)
@@ -272,12 +312,39 @@ void triangle(V3 a, V3 b, V3 c)
 	glVertex(c);
 }
 
-void render(Player const & player, Segment const s)
+void pillar(V3 from, V3 to, double from_radius, double to_radius, unsigned faces)
 {
-	glBegin(GL_LINES);
-		glVertex(player.joints[s.ends[0]]);
-		glVertex(player.joints[s.ends[1]]);
+	V3 a = normalize(cross(to - from, V3{1,1,1} - from));
+	V3 b = normalize(cross(to - from, a));
+
+	double s = 2 * M_PI / faces;
+
+	glBegin(GL_TRIANGLES);
+
+	for (unsigned i = 0; i != faces; ++i)
+	{
+		glNormal(a * sin(i * s) + b * cos(i * s));
+			glVertex(from + a * from_radius * std::sin( i    * s) + b * from_radius * std::cos( i    * s));
+		glVertex(to   + a *   to_radius * std::sin( i    * s) + b *   to_radius * std::cos( i    * s));
+
+		glNormal(a * sin((i + 1) * s) + b * cos((i + 1) * s));
+		glVertex(from + a * from_radius * std::sin((i+1) * s) + b * from_radius * std::cos((i+1) * s));
+
+		glVertex(from + a * from_radius * std::sin((i+1) * s) + b * from_radius * std::cos((i+1) * s));
+		glVertex(to   + a *   to_radius * std::sin((i+1) * s) + b *   to_radius * std::cos((i+1) * s));
+
+		glNormal(a * sin(i * s) + b * cos(i * s));
+		glVertex(to   + a *   to_radius * std::sin( i    * s) + b *   to_radius * std::cos( i    * s));
+	}
+
 	glEnd();
+
+}
+
+void render(Player const & p, Segment const s)
+{
+	auto const a = s.ends[0], b = s.ends[1];
+	pillar(p[a], p[b], jointDefs[a].radius, jointDefs[b].radius, 30);
 }
 
 void renderWires(Player const & player)
@@ -289,10 +356,13 @@ void renderWires(Player const & player)
 
 void renderShape(Player const & player)
 {
-	auto && j = player.joints;
+	auto && j = player;
 
 	auto t = [&](Joint a, Joint b, Joint c)
-		{ triangle(j[a], j[b], j[c]); };
+		{
+			glNormal(normalize(cross(j[b] - j[a], j[c] - j[a])));
+			triangle(j[a], j[b], j[c]);
+		};
 
 	auto crotch = (j[LeftHip] + j[RightHip]) / 2;
 
@@ -307,24 +377,18 @@ void renderShape(Player const & player)
 	glEnd();
 }
 
-inline void glColor(V3 v) { glColor3d(v.x, v.y, v.z); }
-
 void render(Position const & pos, V3 acolor, V3 bcolor, bool ghost = false)
 {
-	Player const & a = pos.players[0], & b = pos.players[1];
+	Player const & a = pos[0], & b = pos[1];
 
 	glColor(acolor);
-	if (!ghost) renderShape(a);
 	renderWires(a);
 
 	glColor(bcolor);
-	if (!ghost) renderShape(b);
 	renderWires(b);
 }
 
-using Moves = PerPlayerJoint<std::map<double /* distance */, std::pair<unsigned /* sequence */, unsigned /* position */>>>;
-
-using Sequence = std::vector<Position>;
+using Sequence = std::vector<Position>; // invariant: .size()>=2
 
 std::vector<Sequence> load(std::string const filename)
 {
@@ -346,6 +410,8 @@ std::vector<Sequence> load(std::string const filename)
 	{
 		if (pod.id != id)
 		{
+			if (!r.empty() && r.back().size() < 2) r.pop_back();
+
 			r.emplace_back();
 			id = pod.id;
 		}
@@ -356,8 +422,6 @@ std::vector<Sequence> load(std::string const filename)
 
 	std::cout << "Loaded " << total << " positions in " << r.size() << " sequences.\n";
 
-	if (r.empty()) r.emplace_back(Sequence(1));
-
 	return r;
 }
 
@@ -366,13 +430,22 @@ std::vector<Sequence> load(std::string const filename)
 std::vector<Sequence> sequences = load("positions.dat");
 unsigned current_sequence = 0;
 unsigned current_position = 0; // index into current sequence
-V3 camera{0, -0.7, 1.7};
-	// x used for rotation over y axis, y used for rotation over x axis, z used for zoom
+
 PlayerJoint closest_joint = {0, LeftAnkle};
-boost::optional<PlayerJoint> chosen_joint;
+
+struct NextPos
+{
+	double howfar;
+	unsigned sequence;
+	unsigned position;
+};
+
+optional<NextPos> next_pos;
+
+optional<PlayerJoint> chosen_joint;
 GLFWwindow * window;
+bool edit_mode = false;
 Position clipboard;
-std::vector<std::pair<unsigned /* sequence */, unsigned /* position */>> candidates;
 
 V4 operator*(M const & m, V4 const v)
 {
@@ -383,6 +456,30 @@ V4 operator*(M const & m, V4 const v)
 		, m[3]*v.x + m[7]*v.y + m[11]*v.z + m[15]};
 }
 
+M operator*(M const & a, M const & b)
+{
+	return
+		{{ a[ 0]*b[ 0] + a[ 4]*b[ 1] + a[ 8]*b[ 2] + a[12]*b[ 3]
+		,  a[ 1]*b[ 0] + a[ 5]*b[ 1] + a[ 9]*b[ 2] + a[13]*b[ 3]
+		,  a[ 2]*b[ 0] + a[ 6]*b[ 1] + a[10]*b[ 2] + a[14]*b[ 3]
+		,  a[ 3]*b[ 0] + a[ 7]*b[ 1] + a[11]*b[ 2] + a[15]*b[ 3]
+
+		,  a[ 0]*b[ 4] + a[ 4]*b[ 5] + a[ 8]*b[ 6] + a[12]*b[ 7]
+		,  a[ 1]*b[ 4] + a[ 5]*b[ 5] + a[ 9]*b[ 6] + a[13]*b[ 7]
+		,  a[ 2]*b[ 4] + a[ 6]*b[ 5] + a[10]*b[ 6] + a[14]*b[ 7]
+		,  a[ 3]*b[ 4] + a[ 7]*b[ 5] + a[11]*b[ 6] + a[15]*b[ 7]
+
+		,  a[ 0]*b[ 8] + a[ 4]*b[ 9] + a[ 8]*b[10] + a[12]*b[11]
+		,  a[ 1]*b[ 8] + a[ 5]*b[ 9] + a[ 9]*b[10] + a[13]*b[11]
+		,  a[ 2]*b[ 8] + a[ 6]*b[ 9] + a[10]*b[10] + a[14]*b[11]
+		,  a[ 3]*b[ 8] + a[ 7]*b[ 9] + a[11]*b[10] + a[15]*b[11]
+
+		,  a[ 0]*b[12] + a[ 4]*b[13] + a[ 8]*b[14] + a[12]*b[15]
+		,  a[ 1]*b[12] + a[ 5]*b[13] + a[ 9]*b[14] + a[13]*b[15]
+		,  a[ 2]*b[12] + a[ 6]*b[13] + a[10]*b[14] + a[14]*b[15]
+		,  a[ 3]*b[12] + a[ 7]*b[13] + a[11]*b[14] + a[15]*b[15] }};
+}
+
 void save(std::string const filename)
 {
 	std::vector<PositionOnDisk> v;
@@ -391,52 +488,89 @@ void save(std::string const filename)
 		for (auto && pos : sequences[i])
 			v.push_back({i, pos});
 
-
 	std::ofstream f(filename, std::ios::binary);
 
 	std::copy_n(reinterpret_cast<char const *>(v.data()), v.size() * sizeof(PositionOnDisk), std::ostreambuf_iterator<char>(f));
 }
+
+class Camera
+{
+	V2 viewportSize;
+	V3 orientation{0, -0.7, 1.7};
+		// x used for rotation over y axis, y used for rotation over x axis, z used for zoom
+	M proj, mv, full;
+
+	void computeMatrices()
+	{
+		proj = perspective(90, viewportSize.x / viewportSize.y, 0.1, 4);
+		mv = translate(0, 0, -orientation.z) * xrot(orientation.y) * yrot(orientation.x);
+		full = proj * mv;
+	}
+
+public:
+
+	Camera() { computeMatrices(); }
+
+	M const & projection() const { return proj; }
+	M const & model_view() const { return mv; }
+
+	V2 world2xy(V3 v) const
+	{
+		auto cs = full * V4(v, 1);
+		return xy(cs) / cs.w;
+	}
+
+	void setViewportSize(int x, int y)
+	{
+		viewportSize.x = x;
+		viewportSize.y = y;
+		computeMatrices();
+	}
+
+	void rotateHorizontal(double radians)
+	{
+		orientation.x += radians;
+		computeMatrices();
+	}
+
+	void rotateVertical(double radians)
+	{
+		orientation.y += radians;
+		computeMatrices();
+	}
+
+	void zoom(double z)
+	{
+		orientation.z += z;
+		computeMatrices();
+	}
+
+	double getHorizontalRotation() const { return orientation.x; }
+
+} camera;
 
 void grid()
 {
 	glColor3f(0.5,0.5,0.5);
 	glLineWidth(2);
 	glBegin(GL_LINES);
-		for (int i = -4; i <= 4; ++i)
+		for (double i = -4; i <= 4; ++i)
 		{
-			glVertex3f(i, 0, -4);
-			glVertex3f(i, 0, 4);
-			glVertex3f(-4, 0, i);
-			glVertex3f(4, 0, i);
+			glVertex3f(i/2, 0, -2);
+			glVertex3f(i/2, 0, 2);
+			glVertex3f(-2, 0, i/2);
+			glVertex3f(2, 0, i/2);
 		}
 	glEnd();
-}
-
-M yrot(double a)
-{
-	return
-		{ cos(a), 0, sin(a), 0
-		, 0, 1, 0, 0
-		, -sin(a), 0, cos(a), 0
-		, 0, 0, 0, 1 };
-}
-
-M xrot(double a)
-{
-	return
-		{ 1, 0, 0, 0
-		, 0, cos(a), -sin(a), 0
-		, 0, sin(a), cos(a), 0
-		, 0, 0, 0, 1 };
 }
 
 Sequence & sequence() { return sequences[current_sequence]; }
 Position & position() { return sequence()[current_position]; }
 
-Position halfway(Position const & a, Position const & b)
+Position between(Position const & a, Position const & b, double s = 0.5 /* [0,1] */)
 {
 	Position r;
-	for (auto j : playerJoints) r[j] = (a[j] + b[j]) / 2;
+	for (auto j : playerJoints) r[j] = a[j] + (b[j] - a[j]) * s;
 	return r;
 }
 
@@ -444,18 +578,16 @@ void add_position()
 {
 	if (current_position == sequence().size() - 1)
 	{
-		auto p = position();
-		sequence().push_back(p);
-		current_position = sequence().size() - 1;
+		sequence().push_back(position());
 	}
 	else
 	{
-		auto p = halfway(position(), sequence()[current_position + 1]);
-		for(int i = 0; i != 6; ++i)
-			spring(position());
-		++current_position;
-		sequence().insert(sequence().begin() + current_position, p);
+		auto p = between(position(), sequence()[current_position + 1]);
+		for(int i = 0; i != 50; ++i)
+			spring(p);
+		sequence().insert(sequence().begin() + current_position + 1, p);
 	}
+	++current_position;
 }
 
 Position * prev_position()
@@ -471,6 +603,8 @@ Position * next_position()
 	if (current_sequence != sequences.size() - 1) return &sequences[current_sequence + 1].front();
 	return nullptr;
 }
+
+
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -491,6 +625,23 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		{
 			case GLFW_KEY_INSERT: add_position(); break;
 
+			case GLFW_KEY_PAGE_UP:
+				if (current_sequence != 0)
+				{
+					--current_sequence;
+					current_position = 0;
+				}
+				break;
+
+			case GLFW_KEY_PAGE_DOWN:
+				if (current_sequence != sequences.size() - 1)
+				{
+					++current_sequence;
+					current_position = 0;
+					std::cout << "down" << std::endl;
+				}
+				break;
+
 			// set position to prev/next/center
 
 			case GLFW_KEY_Y: if (auto p = prev_position()) position() = *p; break;
@@ -499,9 +650,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				if (auto next = next_position())
 				if (auto prev = prev_position())
 				{
-					position() = halfway(*prev, *next);
-					for(int i = 0; i != 6; ++i)
-						spring(position());
+					position() = between(*prev, *next);
+					for(int i = 0; i != 6; ++i) spring(position());
 				}
 				break;
 
@@ -513,6 +663,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				if (auto next = next_position())
 				if (auto prev = prev_position())
 					position()[closest_joint] = ((*prev)[closest_joint] + (*next)[closest_joint]) / 2;
+					for(int i = 0; i != 6; ++i) spring(position());
 				break;
 
 			// new sequence
@@ -520,16 +671,18 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			case GLFW_KEY_N:
 			{
 				auto p = position();
-				sequences.push_back(Sequence{p});
+				sequences.push_back(Sequence{p, p});
 				current_sequence = sequences.size() - 1;
 				current_position = 0;
 				break;
 			}
 
+			case GLFW_KEY_V: edit_mode = !edit_mode; break;
+
 			case GLFW_KEY_S: save("positions.dat"); break;
 			case GLFW_KEY_DELETE:
 			{
-				if (sequence().size() > 1)
+				if (sequence().size() > 2)
 				{
 					sequence().erase(sequence().begin() + current_position);
 					if (current_position == sequence().size()) --current_position;
@@ -544,56 +697,199 @@ double dist(Player const & a, Player const & b)
 {
 	double d = 0;
 	for (auto && j : joints)
-		d += distance(a.joints[j], b.joints[j]);
+		d += distance(a[j], b[j]);
 	return d;
 }
 
 double dist(Position const & a, Position const & b)
 {
-	return dist(a.players[0], b.players[0]) + dist(a.players[1], b.players[1]);
+	return dist(a[0], b[0]) + dist(a[1], b[1]);
 }
 
-double dist_via(Position const & a, Position const & b, PlayerJoint pj)
+struct Viable
 {
-	return dist(a, b) + norm2(b[pj] - a[pj]) * 10;
+	unsigned sequence;
+	unsigned begin, end; // half-open range
+};
+
+PerPlayerJoint<std::vector<Viable>> viable;
+
+bool anyViable(PlayerJoint j)
+{
+	for (auto && v : viable[j]) if (v.end - v.begin > 1) return true;
+	return false;
 }
 
-constexpr unsigned candidates_shown = 5; // todo: define keys for increasing/decreasing
-
-void drawJoint(PlayerJoint pj)
+void drawJoint(Position const & pos, PlayerJoint pj)
 {
-	bool const highlight = pj == (chosen_joint ? *chosen_joint : closest_joint);
+	bool highlight = (pj == (chosen_joint ? *chosen_joint : closest_joint));
 
-	glColor(highlight ? green : playerDefs[pj.player].color);
+	double extraBig = highlight ? 0.01 : 0.005;
+
+	if (edit_mode)
+	{
+		glColor(highlight ? yellow : white);
+	}
+	else
+	{
+		if (anyViable(pj))
+		{
+			glColor(highlight ? yellow : green);
+		}
+		else
+		{
+			glColor(playerDefs[pj.player].color);
+			extraBig = 0;
+		}
+	}
 
 	glPushMatrix();
-		glTranslate(position()[pj]);
+		glTranslate(pos[pj]);
 		GLUquadricObj * Sphere = gluNewQuadric();
 
-		gluSphere(Sphere, jointDefs[pj.joint].radius, 20, 20);
+		gluSphere(Sphere, jointDefs[pj.joint].radius + extraBig, 20, 20);
 
 		gluDeleteQuadric(Sphere);
 	glPopMatrix();
 }
 
-void drawJoints()
+void drawJoints(Position const & pos)
 {
-	for (auto pj : playerJoints) drawJoint(pj);
+	for (auto pj : playerJoints) drawJoint(pos, pj);
 }
+
+unsigned explore_forward(unsigned pos, PlayerJoint j, Sequence const & seq)
+{
+	optional<V3> last;
+	optional<V2> lastxy;
+	for (; pos != seq.size(); ++pos)
+	{
+		V3 v = seq[pos][j];
+		if (last && distanceSquared(v, *last) < 0.003) break;
+		V2 xy = camera.world2xy(v);
+		if (lastxy && distanceSquared(xy, *lastxy) < 0.005) break;
+		last = v;
+		lastxy = xy;
+	}
+	return pos;
+}
+
+unsigned explore_backward(unsigned upos, PlayerJoint j, Sequence const & seq)
+{
+	optional<V3> last;
+	optional<V2> lastxy;
+	int pos = upos;
+	for (; pos >= 0; --pos)
+	{
+		auto && v = seq[pos][j];
+		if (last && distanceSquared(v, *last) < 0.003) break;
+		auto xy = camera.world2xy(v);
+		if (lastxy && distanceSquared(xy, *lastxy) < 0.005) break;
+		last = v;
+		lastxy = xy;
+	}
+	++pos;
+
+	return pos;
+}
+
+void determineViables()
+{
+	for (auto j : playerJoints)
+	{
+		auto & vv = viable[j];
+		vv.clear();
+		vv.emplace_back();
+
+		auto & v = vv.back();
+		
+		v.sequence = current_sequence;
+
+		if (!edit_mode && !jointDefs[j.joint].draggable)
+		{
+			v.begin = v.end = current_position;
+			continue;
+		}
+
+		v.end = explore_forward(current_position, j, sequence());
+		v.begin = explore_backward(current_position, j, sequence());
+
+		// todo: maintain "no small steps" rule along transition changes
+
+		if (v.end == sequence().size())
+			for (unsigned seq = 0; seq != sequences.size(); ++seq)
+			{
+				auto & s = sequences[seq];
+				if (s.front() == sequence().back())
+					vv.push_back(Viable{seq, 0, explore_forward(0, j, s)});
+			}
+
+		if (v.begin == 0)
+			for (unsigned seq = 0; seq != sequences.size(); ++seq)
+			{
+				auto & s = sequences[seq];
+				if (s.back() == sequence().front())
+					vv.push_back(Viable{seq, explore_backward(s.size() - 1, j, s), s.size()});
+			}
+	}
+}
+
+V2 cursor;
 
 template<typename F>
 void determineCandidates(F distance_to_cursor)
 {
-	candidates.clear();
+	next_pos = boost::none;
+	double best = 1000000;
 
-	PlayerJoint const highlight_joint = chosen_joint ? *chosen_joint : closest_joint;
+	PlayerJoint const j = chosen_joint ? *chosen_joint : closest_joint;
 
-	for (unsigned seq = 0; seq != sequences.size(); ++seq)
-	for (unsigned pos = 0; pos != sequences[seq].size(); ++pos)
+	for (auto && via : viable[j])
 	{
-		if (dist(position(), sequences[seq][pos]) < 15 &&
-			distance_to_cursor(sequences[seq][pos][highlight_joint]) <= 0.3)
-			candidates.emplace_back(seq, pos);
+		if (edit_mode && via.sequence != current_sequence) continue;
+
+		for (unsigned pos = via.begin; pos != via.end; ++pos)
+		{
+			if (via.sequence == current_sequence)
+			{
+				if (std::abs(int(pos) - int(current_position)) != 1) continue;
+			}
+			else if (current_position == 0)
+			{
+				if (pos != sequences[via.sequence].size() - 2) continue;
+			}
+			else if (current_position == sequence().size() - 1)
+			{
+				if (pos != 1) continue;
+			}
+			else continue;
+
+			Position const & n = position();
+			Position const & m = sequences[via.sequence][pos];
+
+			V3 p = n[j];
+			V3 q = m[j];
+
+			if (distanceSquared(p, q) < 0.001) continue;
+
+			V2 v = camera.world2xy(p);
+			V2 w = camera.world2xy(q);
+
+			V2 a = cursor - v;
+			V2 b = w - v;
+
+			double howfar = std::max(0., std::min(1., inner_prod(a, b) / norm2(b) / norm2(b)));
+
+			V2 ultimate = v + (w - v) * howfar;
+
+			double d = distanceSquared(ultimate, cursor);
+
+			if (d < best)
+			{
+				next_pos = NextPos{howfar, via.sequence, pos};
+				best = d;
+			}
+		}
 	}
 }
 
@@ -602,89 +898,75 @@ void determineNearestJoint(F distance_to_cursor)
 {
 	double closest = 200;
 
-	for (int i = 0; i != 2; ++i)
+	for (auto j : playerJoints)
 	{
-		auto & player = position().players[i];
+		double d = distance_to_cursor(position()[j]);
 
-		for (auto && ji : joints)
+		if (d < closest)
 		{
-			V3 j = player.joints[ji];
-
-			double d = distance_to_cursor(j);
-
-			if (d < closest)
-			{
-				closest = d;
-				closest_joint.joint = ji;
-				closest_joint.player = i;
-			}
+			closest = d;
+			closest_joint = j;
 		}
 	}
 }
 
-template<typename F>
-void explore(F distance_to_cursor)
-{
-	if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-	{
-		double best = 1000000;
+GLfloat light_diffuse[] = {0.8, 0.8, 0.8, 1.0};
+GLfloat light_position[] = {1.0, 2.0, 1.0, 0.0};
+GLfloat light_ambient[] = {0.3, 0.3, 0.3, 0.0};
 
-		for (auto && candidate : candidates)
-		{
-			double const d = distance_to_cursor(sequences[candidate.first][candidate.second][*chosen_joint]);
-
-			if (d < best)
-			{
-				best = d;
-				current_sequence = candidate.first;
-				current_position = candidate.second;
-			}
-		}
-	}
-}
-
-// todo: when reading file, warn about sequences whose start/end isn't connected to anything
-
-void prepareDraw(M const & persp, int width, int height)
+void prepareDraw(int width, int height)
 {
 	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_COLOR_MATERIAL);
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glMultMatrixd(persp.data());
+	glMultMatrixd(camera.projection().data());
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	glTranslated(0, 0, -camera.z);
-	glMultMatrixd(xrot(camera.y).data());
-	glMultMatrixd(yrot(camera.x).data());
+
+	glMultMatrixd(camera.model_view().data());
 }
 
-void draw()
+void drawViables(PlayerJoint const highlight_joint)
 {
-	glEnable(GL_DEPTH);
-	glEnable(GL_DEPTH_TEST);
+	for (auto j : playerJoints)
+		for (auto && v : viable[j])
+		{
+			if (v.end - v.begin < 2) continue;
 
-	grid();
-	render(position(), red, blue);
+			auto & seq = sequences[v.sequence];
 
-	drawJoints();
+			if (!(j == highlight_joint)) continue;
 
-	glDisable(GL_DEPTH);
-	glDisable(GL_DEPTH_TEST);
+			glColor(j == highlight_joint ? yellow : green);
 
-	drawJoint(chosen_joint ? *chosen_joint : closest_joint);
-}
+			if (j == highlight_joint || edit_mode)
+			{
+				glDisable(GL_DEPTH_TEST);
+			}
 
-V2 world2xy(V3 v, M const & persp)
-{
-	auto v4 = V4(v, 1);
-	v4 = yrot(camera.x) * v4;
-	v4 = xrot(camera.y) * v4;
-	v4.z -= camera.z;
-	v4 = persp * v4;
-	return xy(v4) / v4.w;
+			glBegin(GL_LINE_STRIP);
+			for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq[i][j]);
+			glEnd();
+
+			if (j == highlight_joint || edit_mode)
+			{
+				glPointSize(20);
+				glBegin(GL_POINTS);
+				for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq[i][j]);
+				glEnd();
+				glEnable(GL_DEPTH_TEST);
+			}
+		}
 }
 
 int main()
@@ -726,85 +1008,109 @@ int main()
 	{
 		glfwPollEvents();
 
-		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) camera.y -= 0.05;
-		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) camera.y += 0.05;
-		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) camera.x -= 0.03;
-		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) camera.x += 0.03;
-		if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) camera.z -= 0.05;
-		if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) camera.z += 0.05;
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) camera.rotateVertical(-0.05);
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) camera.rotateVertical(0.05);
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) camera.rotateHorizontal(-0.03);
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) camera.rotateHorizontal(0.03);
+		if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) camera.zoom(-0.05);
+		if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) camera.zoom(0.05);
 
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
-		float const ratio = width / (float) height;
+		camera.setViewportSize(width, height);
 
-		auto const persp = perspective(90, ratio, 0.1, 8);
+		determineViables();
 
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
-		V2 const cursor{((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
+		cursor = {((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
 
-		auto distance_to_cursor = [&](V3 v){ return norm2(world2xy(v, persp) - cursor); };
+
+		auto distance_to_cursor = [&](V3 v){ return norm2(camera.world2xy(v) - cursor); };
 
 		determineCandidates(distance_to_cursor);
 
 		// editing
 
-		if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		if (chosen_joint && edit_mode && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		{
 			Position new_pos = position();
 
-			V4 const dragger = yrot(-camera.x) * V4{{1,0,0},0};
-
+			V4 const dragger = yrot(-camera.getHorizontalRotation()) * V4{{1,0,0},0};
+			
 			auto & joint = new_pos[*chosen_joint];
 
-			auto off = world2xy(joint, persp) - cursor;
+			auto off = camera.world2xy(joint) - cursor;
 
 			joint.x -= dragger.x * off.x;
 			joint.z -= dragger.z * off.x;
-			joint.y = std::max(0., joint.y - off.y);
+			joint.y = std::max(jointDefs[chosen_joint->joint].radius, joint.y - off.y);
 
-			spring(new_pos);
+			spring(new_pos, chosen_joint);
 
 			position() = new_pos;
 		}
 
-		explore(distance_to_cursor);
-
 		determineNearestJoint(distance_to_cursor);
 		
-		prepareDraw(persp, width, height);
-		draw();
+		prepareDraw(width, height);
 
-		// draw sequence lines
+		glEnable(GL_DEPTH);
+		glEnable(GL_DEPTH_TEST);
 
-		glLineWidth(2);
+		glNormal3d(0, 1, 0);
+
+		grid();
+
+		Position posToDraw = position();
 
 		PlayerJoint const highlight_joint = chosen_joint ? *chosen_joint : closest_joint;
 
-		auto j = highlight_joint;
+		if (next_pos && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+		{
+			posToDraw = between(
+				position(),
+				sequences[next_pos->sequence][next_pos->position],
+				next_pos->howfar);
+		}
 
-		glColor(j == highlight_joint ? green : V3{0.5,0.5,0.5});
+		render(posToDraw, red, blue);
+		drawJoints(posToDraw);
 
-		glBegin(GL_LINES);
-			for (unsigned seq = 0; seq != sequences.size(); ++seq)
-			for (unsigned pos = 0; pos <= std::max(0, int(sequences[seq].size()) - 2); ++pos)
-			{
-				if (dist(position(), sequences[seq][pos]) > 15 ||
-					dist(position(), sequences[seq][pos + 1]) > 15) continue;
+		glLineWidth(4);
 
-				auto a = sequences[seq][pos][j];
-				auto b = sequences[seq][pos + 1][j];
+		glNormal3d(0, 1, 0);
 
-				if (distance_to_cursor(a) <= 0.3 && distance_to_cursor(b) <= 0.3)
-				{
-					glVertex(a);
-					glVertex(b);
-				}
-			}
-		glEnd();
+		drawViables(highlight_joint);
 
 		glfwSwapBuffers(window);
+		if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && next_pos && next_pos->howfar > 0.7)
+		{
+			current_sequence = next_pos->sequence;
+			current_position = next_pos->position;
+		}
 	}
 
 	glfwTerminate();
 }
+
+/* Edit guidelines:
+
+Divide & conquer: first define the few key positions along the sequence where you have a clear idea of what all the details ought to look like,
+then see where the interpolation gives a silly result, e.g. limbs moving through eachother, and add one or more positions in between.
+
+Don't make too many segments, because it makes making significant adjustments later much harder. Let the interpolation do its work.
+Make sure there's always at least one big-ish movement going on, because remember: in view mode, small movements are not shown as draggable.
+
+Stay clear from orthogonality. Keep the jiu jitsu tight, so that you don't have limbs flailing around independently.
+
+Todo:
+	- multiple viewports
+	- in edit mode, make it possible to temporarily hide a player, to unobstruct the view to the other
+	- experiment with different joint editing schemes, e.g. direct joint coordinate component manipulation
+	- documentation
+	- joint rotation limits
+	- prevent joints moving through eachother (maybe, might be more annoying than useful)
+	- sticky floor
+	- show nearby keyframes
+*/
