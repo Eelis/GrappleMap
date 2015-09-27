@@ -863,21 +863,20 @@ void determineCandidates(F distance_to_cursor)
 	{
 		if (edit_mode && via.sequence != current_sequence) continue;
 
+		auto & seq = sequences[via.sequence];
+
 		for (unsigned pos = via.begin; pos != via.end; ++pos)
 		{
 			if (via.sequence == current_sequence)
 			{
 				if (std::abs(int(pos) - int(current_position)) != 1) continue;
 			}
-			else if (current_position == 0)
+			else
 			{
-				if (pos != sequences[via.sequence].size() - 2) continue;
+				if (position() == seq.back() && pos == seq.size() - 2) ;
+				else if (position() == seq.front() && pos == 1) ;
+				else continue;
 			}
-			else if (current_position == sequence().size() - 1)
-			{
-				if (pos != 1) continue;
-			}
-			else continue;
 
 			Position const & n = position();
 			Position const & m = sequences[via.sequence][pos];
