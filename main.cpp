@@ -1,3 +1,4 @@
+#include "camera.hpp"
 #include "persistence.hpp"
 #include "math.hpp"
 #include "positions.hpp"
@@ -106,14 +107,6 @@ void render(Position const & pos, V3 acolor, V3 bcolor, bool ghost = false)
 	renderWires(b);
 }
 
-// state
-
-std::vector<Sequence> sequences = load("positions.txt");
-unsigned current_sequence = 0;
-unsigned current_position = 0; // index into current sequence
-
-PlayerJoint closest_joint = {0, LeftAnkle};
-
 struct NextPos
 {
 	double howfar;
@@ -121,70 +114,20 @@ struct NextPos
 	unsigned position;
 };
 
-optional<NextPos> next_pos;
+// state
 
+std::vector<Sequence> sequences = load("positions.txt");
+unsigned current_sequence = 0;
+unsigned current_position = 0; // index into current sequence
+PlayerJoint closest_joint = {0, LeftAnkle};
+optional<NextPos> next_pos;
 optional<PlayerJoint> chosen_joint;
 GLFWwindow * window;
 bool edit_mode = false;
 Position clipboard;
-
-class Camera
-{
-	V2 viewportSize;
-	V3 orientation{0, -0.7, 1.7};
-		// x used for rotation over y axis, y used for rotation over x axis, z used for zoom
-	M proj, mv, full;
-
-	void computeMatrices()
-	{
-		proj = perspective(90, viewportSize.x / viewportSize.y, 0.1, 6);
-		mv = translate(0, 0, -orientation.z) * xrot(orientation.y) * yrot(orientation.x);
-		full = proj * mv;
-	}
-
-public:
-
-	Camera() { computeMatrices(); }
-
-	M const & projection() const { return proj; }
-	M const & model_view() const { return mv; }
-
-	V2 world2xy(V3 v) const
-	{
-		auto cs = full * V4(v, 1);
-		return xy(cs) / cs.w;
-	}
-
-	void setViewportSize(int x, int y)
-	{
-		viewportSize.x = x;
-		viewportSize.y = y;
-		computeMatrices();
-	}
-
-	void rotateHorizontal(double radians)
-	{
-		orientation.x += radians;
-		computeMatrices();
-	}
-
-	void rotateVertical(double radians)
-	{
-		orientation.y += radians;
-		orientation.y = std::max(-M_PI/2, orientation.y);
-		orientation.y = std::min(M_PI/2, orientation.y);
-		computeMatrices();
-	}
-
-	void zoom(double z)
-	{
-		orientation.z += z;
-		computeMatrices();
-	}
-
-	double getHorizontalRotation() const { return orientation.x; }
-
-} camera;
+Camera camera;
+V2 cursor;
+double jiggle = 0;
 
 void grid()
 {
@@ -468,8 +411,6 @@ void determineViables()
 	}
 }
 
-V2 cursor;
-
 template<typename F>
 optional<NextPos> determineNextPos(F distance_to_cursor)
 {
@@ -599,8 +540,6 @@ void drawViables(PlayerJoint const highlight_joint)
 			}
 		}
 }
-
-double jiggle = 0;
 
 int main()
 {
