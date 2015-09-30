@@ -8,6 +8,8 @@
 #include <fstream>
 #include <map>
 #include <algorithm>
+#include <fstream>
+#include <iterator>
 
 #include <boost/optional.hpp>
 
@@ -63,13 +65,13 @@ PerJoint<JointDef> jointDefs =
 	, { RightShoulder, 0.08, true}
 	, { LeftElbow, 0.045, true}
 	, { RightElbow, 0.045, true}
-	, { LeftWrist, 0.02, true}
-	, { RightWrist, 0.02, true}
-	, { LeftHand, 0.02, false}
-	, { RightHand, 0.02, false}
+	, { LeftWrist, 0.02, false}
+	, { RightWrist, 0.02, false}
+	, { LeftHand, 0.02, true}
+	, { RightHand, 0.02, true}
 	, { LeftFingers, 0.02, false}
 	, { RightFingers, 0.02, false}
-	, { Core, 0.1, true}
+	, { Core, 0.1, false}
 	, { Neck, 0.04, false}
 	, { Head, 0.11, true}
 	}};
@@ -99,7 +101,9 @@ const auto playerJoints = make_playerJoints();
 
 struct PlayerDef { V3 color; };
 
-V3 const red{1,0,0}, blue{0.1, 0.1, 0.9}, grey{0.2, 0.2, 0.2}, yellow{1,1,0}, green{0,1,0}, white{1,1,1};
+V3 const
+	red{1,0,0}, blue{0.1, 0.1, 0.9}, grey{0.2, 0.2, 0.2},
+	yellow{1,1,0}, green{0,1,0}, white{1,1,1}, black{0,0,0};
 
 PerPlayer<PlayerDef> playerDefs = {{ {red}, {blue} }};
 
@@ -288,12 +292,6 @@ Player spring(Player const & p, optional<Joint> fixed_joint = boost::none)
 	return r;
 }
 
-struct PositionOnDisk
-{
-	unsigned id;
-	Position pos;
-};
-
 void spring(Position & pos, optional<PlayerJoint> j = boost::none)
 {
 	for (unsigned player = 0; player != 2; ++player)
@@ -388,46 +386,106 @@ void render(Position const & pos, V3 acolor, V3 bcolor, bool ghost = false)
 	renderWires(b);
 }
 
-using Sequence = std::vector<Position>; // invariant: .size()>=2
+struct Sequence
+{
+	std::string description;
+	std::vector<Position> positions; // invariant: .size()>=2
+};
+
+char const base62digits[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+static_assert(sizeof(base62digits) == 62 + 1, "hm");
+
+int fromBase62(char c)
+{
+	if (c >= 'a' && c <= 'z') return c - 'a';
+	if (c >= 'A' && c <= 'Z') return (c - 'A') + 26;
+	if (c >= '0' && c <= '9') return (c - '0') + 52;
+	
+	throw std::runtime_error("not a base 62 digit: " + std::string(1, c));
+}
+
+std::ostream & operator<<(std::ostream & o, Position const & p)
+{
+	auto g = [&o](double const d)
+		{
+			int const i = int(d * 1000);
+			assert(i >= 0);
+			assert(i < 4000);
+			o << base62digits[i / 62] << base62digits[i % 62];
+		};
+
+	for (auto j : playerJoints)
+	{
+		g(p[j].x + 2);
+		g(p[j].y);
+		g(p[j].z + 2);
+	}
+
+	return o;
+}
+
+Position decodePosition(std::string s)
+{
+	if (s.size() != 2 * joint_count * 3 * 2)
+		throw std::runtime_error("position string has incorrect size");
+
+	auto g = [&s]
+		{
+			double d = double(fromBase62(s[0]) * 62 + fromBase62(s[1])) / 1000;
+			s.erase(0, 2);
+			return d;
+		};
+
+	Position p;
+
+	for (auto j : playerJoints)
+		p[j] = {g() - 2, g(), g() - 2};
+
+	return p;
+}
+
+std::istream & operator>>(std::istream & i, std::vector<Sequence> & v)
+{
+	std::string line;
+
+	while(std::getline(i, line))
+		if (line.empty() or line.front() == '#')
+			continue;
+		else if (line.front() == ' ')
+		{
+			if (v.empty()) throw std::runtime_error("file contains position without preceding description");
+
+			while (line.front() == ' ') line.erase(0, 1);
+
+			v.back().positions.push_back(decodePosition(line));
+		}
+		else
+		{
+			v.push_back(Sequence{line});
+			std::cout << "Loading: " << line << '\n';
+		}
+
+	return i;
+}
+
+std::ostream & operator<<(std::ostream & o, Sequence const & s)
+{
+	o << s.description << '\n';
+	for (auto && p : s.positions) o << "    " << p << '\n';
+	return o;
+}
 
 std::vector<Sequence> load(std::string const filename)
 {
-	std::ifstream f(filename, std::ios::binary);
-	std::istreambuf_iterator<char> i(f), e;
-	std::string s(i, e);
-
-	size_t const n = s.size() / sizeof(PositionOnDisk);
-
-	std::vector<PositionOnDisk> v(n);
-	std::copy(s.begin(), s.end(), reinterpret_cast<char *>(v.data())); // TODO: don't be evil
-
 	std::vector<Sequence> r;
-	unsigned id = unsigned(-1);
-
-	unsigned total = 0;
-
-	for (auto && pod : v)
-	{
-		if (pod.id != id)
-		{
-			if (!r.empty() && r.back().size() < 2) r.pop_back();
-
-			r.emplace_back();
-			id = pod.id;
-		}
-
-		++total;
-		r.back().push_back(pod.pos);
-	}
-
-	std::cout << "Loaded " << total << " positions in " << r.size() << " sequences.\n";
-
+	std::ifstream ff("positions.txt");
+	ff >> r;
 	return r;
 }
 
 // state
 
-std::vector<Sequence> sequences = load("positions.dat");
+std::vector<Sequence> sequences = load("positions.txt");
 unsigned current_sequence = 0;
 unsigned current_position = 0; // index into current sequence
 
@@ -482,15 +540,8 @@ M operator*(M const & a, M const & b)
 
 void save(std::string const filename)
 {
-	std::vector<PositionOnDisk> v;
-
-	for (unsigned int i = 0; i != sequences.size(); ++i)
-		for (auto && pos : sequences[i])
-			v.push_back({i, pos});
-
-	std::ofstream f(filename, std::ios::binary);
-
-	std::copy_n(reinterpret_cast<char const *>(v.data()), v.size() * sizeof(PositionOnDisk), std::ostreambuf_iterator<char>(f));
+	std::ofstream f(filename);
+	std::copy(sequences.begin(), sequences.end(), std::ostream_iterator<Sequence>(f));
 }
 
 class Camera
@@ -567,7 +618,7 @@ void grid()
 }
 
 Sequence & sequence() { return sequences[current_sequence]; }
-Position & position() { return sequence()[current_position]; }
+Position & position() { return sequence().positions[current_position]; }
 
 Position between(Position const & a, Position const & b, double s = 0.5 /* [0,1] */)
 {
@@ -578,35 +629,43 @@ Position between(Position const & a, Position const & b, double s = 0.5 /* [0,1]
 
 void add_position()
 {
-	if (current_position == sequence().size() - 1)
+	if (current_position == sequence().positions.size() - 1)
 	{
-		sequence().push_back(position());
+		sequence().positions.push_back(position());
 	}
 	else
 	{
-		auto p = between(position(), sequence()[current_position + 1]);
+		auto p = between(position(), sequence().positions[current_position + 1]);
 		for(int i = 0; i != 50; ++i)
 			spring(p);
-		sequence().insert(sequence().begin() + current_position + 1, p);
+		sequence().positions.insert(sequence().positions.begin() + current_position + 1, p);
 	}
 	++current_position;
 }
 
 Position * prev_position()
 {
-	if (current_position != 0) return &sequence()[current_position - 1];
-	if (current_sequence != 0) return &sequences[current_sequence - 1].back();
+	if (current_position != 0) return &sequence().positions[current_position - 1];
+	if (current_sequence != 0) return &sequences[current_sequence - 1].positions.back();
 	return nullptr;
 }
 
 Position * next_position()
 {
-	if (current_position != sequence().size() - 1) return &sequence()[current_position + 1];
-	if (current_sequence != sequences.size() - 1) return &sequences[current_sequence + 1].front();
+	if (current_position != sequence().positions.size() - 1) return &sequence().positions[current_position + 1];
+	if (current_sequence != sequences.size() - 1) return &sequences[current_sequence + 1].positions.front();
 	return nullptr;
 }
 
+void gotoSequence(unsigned const seq)
+{
+	if (current_sequence != seq)
+	{
+		current_sequence = seq;
 
+		std::cout << "Seq: " << sequence().description << std::endl;
+	}
+}
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -630,7 +689,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			case GLFW_KEY_PAGE_UP:
 				if (current_sequence != 0)
 				{
-					--current_sequence;
+					gotoSequence(current_sequence - 1);
 					current_position = 0;
 				}
 				break;
@@ -638,7 +697,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			case GLFW_KEY_PAGE_DOWN:
 				if (current_sequence != sequences.size() - 1)
 				{
-					++current_sequence;
+					gotoSequence(current_sequence + 1);
 					current_position = 0;
 				}
 				break;
@@ -672,7 +731,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			case GLFW_KEY_N:
 			{
 				auto p = position();
-				sequences.push_back(Sequence{p, p});
+				sequences.push_back(Sequence{"new", {p, p}});
 				current_sequence = sequences.size() - 1;
 				current_position = 0;
 				break;
@@ -694,10 +753,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				}
 				else
 				{
-					if (sequence().size() > 2)
+					if (sequence().positions.size() > 2)
 					{
-						sequence().erase(sequence().begin() + current_position);
-						if (current_position == sequence().size()) --current_position;
+						sequence().positions.erase(sequence().positions.begin() + current_position);
+						if (current_position == sequence().positions.size()) --current_position;
 					}
 				}
 
@@ -735,26 +794,20 @@ bool anyViable(PlayerJoint j)
 
 void drawJoint(Position const & pos, PlayerJoint pj)
 {
+	auto color = playerDefs[pj.player].color;
 	bool highlight = (pj == (chosen_joint ? *chosen_joint : closest_joint));
-
 	double extraBig = highlight ? 0.01 : 0.005;
 
 	if (edit_mode)
-	{
-		glColor(highlight ? yellow : white);
-	}
+		color = highlight ? yellow : white;
+	else if (!anyViable(pj) || (chosen_joint && !highlight))
+		extraBig = 0;
 	else
-	{
-		if (anyViable(pj))
-		{
-			glColor(highlight ? yellow : green);
-		}
-		else
-		{
-			glColor(playerDefs[pj.player].color);
-			extraBig = 0;
-		}
-	}
+		color = highlight
+			? white * 0.6 + color * 0.4
+			: white * 0.3 + color * 0.7;
+
+	glColor(color);
 
 	glPushMatrix();
 		glTranslate(pos[pj]);
@@ -775,12 +828,12 @@ unsigned explore_forward(unsigned pos, PlayerJoint j, Sequence const & seq)
 {
 	optional<V3> last;
 	optional<V2> lastxy;
-	for (; pos != seq.size(); ++pos)
+	for (; pos != seq.positions.size(); ++pos)
 	{
-		V3 v = seq[pos][j];
+		V3 v = seq.positions[pos][j];
 		if (last && distanceSquared(v, *last) < 0.003) break;
 		V2 xy = camera.world2xy(v);
-		if (lastxy && distanceSquared(xy, *lastxy) < 0.002) break;
+		if (lastxy && distanceSquared(xy, *lastxy) < 0.0015) break;
 		last = v;
 		lastxy = xy;
 	}
@@ -794,10 +847,10 @@ unsigned explore_backward(unsigned upos, PlayerJoint j, Sequence const & seq)
 	int pos = upos;
 	for (; pos >= 0; --pos)
 	{
-		auto && v = seq[pos][j];
+		auto && v = seq.positions[pos][j];
 		if (last && distanceSquared(v, *last) < 0.003) break;
 		auto xy = camera.world2xy(v);
-		if (lastxy && distanceSquared(xy, *lastxy) < 0.002) break;
+		if (lastxy && distanceSquared(xy, *lastxy) < 0.0015) break;
 		last = v;
 		lastxy = xy;
 	}
@@ -829,23 +882,23 @@ void determineViables()
 
 		// todo: maintain "no small steps" rule along transition changes
 
-		if (v.end == sequence().size())
+		if (v.end == sequence().positions.size())
 			for (unsigned seq = 0; seq != sequences.size(); ++seq)
 			{
 				auto & s = sequences[seq];
-				if (s.front() == sequence().back())
+				if (s.positions.front() == sequence().positions.back())
 					vv.push_back(Viable{seq, 0, explore_forward(0, j, s)});
-				else if (s.back() == sequence().back())
-					vv.push_back(Viable{seq, explore_backward(s.size() - 1, j, s), unsigned(s.size())});
+				else if (s.positions.back() == sequence().positions.back())
+					vv.push_back(Viable{seq, explore_backward(s.positions.size() - 1, j, s), unsigned(s.positions.size())});
 			}
 
 		if (v.begin == 0)
 			for (unsigned seq = 0; seq != sequences.size(); ++seq)
 			{
 				auto & s = sequences[seq];
-				if (s.back() == sequence().front())
-					vv.push_back(Viable{seq, explore_backward(s.size() - 1, j, s), unsigned(s.size())});
-				else if (s.front() == sequence().front())
+				if (s.positions.back() == sequence().positions.front())
+					vv.push_back(Viable{seq, explore_backward(s.positions.size() - 1, j, s), unsigned(s.positions.size())});
+				else if (s.positions.front() == sequence().positions.front())
 					vv.push_back(Viable{seq, 0, explore_forward(0, j, s)});
 			}
 	}
@@ -857,6 +910,7 @@ template<typename F>
 void determineCandidates(F distance_to_cursor)
 {
 	next_pos = boost::none;
+
 	double best = 1000000;
 
 	PlayerJoint const j = chosen_joint ? *chosen_joint : closest_joint;
@@ -875,13 +929,13 @@ void determineCandidates(F distance_to_cursor)
 			}
 			else
 			{
-				if (position() == seq.back() && pos == seq.size() - 2) ;
-				else if (position() == seq.front() && pos == 1) ;
+				if (position() == seq.positions.back() && pos == seq.positions.size() - 2) ;
+				else if (position() == seq.positions.front() && pos == 1) ;
 				else continue;
 			}
 
 			Position const & n = position();
-			Position const & m = sequences[via.sequence][pos];
+			Position const & m = sequences[via.sequence].positions[pos];
 
 			V3 p = n[j];
 			V3 q = m[j];
@@ -926,7 +980,7 @@ void determineNearestJoint(F distance_to_cursor)
 	}
 }
 
-GLfloat light_diffuse[] = {0.8, 0.8, 0.8, 1.0};
+GLfloat light_diffuse[] = {0.5, 0.5, 0.5, 1.0};
 GLfloat light_position[] = {1.0, 2.0, 1.0, 0.0};
 GLfloat light_ambient[] = {0.3, 0.3, 0.3, 0.0};
 
@@ -971,19 +1025,21 @@ void drawViables(PlayerJoint const highlight_joint)
 			}
 
 			glBegin(GL_LINE_STRIP);
-			for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq[i][j]);
+			for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq.positions[i][j]);
 			glEnd();
 
 			if (j == highlight_joint || edit_mode)
 			{
 				glPointSize(20);
 				glBegin(GL_POINTS);
-				for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq[i][j]);
+				for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq.positions[i][j]);
 				glEnd();
 				glEnable(GL_DEPTH_TEST);
 			}
 		}
 }
+
+double jiggle = 0;
 
 int main()
 {
@@ -1013,7 +1069,7 @@ int main()
 			}
 			else if (yoffset == 1)
 			{
-				if (current_position != sequence().size() - 1) ++current_position;
+				if (current_position != sequence().positions.size() - 1) ++current_position;
 			}
 		});
 	
@@ -1026,10 +1082,16 @@ int main()
 
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) camera.rotateVertical(-0.05);
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) camera.rotateVertical(0.05);
-		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) camera.rotateHorizontal(-0.03);
-		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) camera.rotateHorizontal(0.03);
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { camera.rotateHorizontal(-0.03); jiggle = M_PI; }
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { camera.rotateHorizontal(0.03); jiggle = 0; }
 		if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) camera.zoom(-0.05);
 		if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) camera.zoom(0.05);
+
+		if (!edit_mode)
+		{
+			jiggle += 0.01;
+			camera.rotateHorizontal(sin(jiggle) * 0.0005);
+		}
 
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
@@ -1086,7 +1148,7 @@ int main()
 		{
 			posToDraw = between(
 				position(),
-				sequences[next_pos->sequence][next_pos->position],
+				sequences[next_pos->sequence].positions[next_pos->position],
 				next_pos->howfar);
 		}
 
@@ -1099,10 +1161,21 @@ int main()
 
 		drawViables(highlight_joint);
 
+		if (chosen_joint)
+		{
+			glDisable(GL_DEPTH_TEST);
+			glPointSize(20);
+			glBegin(GL_POINTS);
+			glColor(white);
+			glVertex(posToDraw[*chosen_joint]);
+			glEnd();
+			glEnable(GL_DEPTH_TEST);
+		}
+
 		glfwSwapBuffers(window);
 		if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && next_pos && next_pos->howfar > 0.7)
 		{
-			current_sequence = next_pos->sequence;
+			gotoSequence(next_pos->sequence);
 			current_position = next_pos->position;
 		}
 	}
@@ -1115,7 +1188,7 @@ int main()
 Divide & conquer: first define the few key positions along the sequence where you have a clear idea of what all the details ought to look like,
 then see where the interpolation gives a silly result, e.g. limbs moving through eachother, and add one or more positions in between.
 
-Don't make too many segments, because it makes making significant adjustments later much harder. Let the interpolation do its work.
+Don't make many small segments, because it makes making significant adjustments later much harder. Let the interpolation do its work.
 Make sure there's always at least one big-ish movement going on, because remember: in view mode, small movements are not shown as draggable.
 
 Stay clear from orthogonality. Keep the jiu jitsu tight, so that you don't have limbs flailing around independently.
@@ -1130,4 +1203,6 @@ Todo:
 	- sticky floor
 	- transformed keyframes (so that you can end up in the same position with different offset/rotation)
 	- direction signs ("to truck", "zombie")
+	- undo
+	- enhance viability conditions to cut paths short when their xy projection loops or near-loops
 */
