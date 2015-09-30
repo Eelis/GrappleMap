@@ -1,5 +1,5 @@
-#ifndef JIUJITSUMAPPER_MATH
-#define JIUJITSUMAPPER_MATH
+#ifndef JIUJITSUMAPPER_MATH_HPP
+#define JIUJITSUMAPPER_MATH_HPP
 
 #include <cmath>
 #include <iostream>
