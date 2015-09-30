@@ -77,6 +77,12 @@ struct PerPlayerJoint: PerPlayer<PerJoint<T>>
 
 using Position = PerPlayerJoint<V3>;
 
+struct Sequence
+{
+	std::string description;
+	std::vector<Position> positions; // invariant: .size()>=2
+};
+
 inline std::array<PlayerJoint, joint_count * 2> make_playerJoints()
 {
 	std::array<PlayerJoint, joint_count * 2> r;
