@@ -907,9 +907,9 @@ void determineViables()
 V2 cursor;
 
 template<typename F>
-void determineCandidates(F distance_to_cursor)
+optional<NextPos> determineNextPos(F distance_to_cursor)
 {
-	next_pos = boost::none;
+	optional<NextPos> np;
 
 	double best = 1000000;
 
@@ -919,7 +919,7 @@ void determineCandidates(F distance_to_cursor)
 	{
 		if (edit_mode && via.sequence != current_sequence) continue;
 
-		auto & seq = sequences[via.sequence];
+		auto & seq = sequences[via.sequence].positions;
 
 		for (unsigned pos = via.begin; pos != via.end; ++pos)
 		{
@@ -929,8 +929,8 @@ void determineCandidates(F distance_to_cursor)
 			}
 			else
 			{
-				if (position() == seq.positions.back() && pos == seq.positions.size() - 2) ;
-				else if (position() == seq.positions.front() && pos == 1) ;
+				if (position() == seq.back() && pos == seq.size() - 2) ;
+				else if (position() == seq.front() && pos == 1) ;
 				else continue;
 			}
 
@@ -956,11 +956,13 @@ void determineCandidates(F distance_to_cursor)
 
 			if (d < best)
 			{
-				next_pos = NextPos{howfar, via.sequence, pos};
+				np = NextPos{howfar, via.sequence, pos};
 				best = d;
 			}
 		}
 	}
+
+	return np;
 }
 
 template<typename F>
@@ -997,13 +999,10 @@ void prepareDraw(int width, int height)
 	glEnable(GL_COLOR_MATERIAL);
 
 	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glMultMatrixd(camera.projection().data());
+	glLoadMatrixd(camera.projection().data());
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glMultMatrixd(camera.model_view().data());
+	glLoadMatrixd(camera.model_view().data());
 }
 
 void drawViables(PlayerJoint const highlight_joint)
@@ -1013,26 +1012,24 @@ void drawViables(PlayerJoint const highlight_joint)
 		{
 			if (v.end - v.begin < 2) continue;
 
-			auto & seq = sequences[v.sequence];
+			auto & seq = sequences[v.sequence].positions;
 
 			if (!(j == highlight_joint)) continue;
 
 			glColor(j == highlight_joint ? yellow : green);
 
 			if (j == highlight_joint || edit_mode)
-			{
 				glDisable(GL_DEPTH_TEST);
-			}
 
 			glBegin(GL_LINE_STRIP);
-			for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq.positions[i][j]);
+			for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq[i][j]);
 			glEnd();
 
 			if (j == highlight_joint || edit_mode)
 			{
 				glPointSize(20);
 				glBegin(GL_POINTS);
-				for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq.positions[i][j]);
+				for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq[i][j]);
 				glEnd();
 				glEnable(GL_DEPTH_TEST);
 			}
@@ -1106,7 +1103,7 @@ int main()
 
 		auto distance_to_cursor = [&](V3 v){ return norm2(camera.world2xy(v) - cursor); };
 
-		determineCandidates(distance_to_cursor);
+		next_pos = determineNextPos(distance_to_cursor);
 
 		// editing
 
