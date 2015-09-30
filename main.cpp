@@ -57,7 +57,6 @@ void pillar(V3 from, V3 to, double from_radius, double to_radius, unsigned faces
 	}
 
 	glEnd();
-
 }
 
 void render(Player const & p, Segment const s)
@@ -71,29 +70,6 @@ void renderWires(Player const & player)
 	glLineWidth(50);
 
 	for (auto && s : segments) if (s.visible) render(player, s);
-}
-
-void renderShape(Player const & player)
-{
-	auto && j = player;
-
-	auto t = [&](Joint a, Joint b, Joint c)
-		{
-			glNormal(normalize(cross(j[b] - j[a], j[c] - j[a])));
-			triangle(j[a], j[b], j[c]);
-		};
-
-	auto crotch = (j[LeftHip] + j[RightHip]) / 2;
-
-	glBegin(GL_TRIANGLES);
-		t(LeftAnkle, LeftToe, LeftHeel);
-		t(RightAnkle, RightToe, RightHeel);
-		t(LeftHip, RightHip, Core);
-		t(Core, LeftShoulder, Neck);
-		t(Core, RightShoulder, Neck);
-		triangle(j[LeftKnee], crotch, j[LeftHip]);
-		triangle(j[RightKnee], crotch, j[RightHip]);
-	glEnd();
 }
 
 void render(Position const & pos, V3 acolor, V3 bcolor, bool ghost = false)
