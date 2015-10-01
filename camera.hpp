@@ -8,39 +8,34 @@ class Camera
 	V2 viewportSize;
 	V3 orientation{0, -0.7, 1.7};
 		// x used for rotation over y axis, y used for rotation over x axis, z used for zoom
-	M proj, mv, full;
+	M proj, mv, full_;
 
-	void computeMatrices()
+	void computeMv()
 	{
-		proj = perspective(90, viewportSize.x / viewportSize.y, 0.1, 6);
 		mv = translate(0, 0, -orientation.z) * xrot(orientation.y) * yrot(orientation.x);
-		full = proj * mv;
+		full_ = proj * mv;
 	}
 
 public:
 
-	Camera() { computeMatrices(); }
+	Camera() { setViewportSize(640, 480); computeMv(); }
 
 	M const & projection() const { return proj; }
 	M const & model_view() const { return mv; }
-
-	V2 world2xy(V3 v) const
-	{
-		auto cs = full * V4(v, 1);
-		return xy(cs) / cs.w;
-	}
+	M const & full() const { return full_; }
 
 	void setViewportSize(int x, int y)
 	{
 		viewportSize.x = x;
 		viewportSize.y = y;
-		computeMatrices();
+		proj = perspective(90, viewportSize.x / viewportSize.y, 0.1, 6);
+		full_ = proj * mv;
 	}
 
 	void rotateHorizontal(double radians)
 	{
 		orientation.x += radians;
-		computeMatrices();
+		computeMv();
 	}
 
 	void rotateVertical(double radians)
@@ -48,17 +43,22 @@ public:
 		orientation.y += radians;
 		orientation.y = std::max(-M_PI/2, orientation.y);
 		orientation.y = std::min(M_PI/2, orientation.y);
-		computeMatrices();
+		computeMv();
 	}
 
 	void zoom(double z)
 	{
 		orientation.z += z;
-		computeMatrices();
+		computeMv();
 	}
 
 	double getHorizontalRotation() const { return orientation.x; }
-
 };
+
+inline V2 world2xy(Camera const & camera, V3 v)
+{
+	auto cs = camera.full() * V4(v, 1);
+	return xy(cs) / cs.w;
+}
 
 #endif

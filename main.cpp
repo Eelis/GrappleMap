@@ -90,20 +90,116 @@ struct NextPos
 	unsigned position;
 };
 
-// state
+struct Viable
+{
+	double dist;
+	unsigned sequence;
+	unsigned begin, end; // half-open range
+	V3 beginV3, endV3;
+	V2 beginxy, endxy;
+};
 
-std::vector<Sequence> sequences = load("positions.txt");
-unsigned current_sequence = 0;
-unsigned current_position = 0; // index into current sequence
-PlayerJoint closest_joint = {0, LeftAnkle};
-optional<NextPos> next_pos;
-optional<PlayerJoint> chosen_joint;
-GLFWwindow * window;
-bool edit_mode = false;
-Position clipboard;
-Camera camera;
-V2 cursor;
-double jiggle = 0;
+template<typename F>
+Viable extend_forward(std::vector<Sequence> const & sequences, Viable via, PlayerJoint j, F world2xy)
+{
+	for (; via.end != sequences[via.sequence].positions.size(); ++via.end)
+	{
+		V3 const v = sequences[via.sequence].positions[via.end][j];
+		V2 const xy = world2xy(v);
+		if (via.begin != via.end)
+		{
+			if (distanceSquared(v, via.beginV3) < 0.003) break;
+			double xydist = distanceSquared(xy, via.endxy);
+			if (xydist < 0.0005) break;
+			via.dist += std::sqrt(xydist);
+		}
+		via.endV3 = v;
+		via.endxy = xy;
+	}
+	return via;
+}
+
+template<typename F>
+Viable extend_backward(std::vector<Sequence> const & sequences, Viable via, PlayerJoint j, F world2xy)
+{
+	int pos = via.begin;
+	--pos;
+	for (; pos != -1; --pos)
+	{
+		V3 const v = sequences[via.sequence].positions[pos][j];
+		V2 const xy = world2xy(v);
+		if (pos + 1 != via.end)
+		{
+			if (distanceSquared(v, via.beginV3) < 0.003) break;
+			double xydist = distanceSquared(xy, via.beginxy);
+			if (xydist < 0.0005) break;
+			via.dist += std::sqrt(xydist);
+		}
+		via.beginV3 = v;
+		via.beginxy = xy;
+	}
+
+	via.begin = pos + 1;
+
+	return via;
+}
+
+struct ViablesForJoint
+{
+	double total_dist;
+	std::vector<Viable> viables;
+};
+
+template<typename F>
+ViablesForJoint determineViables
+	( std::vector<Sequence> const & sequences, PlayerJoint const j
+	, unsigned const seq, unsigned const pos
+	, bool edit_mode, F world2xy)
+{
+	Sequence const & s = sequences[seq];
+
+	auto const jp = sequences[seq].positions[pos][j];
+	auto jpxy = world2xy(jp);
+
+	Viable v{0, seq, pos, pos, jp, jp, jpxy, jpxy};
+
+	if (!edit_mode && !jointDefs[j.joint].draggable) return {0};
+
+	v = extend_forward(sequences, v, j, world2xy);
+	v = extend_backward(sequences, v, j, world2xy);
+
+	ViablesForJoint r{v.dist, {v}};
+
+	for (unsigned seq2 = 0; seq2 != sequences.size(); ++seq2)
+	{
+		auto & s2 = sequences[seq2];
+		auto & s2front = s2.positions.front();
+		auto & s2back = s2.positions.back();
+
+		if ((v.end == end(s) && s2front == s.positions.back()) ||
+			(v.begin == 0 && s2front == s.positions.front()))
+		{
+			auto s2frontxy = world2xy(s2front[j]);
+			Viable w{0, seq2, 0, 0, s2front[j], s2front[j], s2frontxy, s2frontxy};
+			auto x = extend_forward(sequences, w, j, world2xy);
+			r.total_dist += x.dist;
+			r.viables.push_back(x);
+		}
+		else if ((v.begin == 0 && s2back == s.positions.front()) ||
+			(v.end == end(s) && s2back == s.positions.back()))
+		{
+			auto s2backxy = world2xy(s2back[j]);
+			Viable w{0, seq2, end(s2), end(s2), s2back[j], s2back[j], s2backxy, s2backxy};
+			auto x = extend_backward(sequences, w, j, world2xy);
+			r.total_dist += x.dist;
+			r.viables.push_back(x);
+		}
+	}
+
+	if (r.total_dist < 0.5) return {0, {}};
+
+	return r;
+}
 
 void grid()
 {
@@ -119,6 +215,22 @@ void grid()
 		}
 	glEnd();
 }
+
+// state
+
+std::vector<Sequence> sequences = load("positions.txt");
+unsigned current_sequence = 0;
+unsigned current_position = 0; // index into current sequence
+PlayerJoint closest_joint = {0, LeftAnkle};
+optional<NextPos> next_pos;
+optional<PlayerJoint> chosen_joint;
+GLFWwindow * window;
+bool edit_mode = false;
+Position clipboard;
+Camera camera;
+V2 cursor;
+double jiggle = 0;
+PerPlayerJoint<ViablesForJoint> viable;
 
 Sequence & sequence() { return sequences[current_sequence]; }
 Position & position() { return sequence().positions[current_position]; }
@@ -163,7 +275,7 @@ void gotoSequence(unsigned const seq)
 	}
 }
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action, int mods)
 {
 	if ((mods & GLFW_MOD_CONTROL) && key == GLFW_KEY_C) // copy
 	{
@@ -198,10 +310,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				}
 				break;
 
-			// set position to prev/next/center
+			// set position to center
 
-			case GLFW_KEY_Y: if (auto p = prev_position()) position() = *p; break;
-			case GLFW_KEY_I: if (auto p = next_position()) position() = *p; break;
 			case GLFW_KEY_U:
 				if (auto next = next_position())
 				if (auto prev = prev_position())
@@ -235,7 +345,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 			case GLFW_KEY_V: edit_mode = !edit_mode; break;
 
-			case GLFW_KEY_S: save(sequences, "positions.dat"); break;
+			case GLFW_KEY_S: save(sequences, "positions.txt"); break;
 			case GLFW_KEY_DELETE:
 			{
 				if (mods & GLFW_MOD_CONTROL)
@@ -261,17 +371,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		}
 }
 
-struct Viable
-{
-	unsigned sequence;
-	unsigned begin, end; // half-open range
-};
-
-PerPlayerJoint<std::vector<Viable>> viable;
-
 bool anyViable(PlayerJoint j)
 {
-	for (auto && v : viable[j]) if (v.end - v.begin > 1) return true;
+	for (auto && v : viable[j].viables) if (v.end - v.begin > 1) return true;
 	return false;
 }
 
@@ -283,12 +385,12 @@ void drawJoint(Position const & pos, PlayerJoint pj)
 
 	if (edit_mode)
 		color = highlight ? yellow : white;
-	else if (!anyViable(pj) || (chosen_joint && !highlight))
+	else if (!anyViable(pj))
 		extraBig = 0;
 	else
 		color = highlight
 			? white * 0.6 + color * 0.4
-			: white * 0.3 + color * 0.7;
+			: white * 0.4 + color * 0.6;
 
 	glColor(color);
 
@@ -307,84 +409,12 @@ void drawJoints(Position const & pos)
 	for (auto pj : playerJoints) drawJoint(pos, pj);
 }
 
-unsigned explore_forward(unsigned pos, PlayerJoint j, Sequence const & seq)
-{
-	optional<V3> last;
-	optional<V2> lastxy;
-	for (; pos != seq.positions.size(); ++pos)
-	{
-		V3 v = seq.positions[pos][j];
-		if (last && distanceSquared(v, *last) < 0.003) break;
-		V2 xy = camera.world2xy(v);
-		if (lastxy && distanceSquared(xy, *lastxy) < 0.0015) break;
-		last = v;
-		lastxy = xy;
-	}
-	return pos;
-}
-
-unsigned explore_backward(unsigned upos, PlayerJoint j, Sequence const & seq)
-{
-	optional<V3> last;
-	optional<V2> lastxy;
-	int pos = upos;
-	for (; pos >= 0; --pos)
-	{
-		auto && v = seq.positions[pos][j];
-		if (last && distanceSquared(v, *last) < 0.003) break;
-		auto xy = camera.world2xy(v);
-		if (lastxy && distanceSquared(xy, *lastxy) < 0.0015) break;
-		last = v;
-		lastxy = xy;
-	}
-	++pos;
-
-	return pos;
-}
-
 void determineViables()
 {
+	auto w2xy = std::bind(world2xy, camera, std::placeholders::_1);
+
 	for (auto j : playerJoints)
-	{
-		auto & vv = viable[j];
-		vv.clear();
-		vv.emplace_back();
-
-		auto & v = vv.back();
-		
-		v.sequence = current_sequence;
-
-		if (!edit_mode && !jointDefs[j.joint].draggable)
-		{
-			v.begin = v.end = current_position;
-			continue;
-		}
-
-		v.end = explore_forward(current_position, j, sequence());
-		v.begin = explore_backward(current_position, j, sequence());
-
-		// todo: maintain "no small steps" rule along transition changes
-
-		if (v.end == sequence().positions.size())
-			for (unsigned seq = 0; seq != sequences.size(); ++seq)
-			{
-				auto & s = sequences[seq];
-				if (s.positions.front() == sequence().positions.back())
-					vv.push_back(Viable{seq, 0, explore_forward(0, j, s)});
-				else if (s.positions.back() == sequence().positions.back())
-					vv.push_back(Viable{seq, explore_backward(s.positions.size() - 1, j, s), unsigned(s.positions.size())});
-			}
-
-		if (v.begin == 0)
-			for (unsigned seq = 0; seq != sequences.size(); ++seq)
-			{
-				auto & s = sequences[seq];
-				if (s.positions.back() == sequence().positions.front())
-					vv.push_back(Viable{seq, explore_backward(s.positions.size() - 1, j, s), unsigned(s.positions.size())});
-				else if (s.positions.front() == sequence().positions.front())
-					vv.push_back(Viable{seq, 0, explore_forward(0, j, s)});
-			}
-	}
+		viable[j] = determineViables(sequences, j, current_sequence, current_position, edit_mode, w2xy);
 }
 
 template<typename F>
@@ -396,7 +426,7 @@ optional<NextPos> determineNextPos(F distance_to_cursor)
 
 	PlayerJoint const j = chosen_joint ? *chosen_joint : closest_joint;
 
-	for (auto && via : viable[j])
+	for (auto && via : viable[j].viables)
 	{
 		if (edit_mode && via.sequence != current_sequence) continue;
 
@@ -423,8 +453,8 @@ optional<NextPos> determineNextPos(F distance_to_cursor)
 
 			if (distanceSquared(p, q) < 0.001) continue;
 
-			V2 v = camera.world2xy(p);
-			V2 w = camera.world2xy(q);
+			V2 v = world2xy(camera, p);
+			V2 w = world2xy(camera, q);
 
 			V2 a = cursor - v;
 			V2 b = w - v;
@@ -489,7 +519,7 @@ void prepareDraw(int width, int height)
 void drawViables(PlayerJoint const highlight_joint)
 {
 	for (auto j : playerJoints)
-		for (auto && v : viable[j])
+		for (auto && v : viable[j].viables)
 		{
 			if (v.end - v.begin < 2) continue;
 
@@ -531,13 +561,13 @@ int main()
 
 	glfwSetKeyCallback(window, key_callback);
 
-	glfwSetMouseButtonCallback(window, [](GLFWwindow *, int button, int action, int mods)
+	glfwSetMouseButtonCallback(window, [](GLFWwindow *, int /*button*/, int action, int /*mods*/)
 		{
 			if (action == GLFW_PRESS) chosen_joint = closest_joint;
 			if (action == GLFW_RELEASE) chosen_joint = boost::none;
 		});
 
-	glfwSetScrollCallback(window, [](GLFWwindow * window, double xoffset, double yoffset)
+	glfwSetScrollCallback(window, [](GLFWwindow * /*window*/, double xoffset, double yoffset)
 		{
 			if (yoffset == -1)
 			{
@@ -580,7 +610,7 @@ int main()
 		cursor = {((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
 
 
-		auto distance_to_cursor = [&](V3 v){ return norm2(camera.world2xy(v) - cursor); };
+		auto distance_to_cursor = [&](V3 v){ return norm2(world2xy(camera, v) - cursor); };
 
 		next_pos = determineNextPos(distance_to_cursor);
 
@@ -594,7 +624,7 @@ int main()
 			
 			auto & joint = new_pos[*chosen_joint];
 
-			auto off = camera.world2xy(joint) - cursor;
+			auto off = world2xy(camera, joint) - cursor;
 
 			joint.x -= dragger.x * off.x;
 			joint.z -= dragger.z * off.x;
@@ -605,7 +635,8 @@ int main()
 			position() = new_pos;
 		}
 
-		determineNearestJoint(distance_to_cursor);
+		if (!chosen_joint)
+			determineNearestJoint(distance_to_cursor);
 		
 		prepareDraw(width, height);
 
@@ -649,7 +680,7 @@ int main()
 		}
 
 		glfwSwapBuffers(window);
-		if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && next_pos && next_pos->howfar > 0.7)
+		if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && next_pos && next_pos->howfar > 0.9)
 		{
 			gotoSequence(next_pos->sequence);
 			current_position = next_pos->position;

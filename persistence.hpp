@@ -65,7 +65,7 @@ inline std::ostream & operator<<(std::ostream & o, Position const & p)
 {
 	auto g = [&o](double const d)
 		{
-			int const i = int(d * 1000);
+			int const i = int(std::round(d * 1000));
 			assert(i >= 0);
 			assert(i < 4000);
 			o << base62digits[i / 62] << base62digits[i % 62];
@@ -91,7 +91,7 @@ inline std::ostream & operator<<(std::ostream & o, Sequence const & s)
 inline std::vector<Sequence> load(std::string const filename)
 {
 	std::vector<Sequence> r;
-	std::ifstream ff("positions.txt");
+	std::ifstream ff(filename);
 	ff >> r;
 	return r;
 }

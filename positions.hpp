@@ -83,6 +83,8 @@ struct Sequence
 	std::vector<Position> positions; // invariant: .size()>=2
 };
 
+inline unsigned end(Sequence const & seq) { return seq.positions.size(); }
+
 inline std::array<PlayerJoint, joint_count * 2> make_playerJoints()
 {
 	std::array<PlayerJoint, joint_count * 2> r;
