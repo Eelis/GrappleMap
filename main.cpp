@@ -72,7 +72,7 @@ void renderWires(Player const & player)
 	for (auto && s : segments) if (s.visible) render(player, s);
 }
 
-void render(Position const & pos, V3 acolor, V3 bcolor, bool ghost = false)
+void render(Position const & pos, V3 acolor, V3 bcolor)
 {
 	Player const & a = pos[0], & b = pos[1];
 
@@ -163,7 +163,7 @@ ViablesForJoint determineViables
 
 	Viable v{0, seq, pos, pos, jp, jp, jpxy, jpxy};
 
-	if (!edit_mode && !jointDefs[j.joint].draggable) return {0};
+	if (!edit_mode && !jointDefs[j.joint].draggable) return {0, {}};
 
 	v = extend_forward(sequences, v, j, world2xy);
 	v = extend_backward(sequences, v, j, world2xy);
@@ -417,8 +417,7 @@ void determineViables()
 		viable[j] = determineViables(sequences, j, current_sequence, current_position, edit_mode, w2xy);
 }
 
-template<typename F>
-optional<NextPos> determineNextPos(F distance_to_cursor)
+optional<NextPos> determineNextPos()
 {
 	optional<NextPos> np;
 
@@ -567,7 +566,7 @@ int main()
 			if (action == GLFW_RELEASE) chosen_joint = boost::none;
 		});
 
-	glfwSetScrollCallback(window, [](GLFWwindow * /*window*/, double xoffset, double yoffset)
+	glfwSetScrollCallback(window, [](GLFWwindow * /*window*/, double /*xoffset*/, double yoffset)
 		{
 			if (yoffset == -1)
 			{
@@ -612,7 +611,7 @@ int main()
 
 		auto distance_to_cursor = [&](V3 v){ return norm2(world2xy(camera, v) - cursor); };
 
-		next_pos = determineNextPos(distance_to_cursor);
+		next_pos = determineNextPos();
 
 		// editing
 

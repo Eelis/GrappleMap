@@ -54,7 +54,7 @@ inline std::istream & operator>>(std::istream & i, std::vector<Sequence> & v)
 		}
 		else
 		{
-			v.push_back(Sequence{line});
+			v.push_back(Sequence{line, {}});
 			std::cout << "Loading: " << line << '\n';
 		}
 
