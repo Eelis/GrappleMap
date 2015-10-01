@@ -223,7 +223,6 @@ std::vector<Sequence> sequences = load("positions.txt");
 unsigned current_sequence = 0;
 unsigned current_position = 0; // index into current sequence
 PlayerJoint closest_joint = {0, LeftAnkle};
-optional<NextPos> next_pos;
 optional<PlayerJoint> chosen_joint;
 GLFWwindow * window;
 bool edit_mode = false;
@@ -418,6 +417,20 @@ void determineViables()
 		viable[j] = determineViables(sequences, j, current_sequence, current_position, edit_mode, w2xy);
 }
 
+
+double whereBetween(Position const & n, Position const & m)
+{
+	PlayerJoint const j = chosen_joint ? *chosen_joint : closest_joint;
+
+	V2 v = world2xy(camera, n[j]);
+	V2 w = world2xy(camera, m[j]);
+
+	V2 a = cursor - v;
+	V2 b = w - v;
+
+	return std::max(0., std::min(1., inner_prod(a, b) / norm2(b) / norm2(b)));
+}
+
 optional<NextPos> determineNextPos()
 {
 	optional<NextPos> np;
@@ -448,18 +461,12 @@ optional<NextPos> determineNextPos()
 			Position const & n = position();
 			Position const & m = sequences[via.sequence].positions[pos];
 
-			V3 p = n[j];
-			V3 q = m[j];
+			if (distanceSquared(n[j], m[j]) < 0.001) return boost::none;
 
-			if (distanceSquared(p, q) < 0.001) continue;
+			double howfar = whereBetween(n, m);
 
-			V2 v = world2xy(camera, p);
-			V2 w = world2xy(camera, q);
-
-			V2 a = cursor - v;
-			V2 b = w - v;
-
-			double howfar = std::max(0., std::min(1., inner_prod(a, b) / norm2(b) / norm2(b)));
+			V2 v = world2xy(camera, n[j]);
+			V2 w = world2xy(camera, m[j]);
 
 			V2 ultimate = v + (w - v) * howfar;
 
@@ -475,6 +482,8 @@ optional<NextPos> determineNextPos()
 
 	return np;
 }
+
+optional<NextPos> next_pos;
 
 GLfloat light_diffuse[] = {0.5, 0.5, 0.5, 1.0};
 GLfloat light_position[] = {1.0, 2.0, 1.0, 0.0};
@@ -592,7 +601,21 @@ int main()
 		glfwGetCursorPos(window, &xpos, &ypos);
 		cursor = {((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
 
-		next_pos = determineNextPos();
+		if (auto best_next_pos = determineNextPos())
+		{
+			if (next_pos)
+			{
+				if (next_pos->sequence == best_next_pos->sequence && next_pos->position == best_next_pos->position)
+					next_pos->howfar = next_pos->howfar * 0.5 + best_next_pos->howfar * 0.5;
+				else if (next_pos->howfar > 0.05)
+					next_pos->howfar -= 0.04;
+				else
+					next_pos = NextPos{0, best_next_pos->sequence, best_next_pos->position};
+			}
+			else next_pos = best_next_pos;
+		}
+
+		Position posToDraw = position();
 
 		// editing
 
@@ -612,43 +635,36 @@ int main()
 
 			spring(new_pos, chosen_joint);
 
-			position() = new_pos;
+			posToDraw = position() = new_pos;
+		}
+		else
+		{
+			if (!chosen_joint)
+				closest_joint = *minimal(
+					playerJoints.begin(), playerJoints.end(),
+					[](PlayerJoint j) { return norm2(world2xy(camera, position()[j]) - cursor); });
+
+			if (next_pos && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+				posToDraw = between(
+						position(),
+						sequences[next_pos->sequence].positions[next_pos->position],
+						next_pos->howfar);
 		}
 
-		if (!chosen_joint)
-			closest_joint = *minimal(
-				playerJoints.begin(), playerJoints.end(),
-				[](PlayerJoint j) { return norm2(world2xy(camera, position()[j]) - cursor); });
-		
 		prepareDraw(width, height);
 
 		glEnable(GL_DEPTH);
 		glEnable(GL_DEPTH_TEST);
 
 		glNormal3d(0, 1, 0);
-
 		grid();
-
-		Position posToDraw = position();
-
-		PlayerJoint const highlight_joint = chosen_joint ? *chosen_joint : closest_joint;
-
-		if (next_pos && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-		{
-			posToDraw = between(
-				position(),
-				sequences[next_pos->sequence].positions[next_pos->position],
-				next_pos->howfar);
-		}
 
 		render(posToDraw, red, blue);
 		drawJoints(posToDraw);
 
 		glLineWidth(4);
-
 		glNormal3d(0, 1, 0);
-
-		drawViables(highlight_joint);
+		drawViables(chosen_joint ? *chosen_joint : closest_joint);
 
 		if (chosen_joint)
 		{
@@ -666,6 +682,7 @@ int main()
 		{
 			gotoSequence(next_pos->sequence);
 			current_position = next_pos->position;
+			next_pos = boost::none;
 		}
 	}
 
