@@ -1,3 +1,4 @@
+#include "util.hpp"
 #include "camera.hpp"
 #include "persistence.hpp"
 #include "math.hpp"
@@ -475,23 +476,6 @@ optional<NextPos> determineNextPos()
 	return np;
 }
 
-template<typename F>
-void determineNearestJoint(F distance_to_cursor)
-{
-	double closest = 200;
-
-	for (auto j : playerJoints)
-	{
-		double d = distance_to_cursor(position()[j]);
-
-		if (d < closest)
-		{
-			closest = d;
-			closest_joint = j;
-		}
-	}
-}
-
 GLfloat light_diffuse[] = {0.5, 0.5, 0.5, 1.0};
 GLfloat light_position[] = {1.0, 2.0, 1.0, 0.0};
 GLfloat light_ambient[] = {0.3, 0.3, 0.3, 0.0};
@@ -608,9 +592,6 @@ int main()
 		glfwGetCursorPos(window, &xpos, &ypos);
 		cursor = {((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
 
-
-		auto distance_to_cursor = [&](V3 v){ return norm2(world2xy(camera, v) - cursor); };
-
 		next_pos = determineNextPos();
 
 		// editing
@@ -635,7 +616,9 @@ int main()
 		}
 
 		if (!chosen_joint)
-			determineNearestJoint(distance_to_cursor);
+			closest_joint = *minimal(
+				playerJoints.begin(), playerJoints.end(),
+				[](PlayerJoint j) { return norm2(world2xy(camera, position()[j]) - cursor); });
 		
 		prepareDraw(width, height);
 
