@@ -93,6 +93,11 @@ inline std::vector<Sequence> load(std::string const filename)
 	std::vector<Sequence> r;
 	std::ifstream ff(filename);
 	ff >> r;
+
+	size_t p = 0;
+	for (auto && seq : r) p += seq.positions.size();
+	std::cout << "Loaded " << p << " positions in " << r.size() << " sequences.\n";
+
 	return r;
 }
 
