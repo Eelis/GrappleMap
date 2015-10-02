@@ -93,6 +93,7 @@ inline V3 & operator+=(V3 & a, V3 b) { return a = a + b; }
 inline V3 & operator-=(V3 & a, V3 b) { return a = a - b; }
 inline V4 & operator-=(V4 & a, V4 b) { return a = a - b; }
 
+inline bool operator==(V2 a, V2 b) { return a.x == b.x && a.y == b.y; }
 inline bool operator==(V3 a, V3 b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
 
 inline std::ostream & operator<<(std::ostream & o, V2 v){ return o << '{' << v.x << ',' << v.y << '}'; }
@@ -137,6 +138,31 @@ inline M operator*(M const & a, M const & b)
 		,  a[ 1]*b[12] + a[ 5]*b[13] + a[ 9]*b[14] + a[13]*b[15]
 		,  a[ 2]*b[12] + a[ 6]*b[13] + a[10]*b[14] + a[14]*b[15]
 		,  a[ 3]*b[12] + a[ 7]*b[13] + a[11]*b[14] + a[15]*b[15] }};
+}
+
+using LineSegment = std::pair<V2, V2>;
+
+inline bool lineSegmentsIntersect(LineSegment a, LineSegment b) // todo: this is no good
+{
+	if (a.first == b.first || a.first == b.second ||
+	    a.second == b.first || a.second == b.second) return false;
+
+	if (a.second.x < a.first.x) std::swap(a.first, a.second);
+	if (b.second.x < b.first.x) std::swap(b.first, b.second);
+
+	if (a.second.x - a.first.x < 0.0001 || b.second.x - b.first.x < 0.0001) return false;
+
+	double const ar = (a.second.y - a.first.y) / (a.second.x - a.first.x);
+	double const br = (b.second.y - b.first.y) / (b.second.x - b.first.x);
+
+	if (std::abs(ar - br) < 0.0001) return false;
+
+	double const a_at0 = a.first.y - a.first.x * ar;
+	double const b_at0 = b.first.y - b.first.x * br;
+
+	double const x = (b_at0 - a_at0) / (ar - br);
+	
+	return a.first.x <= x && x <= a.second.x && b.first.x <= x && x <= b.second.x;
 }
 
 #endif

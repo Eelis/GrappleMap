@@ -100,18 +100,31 @@ struct Viable
 	V2 beginxy, endxy;
 };
 
-template<typename F>
-Viable extend_forward(std::vector<Sequence> const & sequences, Viable via, PlayerJoint j, F world2xy)
+struct ViablesForJoint
+{
+	double total_dist;
+	std::vector<Viable> viables;
+	std::vector<LineSegment> segments;
+};
+
+Viable extend_forward(std::vector<Sequence> const & sequences, Viable via, PlayerJoint j, Camera const & camera, ViablesForJoint & vfj)
 {
 	for (; via.end != sequences[via.sequence].positions.size(); ++via.end)
 	{
 		V3 const v = sequences[via.sequence].positions[via.end][j];
-		V2 const xy = world2xy(v);
+		V2 const xy = world2xy(camera, v);
 		if (via.begin != via.end)
 		{
 			if (distanceSquared(v, via.endV3) < 0.003) break;
 			double xydist = distanceSquared(xy, via.endxy);
 			if (xydist < 0.0005) break;
+
+			auto const segment = LineSegment(xy, via.endxy);
+			for (auto && old : vfj.segments)
+				if (lineSegmentsIntersect(segment, old))
+					return via;
+			vfj.segments.push_back(segment);
+
 			via.dist += std::sqrt(xydist);
 		}
 		via.endV3 = v;
@@ -120,20 +133,26 @@ Viable extend_forward(std::vector<Sequence> const & sequences, Viable via, Playe
 	return via;
 }
 
-template<typename F>
-Viable extend_backward(std::vector<Sequence> const & sequences, Viable via, PlayerJoint j, F world2xy)
+Viable extend_backward(std::vector<Sequence> const & sequences, Viable via, PlayerJoint j, Camera const & camera, ViablesForJoint & vfj)
 {
 	int pos = via.begin;
 	--pos;
 	for (; pos != -1; --pos)
 	{
 		V3 const v = sequences[via.sequence].positions[pos][j];
-		V2 const xy = world2xy(v);
+		V2 const xy = world2xy(camera, v);
 		if (pos + 1 != via.end)
 		{
 			if (distanceSquared(v, via.beginV3) < 0.003) break;
 			double xydist = distanceSquared(xy, via.beginxy);
 			if (xydist < 0.0005) break;
+
+			auto const segment = std::make_pair(xy, via.beginxy);
+			for (auto && old : vfj.segments)
+				if (lineSegmentsIntersect(old, segment))
+					return via;
+			vfj.segments.push_back(segment);
+
 			via.dist += std::sqrt(xydist);
 		}
 		via.beginV3 = v;
@@ -145,31 +164,25 @@ Viable extend_backward(std::vector<Sequence> const & sequences, Viable via, Play
 	return via;
 }
 
-struct ViablesForJoint
-{
-	double total_dist;
-	std::vector<Viable> viables;
-};
-
-template<typename F>
 ViablesForJoint determineViables
 	( std::vector<Sequence> const & sequences, PlayerJoint const j
 	, unsigned const seq, unsigned const pos
-	, bool edit_mode, F world2xy)
+	, bool edit_mode, Camera const & camera)
 {
 	Sequence const & s = sequences[seq];
 
 	auto const jp = sequences[seq].positions[pos][j];
-	auto jpxy = world2xy(jp);
+	auto jpxy = world2xy(camera, jp);
+
+	if (!edit_mode && !jointDefs[j.joint].draggable) return {0, {}, {}};
+
+	ViablesForJoint r{0, {}, {}};
 
 	Viable v{0, seq, pos, pos, jp, jp, jpxy, jpxy};
-
-	if (!edit_mode && !jointDefs[j.joint].draggable) return {0, {}};
-
-	v = extend_forward(sequences, v, j, world2xy);
-	v = extend_backward(sequences, v, j, world2xy);
-
-	ViablesForJoint r{v.dist, {v}};
+	v = extend_forward(sequences, v, j, camera, r);
+	v = extend_backward(sequences, v, j, camera, r);
+	r.viables.push_back(v);
+	r.total_dist = v.dist;
 
 	for (unsigned seq2 = 0; seq2 != sequences.size(); ++seq2)
 	{
@@ -180,24 +193,24 @@ ViablesForJoint determineViables
 		if ((v.end == end(s) && s2front == s.positions.back()) ||
 			(v.begin == 0 && s2front == s.positions.front()))
 		{
-			auto s2frontxy = world2xy(s2front[j]);
+			auto s2frontxy = world2xy(camera, s2front[j]);
 			Viable w{0, seq2, 0, 0, s2front[j], s2front[j], s2frontxy, s2frontxy};
-			auto x = extend_forward(sequences, w, j, world2xy);
+			auto x = extend_forward(sequences, w, j, camera, r);
 			r.total_dist += x.dist;
 			r.viables.push_back(x);
 		}
 		else if ((v.begin == 0 && s2back == s.positions.front()) ||
 			(v.end == end(s) && s2back == s.positions.back()))
 		{
-			auto s2backxy = world2xy(s2back[j]);
+			auto s2backxy = world2xy(camera, s2back[j]);
 			Viable w{0, seq2, end(s2), end(s2), s2back[j], s2back[j], s2backxy, s2backxy};
-			auto x = extend_backward(sequences, w, j, world2xy);
+			auto x = extend_backward(sequences, w, j, camera, r);
 			r.total_dist += x.dist;
 			r.viables.push_back(x);
 		}
 	}
 
-	if (r.total_dist < 0.5) return {0, {}};
+	if (r.total_dist < 0.3) return {0, {}, {}};
 
 	return r;
 }
@@ -373,8 +386,7 @@ void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action
 
 bool anyViable(PlayerJoint j)
 {
-	for (auto && v : viable[j].viables) if (v.end - v.begin > 1) return true;
-	return false;
+	return viable[j].total_dist != 0;
 }
 
 void drawJoint(Position const & pos, PlayerJoint pj)
@@ -411,10 +423,8 @@ void drawJoints(Position const & pos)
 
 void determineViables()
 {
-	auto w2xy = std::bind(world2xy, camera, std::placeholders::_1);
-
 	for (auto j : playerJoints)
-		viable[j] = determineViables(sequences, j, current_sequence, current_position, edit_mode, w2xy);
+		viable[j] = determineViables(sequences, j, current_sequence, current_position, edit_mode, camera);
 }
 
 
@@ -504,35 +514,28 @@ void prepareDraw(int width, int height)
 	glLoadMatrixd(camera.model_view().data());
 }
 
-void drawViables(PlayerJoint const highlight_joint)
+void drawViables(PlayerJoint const j)
 {
-	for (auto j : playerJoints)
-		for (auto && v : viable[j].viables)
-		{
-			if (v.end - v.begin < 2) continue;
+	for (auto && v : viable[j].viables)
+	{
+		if (v.end - v.begin < 1) continue;
 
-			auto & seq = sequences[v.sequence].positions;
+		auto & seq = sequences[v.sequence].positions;
 
-			if (!(j == highlight_joint)) continue;
+		glColor(yellow * 0.9);
 
-			glColor(j == highlight_joint ? yellow : green);
+		glDisable(GL_DEPTH_TEST);
 
-			if (j == highlight_joint || edit_mode)
-				glDisable(GL_DEPTH_TEST);
+		glBegin(GL_LINE_STRIP);
+		for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq[i][j]);
+		glEnd();
 
-			glBegin(GL_LINE_STRIP);
-			for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq[i][j]);
-			glEnd();
-
-			if (j == highlight_joint || edit_mode)
-			{
-				glPointSize(20);
-				glBegin(GL_POINTS);
-				for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq[i][j]);
-				glEnd();
-				glEnable(GL_DEPTH_TEST);
-			}
-		}
+		glPointSize(20);
+		glBegin(GL_POINTS);
+		for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq[i][j]);
+		glEnd();
+		glEnable(GL_DEPTH_TEST);
+	}
 }
 
 int main()
@@ -601,7 +604,7 @@ int main()
 
 		if (auto best_next_pos = determineNextPos())
 		{
-			double const speed = 0.06;
+			double const speed = 0.08;
 
 			if (next_pos)
 			{
