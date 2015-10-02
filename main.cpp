@@ -384,11 +384,6 @@ void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action
 		}
 }
 
-bool anyViable(PlayerJoint j)
-{
-	return viable[j].total_dist != 0;
-}
-
 void drawJoint(Position const & pos, PlayerJoint pj)
 {
 	auto color = playerDefs[pj.player].color;
@@ -397,7 +392,7 @@ void drawJoint(Position const & pos, PlayerJoint pj)
 
 	if (edit_mode)
 		color = highlight ? yellow : white;
-	else if (!anyViable(pj))
+	else if (viable[pj].total_dist == 0)
 		extraBig = 0;
 	else
 		color = highlight
@@ -406,13 +401,10 @@ void drawJoint(Position const & pos, PlayerJoint pj)
 
 	glColor(color);
 
+	static GLUquadricObj * Sphere = gluNewQuadric(); // todo: evil
 	glPushMatrix();
 		glTranslate(pos[pj]);
-		GLUquadricObj * Sphere = gluNewQuadric();
-
 		gluSphere(Sphere, jointDefs[pj.joint].radius + extraBig, 20, 20);
-
-		gluDeleteQuadric(Sphere);
 	glPopMatrix();
 }
 
