@@ -586,7 +586,7 @@ int main()
 		if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) camera.zoom(-0.05);
 		if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) camera.zoom(0.05);
 
-		if (!edit_mode)
+		if (!edit_mode && !chosen_joint)
 		{
 			jiggle += 0.01;
 			camera.rotateHorizontal(sin(jiggle) * 0.0005);
