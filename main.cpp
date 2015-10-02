@@ -109,7 +109,7 @@ Viable extend_forward(std::vector<Sequence> const & sequences, Viable via, Playe
 		V2 const xy = world2xy(v);
 		if (via.begin != via.end)
 		{
-			if (distanceSquared(v, via.beginV3) < 0.003) break;
+			if (distanceSquared(v, via.endV3) < 0.003) break;
 			double xydist = distanceSquared(xy, via.endxy);
 			if (xydist < 0.0005) break;
 			via.dist += std::sqrt(xydist);
@@ -461,8 +461,6 @@ optional<NextPos> determineNextPos()
 			Position const & n = position();
 			Position const & m = sequences[via.sequence].positions[pos];
 
-			if (distanceSquared(n[j], m[j]) < 0.001) return boost::none;
-
 			double howfar = whereBetween(n, m);
 
 			V2 v = world2xy(camera, n[j]);
@@ -482,8 +480,6 @@ optional<NextPos> determineNextPos()
 
 	return np;
 }
-
-optional<NextPos> next_pos;
 
 GLfloat light_diffuse[] = {0.5, 0.5, 0.5, 1.0};
 GLfloat light_position[] = {1.0, 2.0, 1.0, 0.0};
@@ -574,6 +570,8 @@ int main()
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 
+	optional<NextPos> next_pos;
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
@@ -603,16 +601,21 @@ int main()
 
 		if (auto best_next_pos = determineNextPos())
 		{
+			double const speed = 0.06;
+
 			if (next_pos)
 			{
 				if (next_pos->sequence == best_next_pos->sequence && next_pos->position == best_next_pos->position)
-					next_pos->howfar = next_pos->howfar * 0.5 + best_next_pos->howfar * 0.5;
+					next_pos->howfar += std::max(-speed, std::min(speed, best_next_pos->howfar - next_pos->howfar));
 				else if (next_pos->howfar > 0.05)
-					next_pos->howfar -= 0.04;
+					next_pos->howfar = std::max(0., next_pos->howfar - speed);
 				else
 					next_pos = NextPos{0, best_next_pos->sequence, best_next_pos->position};
 			}
-			else next_pos = best_next_pos;
+			else
+			{
+				next_pos = NextPos{0, best_next_pos->sequence, best_next_pos->position};
+			}
 		}
 
 		Position posToDraw = position();
@@ -678,7 +681,7 @@ int main()
 		}
 
 		glfwSwapBuffers(window);
-		if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && next_pos && next_pos->howfar > 0.9)
+		if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && next_pos && next_pos->howfar > 0.95)
 		{
 			gotoSequence(next_pos->sequence);
 			current_position = next_pos->position;
