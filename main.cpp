@@ -538,6 +538,8 @@ int main()
 						next_pos->howfar);
 		}
 
+		camera.setOffset(xz(posToDraw[0][Core] + posToDraw[1][Core]) / 2);
+
 		prepareDraw(width, height);
 
 		glEnable(GL_DEPTH);

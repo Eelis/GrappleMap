@@ -6,13 +6,14 @@
 class Camera
 {
 	V2 viewportSize;
+	V2 xzOffset{0,0}; // y used for z
 	V3 orientation{0, -0.7, 1.7};
 		// x used for rotation over y axis, y used for rotation over x axis, z used for zoom
 	M proj, mv, full_;
 
 	void computeMv()
 	{
-		mv = translate(0, 0, -orientation.z) * xrot(orientation.y) * yrot(orientation.x);
+		mv = translate(0, 0, -orientation.z) * xrot(orientation.y) * yrot(orientation.x) * translate(-xzOffset.x, 0, -xzOffset.y);
 		full_ = proj * mv;
 	}
 
@@ -30,6 +31,12 @@ public:
 		viewportSize.y = y;
 		proj = perspective(90, viewportSize.x / viewportSize.y, 0.1, 6);
 		full_ = proj * mv;
+	}
+
+	void setOffset(V2 o)
+	{
+		xzOffset = xzOffset * 0.95 + o * 0.05;
+		computeMv();
 	}
 
 	void rotateHorizontal(double radians)

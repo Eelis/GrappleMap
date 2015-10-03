@@ -63,6 +63,7 @@ inline V3 cross(V3 a, V3 b)
 }
 
 inline V2 xy(V3 v){ return {v.x, v.y}; }
+inline V2 xz(V3 v){ return {v.x, v.z}; }
 inline V2 xy(V4 v){ return {v.x, v.y}; }
 inline V3 xyz(V4 v){ return {v.x, v.y, v.z}; }
 
