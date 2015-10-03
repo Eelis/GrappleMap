@@ -94,8 +94,7 @@ struct NextPos
 struct Viable
 {
 	double dist;
-	unsigned sequence;
-	unsigned begin, end; // half-open range
+	unsigned begin, end; // half-open range, never empty
 	V3 beginV3, endV3;
 	V2 beginxy, endxy;
 };
@@ -103,65 +102,130 @@ struct Viable
 struct ViablesForJoint
 {
 	double total_dist;
-	std::vector<Viable> viables;
-	std::vector<LineSegment> segments;
+	std::map<unsigned /* sequence */, Viable> viables;
 };
 
-Viable extend_forward(std::vector<Sequence> const & sequences, Viable via, PlayerJoint j, Camera const & camera, ViablesForJoint & vfj)
+Viable viableFront(Sequence const & sequence, PlayerJoint j, Camera const & camera)
 {
-	for (; via.end != sequences[via.sequence].positions.size(); ++via.end)
+	auto xyz = sequence.positions.front()[j];
+	auto xy = world2xy(camera, xyz);
+	return Viable{0, 0, 1, xyz, xyz, xy, xy};
+}
+
+Viable viableBack(Sequence const & seq, PlayerJoint j, Camera const & camera)
+{
+	auto xyz = seq.positions.back()[j];
+	auto xy = world2xy(camera, xyz);
+	return Viable{0, end(seq) - 1, end(seq), xyz, xyz, xy, xy};
+}
+
+void extend_forward(
+	std::vector<Sequence> const &, unsigned seqIndex,
+	Viable &, PlayerJoint, Camera const &, ViablesForJoint &);
+void extend_backward(
+	std::vector<Sequence> const &, unsigned seqIndex,
+	Viable &, PlayerJoint, Camera const &, ViablesForJoint &);
+
+void extend_from(
+	std::vector<Sequence> const & sequences, Position const & p,
+	PlayerJoint j,
+	Camera const & camera, ViablesForJoint & vfj)
+{
+	for (unsigned seq = 0; seq != sequences.size(); ++seq)
 	{
-		V3 const v = sequences[via.sequence].positions[via.end][j];
+		if (vfj.viables.find(seq) != vfj.viables.end()) continue;
+
+		auto & s = sequences[seq];
+
+		if (p == s.positions.front())
+			extend_forward(
+				sequences, seq,
+				vfj.viables[seq] = viableFront(s, j, camera),
+				j, camera, vfj);
+		else if (p == s.positions.back())
+			extend_backward(
+				sequences, seq,
+				vfj.viables[seq] = viableBack(s, j, camera),
+				j, camera, vfj);
+	}
+}
+
+void extend_forward(
+	std::vector<Sequence> const & sequences, unsigned const seqIndex,
+	Viable & via, PlayerJoint j, Camera const & camera, ViablesForJoint & vfj)
+{
+	auto & sequence = sequences[seqIndex];
+
+	for (; via.end != sequence.positions.size(); ++via.end)
+	{
+		V3 const v = sequence.positions[via.end][j];
 		V2 const xy = world2xy(camera, v);
-		if (via.begin != via.end)
-		{
-			if (distanceSquared(v, via.endV3) < 0.003) break;
-			double xydist = distanceSquared(xy, via.endxy);
-			if (xydist < 0.0005) break;
 
-			auto const segment = LineSegment(xy, via.endxy);
-			for (auto && old : vfj.segments)
-				if (lineSegmentsIntersect(segment, old))
-					return via;
-			vfj.segments.push_back(segment);
+		if (distanceSquared(v, via.endV3) < 0.003) break;
 
-			via.dist += std::sqrt(xydist);
-		}
+		double const
+			xydistSqrd = distanceSquared(xy, via.endxy),
+			xydist = std::sqrt(xydistSqrd);
+
+		if (xydist < 0.0005) break;
+
+		/*
+		auto const segment = LineSegment(xy, via.endxy);
+		for (auto && old : vfj.segments)
+			if (lineSegmentsIntersect(segment, old))
+				return via;
+		vfj.segments.push_back(segment);
+		*/
+
+		via.dist += xydist;
+		vfj.total_dist += xydist;
 		via.endV3 = v;
 		via.endxy = xy;
 	}
-	return via;
+
+	if (via.end == sequence.positions.size())
+		extend_from(sequences, sequence.positions.back(), j, camera, vfj);
 }
 
-Viable extend_backward(std::vector<Sequence> const & sequences, Viable via, PlayerJoint j, Camera const & camera, ViablesForJoint & vfj)
+void extend_backward(
+	std::vector<Sequence> const & sequences, unsigned const seqIndex,
+	Viable & via, PlayerJoint j, Camera const & camera, ViablesForJoint & vfj)
 {
+	auto & sequence = sequences[seqIndex];
+
 	int pos = via.begin;
 	--pos;
 	for (; pos != -1; --pos)
 	{
-		V3 const v = sequences[via.sequence].positions[pos][j];
+		V3 const v = sequence.positions[pos][j];
 		V2 const xy = world2xy(camera, v);
-		if (pos + 1 != via.end)
-		{
-			if (distanceSquared(v, via.beginV3) < 0.003) break;
-			double xydist = distanceSquared(xy, via.beginxy);
-			if (xydist < 0.0005) break;
 
-			auto const segment = std::make_pair(xy, via.beginxy);
-			for (auto && old : vfj.segments)
-				if (lineSegmentsIntersect(old, segment))
-					return via;
-			vfj.segments.push_back(segment);
+		if (distanceSquared(v, via.beginV3) < 0.003) break;
 
-			via.dist += std::sqrt(xydist);
-		}
+		double const
+			xydistSqrd = distanceSquared(xy, via.beginxy),
+			xydist = std::sqrt(xydistSqrd);
+
+		if (xydistSqrd < 0.0005) break;
+
+		/*
+		auto const segment = std::make_pair(xy, via.beginxy);
+		for (auto && old : vfj.segments)
+			if (lineSegmentsIntersect(old, segment))
+				return via;
+		vfj.segments.push_back(segment);
+		*/
+
+		via.dist += xydist;
+		vfj.total_dist += xydist;
 		via.beginV3 = v;
 		via.beginxy = xy;
 	}
 
 	via.begin = pos + 1;
 
-	return via;
+	if (via.begin == 0)
+		extend_from(sequences, sequence.positions.front(), j, camera, vfj);
 }
 
 ViablesForJoint determineViables
@@ -171,46 +235,20 @@ ViablesForJoint determineViables
 {
 	Sequence const & s = sequences[seq];
 
+	assert(pos != s.positions.size());
+
 	auto const jp = sequences[seq].positions[pos][j];
 	auto jpxy = world2xy(camera, jp);
 
-	if (!edit_mode && !jointDefs[j.joint].draggable) return {0, {}, {}};
+	ViablesForJoint r{0, {}};
 
-	ViablesForJoint r{0, {}, {}};
+	if (!edit_mode && !jointDefs[j.joint].draggable) return r;
 
-	Viable v{0, seq, pos, pos, jp, jp, jpxy, jpxy};
-	v = extend_forward(sequences, v, j, camera, r);
-	v = extend_backward(sequences, v, j, camera, r);
-	r.viables.push_back(v);
-	r.total_dist = v.dist;
+	auto & v = r.viables[seq] = Viable{0, pos, pos+1, jp, jp, jpxy, jpxy};
+	extend_forward(sequences, seq, v, j, camera, r);
+	extend_backward(sequences, seq, v, j, camera, r);
 
-	for (unsigned seq2 = 0; seq2 != sequences.size(); ++seq2)
-	{
-		auto & s2 = sequences[seq2];
-		auto & s2front = s2.positions.front();
-		auto & s2back = s2.positions.back();
-
-		if ((v.end == end(s) && s2front == s.positions.back()) ||
-			(v.begin == 0 && s2front == s.positions.front()))
-		{
-			auto s2frontxy = world2xy(camera, s2front[j]);
-			Viable w{0, seq2, 0, 0, s2front[j], s2front[j], s2frontxy, s2frontxy};
-			auto x = extend_forward(sequences, w, j, camera, r);
-			r.total_dist += x.dist;
-			r.viables.push_back(x);
-		}
-		else if ((v.begin == 0 && s2back == s.positions.front()) ||
-			(v.end == end(s) && s2back == s.positions.back()))
-		{
-			auto s2backxy = world2xy(camera, s2back[j]);
-			Viable w{0, seq2, end(s2), end(s2), s2back[j], s2back[j], s2backxy, s2backxy};
-			auto x = extend_backward(sequences, w, j, camera, r);
-			r.total_dist += x.dist;
-			r.viables.push_back(x);
-		}
-	}
-
-	if (r.total_dist < 0.3) return {0, {}, {}};
+	if (r.total_dist < 0.3) return {0, {}};
 
 	return r;
 }
@@ -443,13 +481,13 @@ optional<NextPos> determineNextPos()
 
 	for (auto && via : viable[j].viables)
 	{
-		if (edit_mode && via.sequence != current_sequence) continue;
+		if (edit_mode && via.first != current_sequence) continue;
 
-		auto & seq = sequences[via.sequence].positions;
+		auto & seq = sequences[via.first].positions;
 
-		for (unsigned pos = via.begin; pos != via.end; ++pos)
+		for (unsigned pos = via.second.begin; pos != via.second.end; ++pos)
 		{
-			if (via.sequence == current_sequence)
+			if (via.first == current_sequence)
 			{
 				if (std::abs(int(pos) - int(current_position)) != 1) continue;
 			}
@@ -461,7 +499,7 @@ optional<NextPos> determineNextPos()
 			}
 
 			Position const & n = position();
-			Position const & m = sequences[via.sequence].positions[pos];
+			Position const & m = sequences[via.first].positions[pos];
 
 			double howfar = whereBetween(n, m);
 
@@ -474,7 +512,7 @@ optional<NextPos> determineNextPos()
 
 			if (d < best)
 			{
-				np = NextPos{howfar, via.sequence, pos};
+				np = NextPos{howfar, via.first, pos};
 				best = d;
 			}
 		}
@@ -510,21 +548,21 @@ void drawViables(PlayerJoint const j)
 {
 	for (auto && v : viable[j].viables)
 	{
-		if (v.end - v.begin < 1) continue;
+		if (v.second.end - v.second.begin < 1) continue;
 
-		auto & seq = sequences[v.sequence].positions;
+		auto & seq = sequences[v.first].positions;
 
 		glColor(yellow * 0.9);
 
 		glDisable(GL_DEPTH_TEST);
 
 		glBegin(GL_LINE_STRIP);
-		for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq[i][j]);
+		for (unsigned i = v.second.begin; i != v.second.end; ++i) glVertex(seq[i][j]);
 		glEnd();
 
 		glPointSize(20);
 		glBegin(GL_POINTS);
-		for (unsigned i = v.begin; i != v.end; ++i) glVertex(seq[i][j]);
+		for (unsigned i = v.second.begin; i != v.second.end; ++i) glVertex(seq[i][j]);
 		glEnd();
 		glEnable(GL_DEPTH_TEST);
 	}
@@ -709,4 +747,7 @@ Todo:
 	- direction signs ("to truck", "zombie")
 	- undo
 	- enhance viability conditions to cut paths short when their xy projection loops or near-loops
+	- view from player
+	- precompute graph
+	- export graph to DOT
 */
