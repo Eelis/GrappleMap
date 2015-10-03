@@ -150,16 +150,14 @@ ViablesForJoint determineViables
 	, unsigned const seq, unsigned const pos
 	, bool edit_mode, Camera const & camera)
 {
-	Sequence const & s = sequences[seq];
-
 	assert(pos != s.positions.size());
-
-	auto const jp = sequences[seq].positions[pos][j];
-	auto jpxy = world2xy(camera, jp);
 
 	ViablesForJoint r{0, {}};
 
 	if (!edit_mode && !jointDefs[j.joint].draggable) return r;
+
+	auto const jp = sequences[seq].positions[pos][j];
+	auto const jpxy = world2xy(camera, jp);
 
 	auto & v = r.viables[seq] = Viable{0, pos, pos+1, jp, jp, jpxy, jpxy};
 	extend_forward(sequences, graph, seq, v, j, camera, r);
