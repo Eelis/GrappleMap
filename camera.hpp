@@ -35,7 +35,7 @@ public:
 
 	void setOffset(V2 o)
 	{
-		xzOffset = xzOffset * 0.95 + o * 0.05;
+		xzOffset = xzOffset * 0.99 + o * 0.01;
 		computeMv();
 	}
 
