@@ -222,6 +222,13 @@ void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action
 					for(int i = 0; i != 6; ++i) spring(position());
 				break;
 
+			case GLFW_KEY_KP_4: for (auto j : playerJoints) position()[j].x -= 0.02; break;
+			case GLFW_KEY_KP_6: for (auto j : playerJoints) position()[j].x += 0.02; break;
+			case GLFW_KEY_KP_8: for (auto j : playerJoints) position()[j].z -= 0.02; break;
+			case GLFW_KEY_KP_2: for (auto j : playerJoints) position()[j].z += 0.02; break;
+			case GLFW_KEY_KP_9: for (auto j : playerJoints) position()[j] = xyz(yrot(-0.05) * V4(position()[j], 1)); break;
+			case GLFW_KEY_KP_7: for (auto j : playerJoints) position()[j] = xyz(yrot(0.05) * V4(position()[j], 1)); break;
+
 			// new sequence
 
 			case GLFW_KEY_N:
