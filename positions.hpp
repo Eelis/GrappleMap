@@ -217,4 +217,57 @@ inline double dist(Position const & a, Position const & b)
 	return dist(a[0], b[0]) + dist(a[1], b[1]);
 }
 
+using SeqNum = unsigned;
+
+using NodeNum = uint16_t;
+
+struct Edges
+{
+	std::vector<NodeNum> atBegin, atEnd;
+};
+
+struct Graph
+{
+	std::vector<Position> nodes;
+
+	struct Edge
+	{
+		NodeNum from, to;
+		SeqNum sequence;
+	};
+
+	std::vector<Edge> edges;
+};
+
+template<typename C, typename T>
+typename C::iterator insert_nodup(C & c, T const & x)
+{
+	auto i = std::find(c.begin(), c.end(), x);
+
+	if (i == c.end()) { c.push_back(x); i = c.end() - 1; }
+
+	return i;
+}
+
+Graph compute_graph(std::vector<Sequence> const & sequences)
+{
+	Graph g;
+
+	for (SeqNum i = 0; i != sequences.size(); ++i)
+	{
+		auto & seq = sequences[i];
+
+		auto const p = insert_nodup(g.nodes, seq.positions.front());
+		auto const pi = p - g.nodes.begin();
+		auto const q = insert_nodup(g.nodes, seq.positions.back());
+		auto const qi = q - g.nodes.begin();
+
+		g.edges.push_back(Graph::Edge{pi, qi, i});
+	}
+
+	std::cout << "Loaded " << g.nodes.size() << " nodes and " << g.edges.size() << " edges." << std::endl;
+
+	return g;
+}
+
 #endif

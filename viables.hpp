@@ -34,38 +34,40 @@ Viable viableBack(Sequence const & seq, PlayerJoint j, Camera const & camera)
 }
 
 void extend_forward(
-	std::vector<Sequence> const &, unsigned seqIndex,
+	std::vector<Sequence> const &, Graph const & graph, unsigned seqIndex,
 	Viable &, PlayerJoint, Camera const &, ViablesForJoint &);
 void extend_backward(
-	std::vector<Sequence> const &, unsigned seqIndex,
+	std::vector<Sequence> const &, Graph const & graph, unsigned seqIndex,
 	Viable &, PlayerJoint, Camera const &, ViablesForJoint &);
 
 void extend_from(
-	std::vector<Sequence> const & sequences, Position const & p,
+	std::vector<Sequence> const & sequences, Graph const & graph, Position const & p,
 	PlayerJoint j,
 	Camera const & camera, ViablesForJoint & vfj)
 {
-	for (unsigned seq = 0; seq != sequences.size(); ++seq)
+	for (auto && edge : graph.edges)
 	{
-		if (vfj.viables.find(seq) != vfj.viables.end()) continue;
+		if (vfj.viables.find(edge.sequence) != vfj.viables.end()) continue;
 
-		auto & s = sequences[seq];
+		auto & from = graph.nodes[edge.from];
+		auto & to = graph.nodes[edge.to];
+		auto & s = sequences[edge.sequence];
 
-		if (p == s.positions.front())
+		if (from == p)
 			extend_forward(
-				sequences, seq,
-				vfj.viables[seq] = viableFront(s, j, camera),
+				sequences, graph, edge.sequence,
+				vfj.viables[edge.sequence] = viableFront(s, j, camera),
 				j, camera, vfj);
-		else if (p == s.positions.back())
+		else if (to == p)
 			extend_backward(
-				sequences, seq,
-				vfj.viables[seq] = viableBack(s, j, camera),
+				sequences, graph, edge.sequence,
+				vfj.viables[edge.sequence] = viableBack(s, j, camera),
 				j, camera, vfj);
 	}
 }
 
 void extend_forward(
-	std::vector<Sequence> const & sequences, unsigned const seqIndex,
+	std::vector<Sequence> const & sequences, Graph const & graph, unsigned const seqIndex,
 	Viable & via, PlayerJoint j, Camera const & camera, ViablesForJoint & vfj)
 {
 	auto & sequence = sequences[seqIndex];
@@ -98,11 +100,11 @@ void extend_forward(
 	}
 
 	if (via.end == sequence.positions.size())
-		extend_from(sequences, sequence.positions.back(), j, camera, vfj);
+		extend_from(sequences, graph, sequence.positions.back(), j, camera, vfj);
 }
 
 void extend_backward(
-	std::vector<Sequence> const & sequences, unsigned const seqIndex,
+	std::vector<Sequence> const & sequences,  Graph const & graph, unsigned const seqIndex,
 	Viable & via, PlayerJoint j, Camera const & camera, ViablesForJoint & vfj)
 {
 	auto & sequence = sequences[seqIndex];
@@ -139,11 +141,12 @@ void extend_backward(
 	via.begin = pos + 1;
 
 	if (via.begin == 0)
-		extend_from(sequences, sequence.positions.front(), j, camera, vfj);
+		extend_from(sequences, graph, sequence.positions.front(), j, camera, vfj);
 }
 
 ViablesForJoint determineViables
-	( std::vector<Sequence> const & sequences, PlayerJoint const j
+	( std::vector<Sequence> const & sequences
+	, Graph const & graph, PlayerJoint const j
 	, unsigned const seq, unsigned const pos
 	, bool edit_mode, Camera const & camera)
 {
@@ -159,8 +162,8 @@ ViablesForJoint determineViables
 	if (!edit_mode && !jointDefs[j.joint].draggable) return r;
 
 	auto & v = r.viables[seq] = Viable{0, pos, pos+1, jp, jp, jpxy, jpxy};
-	extend_forward(sequences, seq, v, j, camera, r);
-	extend_backward(sequences, seq, v, j, camera, r);
+	extend_forward(sequences, graph, seq, v, j, camera, r);
+	extend_backward(sequences, graph, seq, v, j, camera, r);
 
 	if (r.total_dist < 0.3) return {0, {}};
 

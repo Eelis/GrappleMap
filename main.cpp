@@ -1,3 +1,7 @@
+#ifndef NDEBUG
+#define _GLIBCXX_DEBUG
+#endif
+
 #include "util.hpp"
 #include "camera.hpp"
 #include "persistence.hpp"
@@ -110,7 +114,8 @@ void grid()
 // state
 
 std::vector<Sequence> sequences = load("positions.txt");
-unsigned current_sequence = 0;
+Graph graph = compute_graph(sequences);
+SeqNum current_sequence = 0;
 unsigned current_position = 0; // index into current sequence
 PlayerJoint closest_joint = {0, LeftAnkle};
 optional<PlayerJoint> chosen_joint;
@@ -300,7 +305,7 @@ void drawJoints(Position const & pos)
 void determineViables()
 {
 	for (auto j : playerJoints)
-		viable[j] = determineViables(sequences, j, current_sequence, current_position, edit_mode, camera);
+		viable[j] = determineViables(sequences, graph, j, current_sequence, current_position, edit_mode, camera);
 }
 
 
