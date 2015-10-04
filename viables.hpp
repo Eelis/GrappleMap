@@ -16,65 +16,74 @@ struct Viable
 struct ViablesForJoint
 {
 	double total_dist;
-	std::map<unsigned /* sequence */, Viable> viables;
+	std::map<std::pair<SeqNum, V3 /* offset */>, Viable> viables;
 };
 
-Viable viableFront(Sequence const & sequence, PlayerJoint j, Camera const & camera)
+Viable viableFront(Sequence const & sequence, PlayerJoint j, Camera const & camera, V3 const off)
 {
-	auto xyz = sequence.positions.front()[j];
+	auto xyz = sequence.positions.front()[j] + off;
 	auto xy = world2xy(camera, xyz);
 	return Viable{0, 0, 1, xyz, xyz, xy, xy};
 }
 
-Viable viableBack(Sequence const & seq, PlayerJoint j, Camera const & camera)
+Viable viableBack(Sequence const & seq, PlayerJoint j, Camera const & camera, V3 const off)
 {
-	auto xyz = seq.positions.back()[j];
+	auto xyz = seq.positions.back()[j] + off;
 	auto xy = world2xy(camera, xyz);
 	return Viable{0, end(seq) - 1, end(seq), xyz, xyz, xy, xy};
 }
 
-void extend_forward(
+void extend_forward(int depth,
 	std::vector<Sequence> const &, Graph const & graph, unsigned seqIndex,
-	Viable &, PlayerJoint, Camera const &, ViablesForJoint &);
-void extend_backward(
+	Viable &, PlayerJoint, Camera const &, ViablesForJoint &, V3 off);
+void extend_backward(int depth,
 	std::vector<Sequence> const &, Graph const & graph, unsigned seqIndex,
-	Viable &, PlayerJoint, Camera const &, ViablesForJoint &);
+	Viable &, PlayerJoint, Camera const &, ViablesForJoint &, V3 off);
 
 void extend_from(
-	std::vector<Sequence> const & sequences, Graph const & graph, Position const & p,
+	int depth,
+	std::vector<Sequence> const & sequences, Graph const & graph, ReorientedNode const rn,
 	PlayerJoint j,
 	Camera const & camera, ViablesForJoint & vfj)
 {
+	if (depth > 4) return;
+
 	for (auto && edge : graph.edges)
 	{
-		if (vfj.viables.find(edge.sequence) != vfj.viables.end()) continue;
-
-		auto & from = graph.nodes[edge.from];
-		auto & to = graph.nodes[edge.to];
 		auto & s = sequences[edge.sequence];
 
-		if (from == p)
+		assert(sequences[edge.sequence].positions.front() + edge.from.offset == graph.nodes[edge.from.node]);
+		assert(basicallySame(
+			sequences[edge.sequence].positions.back() + edge.to.offset,
+			graph.nodes[edge.to.node]));
+
+		auto const
+			fromKey = std::make_pair(edge.sequence, rn.offset + edge.from.offset),
+			toKey = std::make_pair(edge.sequence, rn.offset + edge.to.offset);
+
+		if (edge.from.node == rn.node && vfj.viables.find(fromKey) == vfj.viables.end())
 			extend_forward(
-				sequences, graph, edge.sequence,
-				vfj.viables[edge.sequence] = viableFront(s, j, camera),
-				j, camera, vfj);
-		else if (to == p)
+				depth + 1, sequences, graph, edge.sequence,
+				vfj.viables[fromKey] = viableFront(s, j, camera, fromKey.second),
+				j, camera, vfj, fromKey.second);
+
+		if (edge.to.node == rn.node && vfj.viables.find(toKey) == vfj.viables.end())
 			extend_backward(
-				sequences, graph, edge.sequence,
-				vfj.viables[edge.sequence] = viableBack(s, j, camera),
-				j, camera, vfj);
+				depth + 1, sequences, graph, edge.sequence,
+				vfj.viables[toKey] = viableBack(s, j, camera, toKey.second),
+				j, camera, vfj, toKey.second);
 	}
 }
 
-void extend_forward(
+void extend_forward(int depth,
 	std::vector<Sequence> const & sequences, Graph const & graph, unsigned const seqIndex,
-	Viable & via, PlayerJoint j, Camera const & camera, ViablesForJoint & vfj)
+	Viable & via, PlayerJoint j, Camera const & camera, ViablesForJoint & vfj, V3 const off)
 {
 	auto & sequence = sequences[seqIndex];
 
 	for (; via.end != sequence.positions.size(); ++via.end)
 	{
-		V3 const v = sequence.positions[via.end][j];
+		V3 const v = sequence.positions[via.end][j] + off;
 		V2 const xy = world2xy(camera, v);
 
 		if (distanceSquared(v, via.endV3) < 0.003) break;
@@ -99,13 +108,15 @@ void extend_forward(
 		via.endxy = xy;
 	}
 
+	auto & to = graph.edges[seqIndex].to;
+
 	if (via.end == sequence.positions.size())
-		extend_from(sequences, graph, sequence.positions.back(), j, camera, vfj);
+		extend_from(depth+1, sequences, graph, ReorientedNode{to.node, off - to.offset}, j, camera, vfj);
 }
 
-void extend_backward(
-	std::vector<Sequence> const & sequences,  Graph const & graph, unsigned const seqIndex,
-	Viable & via, PlayerJoint j, Camera const & camera, ViablesForJoint & vfj)
+void extend_backward(int depth,
+	std::vector<Sequence> const & sequences, Graph const & graph, unsigned const seqIndex,
+	Viable & via, PlayerJoint j, Camera const & camera, ViablesForJoint & vfj, V3 const off)
 {
 	auto & sequence = sequences[seqIndex];
 
@@ -113,7 +124,7 @@ void extend_backward(
 	--pos;
 	for (; pos != -1; --pos)
 	{
-		V3 const v = sequence.positions[pos][j];
+		V3 const v = sequence.positions[pos][j] + off;
 		V2 const xy = world2xy(camera, v);
 
 		if (distanceSquared(v, via.beginV3) < 0.003) break;
@@ -140,8 +151,10 @@ void extend_backward(
 
 	via.begin = pos + 1;
 
+	auto & from = graph.edges[seqIndex].from;
+
 	if (via.begin == 0)
-		extend_from(sequences, graph, sequence.positions.front(), j, camera, vfj);
+		extend_from(depth+1, sequences, graph, ReorientedNode{from.node, off - from.offset}, j, camera, vfj);
 }
 
 ViablesForJoint determineViables
@@ -150,8 +163,6 @@ ViablesForJoint determineViables
 	, unsigned const seq, unsigned const pos
 	, bool edit_mode, Camera const & camera)
 {
-	assert(pos != s.positions.size());
-
 	ViablesForJoint r{0, {}};
 
 	if (!edit_mode && !jointDefs[j.joint].draggable) return r;
@@ -159,9 +170,9 @@ ViablesForJoint determineViables
 	auto const jp = sequences[seq].positions[pos][j];
 	auto const jpxy = world2xy(camera, jp);
 
-	auto & v = r.viables[seq] = Viable{0, pos, pos+1, jp, jp, jpxy, jpxy};
-	extend_forward(sequences, graph, seq, v, j, camera, r);
-	extend_backward(sequences, graph, seq, v, j, camera, r);
+	auto & v = r.viables[{seq, {0, 0, 0}}] = Viable{0, pos, pos+1, jp, jp, jpxy, jpxy};
+	extend_forward(0, sequences, graph, seq, v, j, camera, r, {0, 0, 0});
+	extend_backward(0, sequences, graph, seq, v, j, camera, r, {0, 0, 0});
 
 	if (r.total_dist < 0.3) return {0, {}};
 

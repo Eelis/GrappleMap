@@ -39,6 +39,12 @@ public:
 		computeMv();
 	}
 
+	void warp(V2 o)
+	{
+		xzOffset -= o;
+		computeMv();
+	}
+
 	void rotateHorizontal(double radians)
 	{
 		orientation.x += radians;

@@ -97,6 +97,17 @@ inline std::array<PlayerJoint, joint_count * 2> make_playerJoints()
 
 const auto playerJoints = make_playerJoints();
 
+Position operator+(Position r, V3 const off)
+{
+	for (auto j : playerJoints) r[j] += off;
+	return r;
+}
+
+inline Position operator-(Position const & p, V3 const off)
+{
+	return p + -off;
+}
+
 struct PlayerDef { V3 color; };
 
 PerPlayer<PlayerDef> playerDefs = {{ {red}, {blue} }};
@@ -204,26 +215,13 @@ inline Position between(Position const & a, Position const & b, double s = 0.5 /
 	return r;
 }
 
-inline double dist(Player const & a, Player const & b)
-{
-	double d = 0;
-	for (auto && j : joints)
-		d += distance(a[j], b[j]);
-	return d;
-}
-
-inline double dist(Position const & a, Position const & b)
-{
-	return dist(a[0], b[0]) + dist(a[1], b[1]);
-}
-
 using SeqNum = unsigned;
-
 using NodeNum = uint16_t;
 
-struct Edges
+struct ReorientedNode
 {
-	std::vector<NodeNum> atBegin, atEnd;
+	NodeNum node;
+	V3 offset;
 };
 
 struct Graph
@@ -232,21 +230,45 @@ struct Graph
 
 	struct Edge
 	{
-		NodeNum from, to;
+		ReorientedNode from, to;
+			// invariant: sequences[sequence].positions.front() + from.offset == nodes[from.node]
+			// invariant: sequences[sequence].positions.back() + to.offset == nodes[to.node]
 		SeqNum sequence;
 	};
 
-	std::vector<Edge> edges;
+	std::vector<Edge> edges; // indexed by seqnum
 };
 
-template<typename C, typename T>
-typename C::iterator insert_nodup(C & c, T const & x)
+bool basicallySame(Position const & a, Position const & b)
 {
-	auto i = std::find(c.begin(), c.end(), x);
+	double u = 0;
+	for (auto j : playerJoints) u += distanceSquared(a[j], b[j]);
+	return u < 0.01;
+}
 
-	if (i == c.end()) { c.push_back(x); i = c.end() - 1; }
+boost::optional<V3> is_reoriented(Position const & a, Position const & b)
+{
+	V3 const r = b[0][Head] - a[0][Head];
+	if (basicallySame(a + r, b)) return r;
+	else return boost::none;
+}
 
-	return i;
+boost::optional<ReorientedNode> is_reoriented_node_in(Graph const & g, Position const & p)
+{
+	for (NodeNum n = 0; n != g.nodes.size(); ++n)
+		if (auto off = is_reoriented(p, g.nodes[n]))
+			return ReorientedNode{n, *off};
+
+	return boost::none;
+}
+
+ReorientedNode find_or_add_node(Graph & g, Position const & p)
+{
+	if (auto m = is_reoriented_node_in(g, p))
+		return *m;
+
+	g.nodes.push_back(p);
+	return {g.nodes.size() - 1, {0, 0, 0}};
 }
 
 Graph compute_graph(std::vector<Sequence> const & sequences)
@@ -257,12 +279,12 @@ Graph compute_graph(std::vector<Sequence> const & sequences)
 	{
 		auto & seq = sequences[i];
 
-		auto const p = insert_nodup(g.nodes, seq.positions.front());
-		auto const pi = p - g.nodes.begin();
-		auto const q = insert_nodup(g.nodes, seq.positions.back());
-		auto const qi = q - g.nodes.begin();
+		auto a = find_or_add_node(g, seq.positions.front());
+		auto b = find_or_add_node(g, seq.positions.back());
 
-		g.edges.push_back(Graph::Edge{pi, qi, i});
+		std::cout << i << ": {" << a.node << ", " << a.offset << "} -> {" << b.node << ", " << b.offset << "}" << std::endl;
+
+		g.edges.push_back(Graph::Edge{a, b, i});
 	}
 
 	std::cout << "Loaded " << g.nodes.size() << " nodes and " << g.edges.size() << " edges." << std::endl;

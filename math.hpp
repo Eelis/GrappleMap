@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <tuple>
 #include <array>
 #include <GL/glu.h>
 
@@ -67,6 +68,7 @@ inline V2 xz(V3 v){ return {v.x, v.z}; }
 inline V2 xy(V4 v){ return {v.x, v.y}; }
 inline V3 xyz(V4 v){ return {v.x, v.y, v.z}; }
 
+
 inline M perspective(double fovy, double aspect, double zNear, double zFar)
 {
 	auto f = 1/tan(fovy*M_PI/360);
@@ -90,9 +92,16 @@ inline V3 operator+(V3 a, V3 b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
 inline V4 operator+(V4 a, V4 b) { return {{a.x + b.x, a.y + b.y, a.z + b.z}, a.w + b.w}; }
 inline V2 operator*(V2 v, double s) { return {v.x * s, v.y * s}; }
 inline V3 operator*(V3 v, double s) { return {v.x * s, v.y * s, v.z * s}; }
+inline V2 & operator+=(V2 & a, V2 b) { return a = a + b; }
 inline V3 & operator+=(V3 & a, V3 b) { return a = a + b; }
+inline V4 & operator+=(V4 & a, V4 b) { return a = a + b; }
+inline V2 & operator-=(V2 & a, V2 b) { return a = a - b; }
 inline V3 & operator-=(V3 & a, V3 b) { return a = a - b; }
 inline V4 & operator-=(V4 & a, V4 b) { return a = a - b; }
+
+
+inline bool operator<(V2 a, V2 b) { return std::make_tuple(a.x, a.y) < std::make_tuple(b.x, b.y); }
+inline bool operator<(V3 a, V3 b) { return std::make_tuple(a.x, a.y, a.z) < std::make_tuple(b.x, b.y, b.z); }
 
 inline bool operator==(V2 a, V2 b) { return a.x == b.x && a.y == b.y; }
 inline bool operator==(V3 a, V3 b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
