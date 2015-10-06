@@ -23,6 +23,8 @@
 
 #include <boost/optional.hpp>
 
+#define foreach(x) for(auto && x)
+
 using boost::optional;
 
 inline void glVertex(V3 const & v) { glVertex3d(v.x, v.y, v.z); }
@@ -75,7 +77,7 @@ void renderWires(Player const & player)
 {
 	glLineWidth(50);
 
-	for (auto && s : segments) if (s.visible) render(player, s);
+	foreach (s : segments) if (s.visible) render(player, s);
 }
 
 void render(Position const & pos, V3 acolor, V3 bcolor)
@@ -94,7 +96,7 @@ struct NextPos
 	double howfar;
 	SeqNum sequence;
 	unsigned position;
-	V3 offset;
+	Reorientation reorientation;
 };
 
 // state
@@ -112,7 +114,7 @@ Camera camera;
 V2 cursor;
 double jiggle = 0;
 PerPlayerJoint<ViablesForJoint> viable;
-V2 gridoffset{0,0};
+Reorientation reorientation;
 
 Sequence & sequence() { return sequences[current_sequence]; }
 Position & position() { return sequence().positions[current_position]; }
@@ -121,13 +123,14 @@ void grid()
 {
 	glColor3f(0.5,0.5,0.5);
 	glLineWidth(2);
+
 	glBegin(GL_LINES);
 		for (double i = -4; i <= 4; ++i)
 		{
-			glVertex3f(i/2+gridoffset.x, 0, -2+gridoffset.y);
-			glVertex3f(i/2+gridoffset.x, 0, 2+gridoffset.y);
-			glVertex3f(-2+gridoffset.x, 0, i/2+gridoffset.y);
-			glVertex3f(2+gridoffset.x, 0, i/2+gridoffset.y);
+			glVertex(V3{i/2, 0,  -2});
+			glVertex(V3{i/2, 0,   2});
+			glVertex(V3{ -2, 0, i/2});
+			glVertex(V3{  2, 0, i/2});
 		}
 	glEnd();
 }
@@ -334,15 +337,14 @@ void drawJoint(Position const & pos, PlayerJoint pj)
 
 void drawJoints(Position const & pos)
 {
-	for (auto pj : playerJoints) drawJoint(pos, pj);
+	foreach (j : playerJoints) drawJoint(pos, j);
 }
 
 void determineViables()
 {
-	for (auto j : playerJoints)
-		viable[j] = determineViables(sequences, graph, j, current_sequence, current_position, edit_mode, camera);
+	foreach (j : playerJoints)
+		viable[j] = determineViables(graph, j, current_sequence, current_position, edit_mode, camera, reorientation);
 }
-
 
 double whereBetween(Position const & n, Position const & m)
 {
@@ -364,51 +366,14 @@ optional<NextPos> determineNextPos()
 	double best = 1000000;
 
 	PlayerJoint const j = chosen_joint ? *chosen_joint : closest_joint;
+	Position const n = apply(reorientation, position());
+	V2 const v = world2xy(camera, n[j]);
 
-	auto const & current_edge = graph.edges[current_sequence];
-
-	for (auto && via : viable[j].viables)
-	{
-		SeqNum const seqNum = via.first.first;
-		V3 const offset = via.first.second;
-		auto const & seq = sequences[seqNum].positions;
-		Graph::Edge const & edge = graph.edges[seqNum];
-
-		if (edit_mode && seqNum != current_sequence) continue;
-
-		for (unsigned pos = via.second.begin; pos != via.second.end; ++pos)
+	auto consider = [&](SeqNum const seq, PosNum const pos, Reorientation const r)
 		{
-			if (seqNum == current_sequence && offset == V3{0,0,0})
-			{
-				if (std::abs(int(pos) - int(current_position)) != 1) continue;
-			}
-			else
-			{
-				assert(basicallySame(sequence().positions.back() + current_edge.to.offset, graph.nodes[current_edge.to.node]));
-				assert(basicallySame(sequence().positions.front() + current_edge.from.offset, graph.nodes[current_edge.from.node]));
-
-				assert(basicallySame(seq.back() + edge.to.offset, graph.nodes[edge.to.node]));
-				assert(basicallySame(seq.front() + edge.from.offset, graph.nodes[edge.from.node]));
-
-				ReorientedNode current_node;
-
-				if (current_position == 0) current_node = current_edge.from;
-				else if (current_position == end(sequence()) - 1) current_node = current_edge.to;
-				else continue;
-
-				if (pos == seq.size() - 2 && current_node.node == edge.to.node &&
-					distanceSquared(current_node.offset, edge.to.offset - offset) < 0.01) ;
-				else if (pos == 1 && current_node.node == edge.from.node &&
-					distanceSquared(current_node.offset, edge.from.offset - offset) < 0.01) ;
-				else continue;
-			}
-
-			Position const & n = position();
-			Position const m = seq[pos] + offset;
-
+			Position const m = apply(r, sequences[seq].positions[pos]);
 			double const howfar = whereBetween(n, m);
 
-			V2 const v = world2xy(camera, n[j]);
 			V2 const w = world2xy(camera, m[j]);
 
 			V2 const ultimate = v + (w - v) * howfar;
@@ -417,17 +382,59 @@ optional<NextPos> determineNextPos()
 
 			if (d < best)
 			{
-				np = NextPos{howfar, seqNum, pos, offset};
+				np = NextPos{howfar, seq, pos, r};
 				best = d;
 			}
+		};
+
+	auto const & current_edge = graph.edges[current_sequence];
+
+	foreach (p : viable[j].viables)
+	{
+		SeqNum const seqNum = p.first;
+		auto & via = p.second;
+		auto const & seq = sequences[seqNum].positions;
+		Graph::Edge const & edge = graph.edges[seqNum];
+
+		if (edit_mode && seqNum != current_sequence) continue;
+
+		for (unsigned pos = via.begin; pos != via.end; ++pos)
+		{
+			if (seqNum == current_sequence)
+			{
+				if (std::abs(int(pos) - int(current_position)) != 1)
+					continue;
+			}
+			else
+			{
+				assert(basicallySame(apply(current_edge.to.reorientation, graph.nodes[current_edge.to.node]),
+					sequence().positions.back()));
+				assert(basicallySame(apply(current_edge.from.reorientation, graph.nodes[current_edge.from.node]),
+					sequence().positions.front()));
+
+				assert(basicallySame(apply(edge.to.reorientation, graph.nodes[edge.to.node]), seq.back()));
+				assert(basicallySame(apply(edge.from.reorientation, graph.nodes[edge.from.node]), seq.front()));
+
+				ReorientedNode current_node;
+
+				if (current_position == 0) current_node = current_edge.from;
+				else if (current_position == end(sequence()) - 1) current_node = current_edge.to;
+				else continue;
+
+				if (pos == seq.size() - 2 && current_node.node == edge.to.node) ;
+				else if (pos == 1 && current_node.node == edge.from.node) ;
+				else continue;
+			}
+
+			consider(seqNum, pos, via.r);
 		}
 	}
+
 
 	return np;
 }
 
 GLfloat light_diffuse[] = {0.5, 0.5, 0.5, 1.0};
-GLfloat light_position[] = {1.0, 2.0, 1.0, 0.0};
 GLfloat light_ambient[] = {0.3, 0.3, 0.3, 0.0};
 
 void prepareDraw(int width, int height)
@@ -437,6 +444,7 @@ void prepareDraw(int width, int height)
 
 	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	GLfloat light_position[] = {1.0, 2.0, 1.0, 0.0};
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHTING);
@@ -451,23 +459,23 @@ void prepareDraw(int width, int height)
 
 void drawViables(PlayerJoint const j)
 {
-	for (auto && v : viable[j].viables)
+	foreach (v : viable[j].viables)
 	{
 		if (v.second.end - v.second.begin < 1) continue;
 
-		auto const off = v.first.second;
-		auto & seq = sequences[v.first.first].positions;
+		auto const r = v.second.r;
+		auto & seq = sequences[v.first].positions;
 
 		glColor(yellow * 0.9);
 		glDisable(GL_DEPTH_TEST);
 
 		glBegin(GL_LINE_STRIP);
-		for (unsigned i = v.second.begin; i != v.second.end; ++i) glVertex(seq[i][j] + off);
+		for (unsigned i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i][j]));
 		glEnd();
 
 		glPointSize(20);
 		glBegin(GL_POINTS);
-		for (unsigned i = v.second.begin; i != v.second.end; ++i) glVertex(seq[i][j] + off);
+		for (unsigned i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i][j]));
 		glEnd();
 		glEnable(GL_DEPTH_TEST);
 	}
@@ -545,18 +553,20 @@ int main()
 			{
 				if (next_pos->sequence == best_next_pos->sequence &&
 				    next_pos->position == best_next_pos->position &&
-				    next_pos->offset   == best_next_pos->offset)
+				    next_pos->reorientation == best_next_pos->reorientation)
 					next_pos->howfar += std::max(-speed, std::min(speed, best_next_pos->howfar - next_pos->howfar));
 				else if (next_pos->howfar > 0.05)
 					next_pos->howfar = std::max(0., next_pos->howfar - speed);
 				else
-					next_pos = NextPos{0, best_next_pos->sequence, best_next_pos->position, best_next_pos->offset};
+					next_pos = NextPos{0, best_next_pos->sequence, best_next_pos->position, best_next_pos->reorientation};
 			}
 			else
-				next_pos = NextPos{0, best_next_pos->sequence, best_next_pos->position, best_next_pos->offset};
+				next_pos = NextPos{0, best_next_pos->sequence, best_next_pos->position, best_next_pos->reorientation};
 		}
 
-		Position posToDraw = position();
+		Position const reorientedPosition = apply(reorientation, position());
+
+		Position posToDraw = reorientedPosition;
 
 		// editing
 
@@ -576,23 +586,25 @@ int main()
 
 			spring(new_pos, chosen_joint);
 
-			posToDraw = position() = new_pos;
+			posToDraw = apply(reorientation, position() = new_pos);
 		}
 		else
 		{
 			if (!chosen_joint)
 				closest_joint = *minimal(
 					playerJoints.begin(), playerJoints.end(),
-					[](PlayerJoint j) { return norm2(world2xy(camera, position()[j]) - cursor); });
+					[&](PlayerJoint j) { return norm2(world2xy(camera, reorientedPosition[j]) - cursor); });
 
 			if (next_pos && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 				posToDraw = between(
-						position(),
-						sequences[next_pos->sequence].positions[next_pos->position] + next_pos->offset,
+						reorientedPosition,
+						apply(next_pos->reorientation, sequences[next_pos->sequence].positions[next_pos->position]),
 						next_pos->howfar);
 		}
 
-		camera.setOffset(xz(posToDraw[0][Core] + posToDraw[1][Core]) / 2);
+		auto const center = xz(posToDraw[0][Core] + posToDraw[1][Core]) / 2;
+
+		camera.setOffset(center);
 
 		prepareDraw(width, height);
 
@@ -625,15 +637,7 @@ int main()
 		{
 			gotoSequence(next_pos->sequence);
 			current_position = next_pos->position;
-			V2 const off2{next_pos->offset.x, next_pos->offset.z};
-
-			gridoffset -= off2;
-			if (gridoffset.x >= 1) gridoffset.x -= 1;
-			if (gridoffset.x <= -1) gridoffset.x += 1;
-			if (gridoffset.y >= 1) gridoffset.y -= 1;
-			if (gridoffset.y <= -1) gridoffset.y += 1;
-
-			camera.warp(off2);
+			reorientation = next_pos->reorientation;
 			next_pos = boost::none;
 		}
 	}

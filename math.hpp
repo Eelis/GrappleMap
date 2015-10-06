@@ -5,6 +5,7 @@
 #include <iostream>
 #include <tuple>
 #include <array>
+#include <cassert>
 #include <GL/glu.h>
 
 struct V2 { GLdouble x, y; };
@@ -174,5 +175,62 @@ inline bool lineSegmentsIntersect(LineSegment a, LineSegment b) // todo: this is
 	
 	return a.first.x <= x && x <= a.second.x && b.first.x <= x && x <= b.second.x;
 }
+
+struct Reorientation
+{
+	V3 offset;
+	double angle;
+};
+
+inline std::ostream & operator<<(std::ostream & o, Reorientation const r)
+{
+	return o << "{offset=" << r.offset << ", angle=" << r.angle << "}";
+}
+
+bool dist(Reorientation const & a, Reorientation const & b)
+{
+	return distanceSquared(a.offset, b.offset) + std::abs(a.angle - b.angle);
+}
+
+bool operator==(Reorientation const & a, Reorientation const & b)
+{
+	return a.offset == b.offset && a.angle == b.angle;
+}
+
+V3 apply(Reorientation const & r, V3 v)
+{
+	return xyz(yrot(r.angle) * (V4(v, 1))) + r.offset;
+}
+
+bool operator<(Reorientation const & a, Reorientation const & b)
+{
+	return std::make_pair(a.offset, a.angle) < std::make_pair(b.offset, b.angle);
+}
+
+Reorientation inverse(Reorientation x)
+{
+	Reorientation r{xyz(yrot(-x.angle)*V4(-x.offset, 1)), -x.angle};
+	#ifndef NDEBUG
+		V3 test{1,0,1};
+		assert(distanceSquared(apply(r, apply(x, test)), test) < 0.001);
+	#endif
+	return r;
+}
+
+Reorientation compose(Reorientation const a, Reorientation const b)
+{
+	auto const r = Reorientation{b.offset + xyz(yrot(b.angle) * V4(a.offset, 1)), a.angle + b.angle};
+
+	#ifndef NDEBUG
+		V3 test{1,0,1};
+		assert(distanceSquared(apply(r, test), apply(b, apply(a, test))) < 0.001);
+	#endif
+
+	return r;
+}
+
+Reorientation noReorientation() { return {{0, 0, 0}, 0}; }
+
+inline double angle(V2 const v) { return atan2(v.y, v.x); }
 
 #endif
