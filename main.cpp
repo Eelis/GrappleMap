@@ -99,6 +99,95 @@ struct NextPos
 	Reorientation reorientation;
 };
 
+double whereBetween(Position const & n, Position const & m, PlayerJoint const j, Camera const & camera, V2 const cursor)
+{
+	V2 v = world2xy(camera, n[j]);
+	V2 w = world2xy(camera, m[j]);
+
+	V2 a = cursor - v;
+	V2 b = w - v;
+
+	return std::max(0., std::min(1., inner_prod(a, b) / norm2(b) / norm2(b)));
+}
+
+optional<NextPos> determineNextPos(
+	PerPlayerJoint<ViablesForJoint> const & viables,
+	Graph const & graph, PlayerJoint const j,
+	SeqNum const seqNum, PosNum const from_pos, Reorientation const reorientation,
+	Camera const & camera, V2 const cursor, bool const edit_mode)
+{
+	optional<NextPos> np;
+
+	double best = 1000000;
+
+	Position const n = apply(reorientation, graph.edges[seqNum].sequence.positions[from_pos]);
+	V2 const v = world2xy(camera, n[j]);
+
+	auto consider = [&](SeqNum const other_seqNum, PosNum const pos, Reorientation const r)
+		{
+			Position const m = apply(r, graph.edges[other_seqNum].sequence.positions[pos]);
+
+			double const howfar = whereBetween(n, m, j, camera, cursor);
+
+			V2 const w = world2xy(camera, m[j]);
+
+			V2 const ultimate = v + (w - v) * howfar;
+
+			double const d = distanceSquared(ultimate, cursor);
+
+			if (d < best)
+			{
+				np = NextPos{howfar, other_seqNum, pos, r};
+				best = d;
+			}
+		};
+
+	auto const & current_edge = graph.edges[seqNum];
+
+	foreach (p : viables[j].viables)
+	{
+		SeqNum const other_seqNum = p.first;
+		auto & via = p.second;
+		Graph::Edge const & edge = graph.edges[other_seqNum];
+		auto const & positions = edge.sequence.positions;
+
+		if (edit_mode && other_seqNum != seqNum) continue;
+
+		for (unsigned pos = via.begin; pos != via.end; ++pos)
+		{
+			if (other_seqNum == seqNum)
+			{
+				if (std::abs(int(pos) - int(from_pos)) != 1)
+					continue;
+			}
+			else
+			{
+				assert(basicallySame(apply(current_edge.to.reorientation, graph.nodes[current_edge.to.node]),
+					sequence().positions.back()));
+				assert(basicallySame(apply(current_edge.from.reorientation, graph.nodes[current_edge.from.node]),
+					sequence().positions.front()));
+
+				assert(basicallySame(apply(edge.to.reorientation, graph.nodes[edge.to.node]), positions.back()));
+				assert(basicallySame(apply(edge.from.reorientation, graph.nodes[edge.from.node]), positions.front()));
+
+				ReorientedNode current_node;
+
+				if (from_pos == 0) current_node = current_edge.from;
+				else if (from_pos == end(current_edge.sequence) - 1) current_node = current_edge.to;
+				else continue;
+
+				if (pos == positions.size() - 2 && current_node.node == edge.to.node) ;
+				else if (pos == 1 && current_node.node == edge.from.node) ;
+				else continue;
+			}
+
+			consider(seqNum, pos, via.r);
+		}
+	}
+
+	return np;
+}
+
 // state
 
 std::vector<Sequence> sequences = load("positions.txt");
@@ -346,94 +435,6 @@ void determineViables()
 		viable[j] = determineViables(graph, j, current_sequence, current_position, edit_mode, camera, reorientation);
 }
 
-double whereBetween(Position const & n, Position const & m)
-{
-	PlayerJoint const j = chosen_joint ? *chosen_joint : closest_joint;
-
-	V2 v = world2xy(camera, n[j]);
-	V2 w = world2xy(camera, m[j]);
-
-	V2 a = cursor - v;
-	V2 b = w - v;
-
-	return std::max(0., std::min(1., inner_prod(a, b) / norm2(b) / norm2(b)));
-}
-
-optional<NextPos> determineNextPos()
-{
-	optional<NextPos> np;
-
-	double best = 1000000;
-
-	PlayerJoint const j = chosen_joint ? *chosen_joint : closest_joint;
-	Position const n = apply(reorientation, position());
-	V2 const v = world2xy(camera, n[j]);
-
-	auto consider = [&](SeqNum const seq, PosNum const pos, Reorientation const r)
-		{
-			Position const m = apply(r, sequences[seq].positions[pos]);
-			double const howfar = whereBetween(n, m);
-
-			V2 const w = world2xy(camera, m[j]);
-
-			V2 const ultimate = v + (w - v) * howfar;
-
-			double const d = distanceSquared(ultimate, cursor);
-
-			if (d < best)
-			{
-				np = NextPos{howfar, seq, pos, r};
-				best = d;
-			}
-		};
-
-	auto const & current_edge = graph.edges[current_sequence];
-
-	foreach (p : viable[j].viables)
-	{
-		SeqNum const seqNum = p.first;
-		auto & via = p.second;
-		auto const & seq = sequences[seqNum].positions;
-		Graph::Edge const & edge = graph.edges[seqNum];
-
-		if (edit_mode && seqNum != current_sequence) continue;
-
-		for (unsigned pos = via.begin; pos != via.end; ++pos)
-		{
-			if (seqNum == current_sequence)
-			{
-				if (std::abs(int(pos) - int(current_position)) != 1)
-					continue;
-			}
-			else
-			{
-				assert(basicallySame(apply(current_edge.to.reorientation, graph.nodes[current_edge.to.node]),
-					sequence().positions.back()));
-				assert(basicallySame(apply(current_edge.from.reorientation, graph.nodes[current_edge.from.node]),
-					sequence().positions.front()));
-
-				assert(basicallySame(apply(edge.to.reorientation, graph.nodes[edge.to.node]), seq.back()));
-				assert(basicallySame(apply(edge.from.reorientation, graph.nodes[edge.from.node]), seq.front()));
-
-				ReorientedNode current_node;
-
-				if (current_position == 0) current_node = current_edge.from;
-				else if (current_position == end(sequence()) - 1) current_node = current_edge.to;
-				else continue;
-
-				if (pos == seq.size() - 2 && current_node.node == edge.to.node) ;
-				else if (pos == 1 && current_node.node == edge.from.node) ;
-				else continue;
-			}
-
-			consider(seqNum, pos, via.r);
-		}
-	}
-
-
-	return np;
-}
-
 GLfloat light_diffuse[] = {0.5, 0.5, 0.5, 1.0};
 GLfloat light_ambient[] = {0.3, 0.3, 0.3, 0.0};
 
@@ -545,7 +546,9 @@ int main()
 		glfwGetCursorPos(window, &xpos, &ypos);
 		cursor = {((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
 
-		if (auto best_next_pos = determineNextPos())
+		if (auto best_next_pos = determineNextPos(
+				viable, graph, chosen_joint ? *chosen_joint : closest_joint,
+				current_sequence, current_position, reorientation, camera, cursor, edit_mode))
 		{
 			double const speed = 0.08;
 
@@ -663,11 +666,10 @@ Todo:
 	- joint rotation limits
 	- prevent joints moving through eachother (maybe, might be more annoying than useful)
 	- sticky floor
-	- transformed keyframes (so that you can end up in the same position with different offset/rotation)
 	- direction signs ("to truck", "zombie")
 	- undo
 	- enhance viability conditions to cut paths short when their xy projection loops or near-loops
 	- view from player
-	- precompute graph
 	- export graph to DOT
+	- recognize reorientations with swapped players
 */
