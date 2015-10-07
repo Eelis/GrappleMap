@@ -16,6 +16,7 @@
 #include <vector>
 #include <numeric>
 #include <fstream>
+#include <iomanip>
 #include <map>
 #include <algorithm>
 #include <fstream>
@@ -209,17 +210,14 @@ Reorientation reorientation;
 
 Sequence const & sequence() { return graph.sequence(location.sequence); }
 
-void gotoSequence(SeqNum const seq)
+void print_status()
 {
-	if (location.sequence != seq)
-	{
-		location.sequence = seq;
-
-		std::cout << "Sequence: " << sequence().description << std::endl;
-	}
+	std::cout
+		<< "\r[" << std::setw(2) << location.position + 1 << '/' << sequence().positions.size() << "] "
+		<< sequence().description << std::string(30, ' ') << std::flush;
 }
 
-void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action, int mods)
+void key_callback(GLFWwindow *, int key, int /*scancode*/, int action, int mods)
 {
 	if ((mods & GLFW_MOD_CONTROL) && key == GLFW_KEY_C) // copy
 	{
@@ -242,16 +240,20 @@ void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action
 			case GLFW_KEY_PAGE_UP:
 				if (location.sequence != 0)
 				{
-					gotoSequence(location.sequence - 1);
+					--location.sequence;
 					location.position = 0;
+					reorientation = noReorientation();
+					print_status();
 				}
 				break;
 
 			case GLFW_KEY_PAGE_DOWN:
 				if (location.sequence != graph.num_sequences() - 1)
 				{
-					gotoSequence(location.sequence + 1);
+					++location.sequence;
 					location.position = 0;
+					reorientation = noReorientation();
+					print_status();
 				}
 				break;
 
@@ -438,8 +440,6 @@ int main()
 
 	glfwSetMouseButtonCallback(window, [](GLFWwindow *, int /*button*/, int action, int /*mods*/)
 		{
-			
-
 			if (action == GLFW_PRESS) chosen_joint = closest_joint;
 			if (action == GLFW_RELEASE) chosen_joint = boost::none;
 		});
@@ -454,6 +454,8 @@ int main()
 			{
 				if (location.position != sequence().positions.size() - 1) ++location.position;
 			}
+
+			print_status();
 		});
 	
 	glfwMakeContextCurrent(window);
@@ -581,10 +583,10 @@ int main()
 		glfwSwapBuffers(window);
 		if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && next_pos && next_pos->howfar > 0.95)
 		{
-			gotoSequence(next_pos->pis.sequence);
-			location.position = next_pos->pis.position;
+			location = next_pos->pis;
 			reorientation = next_pos->reorientation;
 			next_pos = boost::none;
+			print_status();
 		}
 	}
 
