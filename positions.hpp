@@ -232,17 +232,6 @@ struct PositionInSequence
 	PosNum position;
 };
 
-PositionInSequence prev(PositionInSequence const pis)
-{
-	assert(pis.position != 0);
-	return {pis.sequence, pis.position - 1};
-}
-
-PositionInSequence next(PositionInSequence const pis)
-{
-	return {pis.sequence, pis.position + 1};
-}
-
 std::ostream & operator<<(std::ostream & o, PositionInSequence const pis)
 {
 	return o << "{" << pis.sequence << ", " << pis.position << "}";

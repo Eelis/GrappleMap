@@ -209,18 +209,6 @@ Reorientation reorientation;
 
 Sequence const & sequence() { return graph.sequence(location.sequence); }
 
-Position const * prev_position()
-{
-	if (location.position != 0) return &graph[prev(location)];
-	return nullptr;
-}
-
-Position const * next_position()
-{
-	if (location.position != last_pos(graph, location.sequence)) return &graph[next(location)];
-	return nullptr;
-}
-
 void gotoSequence(SeqNum const seq)
 {
 	if (location.sequence != seq)
@@ -270,10 +258,10 @@ void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action
 			// set position to center
 
 			case GLFW_KEY_U:
-				if (auto next = next_position())
-				if (auto prev = prev_position())
+				if (auto nextLoc = next(graph, location))
+				if (auto prevLoc = prev(location))
 				{
-					auto p = between(*prev, *next);
+					auto p = between(graph[*prevLoc], graph[*nextLoc]);
 					for(int i = 0; i != 30; ++i) spring(p);
 					graph.replace(location, p);
 				}
@@ -282,19 +270,19 @@ void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action
 			// set joint to prev/next/center
 
 			case GLFW_KEY_H:
-				if (auto p = prev_position())
-					replace(graph, location, closest_joint, (*p)[closest_joint]);
+				if (auto p = prev(location))
+					replace(graph, location, closest_joint, graph[*p][closest_joint]);
 				break;
 			case GLFW_KEY_K:
-				if (auto p = next_position())
-					replace(graph, location, closest_joint, (*p)[closest_joint]);
+				if (auto p = next(graph, location))
+					replace(graph, location, closest_joint, graph[*p][closest_joint]);
 				break;
 			case GLFW_KEY_J:
-				if (auto next = next_position())
-				if (auto prev = prev_position())
+				if (auto prevLoc = prev(location))
+				if (auto nextLoc = next(graph, location))
 				{
 					Position p = graph[location];
-					p[closest_joint] = ((*prev)[closest_joint] + (*next)[closest_joint]) / 2;
+					p[closest_joint] = (graph[*prevLoc][closest_joint] + graph[*nextLoc][closest_joint]) / 2;
 					for(int i = 0; i != 30; ++i) spring(p);
 					graph.replace(location, p);
 				}
@@ -450,6 +438,8 @@ int main()
 
 	glfwSetMouseButtonCallback(window, [](GLFWwindow *, int /*button*/, int action, int /*mods*/)
 		{
+			
+
 			if (action == GLFW_PRESS) chosen_joint = closest_joint;
 			if (action == GLFW_RELEASE) chosen_joint = boost::none;
 		});

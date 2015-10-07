@@ -91,6 +91,18 @@ PosNum last_pos(Graph const & g, SeqNum const s)
 	return g.sequence(s).positions.size() - 1;
 }
 
+boost::optional<PositionInSequence> prev(PositionInSequence const pis)
+{
+	if (pis.position == 0) return boost::none;
+	return PositionInSequence{pis.sequence, pis.position - 1};
+}
+
+boost::optional<PositionInSequence> next(Graph const & g, PositionInSequence const pis)
+{
+	if (pis.position == last_pos(g, pis.sequence)) return boost::none;
+	return PositionInSequence{pis.sequence, pis.position + 1};
+}
+
 void Graph::changed(PositionInSequence const pis)
 {
 	Edge & edge = edges.at(pis.sequence);
@@ -104,7 +116,7 @@ void Graph::changed(PositionInSequence const pis)
 
 		edge.from = new_from;
 	}
-	else if (pis.position == last_pos(*this, pis.sequence))
+	else if (!next(*this, pis))
 	{
 		auto const new_to = find_or_add(edge.sequence.positions.back());
 
@@ -118,7 +130,7 @@ void Graph::changed(PositionInSequence const pis)
 boost::optional<NodeNum> node(Graph const & g, PositionInSequence const pis)
 {
 	if (pis.position == 0) return g.from(pis.sequence).node;
-	if (pis.position == last_pos(g, pis.sequence)) return g.to(pis.sequence).node;
+	if (!next(g, pis)) return g.to(pis.sequence).node;
 	return boost::none;
 }
 
