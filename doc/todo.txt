@@ -12,4 +12,3 @@
 - oculus rift support
 - generate random walks
 - use opengl es so we can use emscripten and webgl without emulation
-- use scons

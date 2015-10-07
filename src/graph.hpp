@@ -21,7 +21,6 @@ class Graph
 			// invariant: get(g, to) == sequences.positions.back()
 	};
 
-
 	std::vector<Position> nodes;
 	std::vector<Edge> edges; // indexed by seqnum
 

@@ -1,3 +1,4 @@
 *.o
-jjm
-jjm-todot
+.sconsign.dblite
+src/jjm-gui
+src/jjm-todot

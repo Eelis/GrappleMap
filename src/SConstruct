@@ -1,0 +1,4 @@
+env = Environment(CCFLAGS='-Wall -Wextra -pedantic -std=c++11 -DNDEBUG -O3')
+
+env.Program('jjm-gui', ['gui.cpp'], LIBS=['glfw', 'GL', 'GLU'])
+env.Program('jjm-todot', ['todot.cpp'])
