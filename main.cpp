@@ -91,11 +91,10 @@ void render(Position const & pos, V3 acolor, V3 bcolor)
 	renderWires(b);
 }
 
-struct NextPos
+struct NextPosition
 {
+	PositionInSequence pis;
 	double howfar;
-	SeqNum sequence;
-	unsigned position;
 	Reorientation reorientation;
 };
 
@@ -110,22 +109,22 @@ double whereBetween(Position const & n, Position const & m, PlayerJoint const j,
 	return std::max(0., std::min(1., inner_prod(a, b) / norm2(b) / norm2(b)));
 }
 
-optional<NextPos> determineNextPos(
+optional<NextPosition> determineNextPos(
 	PerPlayerJoint<ViablesForJoint> const & viables,
 	Graph const & graph, PlayerJoint const j,
-	SeqNum const seqNum, PosNum const from_pos, Reorientation const reorientation,
+	PositionInSequence const from, Reorientation const reorientation,
 	Camera const & camera, V2 const cursor, bool const edit_mode)
 {
-	optional<NextPos> np;
+	optional<NextPosition> np;
 
 	double best = 1000000;
 
-	Position const n = apply(reorientation, graph.edges[seqNum].sequence.positions[from_pos]);
+	Position const n = apply(reorientation, graph[from]);
 	V2 const v = world2xy(camera, n[j]);
 
-	auto consider = [&](SeqNum const other_seqNum, PosNum const pos, Reorientation const r)
+	auto consider = [&](PositionInSequence const to, Reorientation const r)
 		{
-			Position const m = apply(r, graph.edges[other_seqNum].sequence.positions[pos]);
+			Position const m = apply(r, graph[to]);
 
 			double const howfar = whereBetween(n, m, j, camera, cursor);
 
@@ -137,51 +136,45 @@ optional<NextPos> determineNextPos(
 
 			if (d < best)
 			{
-				np = NextPos{howfar, other_seqNum, pos, r};
+				np = NextPosition{to, howfar, r};
 				best = d;
 			}
 		};
 
-	auto const & current_edge = graph.edges[seqNum];
+	auto const & current_edge = graph.edges[from.sequence];
 
 	foreach (p : viables[j].viables)
 	{
 		SeqNum const other_seqNum = p.first;
-		auto & via = p.second;
-		Graph::Edge const & edge = graph.edges[other_seqNum];
-		auto const & positions = edge.sequence.positions;
+		auto const & viable = p.second;
 
-		if (edit_mode && other_seqNum != seqNum) continue;
+		if (edit_mode && other_seqNum != from.sequence) continue;
 
-		for (unsigned pos = via.begin; pos != via.end; ++pos)
+		auto const & other_edge = graph.edges[other_seqNum];
+
+		for (PositionInSequence other{other_seqNum, viable.begin}; other.position != viable.end; ++other.position)
 		{
-			if (other_seqNum == seqNum)
+			if (other.sequence == from.sequence)
 			{
-				if (std::abs(int(pos) - int(from_pos)) != 1)
+				if (std::abs(int(other.position) - int(from.position)) != 1)
 					continue;
 			}
 			else
 			{
-				assert(basicallySame(apply(current_edge.to.reorientation, graph.nodes[current_edge.to.node]),
-					sequence().positions.back()));
-				assert(basicallySame(apply(current_edge.from.reorientation, graph.nodes[current_edge.from.node]),
-					sequence().positions.front()));
+				NodeNum current_node;
 
-				assert(basicallySame(apply(edge.to.reorientation, graph.nodes[edge.to.node]), positions.back()));
-				assert(basicallySame(apply(edge.from.reorientation, graph.nodes[edge.from.node]), positions.front()));
-
-				ReorientedNode current_node;
-
-				if (from_pos == 0) current_node = current_edge.from;
-				else if (from_pos == end(current_edge.sequence) - 1) current_node = current_edge.to;
+				if (from.position == 0) current_node = current_edge.from.node;
+				else if (from.position == end(current_edge.sequence) - 1) current_node = current_edge.to.node;
 				else continue;
 
-				if (pos == positions.size() - 2 && current_node.node == edge.to.node) ;
-				else if (pos == 1 && current_node.node == edge.from.node) ;
-				else continue;
+				if (!(current_node == other_edge.to.node
+						&& other.position == other_edge.sequence.positions.size() - 2) &&
+					!(current_node == other_edge.from.node
+						&& other.position == 1))
+					continue;
 			}
 
-			consider(seqNum, pos, via.r);
+			consider(other, viable.reorientation);
 		}
 	}
 
@@ -192,8 +185,7 @@ optional<NextPos> determineNextPos(
 
 std::vector<Sequence> sequences = load("positions.txt");
 Graph graph = compute_graph(sequences);
-SeqNum current_sequence = 0;
-unsigned current_position = 0; // index into current sequence
+PositionInSequence location;
 PlayerJoint closest_joint = {0, LeftAnkle};
 optional<PlayerJoint> chosen_joint;
 GLFWwindow * window;
@@ -205,8 +197,8 @@ double jiggle = 0;
 PerPlayerJoint<ViablesForJoint> viable;
 Reorientation reorientation;
 
-Sequence & sequence() { return sequences[current_sequence]; }
-Position & position() { return sequence().positions[current_position]; }
+Sequence & sequence() { return sequences[location.sequence]; }
+Position & position() { return graph[location]; }
 
 void grid()
 {
@@ -226,39 +218,39 @@ void grid()
 
 void add_position()
 {
-	if (current_position == sequence().positions.size() - 1)
+	if (location.position == sequence().positions.size() - 1)
 	{
 		sequence().positions.push_back(position());
 	}
 	else
 	{
-		auto p = between(position(), sequence().positions[current_position + 1]);
+		auto p = between(position(), sequence().positions[location.position + 1]);
 		for(int i = 0; i != 50; ++i)
 			spring(p);
-		sequence().positions.insert(sequence().positions.begin() + current_position + 1, p);
+		sequence().positions.insert(sequence().positions.begin() + location.position + 1, p);
 	}
-	++current_position;
+	++location.position;
 }
 
 Position * prev_position()
 {
-	if (current_position != 0) return &sequence().positions[current_position - 1];
-	if (current_sequence != 0) return &sequences[current_sequence - 1].positions.back();
+	if (location.position != 0) return &sequence().positions[location.position - 1];
+	if (location.sequence != 0) return &sequences[location.sequence - 1].positions.back();
 	return nullptr;
 }
 
 Position * next_position()
 {
-	if (current_position != sequence().positions.size() - 1) return &sequence().positions[current_position + 1];
-	if (current_sequence != sequences.size() - 1) return &sequences[current_sequence + 1].positions.front();
+	if (location.position != sequence().positions.size() - 1) return &sequence().positions[location.position + 1];
+	if (location.sequence != sequences.size() - 1) return &sequences[location.sequence + 1].positions.front();
 	return nullptr;
 }
 
-void gotoSequence(unsigned const seq)
+void gotoSequence(SeqNum const seq)
 {
-	if (current_sequence != seq)
+	if (location.sequence != seq)
 	{
-		current_sequence = seq;
+		location.sequence = seq;
 
 		std::cout << "Seq: " << sequence().description << std::endl;
 	}
@@ -289,18 +281,18 @@ void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action
 				break;
 
 			case GLFW_KEY_PAGE_UP:
-				if (current_sequence != 0)
+				if (location.sequence != 0)
 				{
-					gotoSequence(current_sequence - 1);
-					current_position = 0;
+					gotoSequence(location.sequence - 1);
+					location.position = 0;
 				}
 				break;
 
 			case GLFW_KEY_PAGE_DOWN:
-				if (current_sequence != sequences.size() - 1)
+				if (location.sequence != sequences.size() - 1)
 				{
-					gotoSequence(current_sequence + 1);
-					current_position = 0;
+					gotoSequence(location.sequence + 1);
+					location.position = 0;
 				}
 				break;
 
@@ -364,8 +356,8 @@ void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action
 			{
 				auto p = position();
 				sequences.push_back(Sequence{"new", {p, p}});
-				current_sequence = sequences.size() - 1;
-				current_position = 0;
+				location.sequence = sequences.size() - 1;
+				location.position = 0;
 				graph = compute_graph(sequences);
 				break;
 			}
@@ -379,17 +371,17 @@ void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action
 				{
 					if (sequences.size() > 1)
 					{
-						sequences.erase(sequences.begin() + current_sequence);
-						if (current_sequence == sequences.size()) --current_sequence;
-						current_position = 0;
+						sequences.erase(sequences.begin() + location.sequence);
+						if (location.sequence == sequences.size()) --location.sequence;
+						location.position = 0;
 					}
 				}
 				else
 				{
 					if (sequence().positions.size() > 2)
 					{
-						sequence().positions.erase(sequence().positions.begin() + current_position);
-						if (current_position == sequence().positions.size()) --current_position;
+						sequence().positions.erase(sequence().positions.begin() + location.position);
+						if (location.position == sequence().positions.size()) --location.position;
 					}
 				}
 
@@ -432,7 +424,7 @@ void drawJoints(Position const & pos)
 void determineViables()
 {
 	foreach (j : playerJoints)
-		viable[j] = determineViables(graph, j, current_sequence, current_position, edit_mode, camera, reorientation);
+		viable[j] = determineViables(graph, location, j, edit_mode, camera, reorientation);
 }
 
 GLfloat light_diffuse[] = {0.5, 0.5, 0.5, 1.0};
@@ -464,7 +456,7 @@ void drawViables(PlayerJoint const j)
 	{
 		if (v.second.end - v.second.begin < 1) continue;
 
-		auto const r = v.second.r;
+		auto const r = v.second.reorientation;
 		auto & seq = sequences[v.first].positions;
 
 		glColor(yellow * 0.9);
@@ -506,18 +498,18 @@ int main()
 		{
 			if (yoffset == -1)
 			{
-				if (current_position != 0) --current_position;
+				if (location.position != 0) --location.position;
 			}
 			else if (yoffset == 1)
 			{
-				if (current_position != sequence().positions.size() - 1) ++current_position;
+				if (location.position != sequence().positions.size() - 1) ++location.position;
 			}
 		});
 	
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 
-	optional<NextPos> next_pos;
+	optional<NextPosition> next_pos;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -548,23 +540,22 @@ int main()
 
 		if (auto best_next_pos = determineNextPos(
 				viable, graph, chosen_joint ? *chosen_joint : closest_joint,
-				current_sequence, current_position, reorientation, camera, cursor, edit_mode))
+				{location.sequence, location.position}, reorientation, camera, cursor, edit_mode))
 		{
 			double const speed = 0.08;
 
 			if (next_pos)
 			{
-				if (next_pos->sequence == best_next_pos->sequence &&
-				    next_pos->position == best_next_pos->position &&
+				if (next_pos->pis == best_next_pos->pis &&
 				    next_pos->reorientation == best_next_pos->reorientation)
 					next_pos->howfar += std::max(-speed, std::min(speed, best_next_pos->howfar - next_pos->howfar));
 				else if (next_pos->howfar > 0.05)
 					next_pos->howfar = std::max(0., next_pos->howfar - speed);
 				else
-					next_pos = NextPos{0, best_next_pos->sequence, best_next_pos->position, best_next_pos->reorientation};
+					next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
 			}
 			else
-				next_pos = NextPos{0, best_next_pos->sequence, best_next_pos->position, best_next_pos->reorientation};
+				next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
 		}
 
 		Position const reorientedPosition = apply(reorientation, position());
@@ -601,7 +592,7 @@ int main()
 			if (next_pos && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 				posToDraw = between(
 						reorientedPosition,
-						apply(next_pos->reorientation, sequences[next_pos->sequence].positions[next_pos->position]),
+						apply(next_pos->reorientation, graph[next_pos->pis]),
 						next_pos->howfar);
 		}
 
@@ -638,8 +629,8 @@ int main()
 		glfwSwapBuffers(window);
 		if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && next_pos && next_pos->howfar > 0.95)
 		{
-			gotoSequence(next_pos->sequence);
-			current_position = next_pos->position;
+			gotoSequence(next_pos->pis.sequence);
+			location.position = next_pos->pis.position;
 			reorientation = next_pos->reorientation;
 			next_pos = boost::none;
 		}

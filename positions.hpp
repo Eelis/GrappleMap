@@ -220,6 +220,22 @@ inline Position between(Position const & a, Position const & b, double s = 0.5 /
 using SeqNum = unsigned;
 using NodeNum = uint16_t;
 
+struct PositionInSequence
+{
+	SeqNum sequence;
+	PosNum position;
+};
+
+std::ostream & operator<<(std::ostream & o, PositionInSequence const pis)
+{
+	return o << "{" << pis.sequence << ", " << pis.position << "}";
+}
+
+bool operator==(PositionInSequence const & a, PositionInSequence const & b)
+{
+	return a.sequence == b.sequence && a.position == b.position;
+}
+
 Position apply(Reorientation const & r, Position p)
 {
 	for (auto j : playerJoints) p[j] = apply(r, p[j]);
@@ -246,7 +262,18 @@ struct Graph
 	};
 
 	std::vector<Edge> edges; // indexed by seqnum
+
+	Position const & operator[](PositionInSequence const i) const
+	{
+		return edges[i.sequence].sequence.positions[i.position];
+	}
+
+	Position & operator[](PositionInSequence const i)
+	{
+		return edges[i.sequence].sequence.positions[i.position];
+	}
 };
+
 
 Position get(Graph const & g, ReorientedNode const & n)
 {
