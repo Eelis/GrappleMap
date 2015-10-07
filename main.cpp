@@ -23,8 +23,6 @@
 
 #include <boost/optional.hpp>
 
-#define foreach(x) for(auto && x)
-
 using boost::optional;
 
 inline void glVertex(V3 const & v) { glVertex3d(v.x, v.y, v.z); }

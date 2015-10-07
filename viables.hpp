@@ -19,6 +19,7 @@ struct ViablesForJoint
 {
 	double total_dist;
 	std::map<SeqNum, Viable> viables;
+	std::vector<LineSegment> segments;
 };
 
 Viable viableFront(Graph const & graph, SeqNum const seq, PlayerJoint j, Camera const & camera, Reorientation const & r)
@@ -97,13 +98,9 @@ void extend_forward(int const depth, Graph const & graph,
 
 		if (xydist < 0.0005) break;
 
-		/*
 		auto const segment = LineSegment(xy, via.endxy);
-		for (auto && old : vfj.segments)
-			if (lineSegmentsIntersect(segment, old))
-				return via;
+		foreach (old : vfj.segments) if (lineSegmentsIntersect(segment, old)) return;
 		vfj.segments.push_back(segment);
-		*/
 
 		via.dist += xydist;
 		vfj.total_dist += xydist;
@@ -142,13 +139,9 @@ void extend_backward(int const depth, Graph const & graph,
 
 		if (xydistSqrd < 0.0005) break;
 
-		/*
 		auto const segment = std::make_pair(xy, via.beginxy);
-		for (auto && old : vfj.segments)
-			if (lineSegmentsIntersect(old, segment))
-				return via;
+		foreach (old : vfj.segments) if (lineSegmentsIntersect(old, segment)) return;
 		vfj.segments.push_back(segment);
-		*/
 
 		via.dist += xydist;
 		vfj.total_dist += xydist;

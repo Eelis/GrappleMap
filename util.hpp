@@ -19,4 +19,6 @@ I minimal(I i, I e, F f)
 	return r;
 }
 
+#define foreach(x) for(auto && x)
+
 #endif
