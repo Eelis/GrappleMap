@@ -55,7 +55,7 @@ inline std::istream & operator>>(std::istream & i, std::vector<Sequence> & v)
 		else
 		{
 			v.push_back(Sequence{line, {}});
-			std::cout << "Loading: " << line << '\n';
+			std::cerr << "Loading: " << line << '\n';
 		}
 
 	return i;
@@ -96,7 +96,7 @@ inline std::vector<Sequence> load(std::string const filename)
 
 	size_t p = 0;
 	for (auto && seq : r) p += seq.positions.size();
-	std::cout << "Loaded " << p << " positions in " << r.size() << " sequences.\n";
+	std::cerr << "Loaded " << p << " positions in " << r.size() << " sequences.\n";
 
 	return r;
 }

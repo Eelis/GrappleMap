@@ -83,7 +83,7 @@ public:
 Graph::Graph(std::vector<Sequence> const & sequences)
 {
 	foreach (s : sequences) insert(s);
-	std::cout << "Loaded " << nodes.size() << " nodes and " << edges.size() << " edges." << std::endl;
+	std::cerr << "Loaded " << nodes.size() << " nodes and " << edges.size() << " edges." << std::endl;
 }
 
 PosNum last_pos(Graph const & g, SeqNum const s)
@@ -100,7 +100,7 @@ void Graph::changed(PositionInSequence const pis)
 		auto const new_from = find_or_add(edge.sequence.positions.front());
 
 		if (new_from.node != edge.from.node)
-			std::cout << "Front of sequence is now a different node." << std::endl;
+			std::cerr << "Front of sequence is now a different node." << std::endl;
 
 		edge.from = new_from;
 	}
@@ -109,7 +109,7 @@ void Graph::changed(PositionInSequence const pis)
 		auto const new_to = find_or_add(edge.sequence.positions.back());
 
 		if (new_to.node != edge.to.node)
-			std::cout << "Back of sequence is now a different node." << std::endl;
+			std::cerr << "Back of sequence is now a different node." << std::endl;
 
 		edge.to = new_to;
 	}
@@ -127,7 +127,7 @@ void Graph::replace(PositionInSequence const pis, Position const & p)
 	edges.at(pis.sequence).sequence.positions.at(pis.position) = p;
 	changed(pis);
 
-	std::cout << "Replaced position " << pis << std::endl;
+	std::cerr << "Replaced position " << pis << std::endl;
 }
 
 void replace(Graph & graph, PositionInSequence const pis, PlayerJoint const j, V3 const v)
@@ -148,7 +148,7 @@ SeqNum Graph::insert(Sequence const & sequence)
 {
 	auto const num = edges.size();
 
-	std::cout <<
+	std::cerr <<
 		"Inserted sequence " << num <<
 		" (\"" << sequence.description << "\")"
 		" of size " << sequence.positions.size() << std::endl;
@@ -165,13 +165,13 @@ boost::optional<SeqNum> Graph::erase_sequence(SeqNum const sn)
 {
 	if (edges.size() == 1)
 	{
-		std::cout << "Cannot erase last sequence." << std::endl;
+		std::cerr << "Cannot erase last sequence." << std::endl;
 		return boost::none;
 	}
 
 	auto const & seq = sequence(sn);
 
-	std::cout <<
+	std::cerr <<
 		"Erasing sequence " << sn <<
 		" (\"" << seq.description << "\")"
 		" and the " << seq.positions.size() << " positions in it." << std::endl;
@@ -188,7 +188,7 @@ boost::optional<PosNum> Graph::erase(PositionInSequence const pis)
 
 	if (positions.size() == 2)
 	{
-		std::cout << "Cannot erase either of last two elements in sequence." << std::endl;
+		std::cerr << "Cannot erase either of last two elements in sequence." << std::endl;
 		return boost::none;
 	}
 
