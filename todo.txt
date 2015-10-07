@@ -1,0 +1,15 @@
+- multiple viewports
+- in edit mode, make it possible to temporarily hide a player, to unobstruct the view to the other
+- experiment with different joint editing schemes, e.g. direct joint coordinate component manipulation
+- documentation
+- joint rotation limits
+- prevent joints moving through eachother (maybe, might be more annoying than useful)
+- sticky floor
+- direction signs ("to truck", "zombie")
+- undo
+- view from player
+- recognize reorientations with swapped players
+- oculus rift support
+- generate random walks
+- use opengl es so we can use emscripten and webgl without emulation
+- use scons

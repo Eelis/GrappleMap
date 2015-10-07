@@ -1,0 +1,9 @@
+Guidelines:
+
+	Divide & conquer: first define the few key positions along the sequence where you have a clear idea of what all the details ought to look like,
+	then see where the interpolation gives a silly result, e.g. limbs moving through eachother, and add one or more positions in between.
+
+	Don't make many small segments, because it makes making significant adjustments later much harder. Let the interpolation do its work.
+	Make sure there's always at least one big-ish movement going on, because remember: in view mode, small movements are not shown as draggable.
+
+	Stay clear from orthogonality. Keep the jiu jitsu tight, so that you don't have limbs flailing around independently.
