@@ -1,7 +1,7 @@
 #ifndef JIUJITSUMAPPER_PERSISTENCE_HPP
 #define JIUJITSUMAPPER_PERSISTENCE_HPP
 
-#include "positions.hpp"
+#include "graph.hpp"
 #include <fstream>
 #include <iterator>
 
@@ -101,10 +101,10 @@ inline std::vector<Sequence> load(std::string const filename)
 	return r;
 }
 
-inline void save(std::vector<Sequence> const & sequences, std::string const filename)
+inline void save(Graph const & g, std::string const filename)
 {
 	std::ofstream f(filename);
-	std::copy(sequences.begin(), sequences.end(), std::ostream_iterator<Sequence>(f));
+	for (SeqNum s = 0; s != g.num_sequences(); ++s) f << g.sequence(s);
 }
 
 #endif

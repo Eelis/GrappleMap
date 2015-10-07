@@ -139,18 +139,14 @@ optional<NextPosition> determineNextPos(
 			}
 		};
 
-	auto const & current_edge = graph.edges[from.sequence];
-
 	foreach (p : viables[j].viables)
 	{
-		SeqNum const other_seqNum = p.first;
 		auto const & viable = p.second;
+		PositionInSequence other{p.first, viable.begin};
 
-		if (edit_mode && other_seqNum != from.sequence) continue;
+		if (edit_mode && other.sequence != from.sequence) continue;
 
-		auto const & other_edge = graph.edges[other_seqNum];
-
-		for (PositionInSequence other{other_seqNum, viable.begin}; other.position != viable.end; ++other.position)
+		for (; other.position != viable.end; ++other.position)
 		{
 			if (other.sequence == from.sequence)
 			{
@@ -159,18 +155,20 @@ optional<NextPosition> determineNextPos(
 			}
 			else
 			{
-				NodeNum current_node;
+				if (auto const current_node = node(graph, from))
+				{
+					auto const & e_to = graph.to(other.sequence);
+					auto const & e_from = graph.from(other.sequence);
 
-				if (from.position == 0) current_node = current_edge.from.node;
-				else if (from.position == end(current_edge.sequence) - 1) current_node = current_edge.to.node;
+					if (!(*current_node == e_to.node
+							&& other.position == last_pos(graph, other.sequence) - 1) &&
+						!(*current_node == e_from.node
+							&& other.position == 1))
+						continue;
+				}
 				else continue;
-
-				if (!(current_node == other_edge.to.node
-						&& other.position == other_edge.sequence.positions.size() - 2) &&
-					!(current_node == other_edge.from.node
-						&& other.position == 1))
-					continue;
 			}
+				// todo: clean the above mess up
 
 			consider(other, viable.reorientation);
 		}
@@ -178,25 +176,6 @@ optional<NextPosition> determineNextPos(
 
 	return np;
 }
-
-// state
-
-std::vector<Sequence> sequences = load("positions.txt");
-Graph graph = compute_graph(sequences);
-PositionInSequence location;
-PlayerJoint closest_joint = {0, LeftAnkle};
-optional<PlayerJoint> chosen_joint;
-GLFWwindow * window;
-bool edit_mode = false;
-Position clipboard;
-Camera camera;
-V2 cursor;
-double jiggle = 0;
-PerPlayerJoint<ViablesForJoint> viable;
-Reorientation reorientation;
-
-Sequence & sequence() { return sequences[location.sequence]; }
-Position & position() { return graph[location]; }
 
 void grid()
 {
@@ -214,33 +193,31 @@ void grid()
 	glEnd();
 }
 
-void add_position()
-{
-	if (location.position == sequence().positions.size() - 1)
-	{
-		sequence().positions.push_back(position());
-	}
-	else
-	{
-		auto p = between(position(), sequence().positions[location.position + 1]);
-		for(int i = 0; i != 50; ++i)
-			spring(p);
-		sequence().positions.insert(sequence().positions.begin() + location.position + 1, p);
-	}
-	++location.position;
-}
+// state
 
-Position * prev_position()
+Graph graph(load("positions.txt"));
+PositionInSequence location;
+PlayerJoint closest_joint = {0, LeftAnkle};
+optional<PlayerJoint> chosen_joint;
+GLFWwindow * window;
+bool edit_mode = false;
+Position clipboard;
+Camera camera;
+double jiggle = 0;
+PerPlayerJoint<ViablesForJoint> viable;
+Reorientation reorientation;
+
+Sequence const & sequence() { return graph.sequence(location.sequence); }
+
+Position const * prev_position()
 {
-	if (location.position != 0) return &sequence().positions[location.position - 1];
-	if (location.sequence != 0) return &sequences[location.sequence - 1].positions.back();
+	if (location.position != 0) return &graph[prev(location)];
 	return nullptr;
 }
 
-Position * next_position()
+Position const * next_position()
 {
-	if (location.position != sequence().positions.size() - 1) return &sequence().positions[location.position + 1];
-	if (location.sequence != sequences.size() - 1) return &sequences[location.sequence + 1].positions.front();
+	if (location.position != last_pos(graph, location.sequence)) return &graph[next(location)];
 	return nullptr;
 }
 
@@ -250,7 +227,7 @@ void gotoSequence(SeqNum const seq)
 	{
 		location.sequence = seq;
 
-		std::cout << "Seq: " << sequence().description << std::endl;
+		std::cout << "Sequence: " << sequence().description << std::endl;
 	}
 }
 
@@ -258,14 +235,13 @@ void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action
 {
 	if ((mods & GLFW_MOD_CONTROL) && key == GLFW_KEY_C) // copy
 	{
-		clipboard = position();
+		clipboard = graph[location];
 		return;
 	}
 
 	if ((mods & GLFW_MOD_CONTROL) && key == GLFW_KEY_V) // paste
 	{
-		position() = clipboard;
-		graph = compute_graph(sequences);
+		graph.replace(location, clipboard);
 		return;
 	}
 
@@ -273,10 +249,7 @@ void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action
 	{
 		switch (key)
 		{
-			case GLFW_KEY_INSERT:
-				add_position();
-				graph = compute_graph(sequences);
-				break;
+			case GLFW_KEY_INSERT: graph.clone(location); break;
 
 			case GLFW_KEY_PAGE_UP:
 				if (location.sequence != 0)
@@ -287,7 +260,7 @@ void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action
 				break;
 
 			case GLFW_KEY_PAGE_DOWN:
-				if (location.sequence != sequences.size() - 1)
+				if (location.sequence != graph.num_sequences() - 1)
 				{
 					gotoSequence(location.sequence + 1);
 					location.position = 0;
@@ -300,90 +273,79 @@ void key_callback(GLFWwindow * /*window*/, int key, int /*scancode*/, int action
 				if (auto next = next_position())
 				if (auto prev = prev_position())
 				{
-					position() = between(*prev, *next);
-					for(int i = 0; i != 6; ++i) spring(position());
+					auto p = between(*prev, *next);
+					for(int i = 0; i != 30; ++i) spring(p);
+					graph.replace(location, p);
 				}
-				graph = compute_graph(sequences);
 				break;
 
 			// set joint to prev/next/center
 
 			case GLFW_KEY_H:
-				if (auto p = prev_position()) position()[closest_joint] = (*p)[closest_joint];
-				graph = compute_graph(sequences);
+				if (auto p = prev_position())
+					replace(graph, location, closest_joint, (*p)[closest_joint]);
 				break;
 			case GLFW_KEY_K:
-				if (auto p = next_position()) position()[closest_joint] = (*p)[closest_joint];
-				graph = compute_graph(sequences);
+				if (auto p = next_position())
+					replace(graph, location, closest_joint, (*p)[closest_joint]);
 				break;
 			case GLFW_KEY_J:
 				if (auto next = next_position())
 				if (auto prev = prev_position())
-					position()[closest_joint] = ((*prev)[closest_joint] + (*next)[closest_joint]) / 2;
-					for(int i = 0; i != 6; ++i) spring(position());
+				{
+					Position p = graph[location];
+					p[closest_joint] = ((*prev)[closest_joint] + (*next)[closest_joint]) / 2;
+					for(int i = 0; i != 30; ++i) spring(p);
+					graph.replace(location, p);
+				}
 				break;
 
-			case GLFW_KEY_KP_4:
-				for (auto j : playerJoints) position()[j].x -= 0.02;
-				graph = compute_graph(sequences);
-				break;
-			case GLFW_KEY_KP_6:
-				for (auto j : playerJoints) position()[j].x += 0.02;
-				graph = compute_graph(sequences);
-				break;
-			case GLFW_KEY_KP_8:
-				for (auto j : playerJoints) position()[j].z -= 0.02;
-				graph = compute_graph(sequences);
-				break;
-			case GLFW_KEY_KP_2:
-				for (auto j : playerJoints) position()[j].z += 0.02;
-				graph = compute_graph(sequences);
-				break;
+			case GLFW_KEY_KP_4: graph.replace(location, graph[location] + V3{-0.02, 0, 0}); break;
+			case GLFW_KEY_KP_6: graph.replace(location, graph[location] + V3{0.02, 0, 0}); break;
+			case GLFW_KEY_KP_8: graph.replace(location, graph[location] + V3{0, 0, -0.02}); break;
+			case GLFW_KEY_KP_2: graph.replace(location, graph[location] + V3{0, 0, 0.02}); break;
+
 			case GLFW_KEY_KP_9:
-				for (auto j : playerJoints) position()[j] = xyz(yrot(-0.05) * V4(position()[j], 1));
-				graph = compute_graph(sequences);
+			{
+				auto p = graph[location];
+				for (auto j : playerJoints) p[j] = xyz(yrot(-0.05) * V4(p[j], 1));
+				graph.replace(location, p);
 				break;
+			}
 			case GLFW_KEY_KP_7:
-				for (auto j : playerJoints) position()[j] = xyz(yrot(0.05) * V4(position()[j], 1));
-				graph = compute_graph(sequences);
+			{
+				auto p = graph[location];
+				for (auto j : playerJoints) p[j] = xyz(yrot(0.05) * V4(p[j], 1));
+				graph.replace(location, p);
 				break;
+			}
 
 			// new sequence
 
 			case GLFW_KEY_N:
 			{
-				auto p = position();
-				sequences.push_back(Sequence{"new", {p, p}});
-				location.sequence = sequences.size() - 1;
+				auto const p = graph[location];
+				location.sequence = graph.insert(Sequence{"new", {p, p}});
 				location.position = 0;
-				graph = compute_graph(sequences);
 				break;
 			}
-
 			case GLFW_KEY_V: edit_mode = !edit_mode; break;
 
-			case GLFW_KEY_S: save(sequences, "positions.txt"); break;
+			case GLFW_KEY_S: save(graph, "positions.txt"); break;
+
 			case GLFW_KEY_DELETE:
 			{
 				if (mods & GLFW_MOD_CONTROL)
 				{
-					if (sequences.size() > 1)
+					if (auto const new_seq = graph.erase_sequence(location.sequence))
 					{
-						sequences.erase(sequences.begin() + location.sequence);
-						if (location.sequence == sequences.size()) --location.sequence;
+						location.sequence = *new_seq;
 						location.position = 0;
 					}
 				}
-				else
-				{
-					if (sequence().positions.size() > 2)
-					{
-						sequence().positions.erase(sequence().positions.begin() + location.position);
-						if (location.position == sequence().positions.size()) --location.position;
-					}
-				}
+				else if (auto const new_pos = graph.erase(location))
+					location.position = *new_pos;
 
-				graph = compute_graph(sequences);
 				break;
 			}
 		}
@@ -455,7 +417,7 @@ void drawViables(PlayerJoint const j)
 		if (v.second.end - v.second.begin < 1) continue;
 
 		auto const r = v.second.reorientation;
-		auto & seq = sequences[v.first].positions;
+		auto & seq = graph.sequence(v.first).positions;
 
 		glColor(yellow * 0.9);
 		glDisable(GL_DEPTH_TEST);
@@ -534,7 +496,7 @@ int main()
 
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
-		cursor = {((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
+		V2 const cursor = {((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
 
 		if (auto best_next_pos = determineNextPos(
 				viable, graph, chosen_joint ? *chosen_joint : closest_joint,
@@ -556,7 +518,7 @@ int main()
 				next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
 		}
 
-		Position const reorientedPosition = apply(reorientation, position());
+		Position const reorientedPosition = apply(reorientation, graph[location]);
 
 		Position posToDraw = reorientedPosition;
 
@@ -564,13 +526,13 @@ int main()
 
 		if (chosen_joint && edit_mode && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		{
-			Position new_pos = position();
+			Position new_pos = graph[location];
 
 			V4 const dragger = yrot(-camera.getHorizontalRotation()) * V4{{1,0,0},0};
 			
 			auto & joint = new_pos[*chosen_joint];
 
-			auto off = world2xy(camera, joint) - cursor;
+			auto off = world2xy(camera, apply(reorientation, joint)) - cursor;
 
 			joint.x -= dragger.x * off.x;
 			joint.z -= dragger.z * off.x;
@@ -578,7 +540,9 @@ int main()
 
 			spring(new_pos, chosen_joint);
 
-			posToDraw = apply(reorientation, position() = new_pos);
+			graph.replace(location, new_pos);
+
+			posToDraw = apply(reorientation, new_pos);
 		}
 		else
 		{
@@ -657,7 +621,6 @@ Todo:
 	- sticky floor
 	- direction signs ("to truck", "zombie")
 	- undo
-	- enhance viability conditions to cut paths short when their xy projection loops or near-loops
 	- view from player
 	- export graph to DOT
 	- recognize reorientations with swapped players

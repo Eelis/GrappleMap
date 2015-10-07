@@ -217,14 +217,31 @@ inline Position between(Position const & a, Position const & b, double s = 0.5 /
 	return r;
 }
 
+bool basicallySame(Position const & a, Position const & b)
+{
+	double u = 0;
+	for (auto j : playerJoints) u += distanceSquared(a[j], b[j]);
+	return u < 0.03;
+}
+
 using SeqNum = unsigned;
-using NodeNum = uint16_t;
 
 struct PositionInSequence
 {
 	SeqNum sequence;
 	PosNum position;
 };
+
+PositionInSequence prev(PositionInSequence const pis)
+{
+	assert(pis.position != 0);
+	return {pis.sequence, pis.position - 1};
+}
+
+PositionInSequence next(PositionInSequence const pis)
+{
+	return {pis.sequence, pis.position + 1};
+}
 
 std::ostream & operator<<(std::ostream & o, PositionInSequence const pis)
 {
@@ -242,53 +259,6 @@ Position apply(Reorientation const & r, Position p)
 	return p;
 }
 
-struct ReorientedNode
-{
-	NodeNum node;
-	Reorientation reorientation;
-};
-
-struct Graph
-{
-	std::vector<Position> nodes;
-
-	struct Edge
-	{
-		ReorientedNode from, to;
-		SeqNum seqNum;
-		Sequence sequence;
-			// invariant: get(g, from) == sequence.positions.front()
-			// invariant: get(g, to) == sequences.positions.back()
-	};
-
-	std::vector<Edge> edges; // indexed by seqnum
-
-	Position const & operator[](PositionInSequence const i) const
-	{
-		return edges[i.sequence].sequence.positions[i.position];
-	}
-
-	Position & operator[](PositionInSequence const i)
-	{
-		return edges[i.sequence].sequence.positions[i.position];
-	}
-};
-
-
-Position get(Graph const & g, ReorientedNode const & n)
-{
-	return apply(n.reorientation, g.nodes[n.node]);
-}
-
-bool basicallySame(Position const & a, Position const & b)
-{
-	double u = 0;
-	for (auto j : playerJoints) u += distanceSquared(a[j], b[j]);
-	return u < 0.03;
-}
-
-double degrees(double radians){return radians/M_PI*180;}
-
 boost::optional<Reorientation> is_reoriented(Position const & a, Position const & b)
 {
 	auto const a0h = a[0][Head];
@@ -302,45 +272,6 @@ boost::optional<Reorientation> is_reoriented(Position const & a, Position const 
 
 	if (basicallySame(apply(r, a), b)) return r;
 	else return boost::none;
-}
-
-boost::optional<ReorientedNode> is_reoriented_node_in(Graph const & g, Position const & p)
-{
-	for (NodeNum n = 0; n != g.nodes.size(); ++n)
-		if (auto r = is_reoriented(g.nodes[n], p))
-			return ReorientedNode{n, *r};
-
-	return boost::none;
-}
-
-ReorientedNode find_or_add_node(Graph & g, Position const & p)
-{
-	if (auto m = is_reoriented_node_in(g, p))
-		return *m;
-
-	g.nodes.push_back(p);
-	return {NodeNum(g.nodes.size() - 1), noReorientation()};
-}
-
-Graph compute_graph(std::vector<Sequence> const & sequences)
-{
-	Graph g;
-
-	for (SeqNum i = 0; i != sequences.size(); ++i)
-	{
-		auto & seq = sequences[i];
-
-		auto a = find_or_add_node(g, seq.positions.front());
-		auto b = find_or_add_node(g, seq.positions.back());
-
-		//std::cout << i << ": {" << a.node << ", " << a.offset << "} -> {" << b.node << ", " << b.offset << "}" << std::endl;
-
-		g.edges.push_back(Graph::Edge{a, b, i, seq});
-	}
-
-	std::cout << "Loaded " << g.nodes.size() << " nodes and " << g.edges.size() << " edges." << std::endl;
-
-	return g;
 }
 
 #endif
