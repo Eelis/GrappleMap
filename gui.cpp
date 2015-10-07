@@ -8,6 +8,7 @@
 #include "math.hpp"
 #include "positions.hpp"
 #include "viables.hpp"
+#include "rendering.hpp"
 #include <GLFW/glfw3.h>
 #include <array>
 #include <cmath>
@@ -25,70 +26,6 @@
 #include <boost/optional.hpp>
 
 using boost::optional;
-
-inline void glVertex(V3 const & v) { glVertex3d(v.x, v.y, v.z); }
-inline void glNormal(V3 const & v) { glNormal3d(v.x, v.y, v.z); }
-inline void glTranslate(V3 const & v) { glTranslated(v.x, v.y, v.z); }
-inline void glColor(V3 v) { glColor3d(v.x, v.y, v.z); }
-
-void triangle(V3 a, V3 b, V3 c)
-{
-	glVertex(a);
-	glVertex(b);
-	glVertex(c);
-}
-
-void pillar(V3 from, V3 to, double from_radius, double to_radius, unsigned faces)
-{
-	V3 a = normalize(cross(to - from, V3{1,1,1} - from));
-	V3 b = normalize(cross(to - from, a));
-
-	double s = 2 * M_PI / faces;
-
-	glBegin(GL_TRIANGLES);
-
-	for (unsigned i = 0; i != faces; ++i)
-	{
-		glNormal(a * sin(i * s) + b * cos(i * s));
-		glVertex(from + a * from_radius * std::sin( i    * s) + b * from_radius * std::cos( i    * s));
-		glVertex(to   + a *   to_radius * std::sin( i    * s) + b *   to_radius * std::cos( i    * s));
-
-		glNormal(a * sin((i + 1) * s) + b * cos((i + 1) * s));
-		glVertex(from + a * from_radius * std::sin((i+1) * s) + b * from_radius * std::cos((i+1) * s));
-
-		glVertex(from + a * from_radius * std::sin((i+1) * s) + b * from_radius * std::cos((i+1) * s));
-		glVertex(to   + a *   to_radius * std::sin((i+1) * s) + b *   to_radius * std::cos((i+1) * s));
-
-		glNormal(a * sin(i * s) + b * cos(i * s));
-		glVertex(to   + a *   to_radius * std::sin( i    * s) + b *   to_radius * std::cos( i    * s));
-	}
-
-	glEnd();
-}
-
-void render(Player const & p, Segment const s)
-{
-	auto const a = s.ends[0], b = s.ends[1];
-	pillar(p[a], p[b], jointDefs[a].radius, jointDefs[b].radius, 30);
-}
-
-void renderWires(Player const & player)
-{
-	glLineWidth(50);
-
-	foreach (s : segments) if (s.visible) render(player, s);
-}
-
-void render(Position const & pos, V3 acolor, V3 bcolor)
-{
-	Player const & a = pos[0], & b = pos[1];
-
-	glColor(acolor);
-	renderWires(a);
-
-	glColor(bcolor);
-	renderWires(b);
-}
 
 struct NextPosition
 {
@@ -178,22 +115,6 @@ optional<NextPosition> determineNextPos(
 	return np;
 }
 
-void grid()
-{
-	glColor3f(0.5,0.5,0.5);
-	glLineWidth(2);
-
-	glBegin(GL_LINES);
-		for (double i = -4; i <= 4; ++i)
-		{
-			glVertex(V3{i/2, 0,  -2});
-			glVertex(V3{i/2, 0,   2});
-			glVertex(V3{ -2, 0, i/2});
-			glVertex(V3{  2, 0, i/2});
-		}
-	glEnd();
-}
-
 // state
 
 Graph graph(load("positions.txt"));
@@ -205,7 +126,7 @@ bool edit_mode = false;
 Position clipboard;
 Camera camera;
 double jiggle = 0;
-PerPlayerJoint<ViablesForJoint> viable;
+Viables viable;
 Reorientation reorientation;
 optional<NextPosition> next_pos;
 
@@ -344,35 +265,6 @@ void key_callback(GLFWwindow *, int key, int /*scancode*/, int action, int mods)
 	}
 }
 
-void drawJoint(Position const & pos, PlayerJoint pj)
-{
-	auto color = playerDefs[pj.player].color;
-	bool highlight = (pj == (chosen_joint ? *chosen_joint : closest_joint));
-	double extraBig = highlight ? 0.01 : 0.005;
-
-	if (edit_mode)
-		color = highlight ? yellow : white;
-	else if (viable[pj].total_dist == 0)
-		extraBig = 0;
-	else
-		color = highlight
-			? white * 0.7 + color * 0.3
-			: white * 0.4 + color * 0.6;
-
-	glColor(color);
-
-	static GLUquadricObj * Sphere = gluNewQuadric(); // todo: evil
-	glPushMatrix();
-		glTranslate(pos[pj]);
-		gluSphere(Sphere, jointDefs[pj.joint].radius + extraBig, 20, 20);
-	glPopMatrix();
-}
-
-void drawJoints(Position const & pos)
-{
-	foreach (j : playerJoints) drawJoint(pos, j);
-}
-
 void determineViables()
 {
 	foreach (j : playerJoints)
@@ -400,31 +292,6 @@ void prepareDraw(int width, int height)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixd(camera.model_view().data());
-}
-
-void drawViables(PlayerJoint const j)
-{
-	foreach (v : viable[j].viables)
-	{
-		if (v.second.end - v.second.begin < 1) continue;
-
-		auto const r = v.second.reorientation;
-		auto & seq = graph.sequence(v.first).positions;
-
-		glColor4f(1, 1, 0, 0.5);
-
-		glDisable(GL_DEPTH_TEST);
-
-		glBegin(GL_LINE_STRIP);
-		for (unsigned i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i][j]));
-		glEnd();
-
-		glPointSize(20);
-		glBegin(GL_POINTS);
-		for (unsigned i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i][j]));
-		glEnd();
-		glEnable(GL_DEPTH_TEST);
-	}
 }
 
 void mouse_button_callback(GLFWwindow *, int button, int action, int /*mods*/)
@@ -576,15 +443,14 @@ int main()
 		glNormal3d(0, 1, 0);
 		grid();
 
-		render(posToDraw, red, blue);
-		drawJoints(posToDraw);
+		render(viable, posToDraw, chosen_joint ? *chosen_joint : closest_joint, edit_mode);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glLineWidth(4);
 		glNormal3d(0, 1, 0);
-		drawViables(chosen_joint ? *chosen_joint : closest_joint);
+		drawViables(graph, viable, chosen_joint ? *chosen_joint : closest_joint);
 
 		glDisable(GL_DEPTH_TEST);
 		glPointSize(20);

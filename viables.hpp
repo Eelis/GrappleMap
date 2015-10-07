@@ -190,4 +190,6 @@ ViablesForJoint determineViables
 	return r;
 }
 
+using Viables = PerPlayerJoint<ViablesForJoint>;
+
 #endif
