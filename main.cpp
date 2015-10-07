@@ -410,7 +410,8 @@ void drawViables(PlayerJoint const j)
 		auto const r = v.second.reorientation;
 		auto & seq = graph.sequence(v.first).positions;
 
-		glColor(yellow * 0.9);
+		glColor4f(1, 1, 0, 0.5);
+
 		glDisable(GL_DEPTH_TEST);
 
 		glBegin(GL_LINE_STRIP);
@@ -577,21 +578,20 @@ int main()
 		render(posToDraw, red, blue);
 		drawJoints(posToDraw);
 
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		glLineWidth(4);
 		glNormal3d(0, 1, 0);
 		drawViables(chosen_joint ? *chosen_joint : closest_joint);
 
-		if (chosen_joint)
-		{
-			glDisable(GL_DEPTH_TEST);
-			glPointSize(20);
-			glColor(white);
+		glDisable(GL_DEPTH_TEST);
+		glPointSize(20);
+		glColor(white);
 
-			glBegin(GL_POINTS);
-				glVertex(reorientedPosition[*chosen_joint]);
-				glVertex(posToDraw[*chosen_joint]);
-			glEnd();
-		}
+		glBegin(GL_POINTS);
+		glVertex(posToDraw[chosen_joint ? *chosen_joint : closest_joint]);
+		glEnd();
 
 		glfwSwapBuffers(window);
 
