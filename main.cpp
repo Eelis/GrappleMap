@@ -105,7 +105,7 @@ double whereBetween(Position const & n, Position const & m, PlayerJoint const j,
 	V2 a = cursor - v;
 	V2 b = w - v;
 
-	return std::max(0., std::min(1., inner_prod(a, b) / norm2(b) / norm2(b)));
+	return std::max(0., /*std::min(1.,*/ inner_prod(a, b) / norm2(b) / norm2(b)/*)*/);
 }
 
 optional<NextPosition> determineNextPos(
@@ -207,6 +207,7 @@ Camera camera;
 double jiggle = 0;
 PerPlayerJoint<ViablesForJoint> viable;
 Reorientation reorientation;
+optional<NextPosition> next_pos;
 
 Sequence const & sequence() { return graph.sequence(location.sequence); }
 
@@ -354,7 +355,7 @@ void drawJoint(Position const & pos, PlayerJoint pj)
 		extraBig = 0;
 	else
 		color = highlight
-			? white * 0.6 + color * 0.4
+			? white * 0.7 + color * 0.3
 			: white * 0.4 + color * 0.6;
 
 	glColor(color);
@@ -424,6 +425,23 @@ void drawViables(PlayerJoint const j)
 	}
 }
 
+void mouse_button_callback(GLFWwindow *, int button, int action, int /*mods*/)
+{
+	if (action == GLFW_PRESS) chosen_joint = closest_joint;
+
+	if (action == GLFW_RELEASE)
+	{
+		chosen_joint = boost::none;
+
+		if (button == GLFW_MOUSE_BUTTON_RIGHT && next_pos && next_pos->howfar > 0.5)
+		{
+			location = next_pos->pis;
+			reorientation = next_pos->reorientation;
+			next_pos = boost::none;
+		}
+	}
+}
+
 int main()
 {
 	if (!glfwInit())
@@ -438,11 +456,7 @@ int main()
 
 	glfwSetKeyCallback(window, key_callback);
 
-	glfwSetMouseButtonCallback(window, [](GLFWwindow *, int /*button*/, int action, int /*mods*/)
-		{
-			if (action == GLFW_PRESS) chosen_joint = closest_joint;
-			if (action == GLFW_RELEASE) chosen_joint = boost::none;
-		});
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 	glfwSetScrollCallback(window, [](GLFWwindow * /*window*/, double /*xoffset*/, double yoffset)
 		{
@@ -460,8 +474,6 @@ int main()
 	
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
-
-	optional<NextPosition> next_pos;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -573,16 +585,19 @@ int main()
 		{
 			glDisable(GL_DEPTH_TEST);
 			glPointSize(20);
-			glBegin(GL_POINTS);
 			glColor(white);
-			glVertex(posToDraw[*chosen_joint]);
+
+			glBegin(GL_POINTS);
+				glVertex(reorientedPosition[*chosen_joint]);
+				glVertex(posToDraw[*chosen_joint]);
 			glEnd();
-			glEnable(GL_DEPTH_TEST);
 		}
 
 		glfwSwapBuffers(window);
-		if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && next_pos && next_pos->howfar > 0.95)
+
+		if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && next_pos && next_pos->howfar >= 1)
 		{
+			auto const l = location;
 			location = next_pos->pis;
 			reorientation = next_pos->reorientation;
 			next_pos = boost::none;
