@@ -214,7 +214,8 @@ Sequence const & sequence() { return graph.sequence(location.sequence); }
 void print_status()
 {
 	std::cout
-		<< "\r[" << std::setw(2) << location.position + 1 << '/' << sequence().positions.size() << "] "
+		<< "\r[" << std::setw(2) << location.position + 1
+		<< '/' << std::setw(2) << sequence().positions.size() << "] "
 		<< sequence().description << std::string(30, ' ') << std::flush;
 }
 
@@ -597,7 +598,6 @@ int main()
 
 		if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && next_pos && next_pos->howfar >= 1)
 		{
-			auto const l = location;
 			location = next_pos->pis;
 			reorientation = next_pos->reorientation;
 			next_pos = boost::none;

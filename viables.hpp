@@ -53,9 +53,10 @@ void extend_from(int const depth, Graph const & graph, ReorientedNode const rn,
 
 	for (SeqNum seqNum = 0; seqNum != graph.num_sequences(); ++seqNum)
 	{
-		auto const & s = graph.sequence(seqNum);
-
-		auto const here = graph[rn];
+		#ifndef NDEBUG
+			auto const & s = graph.sequence(seqNum);
+			auto const here = graph[rn];
+		#endif
 
 		auto const from = graph.from(seqNum);
 		auto const to = graph.to(seqNum);
@@ -74,9 +75,8 @@ void extend_from(int const depth, Graph const & graph, ReorientedNode const rn,
 		{
 			assert(basicallySame(graph[to], s.positions.back()));
 
-			auto const there = apply(compose(rn.reorientation, inverse(to.reorientation)), s.positions.back());
-
-			assert(basicallySame(here, there));
+			assert(basicallySame(here,
+				apply(compose(rn.reorientation, inverse(to.reorientation)), s.positions.back())));
 
 			extend_backward(
 				depth + 1, graph,
