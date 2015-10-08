@@ -131,8 +131,8 @@ void print_status(Window const & w)
 	auto && seq = w.graph.sequence(w.location.sequence);
 
 	std::cout
-		<< "\r[" << std::setw(2) << w.location.position + 1
-		<< '/' << std::setw(2) << seq.positions.size() << "] "
+		<< "\r[" << w.location.position + 1
+		<< '/' << seq.positions.size() << "] "
 		<< seq.description << std::string(30, ' ') << std::flush;
 }
 
