@@ -23,6 +23,7 @@
 #include <boost/optional.hpp>
 
 using boost::optional;
+using std::string;
 
 struct NextPosition
 {
@@ -114,7 +115,10 @@ optional<NextPosition> determineNextPos(
 
 struct Window
 {
-	Graph graph{load("positions.txt")};
+	explicit Window(string const f): filename(f), graph(load(f)) {}
+
+	string filename;
+	Graph graph;
 	PositionInSequence location{0, 0};
 	PlayerJoint closest_joint = {0, LeftAnkle};
 	optional<PlayerJoint> chosen_joint;
@@ -134,7 +138,7 @@ void print_status(Window const & w)
 	std::cout
 		<< "\r[" << w.location.position + 1
 		<< '/' << seq.positions.size() << "] "
-		<< seq.description << std::string(30, ' ') << std::flush;
+		<< seq.description << string(30, ' ') << std::flush;
 }
 
 void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int action, int mods)
@@ -220,14 +224,14 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 			case GLFW_KEY_KP_9:
 			{
 				auto p = w.graph[w.location];
-				for (auto j : playerJoints) p[j] = xyz(yrot(-0.05) * V4(p[j], 1));
+				foreach (j : playerJoints) p[j] = xyz(yrot(-0.05) * V4(p[j], 1));
 				w.graph.replace(w.location, p);
 				break;
 			}
 			case GLFW_KEY_KP_7:
 			{
 				auto p = w.graph[w.location];
-				for (auto j : playerJoints) p[j] = xyz(yrot(0.05) * V4(p[j], 1));
+				foreach (j : playerJoints) p[j] = xyz(yrot(0.05) * V4(p[j], 1));
 				w.graph.replace(w.location, p);
 				break;
 			}
@@ -243,7 +247,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 			}
 			case GLFW_KEY_V: w.edit_mode = !w.edit_mode; break;
 
-			case GLFW_KEY_S: save(w.graph, "positions.txt"); break;
+			case GLFW_KEY_S: save(w.graph, w.filename); break;
 
 			case GLFW_KEY_DELETE:
 			{
@@ -319,11 +323,17 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 	print_status(w);
 }
 
-int main()
+int main(int const argc, char const * const * const argv)
 {
-	if (!glfwInit()) return -1;
+	if (argc != 2)
+	{
+		std::cout << "usage: jjm-gui <filename>\n";
+		return 1;
+	}
 
-	Window w;
+	Window w(argv[1]);
+
+	if (!glfwInit()) return -1;
 
 	GLFWwindow * const window = glfwCreateWindow(640, 480, "Jiu Jitsu Mapper", nullptr, nullptr);
 
