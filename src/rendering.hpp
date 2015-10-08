@@ -62,7 +62,7 @@ void render(Viables const & viables, Position const & pos,
 {
 	auto limbs = [&](Player const & player)
 		{
-			foreach (s : segments)
+			foreach (s : segments())
 				if (s.visible)
 				{
 					auto const a = s.ends[0], b = s.ends[1];

@@ -187,27 +187,27 @@ inline std::ostream & operator<<(std::ostream & o, Reorientation const r)
 	return o << "{offset=" << r.offset << ", angle=" << r.angle << "}";
 }
 
-bool dist(Reorientation const & a, Reorientation const & b)
+inline bool dist(Reorientation const & a, Reorientation const & b)
 {
 	return distanceSquared(a.offset, b.offset) + std::abs(a.angle - b.angle);
 }
 
-bool operator==(Reorientation const & a, Reorientation const & b)
+inline bool operator==(Reorientation const & a, Reorientation const & b)
 {
 	return a.offset == b.offset && a.angle == b.angle;
 }
 
-V3 apply(Reorientation const & r, V3 v)
+inline V3 apply(Reorientation const & r, V3 v)
 {
 	return xyz(yrot(r.angle) * (V4(v, 1))) + r.offset;
 }
 
-bool operator<(Reorientation const & a, Reorientation const & b)
+inline bool operator<(Reorientation const & a, Reorientation const & b)
 {
 	return std::make_pair(a.offset, a.angle) < std::make_pair(b.offset, b.angle);
 }
 
-Reorientation inverse(Reorientation x)
+inline Reorientation inverse(Reorientation x)
 {
 	Reorientation r{xyz(yrot(-x.angle)*V4(-x.offset, 1)), -x.angle};
 	#ifndef NDEBUG
@@ -217,7 +217,7 @@ Reorientation inverse(Reorientation x)
 	return r;
 }
 
-Reorientation compose(Reorientation const a, Reorientation const b)
+inline Reorientation compose(Reorientation const a, Reorientation const b)
 {
 	auto const r = Reorientation{b.offset + xyz(yrot(b.angle) * V4(a.offset, 1)), a.angle + b.angle};
 
@@ -229,7 +229,7 @@ Reorientation compose(Reorientation const a, Reorientation const b)
 	return r;
 }
 
-Reorientation noReorientation() { return {{0, 0, 0}, 0}; }
+inline Reorientation noReorientation() { return {{0, 0, 0}, 0}; }
 
 inline double angle(V2 const v) { return atan2(v.y, v.x); }
 
