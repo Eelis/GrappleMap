@@ -1,5 +1,5 @@
 #include "persistence.hpp"
-
+#include "util.hpp"
 #include "graph.hpp"
 #include <fstream>
 #include <iterator>
@@ -32,7 +32,7 @@ namespace
 
 		Position p;
 
-		for (auto j : playerJoints)
+		foreach (j : playerJoints)
 			p[j] = {g() - 2, g(), g() - 2};
 
 		return p;
@@ -73,7 +73,7 @@ std::ostream & operator<<(std::ostream & o, Position const & p)
 			o << base62digits[i / 62] << base62digits[i % 62];
 		};
 
-	for (auto j : playerJoints)
+	foreach (j : playerJoints)
 	{
 		g(p[j].x + 2);
 		g(p[j].y);
@@ -86,7 +86,7 @@ std::ostream & operator<<(std::ostream & o, Position const & p)
 std::ostream & operator<<(std::ostream & o, Sequence const & s)
 {
 	o << s.description << '\n';
-	for (auto && p : s.positions) o << "    " << p << '\n';
+	foreach (p : s.positions) o << "    " << p << '\n';
 	return o;
 }
 
@@ -97,7 +97,7 @@ std::vector<Sequence> load(std::string const filename)
 	ff >> r;
 
 	size_t p = 0;
-	for (auto && seq : r) p += seq.positions.size();
+	foreach (seq : r) p += seq.positions.size();
 	std::cerr << "Loaded " << p << " positions in " << r.size() << " sequences.\n";
 
 	return r;

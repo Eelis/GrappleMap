@@ -32,7 +32,7 @@ inline std::array<PlayerJoint, joint_count * 2> make_playerJoints()
 	std::array<PlayerJoint, joint_count * 2> r;
 	unsigned i = 0;
 	for (unsigned player = 0; player != 2; ++player)
-		for (auto j : joints)
+		foreach (j : joints)
 			r[i++] = {player, j};
 	return r;
 }
@@ -45,7 +45,7 @@ Player spring(Player const & p, boost::optional<Joint> fixed_joint)
 {
 	Player r = p;
 
-	for (auto && j : joints)
+	foreach (j : joints)
 	{
 		if (j == fixed_joint) continue;
 
