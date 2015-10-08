@@ -1,10 +1,11 @@
 #ifndef JIUJITSUMAPPER_VIABLES_HPP
 #define JIUJITSUMAPPER_VIABLES_HPP
 
-#include "camera.hpp"
 #include "positions.hpp"
-#include "graph.hpp"
 #include <map>
+
+struct Graph;
+struct Camera;
 
 struct Viable
 {

@@ -1,5 +1,7 @@
 #include "viables.hpp"
 #include "util.hpp"
+#include "graph.hpp"
+#include "camera.hpp"
 
 namespace
 {
