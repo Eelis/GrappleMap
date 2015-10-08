@@ -316,8 +316,7 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 	}
 	else if (yoffset == 1)
 	{
-		if (w.location.position != w.graph.sequence(w.location.sequence).positions.size() - 1) // TODO
-			++w.location.position;
+		if (auto const n = next(w.graph, w.location)) w.location = *n;
 	}
 
 	print_status(w);
