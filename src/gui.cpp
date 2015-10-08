@@ -468,4 +468,6 @@ int main()
 	}
 
 	glfwTerminate();
+
+	std::cout << '\n';
 }
