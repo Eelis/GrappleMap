@@ -1,7 +1,3 @@
-#ifndef NDEBUG
-#define _GLIBCXX_DEBUG
-#endif
-
 #include "util.hpp"
 #include "camera.hpp"
 #include "persistence.hpp"
