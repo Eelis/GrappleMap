@@ -115,42 +115,44 @@ optional<NextPosition> determineNextPos(
 	return np;
 }
 
-// state
-
-Graph graph(load("positions.txt"));
-PositionInSequence location;
-PlayerJoint closest_joint = {0, LeftAnkle};
-optional<PlayerJoint> chosen_joint;
-GLFWwindow * window;
-bool edit_mode = false;
-Position clipboard;
-Camera camera;
-double jiggle = 0;
-Viables viable;
-Reorientation reorientation;
-optional<NextPosition> next_pos;
-
-Sequence const & sequence() { return graph.sequence(location.sequence); }
-
-void print_status()
+struct Window
 {
+	Graph graph{load("positions.txt")};
+	PositionInSequence location{0, 0};
+	PlayerJoint closest_joint = {0, LeftAnkle};
+	optional<PlayerJoint> chosen_joint;
+	bool edit_mode = false;
+	optional<Position> clipboard;
+	Camera camera;
+	double jiggle = 0;
+	Viables viable;
+	Reorientation reorientation = noReorientation();
+	optional<NextPosition> next_pos;
+};
+
+void print_status(Window const & w)
+{
+	auto && seq = w.graph.sequence(w.location.sequence);
+
 	std::cout
-		<< "\r[" << std::setw(2) << location.position + 1
-		<< '/' << std::setw(2) << sequence().positions.size() << "] "
-		<< sequence().description << std::string(30, ' ') << std::flush;
+		<< "\r[" << std::setw(2) << w.location.position + 1
+		<< '/' << std::setw(2) << seq.positions.size() << "] "
+		<< seq.description << std::string(30, ' ') << std::flush;
 }
 
-void key_callback(GLFWwindow *, int key, int /*scancode*/, int action, int mods)
+void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int action, int mods)
 {
+	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(glfwWindow));
+
 	if ((mods & GLFW_MOD_CONTROL) && key == GLFW_KEY_C) // copy
 	{
-		clipboard = graph[location];
+		w.clipboard = w.graph[w.location];
 		return;
 	}
 
 	if ((mods & GLFW_MOD_CONTROL) && key == GLFW_KEY_V) // paste
 	{
-		graph.replace(location, clipboard);
+		if (w.clipboard) w.graph.replace(w.location, *w.clipboard);
 		return;
 	}
 
@@ -158,78 +160,78 @@ void key_callback(GLFWwindow *, int key, int /*scancode*/, int action, int mods)
 	{
 		switch (key)
 		{
-			case GLFW_KEY_INSERT: graph.clone(location); break;
+			case GLFW_KEY_INSERT: w.graph.clone(w.location); break;
 
 			case GLFW_KEY_PAGE_UP:
-				if (location.sequence != 0)
+				if (w.location.sequence != 0)
 				{
-					--location.sequence;
-					location.position = 0;
-					reorientation = noReorientation();
-					print_status();
+					--w.location.sequence;
+					w.location.position = 0;
+					w.reorientation = noReorientation();
+					print_status(w);
 				}
 				break;
 
 			case GLFW_KEY_PAGE_DOWN:
-				if (location.sequence != graph.num_sequences() - 1)
+				if (w.location.sequence != w.graph.num_sequences() - 1)
 				{
-					++location.sequence;
-					location.position = 0;
-					reorientation = noReorientation();
-					print_status();
+					++w.location.sequence;
+					w.location.position = 0;
+					w.reorientation = noReorientation();
+					print_status(w);
 				}
 				break;
 
 			// set position to center
 
 			case GLFW_KEY_U:
-				if (auto nextLoc = next(graph, location))
-				if (auto prevLoc = prev(location))
+				if (auto nextLoc = next(w.graph, w.location))
+				if (auto prevLoc = prev(w.location))
 				{
-					auto p = between(graph[*prevLoc], graph[*nextLoc]);
+					auto p = between(w.graph[*prevLoc], w.graph[*nextLoc]);
 					for(int i = 0; i != 30; ++i) spring(p);
-					graph.replace(location, p);
+					w.graph.replace(w.location, p);
 				}
 				break;
 
 			// set joint to prev/next/center
 
 			case GLFW_KEY_H:
-				if (auto p = prev(location))
-					replace(graph, location, closest_joint, graph[*p][closest_joint]);
+				if (auto p = prev(w.location))
+					replace(w.graph, w.location, w.closest_joint, w.graph[*p][w.closest_joint]);
 				break;
 			case GLFW_KEY_K:
-				if (auto p = next(graph, location))
-					replace(graph, location, closest_joint, graph[*p][closest_joint]);
+				if (auto p = next(w.graph, w.location))
+					replace(w.graph, w.location, w.closest_joint, w.graph[*p][w.closest_joint]);
 				break;
 			case GLFW_KEY_J:
-				if (auto prevLoc = prev(location))
-				if (auto nextLoc = next(graph, location))
+				if (auto prevLoc = prev(w.location))
+				if (auto nextLoc = next(w.graph, w.location))
 				{
-					Position p = graph[location];
-					p[closest_joint] = (graph[*prevLoc][closest_joint] + graph[*nextLoc][closest_joint]) / 2;
+					Position p = w.graph[w.location];
+					p[w.closest_joint] = (w.graph[*prevLoc][w.closest_joint] + w.graph[*nextLoc][w.closest_joint]) / 2;
 					for(int i = 0; i != 30; ++i) spring(p);
-					graph.replace(location, p);
+					w.graph.replace(w.location, p);
 				}
 				break;
 
-			case GLFW_KEY_KP_4: graph.replace(location, graph[location] + V3{-0.02, 0, 0}); break;
-			case GLFW_KEY_KP_6: graph.replace(location, graph[location] + V3{0.02, 0, 0}); break;
-			case GLFW_KEY_KP_8: graph.replace(location, graph[location] + V3{0, 0, -0.02}); break;
-			case GLFW_KEY_KP_2: graph.replace(location, graph[location] + V3{0, 0, 0.02}); break;
+			case GLFW_KEY_KP_4: w.graph.replace(w.location, w.graph[w.location] + V3{-0.02, 0, 0}); break;
+			case GLFW_KEY_KP_6: w.graph.replace(w.location, w.graph[w.location] + V3{0.02, 0, 0}); break;
+			case GLFW_KEY_KP_8: w.graph.replace(w.location, w.graph[w.location] + V3{0, 0, -0.02}); break;
+			case GLFW_KEY_KP_2: w.graph.replace(w.location, w.graph[w.location] + V3{0, 0, 0.02}); break;
 
 			case GLFW_KEY_KP_9:
 			{
-				auto p = graph[location];
+				auto p = w.graph[w.location];
 				for (auto j : playerJoints) p[j] = xyz(yrot(-0.05) * V4(p[j], 1));
-				graph.replace(location, p);
+				w.graph.replace(w.location, p);
 				break;
 			}
 			case GLFW_KEY_KP_7:
 			{
-				auto p = graph[location];
+				auto p = w.graph[w.location];
 				for (auto j : playerJoints) p[j] = xyz(yrot(0.05) * V4(p[j], 1));
-				graph.replace(location, p);
+				w.graph.replace(w.location, p);
 				break;
 			}
 
@@ -237,27 +239,24 @@ void key_callback(GLFWwindow *, int key, int /*scancode*/, int action, int mods)
 
 			case GLFW_KEY_N:
 			{
-				auto const p = graph[location];
-				location.sequence = graph.insert(Sequence{"new", {p, p}});
-				location.position = 0;
+				auto const p = w.graph[w.location];
+				w.location.sequence = w.graph.insert(Sequence{"new", {p, p}});
+				w.location.position = 0;
 				break;
 			}
-			case GLFW_KEY_V: edit_mode = !edit_mode; break;
+			case GLFW_KEY_V: w.edit_mode = !w.edit_mode; break;
 
-			case GLFW_KEY_S: save(graph, "positions.txt"); break;
+			case GLFW_KEY_S: save(w.graph, "positions.txt"); break;
 
 			case GLFW_KEY_DELETE:
 			{
 				if (mods & GLFW_MOD_CONTROL)
 				{
-					if (auto const new_seq = graph.erase_sequence(location.sequence))
-					{
-						location.sequence = *new_seq;
-						location.position = 0;
-					}
+					if (auto const new_seq = w.graph.erase_sequence(w.location.sequence))
+						w.location = {*new_seq, 0};
 				}
-				else if (auto const new_pos = graph.erase(location))
-					location.position = *new_pos;
+				else if (auto const new_pos = w.graph.erase(w.location))
+					w.location.position = *new_pos;
 
 				break;
 			}
@@ -265,16 +264,10 @@ void key_callback(GLFWwindow *, int key, int /*scancode*/, int action, int mods)
 	}
 }
 
-void determineViables()
-{
-	foreach (j : playerJoints)
-		viable[j] = determineViables(graph, location, j, edit_mode, camera, reorientation);
-}
-
 GLfloat light_diffuse[] = {0.5, 0.5, 0.5, 1.0};
 GLfloat light_ambient[] = {0.3, 0.3, 0.3, 0.0};
 
-void prepareDraw(int width, int height)
+void prepareDraw(Camera const & camera, int width, int height)
 {
 	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -294,52 +287,57 @@ void prepareDraw(int width, int height)
 	glLoadMatrixd(camera.model_view().data());
 }
 
-void mouse_button_callback(GLFWwindow *, int button, int action, int /*mods*/)
+void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int const action, int /*mods*/)
 {
-	if (action == GLFW_PRESS) chosen_joint = closest_joint;
+	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(glfwWindow));
+
+	if (action == GLFW_PRESS) w.chosen_joint = w.closest_joint;
 
 	if (action == GLFW_RELEASE)
 	{
-		chosen_joint = boost::none;
+		w.chosen_joint = boost::none;
 
-		if (button == GLFW_MOUSE_BUTTON_RIGHT && next_pos && next_pos->howfar > 0.5)
+		if (button == GLFW_MOUSE_BUTTON_RIGHT && w.next_pos && w.next_pos->howfar > 0.5)
 		{
-			location = next_pos->pis;
-			reorientation = next_pos->reorientation;
-			next_pos = boost::none;
+			w.location = w.next_pos->pis;
+			w.reorientation = w.next_pos->reorientation;
+			w.next_pos = boost::none;
 		}
 	}
 }
 
-int main()
+void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double yoffset)
 {
-	if (!glfwInit())
-		return -1;
+	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(glfwWindow));
 
-	window = glfwCreateWindow(640, 480, "Jiu Jitsu Mapper", nullptr, nullptr);
-	if (!window)
+	if (yoffset == -1)
 	{
-		glfwTerminate();
-		return -1;
+		if (w.location.position != 0) --w.location.position;
+	}
+	else if (yoffset == 1)
+	{
+		if (w.location.position != w.graph.sequence(w.location.sequence).positions.size() - 1) // TODO
+			++w.location.position;
 	}
 
+	print_status(w);
+}
+
+int main()
+{
+	if (!glfwInit()) return -1;
+
+	Window w;
+
+	GLFWwindow * const window = glfwCreateWindow(640, 480, "Jiu Jitsu Mapper", nullptr, nullptr);
+
+	if (!window) { glfwTerminate(); return -1; }
+
+	glfwSetWindowUserPointer(window, &w);
+
 	glfwSetKeyCallback(window, key_callback);
-
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
-
-	glfwSetScrollCallback(window, [](GLFWwindow * /*window*/, double /*xoffset*/, double yoffset)
-		{
-			if (yoffset == -1)
-			{
-				if (location.position != 0) --location.position;
-			}
-			else if (yoffset == 1)
-			{
-				if (location.position != sequence().positions.size() - 1) ++location.position;
-			}
-
-			print_status();
-		});
+	glfwSetScrollCallback(window, scroll_callback);
 	
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
@@ -348,94 +346,95 @@ int main()
 	{
 		glfwPollEvents();
 
-		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) camera.rotateVertical(-0.05);
-		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) camera.rotateVertical(0.05);
-		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { camera.rotateHorizontal(-0.03); jiggle = M_PI; }
-		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { camera.rotateHorizontal(0.03); jiggle = 0; }
-		if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) camera.zoom(-0.05);
-		if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) camera.zoom(0.05);
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) w.camera.rotateVertical(-0.05);
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) w.camera.rotateVertical(0.05);
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { w.camera.rotateHorizontal(-0.03); w.jiggle = M_PI; }
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { w.camera.rotateHorizontal(0.03); w.jiggle = 0; }
+		if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) w.camera.zoom(-0.05);
+		if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) w.camera.zoom(0.05);
 
-		if (!edit_mode && !chosen_joint)
+		if (!w.edit_mode && !w.chosen_joint)
 		{
-			jiggle += 0.01;
-			camera.rotateHorizontal(sin(jiggle) * 0.0005);
+			w.jiggle += 0.01;
+			w.camera.rotateHorizontal(sin(w.jiggle) * 0.0005);
 		}
 
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
-		camera.setViewportSize(width, height);
+		w.camera.setViewportSize(width, height);
 
-		determineViables();
+		foreach (j : playerJoints)
+			w.viable[j] = determineViables(w.graph, w.location, j, w.edit_mode, w.camera, w.reorientation);
 
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		V2 const cursor = {((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
 
 		if (auto best_next_pos = determineNextPos(
-				viable, graph, chosen_joint ? *chosen_joint : closest_joint,
-				{location.sequence, location.position}, reorientation, camera, cursor, edit_mode))
+				w.viable, w.graph, w.chosen_joint ? *w.chosen_joint : w.closest_joint,
+				{w.location.sequence, w.location.position}, w.reorientation, w.camera, cursor, w.edit_mode))
 		{
 			double const speed = 0.08;
 
-			if (next_pos)
+			if (w.next_pos)
 			{
-				if (next_pos->pis == best_next_pos->pis &&
-				    next_pos->reorientation == best_next_pos->reorientation)
-					next_pos->howfar += std::max(-speed, std::min(speed, best_next_pos->howfar - next_pos->howfar));
-				else if (next_pos->howfar > 0.05)
-					next_pos->howfar = std::max(0., next_pos->howfar - speed);
+				if (w.next_pos->pis == best_next_pos->pis &&
+				    w.next_pos->reorientation == best_next_pos->reorientation)
+					w.next_pos->howfar += std::max(-speed, std::min(speed, best_next_pos->howfar - w.next_pos->howfar));
+				else if (w.next_pos->howfar > 0.05)
+					w.next_pos->howfar = std::max(0., w.next_pos->howfar - speed);
 				else
-					next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
+					w.next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
 			}
 			else
-				next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
+				w.next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
 		}
 
-		Position const reorientedPosition = apply(reorientation, graph[location]);
+		Position const reorientedPosition = apply(w.reorientation, w.graph[w.location]);
 
 		Position posToDraw = reorientedPosition;
 
 		// editing
 
-		if (chosen_joint && edit_mode && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		if (w.chosen_joint && w.edit_mode && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		{
-			Position new_pos = graph[location];
+			Position new_pos = w.graph[w.location];
 
-			V4 const dragger = yrot(-camera.getHorizontalRotation()) * V4{{1,0,0},0};
+			V4 const dragger = yrot(-w.camera.getHorizontalRotation()) * V4{{1,0,0},0};
 			
-			auto & joint = new_pos[*chosen_joint];
+			auto & joint = new_pos[*w.chosen_joint];
 
-			auto off = world2xy(camera, apply(reorientation, joint)) - cursor;
+			auto off = world2xy(w.camera, apply(w.reorientation, joint)) - cursor;
 
 			joint.x -= dragger.x * off.x;
 			joint.z -= dragger.z * off.x;
-			joint.y = std::max(jointDefs[chosen_joint->joint].radius, joint.y - off.y);
+			joint.y = std::max(jointDefs[w.chosen_joint->joint].radius, joint.y - off.y);
 
-			spring(new_pos, chosen_joint);
+			spring(new_pos, w.chosen_joint);
 
-			graph.replace(location, new_pos);
+			w.graph.replace(w.location, new_pos);
 
-			posToDraw = apply(reorientation, new_pos);
+			posToDraw = apply(w.reorientation, new_pos);
 		}
 		else
 		{
-			if (!chosen_joint)
-				closest_joint = *minimal(
+			if (!w.chosen_joint)
+				w.closest_joint = *minimal(
 					playerJoints.begin(), playerJoints.end(),
-					[&](PlayerJoint j) { return norm2(world2xy(camera, reorientedPosition[j]) - cursor); });
+					[&](PlayerJoint j) { return norm2(world2xy(w.camera, reorientedPosition[j]) - cursor); });
 
-			if (next_pos && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+			if (w.next_pos && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 				posToDraw = between(
 						reorientedPosition,
-						apply(next_pos->reorientation, graph[next_pos->pis]),
-						next_pos->howfar);
+						apply(w.next_pos->reorientation, w.graph[w.next_pos->pis]),
+						w.next_pos->howfar);
 		}
 
 		auto const center = xz(posToDraw[0][Core] + posToDraw[1][Core]) / 2;
 
-		camera.setOffset(center);
+		w.camera.setOffset(center);
 
-		prepareDraw(width, height);
+		prepareDraw(w.camera, width, height);
 
 		glEnable(GL_DEPTH);
 		glEnable(GL_DEPTH_TEST);
@@ -443,31 +442,33 @@ int main()
 		glNormal3d(0, 1, 0);
 		grid();
 
-		render(viable, posToDraw, chosen_joint ? *chosen_joint : closest_joint, edit_mode);
+		auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
+
+		render(w.viable, posToDraw, special_joint, w.edit_mode);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glLineWidth(4);
 		glNormal3d(0, 1, 0);
-		drawViables(graph, viable, chosen_joint ? *chosen_joint : closest_joint);
+		drawViables(w.graph, w.viable, special_joint);
 
 		glDisable(GL_DEPTH_TEST);
 		glPointSize(20);
 		glColor(white);
 
 		glBegin(GL_POINTS);
-		glVertex(posToDraw[chosen_joint ? *chosen_joint : closest_joint]);
+		glVertex(posToDraw[special_joint]);
 		glEnd();
 
 		glfwSwapBuffers(window);
 
-		if (chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && next_pos && next_pos->howfar >= 1)
+		if (w.chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && w.next_pos && w.next_pos->howfar >= 1)
 		{
-			location = next_pos->pis;
-			reorientation = next_pos->reorientation;
-			next_pos = boost::none;
-			print_status();
+			w.location = w.next_pos->pis;
+			w.reorientation = w.next_pos->reorientation;
+			w.next_pos = boost::none;
+			print_status(w);
 		}
 	}
 
