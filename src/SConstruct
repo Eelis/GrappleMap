@@ -1,6 +1,6 @@
 env = Environment(CCFLAGS='-Wall -Wextra -pedantic -std=c++11 -DNDEBUG -O3')
 
-common = env.Object(['graph.cpp', 'positions.cpp', 'viables.cpp'])
+common = env.Object(['graph.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp'])
 
 env.Program('jjm-gui', ['gui.cpp', 'rendering.cpp', common], LIBS=['glfw', 'GL', 'GLU'])
 env.Program('jjm-todot', ['todot.cpp', common])

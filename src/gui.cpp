@@ -5,6 +5,7 @@
 #include "positions.hpp"
 #include "viables.hpp"
 #include "rendering.hpp"
+#include "graph.hpp"
 #include <GLFW/glfw3.h>
 #include <array>
 #include <cmath>
