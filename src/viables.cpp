@@ -127,23 +127,26 @@ namespace
 			{
 				assert(basicallySame(graph[from], s.positions.front()));
 
+				Reorientation const seqReo = compose(inverse(from.reorientation), rn.reorientation);
+
+				assert(basicallySame(here, apply(seqReo, s.positions.front())));
+
 				extend_forward(
 					depth + 1, graph,
-					vfj.viables[seqNum] = viableFront(
-						graph, seqNum, j, camera, compose(rn.reorientation, inverse(from.reorientation))),
+					vfj.viables[seqNum] = viableFront(graph, seqNum, j, camera, seqReo),
 					j, camera, vfj);
 			}
 			else if (to.node == rn.node && vfj.viables.find(seqNum) == vfj.viables.end())
 			{
 				assert(basicallySame(graph[to], s.positions.back()));
 
-				assert(basicallySame(here,
-					apply(compose(rn.reorientation, inverse(to.reorientation)), s.positions.back())));
+				Reorientation const seqReo = compose(inverse(to.reorientation), rn.reorientation);
+
+				assert(basicallySame(here, apply(seqReo, s.positions.back())));
 
 				extend_backward(
 					depth + 1, graph,
-					vfj.viables[seqNum] = viableBack(
-						graph, seqNum, j, camera, compose(rn.reorientation, inverse(to.reorientation))),
+					vfj.viables[seqNum] = viableBack(graph, seqNum, j, camera, seqReo),
 					j, camera, vfj);
 			}
 		}
