@@ -6,9 +6,9 @@
 - prevent joints moving through eachother (maybe, might be more annoying than useful)
 - sticky floor
 - direction signs ("to truck", "zombie")
-- undo
 - view from player
 - recognize reorientations with swapped players
 - oculus rift support
 - generate random walks
 - use opengl es so we can use emscripten and webgl without emulation
+- debug build

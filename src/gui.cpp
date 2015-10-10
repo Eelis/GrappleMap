@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iterator>
+#include <stack>
 
 #include <boost/optional.hpp>
 
@@ -129,6 +130,7 @@ struct Window
 	Viables viable;
 	Reorientation reorientation = noReorientation();
 	optional<NextPosition> next_pos;
+	std::stack<std::pair<Graph, PositionInSequence>> undo;
 };
 
 void print_status(Window const & w)
@@ -141,27 +143,54 @@ void print_status(Window const & w)
 		<< seq.description << string(30, ' ') << std::flush;
 }
 
+void push_undo(Window & w)
+{
+	w.undo.emplace(w.graph, w.location);
+}
+
+void translate(Window & w, V3 const v)
+{
+	push_undo(w);
+	w.graph.replace(w.location, w.graph[w.location] + v);
+}
+
 void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int action, int mods)
 {
 	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(glfwWindow));
 
-	if ((mods & GLFW_MOD_CONTROL) && key == GLFW_KEY_C) // copy
-	{
-		w.clipboard = w.graph[w.location];
-		return;
-	}
-
-	if ((mods & GLFW_MOD_CONTROL) && key == GLFW_KEY_V) // paste
-	{
-		if (w.clipboard) w.graph.replace(w.location, *w.clipboard);
-		return;
-	}
-
 	if (action == GLFW_PRESS)
 	{
+		if (mods & GLFW_MOD_CONTROL)
+		{
+			switch (key)
+			{
+				case GLFW_KEY_Z:
+					if (!w.undo.empty())
+					{
+						std::tie(w.graph, w.location) = w.undo.top();
+						w.undo.pop();
+						w.next_pos = boost::none;
+					}
+					return;
+
+				case GLFW_KEY_C: // copy
+					w.clipboard = w.graph[w.location];
+					return;
+
+				case GLFW_KEY_V: // paste
+					if (w.clipboard) w.graph.replace(w.location, *w.clipboard);
+					return;
+			}
+
+			return;
+		}
+
 		switch (key)
 		{
-			case GLFW_KEY_INSERT: w.graph.clone(w.location); break;
+			case GLFW_KEY_INSERT:
+				push_undo(w);
+				w.graph.clone(w.location);
+				break;
 
 			case GLFW_KEY_PAGE_UP:
 				if (w.location.sequence != 0)
@@ -186,6 +215,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 			// set position to center
 
 			case GLFW_KEY_U:
+				push_undo(w);
 				if (auto nextLoc = next(w.graph, w.location))
 				if (auto prevLoc = prev(w.location))
 				{
@@ -199,16 +229,23 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 
 			case GLFW_KEY_H:
 				if (auto p = prev(w.location))
+				{
+					push_undo(w);
 					replace(w.graph, w.location, w.closest_joint, w.graph[*p][w.closest_joint]);
+				}
 				break;
 			case GLFW_KEY_K:
 				if (auto p = next(w.graph, w.location))
+				{
+					push_undo(w);
 					replace(w.graph, w.location, w.closest_joint, w.graph[*p][w.closest_joint]);
+				}
 				break;
 			case GLFW_KEY_J:
 				if (auto prevLoc = prev(w.location))
 				if (auto nextLoc = next(w.graph, w.location))
 				{
+					push_undo(w);
 					Position p = w.graph[w.location];
 					p[w.closest_joint] = (w.graph[*prevLoc][w.closest_joint] + w.graph[*nextLoc][w.closest_joint]) / 2;
 					for(int i = 0; i != 30; ++i) spring(p);
@@ -216,13 +253,14 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				}
 				break;
 
-			case GLFW_KEY_KP_4: w.graph.replace(w.location, w.graph[w.location] + V3{-0.02, 0, 0}); break;
-			case GLFW_KEY_KP_6: w.graph.replace(w.location, w.graph[w.location] + V3{0.02, 0, 0}); break;
-			case GLFW_KEY_KP_8: w.graph.replace(w.location, w.graph[w.location] + V3{0, 0, -0.02}); break;
-			case GLFW_KEY_KP_2: w.graph.replace(w.location, w.graph[w.location] + V3{0, 0, 0.02}); break;
+			case GLFW_KEY_KP_4: translate(w, V3{-0.02, 0, 0}); break;
+			case GLFW_KEY_KP_6: translate(w, V3{0.02, 0, 0}); break;
+			case GLFW_KEY_KP_8: translate(w, V3{0, 0, -0.02}); break;
+			case GLFW_KEY_KP_2: translate(w, V3{0, 0, 0.02}); break;
 
 			case GLFW_KEY_KP_9:
 			{
+				push_undo(w);
 				auto p = w.graph[w.location];
 				foreach (j : playerJoints) p[j] = xyz(yrot(-0.05) * V4(p[j], 1));
 				w.graph.replace(w.location, p);
@@ -230,6 +268,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 			}
 			case GLFW_KEY_KP_7:
 			{
+				push_undo(w);
 				auto p = w.graph[w.location];
 				foreach (j : playerJoints) p[j] = xyz(yrot(0.05) * V4(p[j], 1));
 				w.graph.replace(w.location, p);
@@ -240,6 +279,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 
 			case GLFW_KEY_N:
 			{
+				push_undo(w);
 				auto const p = w.graph[w.location];
 				w.location.sequence = w.graph.insert(Sequence{"new", {p, p}});
 				w.location.position = 0;
@@ -251,13 +291,24 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 
 			case GLFW_KEY_DELETE:
 			{
+				auto const before = std::make_pair(w.graph, w.location);
+
 				if (mods & GLFW_MOD_CONTROL)
 				{
+					push_undo(w);
+
 					if (auto const new_seq = w.graph.erase_sequence(w.location.sequence))
 						w.location = {*new_seq, 0};
+					else w.undo.pop();
 				}
-				else if (auto const new_pos = w.graph.erase(w.location))
-					w.location.position = *new_pos;
+				else
+				{
+					push_undo(w);
+
+					if (auto const new_pos = w.graph.erase(w.location))
+						w.location.position = *new_pos;
+					else w.undo.pop();
+				}
 
 				break;
 			}
@@ -292,7 +343,11 @@ void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int 
 {
 	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(glfwWindow));
 
-	if (action == GLFW_PRESS) w.chosen_joint = w.closest_joint;
+	if (action == GLFW_PRESS)
+	{
+		push_undo(w);
+		w.chosen_joint = w.closest_joint;
+	}
 
 	if (action == GLFW_RELEASE)
 	{
