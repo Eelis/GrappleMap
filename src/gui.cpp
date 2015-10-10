@@ -212,6 +212,17 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				}
 				break;
 
+			// swap players
+
+			case GLFW_KEY_X:
+			{
+				push_undo(w);
+				auto p = w.graph[w.location];
+				swap(p[0], p[1]);
+				w.graph.replace(w.location, p);
+				return;
+			}
+
 			// set position to center
 
 			case GLFW_KEY_U:
