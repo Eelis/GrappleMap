@@ -2,12 +2,12 @@
 #include "util.hpp"
 
 extern PerJoint<JointDef> const jointDefs =
-	{{ { LeftToe, 0.025, false}
-	, { RightToe, 0.025, false}
+	{{ { LeftToe, 0.025, true}
+	, { RightToe, 0.025, true}
 	, { LeftHeel, 0.03, false}
 	, { RightHeel, 0.03, false}
-	, { LeftAnkle, 0.03, true}
-	, { RightAnkle, 0.03, true}
+	, { LeftAnkle, 0.03, false}
+	, { RightAnkle, 0.03, false}
 	, { LeftKnee, 0.05, true}
 	, { RightKnee, 0.05, true}
 	, { LeftHip, 0.10, true}
@@ -26,6 +26,38 @@ extern PerJoint<JointDef> const jointDefs =
 	, { Neck, 0.04, false}
 	, { Head, 0.11, true}
 	}};
+
+char const * to_string(Joint const j)
+{
+	switch (j)
+	{
+		case LeftToe: return "left toe";
+		case RightToe: return "right toe";
+		case LeftHeel: return "left heel";
+		case RightHeel: return "right heel";
+		case LeftAnkle: return "left ankle";
+		case RightAnkle: return "right ankle";
+		case LeftKnee: return "left knee";
+		case RightKnee: return "right knee";
+		case LeftHip: return "left hip";
+		case RightHip: return "right hip";
+		case LeftShoulder: return "left shoulder";
+		case RightShoulder: return "right shoulder";
+		case LeftElbow: return "left elbow";
+		case RightElbow: return "right elbow";
+		case LeftWrist: return "left wrist";
+		case RightWrist: return "right wrist";
+		case LeftHand: return "left hand";
+		case RightHand: return "right hand";
+		case LeftFingers: return "left fingers";
+		case RightFingers: return "right fingers";
+		case Core: return "core";
+		case Neck: return "neck";
+		case Head: return "head";
+
+		default: return "?";
+	}
+}
 
 inline std::array<PlayerJoint, joint_count * 2> make_playerJoints()
 {

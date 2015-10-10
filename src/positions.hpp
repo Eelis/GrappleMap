@@ -26,6 +26,8 @@ constexpr Joint joints[] = { JOINTS };
 
 #undef JOINTS
 
+char const * to_string(Joint);
+
 constexpr uint32_t joint_count = sizeof(joints) / sizeof(Joint);
 
 struct PlayerJoint { unsigned player; Joint joint; };
