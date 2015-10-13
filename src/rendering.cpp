@@ -102,7 +102,7 @@ void drawViables(Graph const & graph, Viables const & viable, PlayerJoint const 
 		auto const r = v.second.reorientation;
 		auto & seq = graph.sequence(v.first).positions;
 
-		glColor4f(1, 1, 0, 0.5);
+		glColor4f(1, 1, 0, 0.3);
 
 		glDisable(GL_DEPTH_TEST);
 
