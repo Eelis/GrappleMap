@@ -356,21 +356,13 @@ void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int 
 
 	if (action == GLFW_PRESS)
 	{
-		push_undo(w);
+		if (button == GLFW_MOUSE_BUTTON_LEFT)
+			push_undo(w);
+
 		w.chosen_joint = w.closest_joint;
 	}
-
-	if (action == GLFW_RELEASE)
-	{
+	else if (action == GLFW_RELEASE)
 		w.chosen_joint = boost::none;
-
-		if (button == GLFW_MOUSE_BUTTON_RIGHT && w.next_pos && w.next_pos->howfar > 0.5)
-		{
-			w.location = w.next_pos->pis;
-			w.reorientation = w.next_pos->reorientation;
-			w.next_pos = boost::none;
-		}
-	}
 }
 
 void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double yoffset)
@@ -446,20 +438,23 @@ int main(int const argc, char const * const * const argv)
 				w.viable, w.graph, w.chosen_joint ? *w.chosen_joint : w.closest_joint,
 				{w.location.sequence, w.location.position}, w.reorientation, w.camera, cursor, w.edit_mode))
 		{
-			double const speed = 0.08;
-
-			if (w.next_pos)
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 			{
-				if (w.next_pos->pis == best_next_pos->pis &&
-				    w.next_pos->reorientation == best_next_pos->reorientation)
-					w.next_pos->howfar += std::max(-speed, std::min(speed, best_next_pos->howfar - w.next_pos->howfar));
-				else if (w.next_pos->howfar > 0.05)
-					w.next_pos->howfar = std::max(0., w.next_pos->howfar - speed);
+				double const speed = 0.08;
+
+				if (w.next_pos)
+				{
+					if (w.next_pos->pis == best_next_pos->pis &&
+						w.next_pos->reorientation == best_next_pos->reorientation)
+						w.next_pos->howfar += std::max(-speed, std::min(speed, best_next_pos->howfar - w.next_pos->howfar));
+					else if (w.next_pos->howfar > 0.05)
+						w.next_pos->howfar = std::max(0., w.next_pos->howfar - speed);
+					else
+						w.next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
+				}
 				else
 					w.next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
 			}
-			else
-				w.next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
 		}
 
 		Position const reorientedPosition = apply(w.reorientation, w.graph[w.location]);
@@ -490,16 +485,16 @@ int main(int const argc, char const * const * const argv)
 		}
 		else
 		{
-			if (!w.chosen_joint)
-				w.closest_joint = *minimal(
-					playerJoints.begin(), playerJoints.end(),
-					[&](PlayerJoint j) { return norm2(world2xy(w.camera, reorientedPosition[j]) - cursor); });
-
-			if (w.next_pos && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+			if (w.next_pos)
 				posToDraw = between(
 						reorientedPosition,
 						apply(w.next_pos->reorientation, w.graph[w.next_pos->pis]),
 						w.next_pos->howfar);
+
+			if (!w.chosen_joint)
+				w.closest_joint = *minimal(
+					playerJoints.begin(), playerJoints.end(),
+					[&](PlayerJoint j) { return norm2(world2xy(w.camera, posToDraw[j]) - cursor); });
 		}
 
 		auto const center = xz(posToDraw[0][Core] + posToDraw[1][Core]) / 2;
