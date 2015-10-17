@@ -327,29 +327,6 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 	}
 }
 
-GLfloat light_diffuse[] = {0.5, 0.5, 0.5, 1.0};
-GLfloat light_ambient[] = {0.3, 0.3, 0.3, 0.0};
-
-void prepareDraw(Camera const & camera, int width, int height)
-{
-	glViewport(0, 0, width, height);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-	GLfloat light_position[] = {1.0, 2.0, 1.0, 0.0};
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_COLOR_MATERIAL);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixd(camera.projection().data());
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixd(camera.model_view().data());
-}
-
 void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int const action, int /*mods*/)
 {
 	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(glfwWindow));
@@ -371,11 +348,19 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 
 	if (yoffset == -1)
 	{
-		if (w.location.position != 0) --w.location.position;
+		if (w.location.position != 0)
+		{
+			--w.location.position;
+			w.next_pos = boost::none;
+		}
 	}
 	else if (yoffset == 1)
 	{
-		if (auto const n = next(w.graph, w.location)) w.location = *n;
+		if (auto const n = next(w.graph, w.location))
+		{
+			w.location = *n;
+			w.next_pos = boost::none;
+		}
 	}
 
 	print_status(w);
@@ -485,7 +470,7 @@ int main(int const argc, char const * const * const argv)
 		}
 		else
 		{
-			if (w.next_pos)
+			if (w.next_pos && (!w.edit_mode || glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS))
 				posToDraw = between(
 						reorientedPosition,
 						apply(w.next_pos->reorientation, w.graph[w.next_pos->pis]),
@@ -511,7 +496,7 @@ int main(int const argc, char const * const * const argv)
 
 		auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
 
-		render(w.viable, posToDraw, special_joint, w.edit_mode);
+		render(&w.viable, posToDraw, special_joint, w.edit_mode);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

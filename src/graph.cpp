@@ -102,3 +102,12 @@ boost::optional<PosNum> Graph::erase(PositionInSequence const pis)
 
 	return pos;
 }
+
+boost::optional<SeqNum> seq_by_desc(Graph const & graph, std::string const & desc)
+{
+	for (SeqNum seqNum = 0; seqNum != graph.num_sequences(); ++seqNum)
+		if (graph.sequence(seqNum).description == desc)
+			return seqNum;
+	
+	return boost::none;
+}

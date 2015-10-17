@@ -17,8 +17,8 @@ class Graph
 	{
 		ReorientedNode from, to;
 		Sequence sequence;
-			// invariant: get(g, from) == sequence.positions.front()
-			// invariant: get(g, to) == sequences.positions.back()
+			// invariant: g[from] == sequence.positions.front()
+			// invariant: g[to] == sequences.positions.back()
 	};
 
 	std::vector<Position> nodes;
@@ -84,6 +84,16 @@ inline PosNum last_pos(Graph const & g, SeqNum const s)
 	return g.sequence(s).positions.size() - 1;
 }
 
+inline PositionInSequence first_pos_in(SeqNum const s)
+{
+	return {s, 0};
+}
+
+inline PositionInSequence last_pos_in(Graph const & g, SeqNum const s)
+{
+	return {s, last_pos(g, s)};
+}
+
 inline boost::optional<PositionInSequence> prev(PositionInSequence const pis)
 {
 	if (pis.position == 0) return boost::none;
@@ -109,5 +119,7 @@ inline void replace(Graph & graph, PositionInSequence const pis, PlayerJoint con
 	p[j] = v;
 	graph.replace(pis, p);
 }
+
+boost::optional<SeqNum> seq_by_desc(Graph const &, std::string const & desc);
 
 #endif

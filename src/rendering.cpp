@@ -1,6 +1,7 @@
 #include "rendering.hpp"
 #include "util.hpp"
 #include "graph.hpp"
+#include "camera.hpp"
 
 namespace
 {
@@ -49,8 +50,8 @@ void grid()
 	glEnd();
 }
 
-void render(Viables const & viables, Position const & pos,
-	PlayerJoint const highlight_joint, bool const edit_mode)
+void render(Viables const * const viables, Position const & pos,
+	boost::optional<PlayerJoint> const highlight_joint, bool const edit_mode)
 {
 	auto limbs = [&](Player const & player)
 		{
@@ -76,7 +77,7 @@ void render(Viables const & viables, Position const & pos,
 
 		if (edit_mode)
 			color = highlight ? yellow : white;
-		else if (viables[pj].total_dist == 0)
+		else if (!viables || (*viables)[pj].total_dist == 0)
 			extraBig = 0;
 		else
 			color = highlight
@@ -110,10 +111,33 @@ void drawViables(Graph const & graph, Viables const & viable, PlayerJoint const 
 		for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i][j]));
 		glEnd();
 
-		glPointSize(20);
+		glPointSize(15);
 		glBegin(GL_POINTS);
 		for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i][j]));
 		glEnd();
 		glEnable(GL_DEPTH_TEST);
 	}
 }
+
+void prepareDraw(Camera const & camera, int width, int height)
+{
+	GLfloat light_diffuse[] = {0.5, 0.5, 0.5, 1.0};
+	GLfloat light_ambient[] = {0.3, 0.3, 0.3, 0.0};
+	glViewport(0, 0, width, height);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	GLfloat light_position[] = {1.0, 2.0, 1.0, 0.0};
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_COLOR_MATERIAL);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadMatrixd(camera.projection().data());
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrixd(camera.model_view().data());
+}
+

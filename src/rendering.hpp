@@ -12,11 +12,14 @@ inline void glColor(V3 v) { glColor3d(v.x, v.y, v.z); }
 
 void grid();
 
-void render(Viables const & viables, Position const & pos,
-	PlayerJoint const highlight_joint, bool const edit_mode);
+void render(Viables const *, Position const &,
+	boost::optional<PlayerJoint> highlight_joint, bool edit_mode);
 
+struct Camera;
 struct Graph;
 
-void drawViables(Graph const & graph, Viables const & viable, PlayerJoint const j);
+void drawViables(Graph const &, Viables const &, PlayerJoint);
+
+void prepareDraw(Camera const &, int width, int height);
 
 #endif
