@@ -3,6 +3,7 @@
 #include "graph.hpp"
 #include <fstream>
 #include <iterator>
+#include <cstring>
 
 namespace
 {
@@ -94,6 +95,9 @@ std::vector<Sequence> load(std::string const filename)
 {
 	std::vector<Sequence> r;
 	std::ifstream ff(filename);
+
+	if (!ff) throw std::runtime_error(filename + ": " + std::strerror(errno));
+
 	ff >> r;
 
 	size_t p = 0;

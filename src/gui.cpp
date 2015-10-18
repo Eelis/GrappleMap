@@ -22,6 +22,7 @@
 #include <stack>
 
 #include <boost/optional.hpp>
+#include <boost/program_options.hpp>
 
 using boost::optional;
 using std::string;
@@ -116,11 +117,18 @@ optional<NextPosition> determineNextPos(
 
 struct Window
 {
-	explicit Window(string const f): filename(f), graph(load(f)) {}
+	explicit Window(string const f, NodeNum const start)
+		: filename(f), graph(load(filename))
+	{
+		if (auto pis = node_as_posinseq(graph, start))
+			location = *pis;
+		else
+			throw std::runtime_error("cannot find sequence starting/ending at specified node");
+	}
 
 	string filename;
 	Graph graph;
-	PositionInSequence location{0, 0};
+	PositionInSequence location;
 	PlayerJoint closest_joint = {0, LeftAnkle};
 	optional<PlayerJoint> chosen_joint;
 	bool edit_mode = false;
@@ -368,162 +376,178 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 
 int main(int const argc, char const * const * const argv)
 {
-	if (argc != 2)
+	namespace po = boost::program_options;
+
+	try
 	{
-		std::cout << "usage: jjm-gui <filename>\n";
-		return 1;
-	}
+		po::options_description desc("options");
+		desc.add_options()
+			("help", "show this help")
+			("start", po::value<NodeNum>()->default_value(0), "initial node")
+			("db", po::value<std::string>()->default_value("positions.txt"), "position database file");
 
-	Window w(argv[1]);
+		po::variables_map vm;
+		po::store(po::parse_command_line(argc, argv, desc), vm);
+		po::notify(vm);
 
-	if (!glfwInit()) return -1;
+		if (vm.count("help")) { std::cout << desc << '\n'; return 0; }
 
-	GLFWwindow * const window = glfwCreateWindow(640, 480, "Jiu Jitsu Mapper", nullptr, nullptr);
+		Window w(vm["db"].as<std::string>(), vm["start"].as<NodeNum>());
 
-	if (!window) { glfwTerminate(); return -1; }
+		if (!glfwInit()) return -1;
 
-	glfwSetWindowUserPointer(window, &w);
+		GLFWwindow * const window = glfwCreateWindow(640, 480, "Jiu Jitsu Mapper", nullptr, nullptr);
 
-	glfwSetKeyCallback(window, key_callback);
-	glfwSetMouseButtonCallback(window, mouse_button_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-	
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1);
+		if (!window) { glfwTerminate(); return -1; }
 
-	while (!glfwWindowShouldClose(window))
-	{
-		glfwPollEvents();
+		glfwSetWindowUserPointer(window, &w);
 
-		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) w.camera.rotateVertical(-0.05);
-		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) w.camera.rotateVertical(0.05);
-		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { w.camera.rotateHorizontal(-0.03); w.jiggle = M_PI; }
-		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { w.camera.rotateHorizontal(0.03); w.jiggle = 0; }
-		if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) w.camera.zoom(-0.05);
-		if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) w.camera.zoom(0.05);
+		glfwSetKeyCallback(window, key_callback);
+		glfwSetMouseButtonCallback(window, mouse_button_callback);
+		glfwSetScrollCallback(window, scroll_callback);
+		
+		glfwMakeContextCurrent(window);
+		glfwSwapInterval(1);
 
-		if (!w.edit_mode && !w.chosen_joint)
+		while (!glfwWindowShouldClose(window))
 		{
-			w.jiggle += 0.01;
-			w.camera.rotateHorizontal(sin(w.jiggle) * 0.0005);
-		}
+			glfwPollEvents();
 
-		int width, height;
-		glfwGetFramebufferSize(window, &width, &height);
-		w.camera.setViewportSize(width, height);
+			if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) w.camera.rotateVertical(-0.05);
+			if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) w.camera.rotateVertical(0.05);
+			if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { w.camera.rotateHorizontal(-0.03); w.jiggle = M_PI; }
+			if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { w.camera.rotateHorizontal(0.03); w.jiggle = 0; }
+			if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) w.camera.zoom(-0.05);
+			if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) w.camera.zoom(0.05);
 
-		foreach (j : playerJoints)
-			w.viable[j] = determineViables(w.graph, w.location, j, w.edit_mode, w.camera, w.reorientation);
-
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
-		V2 const cursor = {((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
-
-		if (auto best_next_pos = determineNextPos(
-				w.viable, w.graph, w.chosen_joint ? *w.chosen_joint : w.closest_joint,
-				{w.location.sequence, w.location.position}, w.reorientation, w.camera, cursor, w.edit_mode))
-		{
-			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+			if (!w.edit_mode && !w.chosen_joint)
 			{
-				double const speed = 0.08;
+				w.jiggle += 0.01;
+				w.camera.rotateHorizontal(sin(w.jiggle) * 0.0005);
+			}
 
-				if (w.next_pos)
+			int width, height;
+			glfwGetFramebufferSize(window, &width, &height);
+			w.camera.setViewportSize(width, height);
+
+			foreach (j : playerJoints)
+				w.viable[j] = determineViables(w.graph, w.location, j, w.edit_mode, w.camera, w.reorientation);
+
+			double xpos, ypos;
+			glfwGetCursorPos(window, &xpos, &ypos);
+			V2 const cursor = {((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
+
+			if (auto best_next_pos = determineNextPos(
+					w.viable, w.graph, w.chosen_joint ? *w.chosen_joint : w.closest_joint,
+					{w.location.sequence, w.location.position}, w.reorientation, w.camera, cursor, w.edit_mode))
+			{
+				if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 				{
-					if (w.next_pos->pis == best_next_pos->pis &&
-						w.next_pos->reorientation == best_next_pos->reorientation)
-						w.next_pos->howfar += std::max(-speed, std::min(speed, best_next_pos->howfar - w.next_pos->howfar));
-					else if (w.next_pos->howfar > 0.05)
-						w.next_pos->howfar = std::max(0., w.next_pos->howfar - speed);
+					double const speed = 0.08;
+
+					if (w.next_pos)
+					{
+						if (w.next_pos->pis == best_next_pos->pis &&
+							w.next_pos->reorientation == best_next_pos->reorientation)
+							w.next_pos->howfar += std::max(-speed, std::min(speed, best_next_pos->howfar - w.next_pos->howfar));
+						else if (w.next_pos->howfar > 0.05)
+							w.next_pos->howfar = std::max(0., w.next_pos->howfar - speed);
+						else
+							w.next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
+					}
 					else
 						w.next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
 				}
-				else
-					w.next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
+			}
+
+			Position const reorientedPosition = apply(w.reorientation, w.graph[w.location]);
+
+			Position posToDraw = reorientedPosition;
+
+			// editing
+
+			if (w.chosen_joint && w.edit_mode && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			{
+				Position new_pos = w.graph[w.location];
+
+				V4 const dragger = yrot(-w.camera.getHorizontalRotation() - w.reorientation.angle) * V4{{1,0,0},0};
+				
+				auto & joint = new_pos[*w.chosen_joint];
+
+				auto off = world2xy(w.camera, apply(w.reorientation, joint)) - cursor;
+
+				joint.x -= dragger.x * off.x;
+				joint.z -= dragger.z * off.x;
+				joint.y = std::max(jointDefs[w.chosen_joint->joint].radius, joint.y - off.y);
+
+				spring(new_pos, w.chosen_joint);
+
+				w.graph.replace(w.location, new_pos);
+
+				posToDraw = apply(w.reorientation, new_pos);
+			}
+			else
+			{
+				if (w.next_pos && (!w.edit_mode || glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS))
+					posToDraw = between(
+							reorientedPosition,
+							apply(w.next_pos->reorientation, w.graph[w.next_pos->pis]),
+							w.next_pos->howfar);
+
+				if (!w.chosen_joint)
+					w.closest_joint = *minimal(
+						playerJoints.begin(), playerJoints.end(),
+						[&](PlayerJoint j) { return norm2(world2xy(w.camera, posToDraw[j]) - cursor); });
+			}
+
+			auto const center = xz(posToDraw[0][Core] + posToDraw[1][Core]) / 2;
+
+			w.camera.setOffset(center);
+
+			prepareDraw(w.camera, 0, 0, width, height);
+
+			glEnable(GL_DEPTH);
+			glEnable(GL_DEPTH_TEST);
+
+			grid();
+
+			auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
+
+			render(&w.viable, posToDraw, special_joint, boost::none, w.edit_mode);
+
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			glLineWidth(4);
+			glNormal3d(0, 1, 0);
+			drawViables(w.graph, w.viable, special_joint);
+
+			glDisable(GL_DEPTH_TEST);
+			glPointSize(20);
+			glColor(white);
+
+			glBegin(GL_POINTS);
+			glVertex(posToDraw[special_joint]);
+			glEnd();
+
+			glfwSwapBuffers(window);
+
+			if (w.chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && w.next_pos && w.next_pos->howfar >= 1)
+			{
+				w.location = w.next_pos->pis;
+				w.reorientation = w.next_pos->reorientation;
+				w.next_pos = boost::none;
+				print_status(w);
 			}
 		}
 
-		Position const reorientedPosition = apply(w.reorientation, w.graph[w.location]);
+		glfwTerminate();
 
-		Position posToDraw = reorientedPosition;
-
-		// editing
-
-		if (w.chosen_joint && w.edit_mode && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-		{
-			Position new_pos = w.graph[w.location];
-
-			V4 const dragger = yrot(-w.camera.getHorizontalRotation() - w.reorientation.angle) * V4{{1,0,0},0};
-			
-			auto & joint = new_pos[*w.chosen_joint];
-
-			auto off = world2xy(w.camera, apply(w.reorientation, joint)) - cursor;
-
-			joint.x -= dragger.x * off.x;
-			joint.z -= dragger.z * off.x;
-			joint.y = std::max(jointDefs[w.chosen_joint->joint].radius, joint.y - off.y);
-
-			spring(new_pos, w.chosen_joint);
-
-			w.graph.replace(w.location, new_pos);
-
-			posToDraw = apply(w.reorientation, new_pos);
-		}
-		else
-		{
-			if (w.next_pos && (!w.edit_mode || glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS))
-				posToDraw = between(
-						reorientedPosition,
-						apply(w.next_pos->reorientation, w.graph[w.next_pos->pis]),
-						w.next_pos->howfar);
-
-			if (!w.chosen_joint)
-				w.closest_joint = *minimal(
-					playerJoints.begin(), playerJoints.end(),
-					[&](PlayerJoint j) { return norm2(world2xy(w.camera, posToDraw[j]) - cursor); });
-		}
-
-		auto const center = xz(posToDraw[0][Core] + posToDraw[1][Core]) / 2;
-
-		w.camera.setOffset(center);
-
-		prepareDraw(w.camera, 0, 0, width, height);
-
-		glEnable(GL_DEPTH);
-		glEnable(GL_DEPTH_TEST);
-
-		grid();
-
-		auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
-
-		render(&w.viable, posToDraw, special_joint, boost::none, w.edit_mode);
-
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		glLineWidth(4);
-		glNormal3d(0, 1, 0);
-		drawViables(w.graph, w.viable, special_joint);
-
-		glDisable(GL_DEPTH_TEST);
-		glPointSize(20);
-		glColor(white);
-
-		glBegin(GL_POINTS);
-		glVertex(posToDraw[special_joint]);
-		glEnd();
-
-		glfwSwapBuffers(window);
-
-		if (w.chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && w.next_pos && w.next_pos->howfar >= 1)
-		{
-			w.location = w.next_pos->pis;
-			w.reorientation = w.next_pos->reorientation;
-			w.next_pos = boost::none;
-			print_status(w);
-		}
+		std::cout << '\n';
 	}
-
-	glfwTerminate();
-
-	std::cout << '\n';
+	catch (std::exception const & e)
+	{
+		std::cerr << "error: " << e.what() << '\n';
+		return 1;
+	}
 }

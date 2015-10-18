@@ -111,3 +111,14 @@ boost::optional<SeqNum> seq_by_desc(Graph const & graph, std::string const & des
 	
 	return boost::none;
 }
+
+boost::optional<PositionInSequence> node_as_posinseq(Graph const & graph, NodeNum const node)
+{
+	for (SeqNum seqNum = 0; seqNum != graph.num_sequences(); ++seqNum)
+	{
+		if (graph.from(seqNum).node == node) return first_pos_in(seqNum);
+		else if (graph.to(seqNum).node == node) return last_pos_in(graph, seqNum);
+	}
+
+	return boost::none;
+}

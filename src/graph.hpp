@@ -122,4 +122,7 @@ inline void replace(Graph & graph, PositionInSequence const pis, PlayerJoint con
 
 boost::optional<SeqNum> seq_by_desc(Graph const &, std::string const & desc);
 
+boost::optional<PositionInSequence> node_as_posinseq(Graph const &, NodeNum);
+	// may return either the beginning of a sequence or the end
+
 #endif
