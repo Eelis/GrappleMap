@@ -36,6 +36,7 @@ namespace
 
 void grid()
 {
+	glNormal3d(0, 1, 0);
 	glColor3f(0.5,0.5,0.5);
 	glLineWidth(2);
 
@@ -122,17 +123,15 @@ void drawViables(Graph const & graph, Viables const & viable, PlayerJoint const 
 	}
 }
 
-void prepareDraw(Camera const & camera, int width, int height)
+void prepareDraw(Camera & camera, int x, int y, int width, int height)
 {
-	GLfloat light_diffuse[] = {0.5, 0.5, 0.5, 1.0};
-	GLfloat light_ambient[] = {0.3, 0.3, 0.3, 0.0};
-	glViewport(0, 0, width, height);
+	glViewport(x, y, width, height);
+	glScissor(x, y, width, height);
+
+	camera.setViewportSize(width, height);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-	GLfloat light_position[] = {1.0, 2.0, 1.0, 0.0};
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_COLOR_MATERIAL);
@@ -142,5 +141,14 @@ void prepareDraw(Camera const & camera, int width, int height)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixd(camera.model_view().data());
+
+
+	GLfloat light_diffuse[] = {0.5, 0.5, 0.5, 1.0};
+	GLfloat light_ambient[] = {0.3, 0.3, 0.3, 0.0};
+	GLfloat light_position[] = {1.0, 2.0, 1.0, 0.0};
+
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 }
 

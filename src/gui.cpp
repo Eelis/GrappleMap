@@ -452,7 +452,7 @@ int main(int const argc, char const * const * const argv)
 		{
 			Position new_pos = w.graph[w.location];
 
-			V4 const dragger = yrot(-w.camera.getHorizontalRotation()) * V4{{1,0,0},0};
+			V4 const dragger = yrot(-w.camera.getHorizontalRotation() - w.reorientation.angle) * V4{{1,0,0},0};
 			
 			auto & joint = new_pos[*w.chosen_joint];
 
@@ -486,12 +486,11 @@ int main(int const argc, char const * const * const argv)
 
 		w.camera.setOffset(center);
 
-		prepareDraw(w.camera, width, height);
+		prepareDraw(w.camera, 0, 0, width, height);
 
 		glEnable(GL_DEPTH);
 		glEnable(GL_DEPTH_TEST);
 
-		glNormal3d(0, 1, 0);
 		grid();
 
 		auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;

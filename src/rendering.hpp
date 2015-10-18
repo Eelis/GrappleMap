@@ -30,6 +30,6 @@ struct Graph;
 
 void drawViables(Graph const &, Viables const &, PlayerJoint);
 
-void prepareDraw(Camera const &, int width, int height);
+void prepareDraw(Camera &, int x, int y, int width, int height);
 
 #endif

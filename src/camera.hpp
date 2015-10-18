@@ -30,7 +30,7 @@ public:
 	{
 		viewportSize.x = x;
 		viewportSize.y = y;
-		proj = perspective(90, viewportSize.x / viewportSize.y, 0.1, 6);
+		proj = perspective(90, viewportSize.x / viewportSize.y, 0.01, 6);
 		full_ = proj * mv;
 	}
 

@@ -93,6 +93,10 @@ int main(int const argc, char const * const * const argv)
 
 		unsigned const frames_per_position = vm["frames-per-pos"].as<unsigned>();
 
+		glEnable(GL_SCISSOR_TEST);
+		glEnable(GL_DEPTH);
+		glEnable(GL_DEPTH_TEST);
+
 		foreach(p : connectSequences(graph, seqs))
 			for(
 				PositionInSequence location = first_pos_in(p.first);
@@ -116,7 +120,6 @@ int main(int const argc, char const * const * const argv)
 
 					int width, height;
 					glfwGetFramebufferSize(window, &width, &height);
-					camera.setViewportSize(width, height);
 
 					Position posToDraw = between(
 						apply(p.second, graph[location]),
@@ -128,32 +131,31 @@ int main(int const argc, char const * const * const argv)
 
 					camera.setOffset(center);
 
-					prepareDraw(camera, width, height);
+					auto view = [&](boost::optional<unsigned> first_person_player, int x, int y, int w, int h)
+						{
+							prepareDraw(camera, x, y, w, h);
 
-					if (first_person_player)
-					{
-						glMatrixMode(GL_MODELVIEW);
-						auto p = *first_person_player;
+							if (first_person_player)
+							{
+								auto const & p = posToDraw[*first_person_player];
 
-						glLoadIdentity();
-						gluLookAt(
-							posToDraw[p][Head],
-							(posToDraw[p][LeftHand] + posToDraw[p][RightHand]) / 2.,
-							posToDraw[p][Head] - posToDraw[p][Core]);
-					}
+								glMatrixMode(GL_MODELVIEW);
+								glLoadIdentity();
+								gluLookAt(p[Head], (p[LeftHand] + p[RightHand]) / 2., p[Head] - p[Core]);
+							}
 
-					glEnable(GL_DEPTH);
-					glEnable(GL_DEPTH_TEST);
+							grid();
+							render(
+								nullptr, // no viables
+								posToDraw,
+								boost::none, // no highlighted joint
+								first_person_player,
+								false); // not edit mode
+						};
 
-					glNormal3d(0, 1, 0);
-					grid();
-
-					render(
-						nullptr, // no viables
-						posToDraw,
-						boost::none, // no highlighted joint
-						first_person_player,
-						false); // not edit mode
+					view(boost::none, 0, 0, width - width/2, height);
+					view(boost::optional<unsigned>(0), width-width/2, height-height/2, width/2, height/2);
+					view(boost::optional<unsigned>(1), width-width/2, 0, width/2, height/2);
 
 					glfwSwapBuffers(window);
 				}
