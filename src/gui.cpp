@@ -428,14 +428,15 @@ int main(int const argc, char const * const * const argv)
 
 			int width, height;
 			glfwGetFramebufferSize(window, &width, &height);
-			w.camera.setViewportSize(width, height);
+
+			w.camera.setViewportSize(width/2, height);
 
 			foreach (j : playerJoints)
 				w.viable[j] = determineViables(w.graph, w.location, j, w.edit_mode, w.camera, w.reorientation);
 
 			double xpos, ypos;
 			glfwGetCursorPos(window, &xpos, &ypos);
-			V2 const cursor = {((xpos / width) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
+			V2 const cursor = {((xpos / (width/2)) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
 
 			if (auto best_next_pos = determineNextPos(
 					w.viable, w.graph, w.chosen_joint ? *w.chosen_joint : w.closest_joint,
@@ -504,33 +505,9 @@ int main(int const argc, char const * const * const argv)
 
 			w.camera.setOffset(center);
 
-			prepareDraw(w.camera, 0, 0, width, height);
-
-			glEnable(GL_DEPTH);
-			glEnable(GL_DEPTH_TEST);
-
-			grid();
-
 			auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
 
-			render(&w.viable, posToDraw, special_joint, boost::none, w.edit_mode);
-
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			glLineWidth(4);
-			glNormal3d(0, 1, 0);
-			drawViables(w.graph, w.viable, special_joint);
-
-			glDisable(GL_DEPTH_TEST);
-			glPointSize(20);
-			glColor(white);
-
-			glBegin(GL_POINTS);
-			glVertex(posToDraw[special_joint]);
-			glEnd();
-
-			glfwSwapBuffers(window);
+			renderWindow(&w.viable, w.graph, window, posToDraw, w.camera, special_joint, w.edit_mode);
 
 			if (w.chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && w.next_pos && w.next_pos->howfar >= 1)
 			{
