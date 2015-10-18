@@ -7,11 +7,13 @@
 #include "rendering.hpp"
 #include "graph.hpp"
 #include <GLFW/glfw3.h>
+#include <boost/program_options.hpp>
 #include <array>
 #include <iostream>
 #include <GL/glu.h>
 #include <vector>
-#include <iterator>
+#include <fstream>
+
 
 Reorientation sequence_transition(Graph const & graph, SeqNum const from, SeqNum const to)
 {
@@ -45,86 +47,124 @@ std::vector<std::pair<SeqNum, Reorientation>>
 
 int main(int const argc, char const * const * const argv)
 {
-	if (argc != 2)
+	namespace po = boost::program_options;
+
+	try
 	{
-		std::cout << "usage: jjm-playback <positions-file> < <script-file>\n";
+		po::options_description desc("options");
+		desc.add_options()
+			("help", "show this help")
+			("first-person", po::value<unsigned>(), "first person view")
+			("frames-per-pos", po::value<unsigned>()->default_value(20), "number of frames rendered per position")
+			("script", po::value<std::string>()->default_value("script.txt"), "script file")
+			("db", po::value<std::string>()->default_value("positions.txt"), "position database file");
+
+		po::variables_map vm;
+		po::store(po::parse_command_line(argc, argv, desc), vm);
+		po::notify(vm);
+
+		if (vm.count("help")) { std::cout << desc << '\n'; return 0; }
+
+		boost::optional<unsigned> first_person_player;
+		if (vm.count("first-person"))
+			first_person_player = vm["first-person"].as<unsigned>();
+
+		Graph graph(load(vm["db"].as<std::string>()));
+		Camera camera;
+
+		std::vector<SeqNum> seqs;
+		{
+			std::string filename = vm["script"].as<std::string>();
+			std::ifstream f(filename);
+			if (!f) throw std::runtime_error(filename + ": " + std::strerror(errno));
+			std::string seq;
+			while (std::getline(f, seq))
+				seqs.push_back(*seq_by_desc(graph, seq));
+		}
+
+		if (!glfwInit()) return -1;
+
+		GLFWwindow * const window = glfwCreateWindow(640, 480, "Jiu Jitsu Mapper", nullptr, nullptr);
+
+		if (!window) { glfwTerminate(); return -1; }
+
+		glfwMakeContextCurrent(window);
+		glfwSwapInterval(1);
+
+		unsigned const frames_per_position = vm["frames-per-pos"].as<unsigned>();
+
+		foreach(p : connectSequences(graph, seqs))
+			for(
+				PositionInSequence location = first_pos_in(p.first);
+				next(graph, location);
+				location = *next(graph, location))
+					// See GCC bug 68003 for the reason behind the DRY violation.
+
+				for (unsigned howfar = 0; howfar != frames_per_position; ++howfar)
+				{
+					camera.rotateHorizontal(-0.01);
+
+					glfwPollEvents();
+					if (glfwWindowShouldClose(window)) return 0;
+
+					if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) camera.rotateVertical(-0.05);
+					if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) camera.rotateVertical(0.05);
+					if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { camera.rotateHorizontal(-0.03); }
+					if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { camera.rotateHorizontal(0.03); }
+					if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) camera.zoom(-0.05);
+					if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) camera.zoom(0.05);
+
+					int width, height;
+					glfwGetFramebufferSize(window, &width, &height);
+					camera.setViewportSize(width, height);
+
+					Position posToDraw = between(
+						apply(p.second, graph[location]),
+						apply(p.second, graph[*next(graph, location)]),
+						howfar / double(frames_per_position)
+						);
+
+					auto const center = xz(posToDraw[0][Core] + posToDraw[1][Core]) / 2;
+
+					camera.setOffset(center);
+
+					prepareDraw(camera, width, height);
+
+					if (first_person_player)
+					{
+						glMatrixMode(GL_MODELVIEW);
+						auto p = *first_person_player;
+
+						glLoadIdentity();
+						gluLookAt(
+							posToDraw[p][Head],
+							(posToDraw[p][LeftHand] + posToDraw[p][RightHand]) / 2.,
+							posToDraw[p][Head] - posToDraw[p][Core]);
+					}
+
+					glEnable(GL_DEPTH);
+					glEnable(GL_DEPTH_TEST);
+
+					glNormal3d(0, 1, 0);
+					grid();
+
+					render(
+						nullptr, // no viables
+						posToDraw,
+						boost::none, // no highlighted joint
+						first_person_player,
+						false); // not edit mode
+
+					glfwSwapBuffers(window);
+				}
+
+		sleep(2);
+
+		glfwTerminate();
+	}
+	catch (std::exception const & e)
+	{
+		std::cerr << "error: " << e.what() << '\n';
 		return 1;
 	}
-
-	Graph graph(load(argv[1]));
-	Camera camera;
-
-	if (!glfwInit()) return -1;
-
-	GLFWwindow * const window = glfwCreateWindow(640, 480, "Jiu Jitsu Mapper", nullptr, nullptr);
-
-	if (!window) { glfwTerminate(); return -1; }
-
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1);
-
-	std::vector<SeqNum> seqs;
-
-	{
-		std::string seq;
-		while (std::getline(std::cin, seq))
-			seqs.push_back(*seq_by_desc(graph, seq));
-	}
-
-	unsigned const frames_per_position = 12;
-
-	foreach(p : connectSequences(graph, seqs))
-		for(
-			PositionInSequence location = first_pos_in(p.first);
-			next(graph, location);
-			location = *next(graph, location))
-				// See GCC bug 68003 for the reason behind the DRY violation.
-
-			for (unsigned howfar = 0; howfar != frames_per_position; ++howfar)
-			{
-				camera.rotateHorizontal(-0.01);
-
-				glfwPollEvents();
-
-				if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) camera.rotateVertical(-0.05);
-				if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) camera.rotateVertical(0.05);
-				if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { camera.rotateHorizontal(-0.03); }
-				if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { camera.rotateHorizontal(0.03); }
-				if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) camera.zoom(-0.05);
-				if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) camera.zoom(0.05);
-
-				int width, height;
-				glfwGetFramebufferSize(window, &width, &height);
-				camera.setViewportSize(width, height);
-
-				Position posToDraw = between(
-					apply(p.second, graph[location]),
-					apply(p.second, graph[*next(graph, location)]),
-					howfar / double(frames_per_position)
-					);
-
-				auto const center = xz(posToDraw[0][Core] + posToDraw[1][Core]) / 2;
-
-				camera.setOffset(center);
-
-				prepareDraw(camera, width, height);
-
-				glEnable(GL_DEPTH);
-				glEnable(GL_DEPTH_TEST);
-
-				glNormal3d(0, 1, 0);
-				grid();
-
-				render(
-					nullptr, // no viables
-					posToDraw,
-					boost::none, // no highlighted joint
-					false); // not edit mode
-
-				glfwSwapBuffers(window);
-			}
-
-	sleep(2);
-
-	glfwTerminate();
 }

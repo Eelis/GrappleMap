@@ -496,7 +496,7 @@ int main(int const argc, char const * const * const argv)
 
 		auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
 
-		render(&w.viable, posToDraw, special_joint, w.edit_mode);
+		render(&w.viable, posToDraw, special_joint, boost::none, w.edit_mode);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

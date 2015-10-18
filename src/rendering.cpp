@@ -51,7 +51,8 @@ void grid()
 }
 
 void render(Viables const * const viables, Position const & pos,
-	boost::optional<PlayerJoint> const highlight_joint, bool const edit_mode)
+	boost::optional<PlayerJoint> const highlight_joint,
+	boost::optional<unsigned> const first_person_player, bool const edit_mode)
 {
 	auto limbs = [&](Player const & player)
 		{
@@ -71,6 +72,8 @@ void render(Viables const * const viables, Position const & pos,
 
 	foreach (pj : playerJoints)
 	{
+		if (pj.player == first_person_player && pj.joint == Head) continue;
+
 		auto color = playerDefs[pj.player].color;
 		bool highlight = pj == highlight_joint;
 		double extraBig = highlight ? 0.01 : 0.005;

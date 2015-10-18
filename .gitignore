@@ -1,4 +1,5 @@
 *.o
 .sconsign.dblite
 src/jjm-gui
+src/jjm-playback
 src/jjm-todot

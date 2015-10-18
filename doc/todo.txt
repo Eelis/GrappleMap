@@ -6,7 +6,6 @@
 - prevent joints moving through eachother (maybe, might be more annoying than useful)
 - sticky floor
 - direction signs ("to truck", "zombie")
-- view from player
 - recognize reorientations with swapped players
 - oculus rift support
 - generate random walks
