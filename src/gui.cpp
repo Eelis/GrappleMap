@@ -134,6 +134,7 @@ struct Window
 	bool edit_mode = false;
 	optional<Position> clipboard;
 	Camera camera;
+	bool split_view = false;
 	double jiggle = 0;
 	Viables viable;
 	Reorientation reorientation = noReorientation();
@@ -308,6 +309,8 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 
 			case GLFW_KEY_S: save(w.graph, w.filename); break;
 
+			case GLFW_KEY_1: w.split_view = !w.split_view; break;
+
 			case GLFW_KEY_DELETE:
 			{
 				auto const before = std::make_pair(w.graph, w.location);
@@ -374,6 +377,20 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 	print_status(w);
 }
 
+std::vector<View> const
+	single_view
+		{ {0, 0, 1, 1, boost::none, 90} },
+	split_view
+		{ {0, 0, .5, 1, boost::none, 90}
+		, {.5, .5, .5, .5, boost::optional<unsigned>(0), 75}
+		, {.5, 0, .5, .5, boost::optional<unsigned>(1), 75} };
+
+View const * main_view(std::vector<View> const & vv)
+{
+	foreach (v : vv) if (!v.first_person) return &v;
+	return nullptr;
+}
+
 int main(int const argc, char const * const * const argv)
 {
 	namespace po = boost::program_options;
@@ -429,37 +446,53 @@ int main(int const argc, char const * const * const argv)
 			int width, height;
 			glfwGetFramebufferSize(window, &width, &height);
 
-			w.camera.setViewportSize(width/2, height);
+			boost::optional<V2> cursor;
 
-			foreach (j : playerJoints)
-				w.viable[j] = determineViables(w.graph, w.location, j, w.edit_mode, w.camera, w.reorientation);
+			auto & views = w.split_view ? split_view : single_view;
 
-			double xpos, ypos;
-			glfwGetCursorPos(window, &xpos, &ypos);
-			V2 const cursor = {((xpos / (width/2)) - 0.5) * 2, ((1-(ypos / height)) - 0.5) * 2};
-
-			if (auto best_next_pos = determineNextPos(
-					w.viable, w.graph, w.chosen_joint ? *w.chosen_joint : w.closest_joint,
-					{w.location.sequence, w.location.position}, w.reorientation, w.camera, cursor, w.edit_mode))
+			if (View const * v = main_view(views))
 			{
-				if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-				{
-					double const speed = 0.08;
+				w.camera.setViewportSize(v->fov, v->w * width, v->h * height);
 
-					if (w.next_pos)
+				foreach (j : playerJoints)
+					w.viable[j] = determineViables(w.graph, w.location, j, w.edit_mode, w.camera, w.reorientation);
+
+				double xpos, ypos;
+				glfwGetCursorPos(window, &xpos, &ypos);
+
+				double x = xpos / width;
+				double y = 1 - (ypos / height);
+
+				if (x >= v->x && x <= v->x + v->w &&
+					y >= v->y && y <= v->y + v->h)
+					cursor = V2{
+						(((x - v->x) / v->w) - 0.5) * 2,
+						(((y - v->y) / v->h) - 0.5) * 2};
+			}
+
+			if (cursor)
+				if (auto best_next_pos = determineNextPos(
+						w.viable, w.graph, w.chosen_joint ? *w.chosen_joint : w.closest_joint,
+						{w.location.sequence, w.location.position}, w.reorientation, w.camera, *cursor, w.edit_mode))
+				{
+					if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 					{
-						if (w.next_pos->pis == best_next_pos->pis &&
-							w.next_pos->reorientation == best_next_pos->reorientation)
-							w.next_pos->howfar += std::max(-speed, std::min(speed, best_next_pos->howfar - w.next_pos->howfar));
-						else if (w.next_pos->howfar > 0.05)
-							w.next_pos->howfar = std::max(0., w.next_pos->howfar - speed);
+						double const speed = 0.08;
+
+						if (w.next_pos)
+						{
+							if (w.next_pos->pis == best_next_pos->pis &&
+								w.next_pos->reorientation == best_next_pos->reorientation)
+								w.next_pos->howfar += std::max(-speed, std::min(speed, best_next_pos->howfar - w.next_pos->howfar));
+							else if (w.next_pos->howfar > 0.05)
+								w.next_pos->howfar = std::max(0., w.next_pos->howfar - speed);
+							else
+								w.next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
+						}
 						else
 							w.next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
 					}
-					else
-						w.next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
 				}
-			}
 
 			Position const reorientedPosition = apply(w.reorientation, w.graph[w.location]);
 
@@ -467,7 +500,7 @@ int main(int const argc, char const * const * const argv)
 
 			// editing
 
-			if (w.chosen_joint && w.edit_mode && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			if (cursor && w.chosen_joint && w.edit_mode && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 			{
 				Position new_pos = w.graph[w.location];
 
@@ -475,7 +508,7 @@ int main(int const argc, char const * const * const argv)
 				
 				auto & joint = new_pos[*w.chosen_joint];
 
-				auto off = world2xy(w.camera, apply(w.reorientation, joint)) - cursor;
+				auto off = world2xy(w.camera, apply(w.reorientation, joint)) - *cursor;
 
 				joint.x -= dragger.x * off.x;
 				joint.z -= dragger.z * off.x;
@@ -495,10 +528,10 @@ int main(int const argc, char const * const * const argv)
 							apply(w.next_pos->reorientation, w.graph[w.next_pos->pis]),
 							w.next_pos->howfar);
 
-				if (!w.chosen_joint)
+				if (cursor && !w.chosen_joint)
 					w.closest_joint = *minimal(
 						playerJoints.begin(), playerJoints.end(),
-						[&](PlayerJoint j) { return norm2(world2xy(w.camera, posToDraw[j]) - cursor); });
+						[&](PlayerJoint j) { return norm2(world2xy(w.camera, posToDraw[j]) - *cursor); });
 			}
 
 			auto const center = xz(posToDraw[0][Core] + posToDraw[1][Core]) / 2;
@@ -507,7 +540,8 @@ int main(int const argc, char const * const * const argv)
 
 			auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
 
-			renderWindow(&w.viable, w.graph, window, posToDraw, w.camera, special_joint, w.edit_mode);
+			renderWindow(
+				views, &w.viable, w.graph, window, posToDraw, w.camera, special_joint, w.edit_mode);
 
 			if (w.chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && w.next_pos && w.next_pos->howfar >= 1)
 			{

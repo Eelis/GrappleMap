@@ -20,17 +20,17 @@ class Camera
 
 public:
 
-	Camera() { setViewportSize(640, 480); computeMv(); }
+	Camera() { setViewportSize(90, 640, 480); computeMv(); }
 
 	M const & projection() const { return proj; }
 	M const & model_view() const { return mv; }
 	M const & full() const { return full_; }
 
-	void setViewportSize(int x, int y)
+	void setViewportSize(double fov, int x, int y)
 	{
 		viewportSize.x = x;
 		viewportSize.y = y;
-		proj = perspective(90, viewportSize.x / viewportSize.y, 0.01, 6);
+		proj = perspective(fov, viewportSize.x / viewportSize.y, 0.01, 6);
 		full_ = proj * mv;
 	}
 

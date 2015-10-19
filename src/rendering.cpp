@@ -138,6 +138,7 @@ namespace
 }
 
 void renderWindow(
+	std::vector<View> const & views,
 	Viables const * const viables,
 	Graph const & graph,
 	GLFWwindow * const window,
@@ -148,18 +149,6 @@ void renderWindow(
 {
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
-
-	struct View
-	{
-		double x, y, w, h; // all in [0,1]
-		boost::optional<unsigned> first_person;
-	};
-
-	View views[]
-		{ View{0, 0, .5, 1, boost::none}
-		, View{.5, .5, .5, .5, boost::optional<unsigned>(0)}
-		, View{.5, 0, .5, .5, boost::optional<unsigned>(1)}
-		};
 
 	glEnable(GL_SCISSOR_TEST);
 
@@ -174,7 +163,7 @@ void renderWindow(
 		glViewport(x, y, w, h);
 		glScissor(x, y, w, h);
 
-		camera.setViewportSize(w, h);
+		camera.setViewportSize(v.fov, w, h);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -192,7 +181,7 @@ void renderWindow(
 			auto const & p = position[*v.first_person];
 
 			glLoadIdentity();
-			gluLookAt(p[Head], (p[LeftHand] + p[RightHand]) / 2., p[Head] - p[Core]);
+			gluLookAt(p[Head], (p[LeftHand] + p[RightHand]) / 2., p[Head] - p[Neck]);
 		}
 		else
 			glLoadMatrixd(camera.model_view().data());

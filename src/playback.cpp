@@ -44,6 +44,11 @@ std::vector<std::pair<SeqNum, Reorientation>>
 	return v;
 }
 
+std::vector<View> const views
+	{ {0, 0, 1, 1, boost::none, 90}
+	, {1-.3-.02, .02, .3, .3, boost::optional<unsigned>(0), 60}
+	, {.02, .02, .3, .3, boost::optional<unsigned>(1), 60} };
+
 int main(int const argc, char const * const * const argv)
 {
 	namespace po = boost::program_options;
@@ -96,7 +101,7 @@ int main(int const argc, char const * const * const argv)
 
 				for (unsigned howfar = 0; howfar != frames_per_position; ++howfar)
 				{
-					camera.rotateHorizontal(-0.01);
+					camera.rotateHorizontal(-0.005);
 
 					glfwPollEvents();
 					if (glfwWindowShouldClose(window)) return 0;
@@ -117,6 +122,7 @@ int main(int const argc, char const * const * const argv)
 					camera.setOffset(xz(posToDraw[0][Core] + posToDraw[1][Core]) / 2);
 
 					renderWindow(
+						views,
 						nullptr, // no viables
 						graph, window, posToDraw, camera,
 						boost::none, // no highlighted joint
