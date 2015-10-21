@@ -7,19 +7,19 @@ namespace
 {
 	Viable viableFront(
 		Graph const & graph, SeqNum const seq, PlayerJoint const j,
-		Camera const & camera, Reorientation const & r)
+		Camera const & camera, PositionReorientation const & r)
 	{
-		auto const xyz = apply(r, graph.sequence(seq).positions.front()[j]);
+		auto const xyz = apply(r, graph.sequence(seq).positions.front(), j);
 		auto const xy = world2xy(camera, xyz);
 		return Viable{seq, r, 0, 0, 1, xyz, xyz, xy, xy};
 	}
 
 	Viable viableBack(
 		Graph const & graph, SeqNum const seq, PlayerJoint const j,
-		Camera const & camera, Reorientation const & r)
+		Camera const & camera, PositionReorientation const & r)
 	{
 		auto const & sequence = graph.sequence(seq);
-		auto const xyz = apply(r, sequence.positions.back()[j]);
+		auto const xyz = apply(r, sequence.positions.back(), j);
 		auto const xy = world2xy(camera, xyz);
 		return Viable{seq, r, 0, end(sequence) - 1, end(sequence), xyz, xyz, xy, xy};
 	}
@@ -33,7 +33,7 @@ namespace
 
 		for (; via.end != sequence.positions.size(); ++via.end)
 		{
-			V3 const v = apply(via.reorientation, sequence.positions[via.end][j]);
+			V3 const v = apply(via.reorientation, sequence.positions[via.end], j);
 			V2 const xy = world2xy(camera, v);
 
 			if (distanceSquared(v, via.endV3) < 0.003) break;
@@ -74,7 +74,7 @@ namespace
 		--pos;
 		for (; pos != -1; --pos)
 		{
-			V3 const v = apply(via.reorientation, sequence.positions[pos][j]);
+			V3 const v = apply(via.reorientation, sequence.positions[pos], j);
 			V2 const xy = world2xy(camera, v);
 
 			if (distanceSquared(v, via.beginV3) < 0.003) break;
@@ -127,7 +127,7 @@ namespace
 			{
 				assert(basicallySame(graph[from], s.positions.front()));
 
-				Reorientation const seqReo = compose(inverse(from.reorientation), rn.reorientation);
+				PositionReorientation const seqReo = compose(inverse(from.reorientation), rn.reorientation);
 
 				assert(basicallySame(here, apply(seqReo, s.positions.front())));
 
@@ -140,7 +140,7 @@ namespace
 			{
 				assert(basicallySame(graph[to], s.positions.back()));
 
-				Reorientation const seqReo = compose(inverse(to.reorientation), rn.reorientation);
+				PositionReorientation const seqReo = compose(inverse(to.reorientation), rn.reorientation);
 
 				assert(basicallySame(here, apply(seqReo, s.positions.back())));
 
@@ -155,13 +155,13 @@ namespace
 
 ViablesForJoint determineViables
 	( Graph const & graph, PositionInSequence const from, PlayerJoint const j
-	, bool const edit_mode, Camera const & camera, Reorientation const reo)
+	, bool const edit_mode, Camera const & camera, PositionReorientation const reo)
 {
 	ViablesForJoint r{0, {}, {}};
 
 	if (!edit_mode && !jointDefs[j.joint].draggable) return r;
 
-	auto const jp = apply(reo, graph[from][j]);
+	auto const jp = apply(reo, graph[from], j);
 	auto const jpxy = world2xy(camera, jp);
 
 	auto & v = r.viables[from.sequence] =

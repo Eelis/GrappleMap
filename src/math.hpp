@@ -180,6 +180,8 @@ struct Reorientation
 {
 	V3 offset;
 	double angle;
+
+	Reorientation(V3 o = {0,0,0}, double a = 0): offset(o), angle(a) {} // ugh
 };
 
 inline std::ostream & operator<<(std::ostream & o, Reorientation const r)
@@ -228,8 +230,6 @@ inline Reorientation compose(Reorientation const a, Reorientation const b)
 
 	return r;
 }
-
-inline Reorientation noReorientation() { return {{0, 0, 0}, 0}; }
 
 inline double angle(V2 const v) { return atan2(v.y, v.x); }
 

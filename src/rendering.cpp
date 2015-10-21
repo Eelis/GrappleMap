@@ -125,12 +125,12 @@ namespace
 			glDisable(GL_DEPTH_TEST);
 
 			glBegin(GL_LINE_STRIP);
-			for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i][j]));
+			for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i], j));
 			glEnd();
 
 			glPointSize(15);
 			glBegin(GL_POINTS);
-			for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i][j]));
+			for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i], j));
 			glEnd();
 			glEnable(GL_DEPTH_TEST);
 		}
@@ -145,7 +145,7 @@ void renderWindow(
 	Position const & position,
 	Camera camera,
 	boost::optional<PlayerJoint> highlight_joint,
-	bool edit_mode)
+	bool const edit_mode)
 {
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);

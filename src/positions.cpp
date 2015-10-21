@@ -125,17 +125,33 @@ void spring(Position & pos, boost::optional<PlayerJoint> j)
 	}
 }
 
-boost::optional<Reorientation> is_reoriented(Position const & a, Position const & b)
+namespace
 {
-	auto const a0h = a[0][Head];
-	auto const a1h = a[1][Head];
-	auto const b0h = b[0][Head];
-	auto const b1h = b[1][Head];
+	boost::optional<Reorientation> is_reoriented_without_swap(Position const & a, Position const & b)
+	{
+		auto const a0h = a[0][Head];
+		auto const a1h = a[1][Head];
+		auto const b0h = b[0][Head];
+		auto const b1h = b[1][Head];
 
-	double const angleOff = angle(xz(b1h - b0h)) - angle(xz(a1h - a0h));
+		double const angleOff = angle(xz(b1h - b0h)) - angle(xz(a1h - a0h));
 
-	Reorientation const r = { b0h - xyz(yrot(angleOff) * V4(a0h, 1)), angleOff };
+		Reorientation const r = { b0h - xyz(yrot(angleOff) * V4(a0h, 1)), angleOff };
 
-	if (basicallySame(apply(r, a), b)) return r;
-	else return boost::none;
+		if (basicallySame(apply(r, a), b)) return r;
+		else return boost::none;
+	}
+}
+
+boost::optional<PositionReorientation> is_reoriented(Position const & a, Position b)
+{
+	if (auto r = is_reoriented_without_swap(a, b))
+		return PositionReorientation{*r, false};
+
+	std::swap(b[0], b[1]);
+
+	if (auto r = is_reoriented_without_swap(a, b))
+		return PositionReorientation{*r, true};
+
+	return boost::none;
 }

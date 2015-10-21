@@ -8,7 +8,7 @@ using NodeNum = uint16_t;
 struct ReorientedNode
 {
 	NodeNum node;
-	Reorientation reorientation;
+	PositionReorientation reorientation;
 };
 
 class Graph
@@ -39,7 +39,7 @@ class Graph
 			return *m;
 
 		nodes.push_back(p);
-		return {NodeNum(nodes.size() - 1), noReorientation()};
+		return ReorientedNode{NodeNum(nodes.size() - 1), PositionReorientation{}};
 	}
 
 	void changed(PositionInSequence);

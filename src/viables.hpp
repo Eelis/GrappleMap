@@ -10,7 +10,7 @@ struct Camera;
 struct Viable
 {
 	SeqNum seqNum;
-	Reorientation reorientation;
+	PositionReorientation reorientation;
 	double dist;
 	PosNum begin, end; // half-open range, never empty
 	V3 beginV3, endV3;
@@ -28,6 +28,6 @@ using Viables = PerPlayerJoint<ViablesForJoint>;
 
 ViablesForJoint determineViables(
 	Graph const &, PositionInSequence, PlayerJoint,
-	bool edit_mode, Camera const &, Reorientation);
+	bool edit_mode, Camera const &, PositionReorientation);
 
 #endif

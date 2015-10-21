@@ -168,12 +168,48 @@ inline bool operator==(PositionInSequence const & a, PositionInSequence const & 
 	return a.sequence == b.sequence && a.position == b.position;
 }
 
+struct PositionReorientation
+{
+	Reorientation reorientation;
+	bool swap_players;
+
+	PositionReorientation(Reorientation r = {{0,0,0},0}, bool sp = false): reorientation(r), swap_players(sp) {} // ugh
+};
+
 inline Position apply(Reorientation const & r, Position p)
 {
 	for (auto j : playerJoints) p[j] = apply(r, p[j]);
 	return p;
 }
 
-boost::optional<Reorientation> is_reoriented(Position const &, Position const &);
+inline Position apply(PositionReorientation const & r, Position p)
+{
+	p = apply(r.reorientation, p);
+	if (r.swap_players) std::swap(p[0], p[1]);
+	return p;
+}
+
+inline V3 apply(PositionReorientation const & r, Position const & p, PlayerJoint j)
+{
+	if (r.swap_players) j.player = 1 - j.player;
+	return apply(r.reorientation, p[j]);
+}
+
+inline PositionReorientation inverse(PositionReorientation const r)
+{
+	return {inverse(r.reorientation), r.swap_players};
+}
+
+inline PositionReorientation compose(PositionReorientation const a, PositionReorientation const b)
+{
+	return PositionReorientation{compose(a.reorientation, b.reorientation), a.swap_players != b.swap_players};
+}
+
+boost::optional<PositionReorientation> is_reoriented(Position const &, Position);
+
+inline bool operator==(PositionReorientation const & a, PositionReorientation const & b)
+{
+	return a.reorientation == b.reorientation && a.swap_players == b.swap_players;
+}
 
 #endif

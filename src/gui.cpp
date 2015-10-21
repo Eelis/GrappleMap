@@ -31,7 +31,7 @@ struct NextPosition
 {
 	PositionInSequence pis;
 	double howfar;
-	Reorientation reorientation;
+	PositionReorientation reorientation;
 };
 
 double whereBetween(Position const & n, Position const & m, PlayerJoint const j, Camera const & camera, V2 const cursor)
@@ -48,7 +48,7 @@ double whereBetween(Position const & n, Position const & m, PlayerJoint const j,
 optional<NextPosition> determineNextPos(
 	PerPlayerJoint<ViablesForJoint> const & viables,
 	Graph const & graph, PlayerJoint const j,
-	PositionInSequence const from, Reorientation const reorientation,
+	PositionInSequence const from, PositionReorientation const reorientation,
 	Camera const & camera, V2 const cursor, bool const edit_mode)
 {
 	optional<NextPosition> np;
@@ -58,7 +58,7 @@ optional<NextPosition> determineNextPos(
 	Position const n = apply(reorientation, graph[from]);
 	V2 const v = world2xy(camera, n[j]);
 
-	auto consider = [&](PositionInSequence const to, Reorientation const r)
+	auto consider = [&](PositionInSequence const to, PositionReorientation const r)
 		{
 			Position const m = apply(r, graph[to]);
 
@@ -137,7 +137,7 @@ struct Window
 	bool split_view = false;
 	double jiggle = 0;
 	Viables viable;
-	Reorientation reorientation = noReorientation();
+	PositionReorientation reorientation{};
 	optional<NextPosition> next_pos;
 	std::stack<std::pair<Graph, PositionInSequence>> undo;
 };
@@ -206,7 +206,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				{
 					--w.location.sequence;
 					w.location.position = 0;
-					w.reorientation = noReorientation();
+					w.reorientation = PositionReorientation();
 					print_status(w);
 				}
 				break;
@@ -216,7 +216,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				{
 					++w.location.sequence;
 					w.location.position = 0;
-					w.reorientation = noReorientation();
+					w.reorientation = PositionReorientation();
 					print_status(w);
 				}
 				break;
@@ -504,11 +504,11 @@ int main(int const argc, char const * const * const argv)
 			{
 				Position new_pos = w.graph[w.location];
 
-				V4 const dragger = yrot(-w.camera.getHorizontalRotation() - w.reorientation.angle) * V4{{1,0,0},0};
+				V4 const dragger = yrot(-w.camera.getHorizontalRotation() - w.reorientation.reorientation.angle) * V4{{1,0,0},0};
 				
-				auto & joint = new_pos[*w.chosen_joint];
+				auto off = world2xy(w.camera, apply(w.reorientation, new_pos, *w.chosen_joint)) - *cursor;
 
-				auto off = world2xy(w.camera, apply(w.reorientation, joint)) - *cursor;
+				auto & joint = new_pos[*w.chosen_joint];
 
 				joint.x -= dragger.x * off.x;
 				joint.z -= dragger.z * off.x;

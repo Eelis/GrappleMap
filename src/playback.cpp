@@ -14,7 +14,7 @@
 #include <vector>
 #include <fstream>
 
-Reorientation sequence_transition(Graph const & graph, SeqNum const from, SeqNum const to)
+PositionReorientation sequence_transition(Graph const & graph, SeqNum const from, SeqNum const to)
 {
 	assert(graph.to(from).node == graph.from(to).node);
 
@@ -23,11 +23,11 @@ Reorientation sequence_transition(Graph const & graph, SeqNum const from, SeqNum
 		graph.to(from).reorientation);
 }
 
-std::vector<std::pair<SeqNum, Reorientation>>
+std::vector<std::pair<SeqNum, PositionReorientation>>
 	connectSequences(Graph const & graph, std::vector<SeqNum> const & seqNrs)
 {
-	std::vector<std::pair<SeqNum, Reorientation>> v;
-	Reorientation r = noReorientation();
+	std::vector<std::pair<SeqNum, PositionReorientation>> v;
+	PositionReorientation r;
 
 	for (auto i = seqNrs.begin(); i != seqNrs.end(); )
 	{
