@@ -508,7 +508,12 @@ int main(int const argc, char const * const * const argv)
 				
 				auto off = world2xy(w.camera, apply(w.reorientation, new_pos, *w.chosen_joint)) - *cursor;
 
-				auto & joint = new_pos[*w.chosen_joint];
+				auto jointToEdit = *w.chosen_joint;
+
+				if (w.reorientation.swap_players)
+					jointToEdit.player = opponent(jointToEdit.player);
+
+				auto & joint = new_pos[jointToEdit];
 
 				joint.x -= dragger.x * off.x;
 				joint.z -= dragger.z * off.x;
