@@ -66,7 +66,7 @@ namespace
 
 	void render(Viables const * const viables, Position const & pos,
 		boost::optional<PlayerJoint> const highlight_joint,
-		boost::optional<unsigned> const first_person_player, bool const edit_mode)
+		boost::optional<PlayerNum> const first_person_player, bool const edit_mode)
 	{
 		auto limbs = [&](Player const & player)
 			{
@@ -74,7 +74,9 @@ namespace
 					if (s.visible)
 					{
 						auto const a = s.ends[0], b = s.ends[1];
-						pillar(player[a], player[b], jointDefs[a].radius, jointDefs[b].radius, 30);
+						auto mid = (player[a] + player[b]) / 2;
+						pillar(player[a], mid, jointDefs[a].radius, s.midpointRadius, 30);
+						pillar(mid, player[b], s.midpointRadius, jointDefs[b].radius, 30);
 					}
 			};
 

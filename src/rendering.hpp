@@ -11,7 +11,7 @@ struct GLFWwindow;
 struct View
 {
 	double x, y, w, h; // all in [0,1]
-	boost::optional<unsigned> first_person;
+	boost::optional<PlayerNum> first_person;
 	double fov;
 };
 

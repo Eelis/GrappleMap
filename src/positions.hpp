@@ -30,7 +30,11 @@ char const * to_string(Joint);
 
 constexpr uint32_t joint_count = sizeof(joints) / sizeof(Joint);
 
-struct PlayerJoint { unsigned player; Joint joint; };
+using PlayerNum = unsigned;
+
+inline PlayerNum opponent(PlayerNum const p) { return 1 - p; }
+
+struct PlayerJoint { PlayerNum player; Joint joint; };
 
 inline bool operator==(PlayerJoint a, PlayerJoint b)
 {
@@ -85,45 +89,46 @@ extern PerPlayer<PlayerDef> const playerDefs;
 struct Segment
 {
 	std::array<Joint, 2> ends;
-	double length; // in meters
+	double length, midpointRadius; // in meters
 	bool visible;
 };
 
 inline auto & segments()
 {
 	static const Segment segments[] =
-		{ {{LeftToe, LeftHeel}, 0.23, true}
-		, {{LeftToe, LeftAnkle}, 0.18, true}
-		, {{LeftHeel, LeftAnkle}, 0.09, true}
-		, {{LeftAnkle, LeftKnee}, 0.42, true}
-		, {{LeftKnee, LeftHip}, 0.47, true}
-		, {{LeftHip, Core}, 0.28, true}
-		, {{Core, LeftShoulder}, 0.38, true}
-		, {{LeftShoulder, LeftElbow}, 0.29, true}
-		, {{LeftElbow, LeftWrist}, 0.26, true}
-		, {{LeftWrist, LeftHand}, 0.08, true}
-		, {{LeftHand, LeftFingers}, 0.08, true}
-		, {{LeftWrist, LeftFingers}, 0.14, false}
+		{ {{LeftToe, LeftHeel}, 0.23, 0.025, true}
+		, {{LeftToe, LeftAnkle}, 0.18, 0.025, true}
+		, {{LeftHeel, LeftAnkle}, 0.09, 0.025, true}
+		, {{LeftAnkle, LeftKnee}, 0.42, 0.055, true}
+		, {{LeftKnee, LeftHip}, 0.44, 0.085, true}
+		, {{LeftHip, Core}, 0.27, 0.1, true}
+		, {{Core, LeftShoulder}, 0.37, 0.075, true}
+		, {{LeftShoulder, LeftElbow}, 0.29, 0.06, true}
+		, {{LeftElbow, LeftWrist}, 0.26, 0.03, true}
+		, {{LeftWrist, LeftHand}, 0.08, 0.02, true}
+		, {{LeftHand, LeftFingers}, 0.08, 0.02, true}
+		, {{LeftWrist, LeftFingers}, 0.14, 0.02, false}
 
-		, {{RightToe, RightHeel}, 0.23, true}
-		, {{RightToe, RightAnkle}, 0.18, true}
-		, {{RightHeel, RightAnkle}, 0.09, true}
-		, {{RightAnkle, RightKnee}, 0.42, true}
-		, {{RightKnee, RightHip}, 0.47, true}
-		, {{RightHip, Core}, 0.28, true}
-		, {{Core, RightShoulder}, 0.38, true}
-		, {{RightShoulder, RightElbow}, 0.29, true}
-		, {{RightElbow, RightWrist}, 0.26, true}
-		, {{RightWrist, RightHand}, 0.08, true}
-		, {{RightHand, RightFingers}, 0.08, true}
-		, {{RightWrist, RightFingers}, 0.14, false}
+		, {{RightToe, RightHeel}, 0.23, 0.025, true}
+		, {{RightToe, RightAnkle}, 0.18, 0.025, true}
+		, {{RightHeel, RightAnkle}, 0.09, 0.025, true}
+		, {{RightAnkle, RightKnee}, 0.42, 0.055, true}
+		, {{RightKnee, RightHip}, 0.44, 0.085, true}
+		, {{RightHip, Core}, 0.27, 0.1, true}
+		, {{Core, RightShoulder}, 0.37, 0.075, true}
+		, {{RightShoulder, RightElbow}, 0.29, 0.06, true}
+		, {{RightElbow, RightWrist}, 0.27, 0.03, true}
+		, {{RightWrist, RightHand}, 0.08, 0.02, true}
+		, {{RightHand, RightFingers}, 0.08, 0.02, true}
+		, {{RightWrist, RightFingers}, 0.14, 0.02, false}
 
-		, {{LeftShoulder, RightShoulder}, 0.4, false}
-		, {{LeftHip, RightHip}, 0.25, false}
+		, {{LeftShoulder, RightShoulder}, 0.34, 0.1, false}
+		, {{LeftHip, RightHip}, 0.22, 0.1,  false}
 
-		, {{LeftShoulder, Neck}, 0.23, true}
-		, {{RightShoulder, Neck}, 0.23, true}
-		, {{Neck, Head}, 0.15, false}
+		, {{LeftShoulder, Neck}, 0.175, 0.065, true}
+		, {{RightShoulder, Neck}, 0.175, 0.065, true}
+		, {{Neck, Head}, 0.165, 0.05, true}
+
 		};
 
 		// TODO: replace with something less stupid once I upgrade to gcc that supports 14/17
@@ -191,7 +196,7 @@ inline Position apply(PositionReorientation const & r, Position p)
 
 inline V3 apply(PositionReorientation const & r, Position const & p, PlayerJoint j)
 {
-	if (r.swap_players) j.player = 1 - j.player;
+	if (r.swap_players) j.player = opponent(j.player);
 	return apply(r.reorientation, p[j]);
 }
 
