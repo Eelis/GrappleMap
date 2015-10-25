@@ -31,10 +31,26 @@ void Graph::changed(PositionInSequence const pis)
 	}
 }
 
-void Graph::replace(PositionInSequence const pis, Position const & p)
+void Graph::replace(PositionInSequence const pis, Position const & p, bool const local)
 {
 	edges.at(pis.sequence).sequence.positions.at(pis.position) = p;
-	changed(pis);
+
+	boost::optional<ReorientedNode> const rn = node(*this, pis);
+	if (!local && rn)
+	{
+		nodes[rn->node] = apply(inverse(rn->reorientation), p);
+		assert(basicallySame((*this)[*rn], p));
+
+		foreach (e : edges)
+		{
+			if (e.from.node == rn->node)
+				e.sequence.positions.front() = (*this)[e.from];
+
+			if (e.to.node == rn->node)
+				e.sequence.positions.back() = (*this)[e.to];
+		}
+	}
+	else changed(pis);
 
 	std::cerr << "Replaced position " << pis << std::endl;
 }

@@ -71,7 +71,11 @@ public:
 
 	// mutation
 
-	void replace(PositionInSequence, Position const &);
+	void replace(PositionInSequence, Position const &, bool local);
+		// The local flag only affects the case where the position denotes a node.
+		// In that case, if local is true, the existing node and connecting sequences
+		// will not be updated, but the sequence will detach from the node instead,
+		// and either end up on a new node, or connect to another existing node.
 	void clone(PositionInSequence);
 	SeqNum new_sequence(Position const &);
 	SeqNum insert(Sequence const &);
@@ -106,18 +110,18 @@ inline boost::optional<PositionInSequence> next(Graph const & g, PositionInSeque
 	return PositionInSequence{pis.sequence, pis.position + 1};
 }
 
-inline boost::optional<NodeNum> node(Graph const & g, PositionInSequence const pis)
+inline boost::optional<ReorientedNode> node(Graph const & g, PositionInSequence const pis)
 {
-	if (pis.position == 0) return g.from(pis.sequence).node;
-	if (!next(g, pis)) return g.to(pis.sequence).node;
+	if (pis.position == 0) return g.from(pis.sequence);
+	if (!next(g, pis)) return g.to(pis.sequence);
 	return boost::none;
 }
 
-inline void replace(Graph & graph, PositionInSequence const pis, PlayerJoint const j, V3 const v)
+inline void replace(Graph & graph, PositionInSequence const pis, PlayerJoint const j, V3 const v, bool const local)
 {
 	Position p = graph[pis];
 	p[j] = v;
-	graph.replace(pis, p);
+	graph.replace(pis, p, local);
 }
 
 boost::optional<SeqNum> seq_by_desc(Graph const &, std::string const & desc);

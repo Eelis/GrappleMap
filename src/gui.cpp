@@ -98,9 +98,9 @@ optional<NextPosition> determineNextPos(
 					auto const & e_to = graph.to(other.sequence);
 					auto const & e_from = graph.from(other.sequence);
 
-					if (!(*current_node == e_to.node
+					if (!(current_node->node == e_to.node
 							&& other.position == last_pos(graph, other.sequence) - 1) &&
-						!(*current_node == e_from.node
+						!(current_node->node == e_from.node
 							&& other.position == 1))
 						continue;
 				}
@@ -160,7 +160,7 @@ void push_undo(Window & w)
 void translate(Window & w, V3 const v)
 {
 	push_undo(w);
-	w.graph.replace(w.location, w.graph[w.location] + v);
+	w.graph.replace(w.location, w.graph[w.location] + v, true);
 }
 
 void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int action, int mods)
@@ -187,7 +187,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					return;
 
 				case GLFW_KEY_V: // paste
-					if (w.clipboard) w.graph.replace(w.location, *w.clipboard);
+					if (w.clipboard) w.graph.replace(w.location, *w.clipboard, true);
 					return;
 			}
 
@@ -228,7 +228,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				push_undo(w);
 				auto p = w.graph[w.location];
 				swap(p[0], p[1]);
-				w.graph.replace(w.location, p);
+				w.graph.replace(w.location, p, true);
 				return;
 			}
 
@@ -241,7 +241,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				{
 					auto p = between(w.graph[*prevLoc], w.graph[*nextLoc]);
 					for(int i = 0; i != 30; ++i) spring(p);
-					w.graph.replace(w.location, p);
+					w.graph.replace(w.location, p, true);
 				}
 				break;
 
@@ -251,14 +251,14 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				if (auto p = prev(w.location))
 				{
 					push_undo(w);
-					replace(w.graph, w.location, w.closest_joint, w.graph[*p][w.closest_joint]);
+					replace(w.graph, w.location, w.closest_joint, w.graph[*p][w.closest_joint], false);
 				}
 				break;
 			case GLFW_KEY_K:
 				if (auto p = next(w.graph, w.location))
 				{
 					push_undo(w);
-					replace(w.graph, w.location, w.closest_joint, w.graph[*p][w.closest_joint]);
+					replace(w.graph, w.location, w.closest_joint, w.graph[*p][w.closest_joint], false);
 				}
 				break;
 			case GLFW_KEY_J:
@@ -269,7 +269,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					Position p = w.graph[w.location];
 					p[w.closest_joint] = (w.graph[*prevLoc][w.closest_joint] + w.graph[*nextLoc][w.closest_joint]) / 2;
 					for(int i = 0; i != 30; ++i) spring(p);
-					w.graph.replace(w.location, p);
+					w.graph.replace(w.location, p, false);
 				}
 				break;
 
@@ -283,7 +283,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				push_undo(w);
 				auto p = w.graph[w.location];
 				foreach (j : playerJoints) p[j] = xyz(yrot(-0.05) * V4(p[j], 1));
-				w.graph.replace(w.location, p);
+				w.graph.replace(w.location, p, true);
 				break;
 			}
 			case GLFW_KEY_KP_7:
@@ -291,7 +291,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				push_undo(w);
 				auto p = w.graph[w.location];
 				foreach (j : playerJoints) p[j] = xyz(yrot(0.05) * V4(p[j], 1));
-				w.graph.replace(w.location, p);
+				w.graph.replace(w.location, p, true);
 				break;
 			}
 
@@ -521,7 +521,7 @@ int main(int const argc, char const * const * const argv)
 
 				spring(new_pos, w.chosen_joint);
 
-				w.graph.replace(w.location, new_pos);
+				w.graph.replace(w.location, new_pos, false);
 
 				posToDraw = apply(w.reorientation, new_pos);
 			}
