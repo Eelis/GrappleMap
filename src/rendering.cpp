@@ -68,23 +68,27 @@ namespace
 		boost::optional<PlayerJoint> const highlight_joint,
 		boost::optional<PlayerNum> const first_person_player, bool const edit_mode)
 	{
-		auto limbs = [&](Player const & player)
-			{
-				foreach (s : segments())
-					if (s.visible)
-					{
-						auto const a = s.ends[0], b = s.ends[1];
-						auto mid = (player[a] + player[b]) / 2;
-						pillar(player[a], mid, jointDefs[a].radius, s.midpointRadius, 30);
-						pillar(mid, player[b], s.midpointRadius, jointDefs[b].radius, 30);
-					}
-			};
+		// draw limbs:
 
-		glColor(playerDefs[0].color);
-		limbs(pos[0]);
+		for (PlayerNum p = 0; p != 2; ++p)
+		{
+			glColor(playerDefs[p].color);
+			Player const & player = pos[p];
 
-		glColor(playerDefs[1].color);
-		limbs(pos[1]);
+			foreach (s : segments())
+				if (s.visible)
+				{
+					auto const a = s.ends[0], b = s.ends[1];
+
+					if (b == Head && p == first_person_player) continue;
+
+					auto mid = (player[a] + player[b]) / 2;
+					pillar(player[a], mid, jointDefs[a].radius, s.midpointRadius, 30);
+					pillar(mid, player[b], s.midpointRadius, jointDefs[b].radius, 30);
+				}
+		}
+
+		// draw joints:
 
 		foreach (pj : playerJoints)
 		{
