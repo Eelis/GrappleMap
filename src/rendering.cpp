@@ -134,10 +134,13 @@ namespace
 			for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i], j));
 			glEnd();
 
-			glPointSize(15);
-			glBegin(GL_POINTS);
-			for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i], j));
-			glEnd();
+			for (PosNum i = v.second.begin; i != v.second.end; ++i)
+			{
+				glPointSize(i == 0 || i == seq.size() - 1 ? 30 : 15);
+				glBegin(GL_POINTS);
+					glVertex(apply(r, seq[i], j));
+				glEnd();
+			}
 			glEnable(GL_DEPTH_TEST);
 		}
 	}
