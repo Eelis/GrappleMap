@@ -191,11 +191,6 @@ inline std::ostream & operator<<(std::ostream & o, Reorientation const r)
 	return o << "{offset=" << r.offset << ", angle=" << r.angle << "}";
 }
 
-inline bool dist(Reorientation const & a, Reorientation const & b)
-{
-	return distanceSquared(a.offset, b.offset) + std::abs(a.angle - b.angle);
-}
-
 inline bool operator==(Reorientation const & a, Reorientation const & b)
 {
 	return a.offset == b.offset && a.angle == b.angle;
