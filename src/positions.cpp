@@ -71,7 +71,7 @@ inline std::array<PlayerJoint, joint_count * 2> make_playerJoints()
 
 extern std::array<PlayerJoint, joint_count * 2> const playerJoints = make_playerJoints();
 
-extern PerPlayer<PlayerDef> const playerDefs = {{ {red}, {blue} }};
+extern PerPlayer<PlayerDef> const playerDefs = {{ {red}, {V3{0.15,0.15,1}} }};
 
 Player spring(Player const & p, boost::optional<Joint> fixed_joint)
 {
