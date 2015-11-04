@@ -2,12 +2,12 @@
 #include "util.hpp"
 
 extern PerJoint<JointDef> const jointDefs =
-	{{ { LeftToe, 0.025, true}
-	, { RightToe, 0.025, true}
+	{{ { LeftToe, 0.025, false}
+	, { RightToe, 0.025, false}
 	, { LeftHeel, 0.03, false}
 	, { RightHeel, 0.03, false}
-	, { LeftAnkle, 0.03, false}
-	, { RightAnkle, 0.03, false}
+	, { LeftAnkle, 0.03, true}
+	, { RightAnkle, 0.03, true}
 	, { LeftKnee, 0.05, true}
 	, { RightKnee, 0.05, true}
 	, { LeftHip, 0.10, true}

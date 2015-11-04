@@ -7,25 +7,14 @@
 #include "rendering.hpp"
 #include "graph.hpp"
 #include <GLFW/glfw3.h>
-#include <array>
+#include <boost/program_options.hpp>
 #include <cmath>
-#include <iostream>
 #include <GL/glu.h>
-#include <vector>
 #include <numeric>
-#include <fstream>
 #include <iomanip>
-#include <map>
 #include <algorithm>
-#include <fstream>
 #include <iterator>
 #include <stack>
-
-#include <boost/optional.hpp>
-#include <boost/program_options.hpp>
-
-using boost::optional;
-using std::string;
 
 struct NextPosition
 {
@@ -55,12 +44,12 @@ optional<NextPosition> determineNextPos(
 
 	double best = 1000000;
 
-	Position const n = apply(reorientation, graph[from]);
+	Position const n = reorientation(graph[from]);
 	V2 const v = world2xy(camera, n[j]);
 
 	auto consider = [&](PositionInSequence const to, PositionReorientation const r)
 		{
-			Position const m = apply(r, graph[to]);
+			Position const m = r(graph[to]);
 
 			double const howfar = whereBetween(n, m, j, camera, cursor);
 
@@ -144,7 +133,7 @@ struct Window
 
 void print_status(Window const & w)
 {
-	auto && seq = w.graph.sequence(w.location.sequence);
+	auto && seq = w.graph[w.location.sequence];
 
 	std::cout
 		<< "\r[" << w.location.position + 1
@@ -202,9 +191,9 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				break;
 
 			case GLFW_KEY_PAGE_UP:
-				if (w.location.sequence != 0)
+				if (w.location.sequence.index != 0)
 				{
-					--w.location.sequence;
+					--w.location.sequence.index;
 					w.location.position = 0;
 					w.reorientation = PositionReorientation();
 					print_status(w);
@@ -212,9 +201,9 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				break;
 
 			case GLFW_KEY_PAGE_DOWN:
-				if (w.location.sequence != w.graph.num_sequences() - 1)
+				if (w.location.sequence.index != w.graph.num_sequences() - 1)
 				{
-					++w.location.sequence;
+					++w.location.sequence.index;
 					w.location.position = 0;
 					w.reorientation = PositionReorientation();
 					print_status(w);
@@ -301,7 +290,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 			{
 				push_undo(w);
 				auto const p = w.graph[w.location];
-				w.location.sequence = w.graph.insert(Sequence{"new", {p, p}});
+				w.location.sequence = insert(w.graph, Sequence{"new", {p, p}});
 				w.location.position = 0;
 				break;
 			}
@@ -311,6 +300,8 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 
 			case GLFW_KEY_1: w.split_view = !w.split_view; break;
 
+			case GLFW_KEY_B: split_at(w.graph, w.location); break; // branch
+
 			case GLFW_KEY_DELETE:
 			{
 				auto const before = std::make_pair(w.graph, w.location);
@@ -319,7 +310,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				{
 					push_undo(w);
 
-					if (auto const new_seq = w.graph.erase_sequence(w.location.sequence))
+					if (auto const new_seq = erase_sequence(w.graph, w.location.sequence))
 						w.location = {*new_seq, 0};
 					else w.undo.pop();
 				}
@@ -494,7 +485,7 @@ int main(int const argc, char const * const * const argv)
 					}
 				}
 
-			Position const reorientedPosition = apply(w.reorientation, w.graph[w.location]);
+			Position const reorientedPosition = w.reorientation(w.graph[w.location]);
 
 			Position posToDraw = reorientedPosition;
 
@@ -523,14 +514,14 @@ int main(int const argc, char const * const * const argv)
 
 				w.graph.replace(w.location, new_pos, false);
 
-				posToDraw = apply(w.reorientation, new_pos);
+				posToDraw = w.reorientation(new_pos);
 			}
 			else
 			{
 				if (w.next_pos && (!w.edit_mode || glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS))
 					posToDraw = between(
 							reorientedPosition,
-							apply(w.next_pos->reorientation, w.graph[w.next_pos->pis]),
+							w.next_pos->reorientation(w.graph[w.next_pos->pis]),
 							w.next_pos->howfar);
 
 				if (cursor && !w.chosen_joint)

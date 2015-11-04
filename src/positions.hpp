@@ -155,7 +155,11 @@ inline bool basicallySame(Position const & a, Position const & b)
 	return u < 0.03;
 }
 
-using SeqNum = unsigned;
+struct SeqNum { unsigned index; };
+
+inline bool operator==(SeqNum const a, SeqNum const b) { return a.index == b.index; }
+inline bool operator!=(SeqNum const a, SeqNum const b) { return a.index != b.index; }
+inline bool operator<(SeqNum const a, SeqNum const b) { return a.index < b.index; }
 
 struct PositionInSequence
 {
@@ -165,7 +169,7 @@ struct PositionInSequence
 
 inline std::ostream & operator<<(std::ostream & o, PositionInSequence const pis)
 {
-	return o << "{" << pis.sequence << ", " << pis.position << "}";
+	return o << "{" << pis.sequence.index << ", " << pis.position << "}";
 }
 
 inline bool operator==(PositionInSequence const & a, PositionInSequence const & b)
@@ -179,6 +183,8 @@ struct PositionReorientation
 	bool swap_players;
 
 	PositionReorientation(Reorientation r = {{0,0,0},0}, bool sp = false): reorientation(r), swap_players(sp) {} // ugh
+
+	Position operator()(Position) const;
 };
 
 inline Position apply(Reorientation const & r, Position p)
@@ -187,10 +193,10 @@ inline Position apply(Reorientation const & r, Position p)
 	return p;
 }
 
-inline Position apply(PositionReorientation const & r, Position p)
+inline Position PositionReorientation::operator()(Position p) const
 {
-	p = apply(r.reorientation, p);
-	if (r.swap_players) std::swap(p[0], p[1]);
+	p = apply(reorientation, p);
+	if (swap_players) std::swap(p[0], p[1]);
 	return p;
 }
 

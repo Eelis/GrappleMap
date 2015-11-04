@@ -5,9 +5,17 @@
 
 using NodeNum = uint16_t;
 
+using boost::optional;
+
 struct ReorientedNode
 {
 	NodeNum node;
+	PositionReorientation reorientation;
+};
+
+struct ReorientedSequence
+{
+	SeqNum sequence;
 	PositionReorientation reorientation;
 };
 
@@ -54,18 +62,18 @@ public:
 
 	Position const & operator[](PositionInSequence const i) const
 	{
-		return edges[i.sequence].sequence.positions[i.position];
+		return edges[i.sequence.index].sequence.positions[i.position];
 	}
 
 	Position operator[](ReorientedNode const & n) const
 	{
-		return apply(n.reorientation, nodes[n.node]);
+		return n.reorientation(nodes[n.node]);
 	}
 
-	Sequence const & sequence(SeqNum const s) const { return edges[s].sequence; }
+	Sequence const & operator[](SeqNum const s) const { return edges[s.index].sequence; }
 
-	ReorientedNode from(SeqNum const s) const { return edges[s].from; }
-	ReorientedNode to(SeqNum const s) const { return edges[s].to; }
+	ReorientedNode from(SeqNum const s) const { return edges[s.index].from; }
+	ReorientedNode to(SeqNum const s) const { return edges[s.index].to; }
 
 	unsigned num_sequences() const { return edges.size(); }
 
@@ -77,15 +85,22 @@ public:
 		// will not be updated, but the sequence will detach from the node instead,
 		// and either end up on a new node, or connect to another existing node.
 	void clone(PositionInSequence);
-	SeqNum new_sequence(Position const &);
-	SeqNum insert(Sequence const &);
-	boost::optional<SeqNum> erase_sequence(SeqNum); // invalidates seqnums
-	boost::optional<PosNum> erase(PositionInSequence); // invalidates posnums
+	optional<PosNum> erase(PositionInSequence); // invalidates posnums
+
+	void set(optional<SeqNum>, optional<Sequence>);
+		// no seqnum means insert
+		// no sequence means erase
+		// neither means noop
+		// both means replace
 };
+
+SeqNum insert(Graph &, Sequence const &);
+optional<SeqNum> erase_sequence(Graph &, SeqNum);
+void split_at(Graph &, PositionInSequence);
 
 inline PosNum last_pos(Graph const & g, SeqNum const s)
 {
-	return g.sequence(s).positions.size() - 1;
+	return g[s].positions.size() - 1;
 }
 
 inline PositionInSequence first_pos_in(SeqNum const s)

@@ -118,6 +118,8 @@ inline double distance(V3 from, V3 to) { return norm2(to - from); }
 inline double distanceSquared(V2 from, V2 to) { return inner_prod(to - from, to - from); }
 inline double distanceSquared(V3 from, V3 to) { return inner_prod(to - from, to - from); }
 
+inline V3 between(V3 const a, V3 const b) { return (a + b) / 2; }
+
 inline V4 operator*(M const & m, V4 const v)
 {
 	return

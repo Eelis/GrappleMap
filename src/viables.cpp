@@ -9,7 +9,7 @@ namespace
 		Graph const & graph, SeqNum const seq, PlayerJoint const j,
 		Camera const & camera, PositionReorientation const & r)
 	{
-		auto const xyz = apply(r, graph.sequence(seq).positions.front(), j);
+		auto const xyz = apply(r, graph[seq].positions.front(), j);
 		auto const xy = world2xy(camera, xyz);
 		return Viable{seq, r, 0, 0, 1, xyz, xyz, xy, xy};
 	}
@@ -18,7 +18,7 @@ namespace
 		Graph const & graph, SeqNum const seq, PlayerJoint const j,
 		Camera const & camera, PositionReorientation const & r)
 	{
-		auto const & sequence = graph.sequence(seq);
+		auto const & sequence = graph[seq];
 		auto const xyz = apply(r, sequence.positions.back(), j);
 		auto const xy = world2xy(camera, xyz);
 		return Viable{seq, r, 0, end(sequence) - 1, end(sequence), xyz, xyz, xy, xy};
@@ -27,9 +27,9 @@ namespace
 	void extend_from(int depth, Graph const &, ReorientedNode, PlayerJoint, Camera const &, ViablesForJoint &);
 
 	void extend_forward(int const depth, Graph const & graph,
-		Viable & via, PlayerJoint j, Camera const & camera, ViablesForJoint & vfj)
+		Viable & via, PlayerJoint const j, Camera const & camera, ViablesForJoint & vfj)
 	{
-		auto const & sequence = graph.sequence(via.seqNum);
+		auto const & sequence = graph[via.seqNum];
 
 		for (; via.end != sequence.positions.size(); ++via.end)
 		{
@@ -59,16 +59,16 @@ namespace
 			auto const & to = graph.to(via.seqNum);
 			ReorientedNode const n{to.node, compose(to.reorientation, via.reorientation)};
 
-			assert(basicallySame(graph[n], apply(via.reorientation, sequence.positions.back())));
+			assert(basicallySame(graph[n], via.reorientation(sequence.positions.back())));
 
 			extend_from(depth + 1, graph, n, j, camera, vfj);
 		}
 	}
 
 	void extend_backward(int const depth, Graph const & graph,
-		Viable & via, PlayerJoint j, Camera const & camera, ViablesForJoint & vfj)
+		Viable & via, PlayerJoint const j, Camera const & camera, ViablesForJoint & vfj)
 	{
-		auto & sequence = graph.sequence(via.seqNum);
+		auto & sequence = graph[via.seqNum];
 
 		int pos = via.begin;
 		--pos;
@@ -102,7 +102,7 @@ namespace
 			auto const & from = graph.from(via.seqNum);
 			ReorientedNode const n{from.node, compose(from.reorientation, via.reorientation)};
 
-			assert(basicallySame(graph[n], apply(via.reorientation, sequence.positions.front())));
+			assert(basicallySame(graph[n], via.reorientation(sequence.positions.front())));
 
 			extend_from(depth+1, graph, n, j, camera, vfj);
 		}
@@ -113,10 +113,10 @@ namespace
 	{
 		if (depth > 3) return;
 
-		for (SeqNum seqNum = 0; seqNum != graph.num_sequences(); ++seqNum)
+		for (SeqNum seqNum{0}; seqNum.index != graph.num_sequences(); ++seqNum.index)
 		{
 			#ifndef NDEBUG
-				auto const & s = graph.sequence(seqNum);
+				auto const & s = graph[seqNum];
 				auto const here = graph[rn];
 			#endif
 
@@ -129,7 +129,7 @@ namespace
 
 				PositionReorientation const seqReo = compose(inverse(from.reorientation), rn.reorientation);
 
-				assert(basicallySame(here, apply(seqReo, s.positions.front())));
+				assert(basicallySame(here, seqReo(s.positions.front())));
 
 				extend_forward(
 					depth + 1, graph,
@@ -142,7 +142,7 @@ namespace
 
 				PositionReorientation const seqReo = compose(inverse(to.reorientation), rn.reorientation);
 
-				assert(basicallySame(here, apply(seqReo, s.positions.back())));
+				assert(basicallySame(here, seqReo(s.positions.back())));
 
 				extend_backward(
 					depth + 1, graph,

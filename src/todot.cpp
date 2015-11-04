@@ -8,9 +8,9 @@ void todot(Graph const & graph, std::ostream & o)
 {
 	o << "digraph G {\n";
 
-	for (SeqNum s = 0; s != graph.num_sequences(); ++s)
+	for (SeqNum s{0}; s.index != graph.num_sequences(); ++s.index)
 		o << graph.from(s).node << " -> " << graph.to(s).node
-		  << " [label=\"" << graph.sequence(s).description << " (" << graph.sequence(s).positions.size()-2 << ")\"];\n";
+		  << " [label=\"" << graph[s].description << " (" << graph[s].positions.size()-2 << ")\"];\n";
 
 	o << "}\n";
 }

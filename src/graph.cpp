@@ -3,13 +3,13 @@
 
 Graph::Graph(std::vector<Sequence> const & sequences)
 {
-	foreach (s : sequences) insert(s);
+	foreach (s : sequences) insert(*this, s);
 	std::cerr << "Loaded " << nodes.size() << " nodes and " << edges.size() << " edges." << std::endl;
 }
 
 void Graph::changed(PositionInSequence const pis)
 {
-	Edge & edge = edges.at(pis.sequence);
+	Edge & edge = edges.at(pis.sequence.index);
 
 	if (pis.position == 0)
 	{
@@ -33,12 +33,12 @@ void Graph::changed(PositionInSequence const pis)
 
 void Graph::replace(PositionInSequence const pis, Position const & p, bool const local)
 {
-	edges.at(pis.sequence).sequence.positions.at(pis.position) = p;
+	edges.at(pis.sequence.index).sequence.positions.at(pis.position) = p;
 
-	boost::optional<ReorientedNode> const rn = node(*this, pis);
+	optional<ReorientedNode> const rn = node(*this, pis);
 	if (!local && rn)
 	{
-		nodes[rn->node] = apply(inverse(rn->reorientation), p);
+		nodes[rn->node] = inverse(rn->reorientation)(p);
 		assert(basicallySame((*this)[*rn], p));
 
 		foreach (e : edges)
@@ -57,51 +57,66 @@ void Graph::replace(PositionInSequence const pis, Position const & p, bool const
 
 void Graph::clone(PositionInSequence const pis)
 {
-	auto & positions =  edges.at(pis.sequence).sequence.positions;
+	auto & positions =  edges.at(pis.sequence.index).sequence.positions;
 	Position const p = positions.at(pis.position);
 	positions.insert(positions.begin() + pis.position, p);
 }
 
-SeqNum Graph::insert(Sequence const & sequence)
+void Graph::set(optional<SeqNum> const num, optional<Sequence> const seq)
 {
-	auto const num = edges.size();
+	if (seq)
+	{
+		Edge e{
+			find_or_add(seq->positions.front()),
+			find_or_add(seq->positions.back()),
+			*seq};
+
+		if (num)
+			edges[num->index] = e;
+		else
+			edges.push_back(e);
+	}
+	else if (num)
+		edges.erase(edges.begin() + num->index);
+}
+
+SeqNum insert(Graph & g, Sequence const & sequence)
+{
+	unsigned const num = g.num_sequences();
+
+	g.set(boost::none, sequence);
 
 	std::cerr <<
 		"Inserted sequence " << num <<
 		" (\"" << sequence.description << "\")"
 		" of size " << sequence.positions.size() << std::endl;
 
-	edges.push_back({
-		find_or_add(sequence.positions.front()),
-		find_or_add(sequence.positions.back()),
-		sequence});
-
-	return num;
+	return {num};
 }
 
-boost::optional<SeqNum> Graph::erase_sequence(SeqNum const sn)
+optional<SeqNum> erase_sequence(Graph & g, SeqNum const sn)
 {
-	if (edges.size() == 1)
+	if (g.num_sequences() == 1)
 	{
 		std::cerr << "Cannot erase last sequence." << std::endl;
 		return boost::none;
 	}
 
-	auto const & seq = sequence(sn);
+	auto const & seq = g[sn];
 
 	std::cerr <<
-		"Erasing sequence " << sn <<
+		"Erasing sequence " << sn.index <<
 		" (\"" << seq.description << "\")"
 		" and the " << seq.positions.size() << " positions in it." << std::endl;
 
-	edges.erase(edges.begin() + sn);
+	g.set(sn, boost::none);
 
-	return sn == 0 ? 0 : sn - 1;
+	return SeqNum{sn.index == 0 ? 0 : sn.index - 1};
 }
 
-boost::optional<PosNum> Graph::erase(PositionInSequence const pis)
+optional<PosNum> Graph::erase(PositionInSequence const pis)
 {
-	auto & edge = edges.at(pis.sequence);
+	auto & edge = edges.at(pis.sequence.index);
 	auto & positions = edge.sequence.positions;
 
 	if (positions.size() == 2)
@@ -119,22 +134,35 @@ boost::optional<PosNum> Graph::erase(PositionInSequence const pis)
 	return pos;
 }
 
-boost::optional<SeqNum> seq_by_desc(Graph const & graph, std::string const & desc)
+optional<SeqNum> seq_by_desc(Graph const & graph, std::string const & desc)
 {
-	for (SeqNum seqNum = 0; seqNum != graph.num_sequences(); ++seqNum)
-		if (graph.sequence(seqNum).description == desc)
+	for (SeqNum seqNum{0}; seqNum.index != graph.num_sequences(); ++seqNum.index)
+		if (graph[seqNum].description == desc)
 			return seqNum;
 	
-	return boost::none;
+	return none;
 }
 
-boost::optional<PositionInSequence> node_as_posinseq(Graph const & graph, NodeNum const node)
+optional<PositionInSequence> node_as_posinseq(Graph const & graph, NodeNum const node)
 {
-	for (SeqNum seqNum = 0; seqNum != graph.num_sequences(); ++seqNum)
+	for (SeqNum seqNum{0}; seqNum.index != graph.num_sequences(); ++seqNum.index)
 	{
 		if (graph.from(seqNum).node == node) return first_pos_in(seqNum);
 		else if (graph.to(seqNum).node == node) return last_pos_in(graph, seqNum);
 	}
 
-	return boost::none;
+	return none;
+}
+
+void split_at(Graph & g, PositionInSequence const pis)
+{
+	if (node(g, pis)) throw std::runtime_error("cannot split node");
+
+	Sequence a = g[pis.sequence], b = a;
+	
+	a.positions.erase(a.positions.begin() + pis.position + 1, a.positions.end());
+	b.positions.erase(b.positions.begin(), b.positions.begin() + pis.position);
+
+	g.set(pis.sequence, a);
+	g.set(boost::none, b);
 }

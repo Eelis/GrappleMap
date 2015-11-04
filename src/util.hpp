@@ -1,6 +1,19 @@
 #ifndef JIUJITSUMAPPER_UTIL_HPP
 #define JIUJITSUMAPPER_UTIL_HPP
 
+#include <stdexcept>
+#include <string>
+#include <vector>
+#include <boost/optional.hpp>
+#include <iostream>
+
+using std::string;
+using std::vector;
+using std::istream;
+using std::ostream;
+using boost::optional;
+using boost::none;
+
 template<typename I, typename F>
 I minimal(I i, I e, F f)
 {
@@ -20,5 +33,7 @@ I minimal(I i, I e, F f)
 }
 
 #define foreach(x) for(auto && x)
+
+inline void error(std::string const & s) { throw std::runtime_error(s); }
 
 #endif

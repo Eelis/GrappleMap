@@ -19,7 +19,7 @@ namespace
 		throw std::runtime_error("not a base 62 digit: " + std::string(1, c));
 	}
 
-	Position decodePosition(std::string s)
+	Position decodePosition(string s)
 	{
 		if (s.size() != 2 * joint_count * 3 * 2)
 			throw std::runtime_error("position string has incorrect size");
@@ -40,16 +40,16 @@ namespace
 	}
 }
 
-std::istream & operator>>(std::istream & i, std::vector<Sequence> & v)
+istream & operator>>(istream & i, vector<Sequence> & v)
 {
-	std::string line;
+	string line;
 
 	while(std::getline(i, line))
 		if (line.empty() or line.front() == '#')
 			continue;
 		else if (line.front() == ' ')
 		{
-			if (v.empty()) throw std::runtime_error("file contains position without preceding description");
+			if (v.empty()) error("file contains position without preceding description");
 
 			while (line.front() == ' ') line.erase(0, 1);
 
@@ -64,7 +64,7 @@ std::istream & operator>>(std::istream & i, std::vector<Sequence> & v)
 	return i;
 }
 
-std::ostream & operator<<(std::ostream & o, Position const & p)
+ostream & operator<<(ostream & o, Position const & p)
 {
 	auto g = [&o](double const d)
 		{
@@ -84,19 +84,19 @@ std::ostream & operator<<(std::ostream & o, Position const & p)
 	return o;
 }
 
-std::ostream & operator<<(std::ostream & o, Sequence const & s)
+ostream & operator<<(ostream & o, Sequence const & s)
 {
 	o << s.description << '\n';
 	foreach (p : s.positions) o << "    " << p << '\n';
 	return o;
 }
 
-std::vector<Sequence> load(std::string const filename)
+vector<Sequence> load(string const filename)
 {
 	std::vector<Sequence> r;
 	std::ifstream ff(filename);
 
-	if (!ff) throw std::runtime_error(filename + ": " + std::strerror(errno));
+	if (!ff) error(filename + ": " + std::strerror(errno));
 
 	ff >> r;
 
@@ -110,5 +110,24 @@ std::vector<Sequence> load(std::string const filename)
 void save(Graph const & g, std::string const filename)
 {
 	std::ofstream f(filename);
-	for (SeqNum s = 0; s != g.num_sequences(); ++s) f << g.sequence(s);
+	for (SeqNum s{0}; s.index != g.num_sequences(); ++s.index) f << g[s];
+}
+
+vector<SeqNum> readScript(Graph const & graph, string const filename)
+{
+	std::ifstream f(filename);
+	if (!f) error(filename + ": " + std::strerror(errno));
+
+	vector<SeqNum> r;
+	string seq;
+	unsigned lineNr = 0;
+
+	while (++lineNr, std::getline(f, seq))
+		if (optional<SeqNum> const sn = seq_by_desc(graph, seq))
+			r.push_back(*sn);
+		else error(
+			filename + ": line " + std::to_string(lineNr)
+			+ ": unknown sequence: \"" + seq + '"');
+
+	return r;
 }

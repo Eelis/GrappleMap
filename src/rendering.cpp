@@ -124,7 +124,7 @@ namespace
 			if (v.second.end - v.second.begin < 1) continue;
 
 			auto const r = v.second.reorientation;
-			auto & seq = graph.sequence(v.first).positions;
+			auto & seq = graph[v.first].positions;
 
 			glColor4f(1, 1, 0, 0.3);
 
