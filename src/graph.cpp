@@ -84,7 +84,7 @@ SeqNum insert(Graph & g, Sequence const & sequence)
 {
 	unsigned const num = g.num_sequences();
 
-	g.set(boost::none, sequence);
+	g.set(none, sequence);
 
 	std::cerr <<
 		"Inserted sequence " << num <<
@@ -99,7 +99,7 @@ optional<SeqNum> erase_sequence(Graph & g, SeqNum const sn)
 	if (g.num_sequences() == 1)
 	{
 		std::cerr << "Cannot erase last sequence." << std::endl;
-		return boost::none;
+		return none;
 	}
 
 	auto const & seq = g[sn];
@@ -109,7 +109,7 @@ optional<SeqNum> erase_sequence(Graph & g, SeqNum const sn)
 		" (\"" << seq.description << "\")"
 		" and the " << seq.positions.size() << " positions in it." << std::endl;
 
-	g.set(sn, boost::none);
+	g.set(sn, none);
 
 	return SeqNum{sn.index == 0 ? 0 : sn.index - 1};
 }
@@ -122,7 +122,7 @@ optional<PosNum> Graph::erase(PositionInSequence const pis)
 	if (positions.size() == 2)
 	{
 		std::cerr << "Cannot erase either of last two elements in sequence." << std::endl;
-		return boost::none;
+		return none;
 	}
 
 	positions.erase(positions.begin() + pis.position);
@@ -164,5 +164,5 @@ void split_at(Graph & g, PositionInSequence const pis)
 	b.positions.erase(b.positions.begin(), b.positions.begin() + pis.position);
 
 	g.set(pis.sequence, a);
-	g.set(boost::none, b);
+	g.set(none, b);
 }

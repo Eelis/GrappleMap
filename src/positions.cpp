@@ -69,11 +69,36 @@ inline std::array<PlayerJoint, joint_count * 2> make_playerJoints()
 	return r;
 }
 
+namespace
+{
+	void swapLimbs(Player & p)
+	{
+		std::swap(p[LeftShoulder], p[RightShoulder]);
+		std::swap(p[LeftHip], p[RightHip]);
+		std::swap(p[LeftHand], p[RightHand]);
+		std::swap(p[LeftWrist], p[RightWrist]);
+		std::swap(p[LeftElbow], p[RightElbow]);
+		std::swap(p[LeftFingers], p[RightFingers]);
+		std::swap(p[LeftAnkle], p[RightAnkle]);
+		std::swap(p[LeftToe], p[RightToe]);
+		std::swap(p[LeftHeel], p[RightHeel]);
+		std::swap(p[LeftKnee], p[RightKnee]);
+	}
+}
+
+Position mirror(Position p)
+{
+	foreach (j : playerJoints) p[j].x = -p[j].x;
+	swapLimbs(p[0]);
+	swapLimbs(p[1]);
+	return p;
+}
+
 extern std::array<PlayerJoint, joint_count * 2> const playerJoints = make_playerJoints();
 
 extern PerPlayer<PlayerDef> const playerDefs = {{ {red}, {V3{0.15,0.15,1}} }};
 
-Player spring(Player const & p, boost::optional<Joint> fixed_joint)
+Player spring(Player const & p, optional<Joint> fixed_joint)
 {
 	Player r = p;
 
@@ -114,11 +139,11 @@ Player spring(Player const & p, boost::optional<Joint> fixed_joint)
 	return r;
 }
 
-void spring(Position & pos, boost::optional<PlayerJoint> j)
+void spring(Position & pos, optional<PlayerJoint> j)
 {
 	for (unsigned player = 0; player != 2; ++player)
 	{
-		boost::optional<Joint> fixed_joint;
+		optional<Joint> fixed_joint;
 		if (j && j->player == player) fixed_joint = j->joint;
 
 		pos[player] = spring(pos[player], fixed_joint);
@@ -127,7 +152,7 @@ void spring(Position & pos, boost::optional<PlayerJoint> j)
 
 namespace
 {
-	boost::optional<Reorientation> is_reoriented_without_swap(Position const & a, Position const & b)
+	optional<Reorientation> is_reoriented_without_mirror_and_swap(Position const & a, Position const & b)
 	{
 		auto const a0h = a[0][Head];
 		auto const a1h = a[1][Head];
@@ -136,22 +161,44 @@ namespace
 
 		double const angleOff = angle(xz(b1h - b0h)) - angle(xz(a1h - a0h));
 
-		Reorientation const r = { b0h - xyz(yrot(angleOff) * V4(a0h, 1)), angleOff };
+		Reorientation const r{b0h - xyz(yrot(angleOff) * V4(a0h, 1)), angleOff};
 
 		if (basicallySame(apply(r, a), b)) return r;
-		else return boost::none;
+		else return none;
+	}
+
+	optional<PositionReorientation> is_reoriented_without_swap(Position const & a, Position const & b)
+	{
+		if (auto r = is_reoriented_without_mirror_and_swap(a, b))
+		{
+			PositionReorientation u{*r, false, false};
+			assert(basicallySame(u(a), b));
+			return u;
+		}
+		
+		if (auto r = is_reoriented_without_mirror_and_swap(a, mirror(b)))
+		{
+			PositionReorientation u{*r, false, true};
+			assert(basicallySame(u(a), b));
+			return u;
+		}
+
+		return none;
 	}
 }
 
-boost::optional<PositionReorientation> is_reoriented(Position const & a, Position b)
+optional<PositionReorientation> is_reoriented(Position const & a, Position b)
 {
-	if (auto r = is_reoriented_without_swap(a, b))
-		return PositionReorientation{*r, false};
+	optional<PositionReorientation> r = is_reoriented_without_swap(a, b);
+	
+	if (!r)
+	{
+		std::swap(b[0], b[1]);
+		r = is_reoriented_without_swap(a, b);
+		if (r) r->swap_players = true;
+	}
 
-	std::swap(b[0], b[1]);
+	if (r) assert(basicallySame((*r)(a), b));
 
-	if (auto r = is_reoriented_without_swap(a, b))
-		return PositionReorientation{*r, true};
-
-	return boost::none;
+	return r;
 }

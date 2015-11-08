@@ -65,8 +65,8 @@ namespace
 	}
 
 	void render(Viables const * const viables, Position const & pos,
-		boost::optional<PlayerJoint> const highlight_joint,
-		boost::optional<PlayerNum> const first_person_player, bool const edit_mode)
+		optional<PlayerJoint> const highlight_joint,
+		optional<PlayerNum> const first_person_player, bool const edit_mode)
 	{
 		// draw limbs:
 
@@ -134,13 +134,12 @@ namespace
 			for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i], j));
 			glEnd();
 
+			glPointSize(25);
+			glBegin(GL_POINTS);
 			for (PosNum i = v.second.begin; i != v.second.end; ++i)
-			{
-				glPointSize(i == 0 || i == seq.size() - 1 ? 30 : 15);
-				glBegin(GL_POINTS);
+				if (i == 0 || i == seq.size() - 1)
 					glVertex(apply(r, seq[i], j));
-				glEnd();
-			}
+			glEnd();
 			glEnable(GL_DEPTH_TEST);
 		}
 	}
@@ -153,7 +152,7 @@ void renderWindow(
 	GLFWwindow * const window,
 	Position const & position,
 	Camera camera,
-	boost::optional<PlayerJoint> highlight_joint,
+	optional<PlayerJoint> highlight_joint,
 	bool const edit_mode)
 {
 	int width, height;

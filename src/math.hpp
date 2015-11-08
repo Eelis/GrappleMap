@@ -183,7 +183,9 @@ struct Reorientation
 	V3 offset;
 	double angle;
 
-	Reorientation(V3 o = {0,0,0}, double a = 0): offset(o), angle(a) {} // ugh
+	Reorientation(V3 o = {0,0,0}, double a = 0)
+		: offset(o), angle(a)
+	{}
 };
 
 inline std::ostream & operator<<(std::ostream & o, Reorientation const r)
@@ -191,19 +193,14 @@ inline std::ostream & operator<<(std::ostream & o, Reorientation const r)
 	return o << "{offset=" << r.offset << ", angle=" << r.angle << "}";
 }
 
-inline bool operator==(Reorientation const & a, Reorientation const & b)
-{
-	return a.offset == b.offset && a.angle == b.angle;
-}
+inline auto members(Reorientation const & r) { return std::tie(r.offset, r.angle); }
+
+inline bool operator==(Reorientation const & a, Reorientation const & b) { return members(a) == members(b); }
+inline bool operator<(Reorientation const & a, Reorientation const & b) { return members(a) < members(b); }
 
 inline V3 apply(Reorientation const & r, V3 v)
 {
 	return xyz(yrot(r.angle) * (V4(v, 1))) + r.offset;
-}
-
-inline bool operator<(Reorientation const & a, Reorientation const & b)
-{
-	return std::make_pair(a.offset, a.angle) < std::make_pair(b.offset, b.angle);
 }
 
 inline Reorientation inverse(Reorientation x)

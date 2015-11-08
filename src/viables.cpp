@@ -43,11 +43,11 @@ namespace
 				xydist = std::sqrt(xydistSqrd);
 
 			if (xydist < 0.0005) break;
-
+/*
 			auto const segment = LineSegment(xy, via.endxy);
 			foreach (old : vfj.segments) if (lineSegmentsIntersect(segment, old)) return;
 			vfj.segments.push_back(segment);
-
+*/
 			via.dist += xydist;
 			vfj.total_dist += xydist;
 			via.endV3 = v;
@@ -84,11 +84,11 @@ namespace
 				xydist = std::sqrt(xydistSqrd);
 
 			if (xydistSqrd < 0.0005) break;
-
+/*
 			auto const segment = std::make_pair(xy, via.beginxy);
 			foreach (old : vfj.segments) if (lineSegmentsIntersect(old, segment)) return;
 			vfj.segments.push_back(segment);
-
+*/
 			via.dist += xydist;
 			vfj.total_dist += xydist;
 			via.beginV3 = v;

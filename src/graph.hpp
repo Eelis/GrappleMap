@@ -5,8 +5,6 @@
 
 using NodeNum = uint16_t;
 
-using boost::optional;
-
 struct ReorientedNode
 {
 	NodeNum node;
@@ -29,16 +27,16 @@ class Graph
 			// invariant: g[to] == sequences.positions.back()
 	};
 
-	std::vector<Position> nodes;
-	std::vector<Edge> edges; // indexed by seqnum
+	vector<Position> nodes;
+	vector<Edge> edges; // indexed by seqnum
 
-	boost::optional<ReorientedNode> is_reoriented_node(Position const & p) const
+	optional<ReorientedNode> is_reoriented_node(Position const & p) const
 	{
 		for (NodeNum n = 0; n != nodes.size(); ++n)
 			if (auto r = is_reoriented(nodes[n], p))
 				return ReorientedNode{n, *r};
 
-		return boost::none;
+		return none;
 	}
 
 	ReorientedNode find_or_add(Position const & p)
@@ -113,23 +111,23 @@ inline PositionInSequence last_pos_in(Graph const & g, SeqNum const s)
 	return {s, last_pos(g, s)};
 }
 
-inline boost::optional<PositionInSequence> prev(PositionInSequence const pis)
+inline optional<PositionInSequence> prev(PositionInSequence const pis)
 {
-	if (pis.position == 0) return boost::none;
+	if (pis.position == 0) return none;
 	return PositionInSequence{pis.sequence, pis.position - 1};
 }
 
-inline boost::optional<PositionInSequence> next(Graph const & g, PositionInSequence const pis)
+inline optional<PositionInSequence> next(Graph const & g, PositionInSequence const pis)
 {
-	if (pis.position == last_pos(g, pis.sequence)) return boost::none;
+	if (pis.position == last_pos(g, pis.sequence)) return none;
 	return PositionInSequence{pis.sequence, pis.position + 1};
 }
 
-inline boost::optional<ReorientedNode> node(Graph const & g, PositionInSequence const pis)
+inline optional<ReorientedNode> node(Graph const & g, PositionInSequence const pis)
 {
 	if (pis.position == 0) return g.from(pis.sequence);
 	if (!next(g, pis)) return g.to(pis.sequence);
-	return boost::none;
+	return none;
 }
 
 inline void replace(Graph & graph, PositionInSequence const pis, PlayerJoint const j, V3 const v, bool const local)
@@ -139,9 +137,9 @@ inline void replace(Graph & graph, PositionInSequence const pis, PlayerJoint con
 	graph.replace(pis, p, local);
 }
 
-boost::optional<SeqNum> seq_by_desc(Graph const &, std::string const & desc);
+optional<SeqNum> seq_by_desc(Graph const &, std::string const & desc);
 
-boost::optional<PositionInSequence> node_as_posinseq(Graph const &, NodeNum);
+optional<PositionInSequence> node_as_posinseq(Graph const &, NodeNum);
 	// may return either the beginning of a sequence or the end
 
 #endif

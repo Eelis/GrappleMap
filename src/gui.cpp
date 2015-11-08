@@ -167,7 +167,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					{
 						std::tie(w.graph, w.location) = w.undo.top();
 						w.undo.pop();
-						w.next_pos = boost::none;
+						w.next_pos = none;
 					}
 					return;
 
@@ -218,7 +218,16 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				auto p = w.graph[w.location];
 				swap(p[0], p[1]);
 				w.graph.replace(w.location, p, true);
-				return;
+				break;
+			}
+
+			// mirror
+
+			case GLFW_KEY_M:
+			{
+				push_undo(w);
+				w.graph.replace(w.location, mirror(w.graph[w.location]), true);
+				break;
 			}
 
 			// set position to center
@@ -300,7 +309,12 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 
 			case GLFW_KEY_1: w.split_view = !w.split_view; break;
 
-			case GLFW_KEY_B: split_at(w.graph, w.location); break; // branch
+			case GLFW_KEY_B: // branch
+			{
+				push_undo(w);
+				split_at(w.graph, w.location);
+				break;
+			}
 
 			case GLFW_KEY_DELETE:
 			{
@@ -341,7 +355,7 @@ void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int 
 		w.chosen_joint = w.closest_joint;
 	}
 	else if (action == GLFW_RELEASE)
-		w.chosen_joint = boost::none;
+		w.chosen_joint = none;
 }
 
 void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double yoffset)
@@ -353,7 +367,7 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 		if (w.location.position != 0)
 		{
 			--w.location.position;
-			w.next_pos = boost::none;
+			w.next_pos = none;
 		}
 	}
 	else if (yoffset == 1)
@@ -361,7 +375,7 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 		if (auto const n = next(w.graph, w.location))
 		{
 			w.location = *n;
-			w.next_pos = boost::none;
+			w.next_pos = none;
 		}
 	}
 
@@ -370,11 +384,11 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 
 std::vector<View> const
 	single_view
-		{ {0, 0, 1, 1, boost::none, 90} },
+		{ {0, 0, 1, 1, none, 90} },
 	split_view
-		{ {0, 0, .5, 1, boost::none, 90}
-		, {.5, .5, .5, .5, boost::optional<unsigned>(0), 75}
-		, {.5, 0, .5, .5, boost::optional<unsigned>(1), 75} };
+		{ {0, 0, .5, 1, none, 90}
+		, {.5, .5, .5, .5, optional<unsigned>(0), 75}
+		, {.5, 0, .5, .5, optional<unsigned>(1), 75} };
 
 View const * main_view(std::vector<View> const & vv)
 {
@@ -437,7 +451,7 @@ int main(int const argc, char const * const * const argv)
 			int width, height;
 			glfwGetFramebufferSize(window, &width, &height);
 
-			boost::optional<V2> cursor;
+			optional<V2> cursor;
 
 			auto & views = w.split_view ? split_view : single_view;
 
@@ -543,7 +557,7 @@ int main(int const argc, char const * const * const argv)
 			{
 				w.location = w.next_pos->pis;
 				w.reorientation = w.next_pos->reorientation;
-				w.next_pos = boost::none;
+				w.next_pos = none;
 				print_status(w);
 			}
 		}

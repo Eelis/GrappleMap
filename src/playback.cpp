@@ -138,7 +138,7 @@ int main(int const argc, char const * const * const argv)
 
 				nullptr, // no viables
 				graph, window, pos, camera,
-				boost::none, // no highlighted joint
+				none, // no highlighted joint
 				false); // not edit mode
 		}
 

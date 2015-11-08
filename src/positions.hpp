@@ -2,10 +2,9 @@
 #define JIUJITSUMAPPER_POSITIONS_HPP
 
 #include "math.hpp"
+#include "util.hpp"
 #include <array>
 #include <cmath>
-
-#include <boost/optional.hpp>
 
 #define JOINTS \
 	LeftToe, RightToe, \
@@ -138,20 +137,21 @@ inline auto & segments()
 
 using Player = PerJoint<V3>;
 
-Player spring(Player const &, boost::optional<Joint> fixed_joint = boost::none);
-void spring(Position &, boost::optional<PlayerJoint> = boost::none);
+Position mirror(Position);
+Player spring(Player const &, optional<Joint> fixed_joint = none);
+void spring(Position &, optional<PlayerJoint> = none);
 
 inline Position between(Position const & a, Position const & b, double s = 0.5 /* [0,1] */)
 {
 	Position r;
-	for (auto j : playerJoints) r[j] = a[j] + (b[j] - a[j]) * s;
+	foreach (j : playerJoints) r[j] = a[j] + (b[j] - a[j]) * s;
 	return r;
 }
 
 inline bool basicallySame(Position const & a, Position const & b)
 {
 	double u = 0;
-	for (auto j : playerJoints) u += distanceSquared(a[j], b[j]);
+	foreach (j : playerJoints) u += distanceSquared(a[j], b[j]);
 	return u < 0.03;
 }
 
@@ -177,50 +177,50 @@ inline bool operator==(PositionInSequence const & a, PositionInSequence const & 
 	return a.sequence == b.sequence && a.position == b.position;
 }
 
-struct PositionReorientation
-{
-	Reorientation reorientation;
-	bool swap_players;
-
-	PositionReorientation(Reorientation r = {{0,0,0},0}, bool sp = false): reorientation(r), swap_players(sp) {} // ugh
-
-	Position operator()(Position) const;
-};
-
 inline Position apply(Reorientation const & r, Position p)
 {
 	for (auto j : playerJoints) p[j] = apply(r, p[j]);
 	return p;
 }
 
-inline Position PositionReorientation::operator()(Position p) const
+struct PositionReorientation
 {
-	p = apply(reorientation, p);
-	if (swap_players) std::swap(p[0], p[1]);
-	return p;
-}
+	Reorientation reorientation;
+	bool swap_players;
+	bool mirror; // not done as part of Reorientation because requires swapping left/right limbs
+
+	PositionReorientation(Reorientation r = {{0,0,0},0}, bool sp = false, bool m = false)
+		: reorientation(r), swap_players(sp), mirror(m) {} // ugh
+
+	Position operator()(Position p) const
+	{
+		p = apply(reorientation, p);
+		if (swap_players) std::swap(p[0], p[1]);
+		if (mirror) p = ::mirror(p);
+		return p;
+	}
+};
 
 inline V3 apply(PositionReorientation const & r, Position const & p, PlayerJoint j)
 {
-	if (r.swap_players) j.player = opponent(j.player);
-	return apply(r.reorientation, p[j]);
+	return r(p)[j]; // todo: inefficient
 }
 
 inline PositionReorientation inverse(PositionReorientation const r)
 {
-	return {inverse(r.reorientation), r.swap_players};
+	return {inverse(r.reorientation), r.swap_players, r.mirror};
 }
 
 inline PositionReorientation compose(PositionReorientation const a, PositionReorientation const b)
 {
-	return PositionReorientation{compose(a.reorientation, b.reorientation), a.swap_players != b.swap_players};
+	return PositionReorientation{compose(a.reorientation, b.reorientation), a.swap_players != b.swap_players, a.mirror != b.mirror};
 }
 
-boost::optional<PositionReorientation> is_reoriented(Position const &, Position);
+optional<PositionReorientation> is_reoriented(Position const &, Position);
 
 inline bool operator==(PositionReorientation const & a, PositionReorientation const & b)
 {
-	return a.reorientation == b.reorientation && a.swap_players == b.swap_players;
+	return a.reorientation == b.reorientation && a.swap_players == b.swap_players && a.mirror == b.mirror;
 }
 
 #endif
