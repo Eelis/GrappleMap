@@ -190,7 +190,9 @@ namespace
 optional<PositionReorientation> is_reoriented(Position const & a, Position b)
 {
 	optional<PositionReorientation> r = is_reoriented_without_swap(a, b);
-	
+
+	Position const c = b;
+
 	if (!r)
 	{
 		std::swap(b[0], b[1]);
@@ -198,7 +200,7 @@ optional<PositionReorientation> is_reoriented(Position const & a, Position b)
 		if (r) r->swap_players = true;
 	}
 
-	if (r) assert(basicallySame((*r)(a), b));
+	if (r) assert(basicallySame((*r)(a), c));
 
 	return r;
 }
