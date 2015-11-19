@@ -18,26 +18,26 @@ namespace
 		
 		throw std::runtime_error("not a base 62 digit: " + std::string(1, c));
 	}
+}
 
-	Position decodePosition(string s)
-	{
-		if (s.size() != 2 * joint_count * 3 * 2)
-			throw std::runtime_error("position string has incorrect size");
+Position decodePosition(string s)
+{
+	if (s.size() != 2 * joint_count * 3 * 2)
+		throw std::runtime_error("position string has incorrect size");
 
-		auto g = [&s]
-			{
-				double d = double(fromBase62(s[0]) * 62 + fromBase62(s[1])) / 1000;
-				s.erase(0, 2);
-				return d;
-			};
+	auto g = [&s]
+		{
+			double d = double(fromBase62(s[0]) * 62 + fromBase62(s[1])) / 1000;
+			s.erase(0, 2);
+			return d;
+		};
 
-		Position p;
+	Position p;
 
-		foreach (j : playerJoints)
-			p[j] = {g() - 2, g(), g() - 2};
+	foreach (j : playerJoints)
+		p[j] = {g() - 2, g(), g() - 2};
 
-		return p;
-	}
+	return p;
 }
 
 istream & operator>>(istream & i, vector<Sequence> & v)

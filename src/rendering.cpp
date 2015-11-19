@@ -47,10 +47,10 @@ namespace
 			up.x, up.y, up.z);
 	}
 
-	void grid()
+	void grid(V3 const color)
 	{
 		glNormal3d(0, 1, 0);
-		glColor3f(0.5,0.5,0.5);
+		glColor3f(color.x, color.y, color.z);
 		glLineWidth(2);
 
 		glBegin(GL_LINES);
@@ -153,11 +153,10 @@ void renderWindow(
 	Position const & position,
 	Camera camera,
 	optional<PlayerJoint> highlight_joint,
-	bool const edit_mode)
+	bool const edit_mode,
+	int const width, int const height,
+	Style const & style)
 {
-	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
-
 	glEnable(GL_SCISSOR_TEST);
 
 	foreach (v : views)
@@ -172,6 +171,8 @@ void renderWindow(
 		glScissor(x, y, w, h);
 
 		camera.setViewportSize(v.fov, w, h);
+
+		glClearColor(style.background_color.x, style.background_color.y, style.background_color.z, 0);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -205,7 +206,7 @@ void renderWindow(
 		glEnable(GL_DEPTH);
 		glEnable(GL_DEPTH_TEST);
 
-		grid();
+		grid(style.grid_color);
 		render(viables, position, highlight_joint, v.first_person, edit_mode);
 
 		if (viables && highlight_joint)

@@ -83,7 +83,7 @@ namespace
 				xydistSqrd = distanceSquared(xy, via.beginxy),
 				xydist = std::sqrt(xydistSqrd);
 
-			if (xydistSqrd < 0.0005) break;
+			if (xydist < 0.0005) break;
 /*
 			auto const segment = std::make_pair(xy, via.beginxy);
 			foreach (old : vfj.segments) if (lineSegmentsIntersect(old, segment)) return;
@@ -111,7 +111,7 @@ namespace
 	void extend_from(int const depth, Graph const & graph, ReorientedNode const rn,
 		PlayerJoint const j, Camera const & camera, ViablesForJoint & vfj)
 	{
-		if (depth > 3) return;
+		if (depth >= 2) return;
 
 		for (SeqNum seqNum{0}; seqNum.index != graph.num_sequences(); ++seqNum.index)
 		{

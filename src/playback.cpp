@@ -130,6 +130,9 @@ int main(int const argc, char const * const * const argv)
 			if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) camera.zoom(-0.05);
 			if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) camera.zoom(0.05);
 
+			int width, height;
+			glfwGetFramebufferSize(window, &width, &height);
+
 			renderWindow(
 				// views:
 				{ {0, 0, 1, 1, none, 90}
@@ -139,7 +142,8 @@ int main(int const argc, char const * const * const argv)
 				nullptr, // no viables
 				graph, window, pos, camera,
 				none, // no highlighted joint
-				false); // not edit mode
+				false, // not edit mode
+				width, height);
 		}
 
 		sleep(2);

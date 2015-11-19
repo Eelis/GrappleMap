@@ -405,7 +405,7 @@ int main(int const argc, char const * const * const argv)
 		po::options_description desc("options");
 		desc.add_options()
 			("help", "show this help")
-			("start", po::value<NodeNum>()->default_value(0), "initial node")
+			("start", po::value<uint16_t>()->default_value(0), "initial node")
 			("db", po::value<std::string>()->default_value("positions.txt"), "position database file");
 
 		po::variables_map vm;
@@ -414,7 +414,7 @@ int main(int const argc, char const * const * const argv)
 
 		if (vm.count("help")) { std::cout << desc << '\n'; return 0; }
 
-		Window w(vm["db"].as<std::string>(), vm["start"].as<NodeNum>());
+		Window w(vm["db"].as<std::string>(), NodeNum{vm["start"].as<uint16_t>()});
 
 		if (!glfwInit()) return -1;
 
@@ -509,20 +509,16 @@ int main(int const argc, char const * const * const argv)
 			{
 				Position new_pos = w.graph[w.location];
 
-				V4 const dragger = yrot(-w.camera.getHorizontalRotation() - w.reorientation.reorientation.angle) * V4{{1,0,0},0};
+				V4 dragger = yrot(-w.camera.getHorizontalRotation() - w.reorientation.reorientation.angle) * V4{{1,0,0},0};
+				if (w.reorientation.mirror) dragger.x = -dragger.x;
 				
-				auto off = world2xy(w.camera, apply(w.reorientation, new_pos, *w.chosen_joint)) - *cursor;
+				V2 const off = *cursor - world2xy(w.camera, apply(w.reorientation, new_pos, *w.chosen_joint));
 
-				auto jointToEdit = *w.chosen_joint;
+				auto & joint = new_pos[apply(w.reorientation, *w.chosen_joint)];
 
-				if (w.reorientation.swap_players)
-					jointToEdit.player = opponent(jointToEdit.player);
-
-				auto & joint = new_pos[jointToEdit];
-
-				joint.x -= dragger.x * off.x;
-				joint.z -= dragger.z * off.x;
-				joint.y = std::max(jointDefs[w.chosen_joint->joint].radius, joint.y - off.y);
+				joint.x += dragger.x * off.x;
+				joint.z += dragger.z * off.x;
+				joint.y = std::max(jointDefs[w.chosen_joint->joint].radius, joint.y + off.y);
 
 				spring(new_pos, w.chosen_joint);
 
@@ -550,8 +546,9 @@ int main(int const argc, char const * const * const argv)
 
 			auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
 
+			glfwGetFramebufferSize(window, &width, &height);
 			renderWindow(
-				views, &w.viable, w.graph, window, posToDraw, w.camera, special_joint, w.edit_mode);
+				views, &w.viable, w.graph, window, posToDraw, w.camera, special_joint, w.edit_mode, width, height);
 
 			if (w.chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && w.next_pos && w.next_pos->howfar >= 1)
 			{

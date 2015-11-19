@@ -5,6 +5,7 @@
 #include "util.hpp"
 #include <array>
 #include <cmath>
+#include <iostream>
 
 #define JOINTS \
 	LeftToe, RightToe, \
@@ -40,12 +41,47 @@ inline bool operator==(PlayerJoint a, PlayerJoint b)
 	return a.player == b.player && a.joint == b.joint;
 }
 
+inline std::ostream & operator<<(std::ostream & o, PlayerJoint const pj)
+{
+	return o << "player " << pj.player << "'s " << to_string(pj.joint);
+}
+
 template<typename T> using PerPlayer = std::array<T, 2>;
 template<typename T> using PerJoint = std::array<T, joint_count>;
 
 struct JointDef { Joint joint; double radius; bool draggable; };
 
 extern PerJoint<JointDef> const jointDefs;
+
+inline Joint mirror(Joint const j)
+{
+	switch (j)
+	{
+		case LeftToe: return RightToe;
+		case LeftHeel: return RightHeel;
+		case LeftAnkle: return RightAnkle;
+		case LeftKnee: return RightKnee;
+		case LeftHip: return RightHip;
+		case LeftShoulder: return RightShoulder;
+		case LeftElbow: return RightElbow;
+		case LeftWrist: return RightWrist;
+		case LeftHand: return RightHand;
+		case LeftFingers: return RightFingers;
+
+		case RightToe: return LeftToe;
+		case RightHeel: return LeftHeel;
+		case RightAnkle: return LeftAnkle;
+		case RightKnee: return LeftKnee;
+		case RightHip: return LeftHip;
+		case RightShoulder: return LeftShoulder;
+		case RightElbow: return LeftElbow;
+		case RightWrist: return LeftWrist;
+		case RightHand: return LeftHand;
+		case RightFingers: return LeftFingers;
+
+		default: return j;
+	}
+}
 
 template<typename T>
 struct PerPlayerJoint: PerPlayer<PerJoint<T>>
@@ -195,21 +231,36 @@ struct PositionReorientation
 	Position operator()(Position p) const
 	{
 		p = apply(reorientation, p);
-		if (swap_players) std::swap(p[0], p[1]);
 		if (mirror) p = ::mirror(p);
+		if (swap_players) std::swap(p[0], p[1]);
 		return p;
 	}
 };
+
+inline std::ostream & operator<<(std::ostream & o, PositionReorientation const & r)
+{
+	return o
+		<< "{" << r.reorientation
+		<< ", swap_players=" << r.swap_players
+		<< ", mirror=" << r.mirror
+		<< '}';
+}
 
 inline V3 apply(PositionReorientation const & r, Position const & p, PlayerJoint j)
 {
 	return r(p)[j]; // todo: inefficient
 }
 
-inline PositionReorientation inverse(PositionReorientation const r)
+inline PlayerJoint apply(PositionReorientation const & r, PlayerJoint pj)
 {
-	return {inverse(r.reorientation), r.swap_players, r.mirror};
+	if (r.mirror) pj.joint = mirror(pj.joint);
+
+	if (r.swap_players) pj.player = opponent(pj.player);
+
+	return pj;
 }
+
+PositionReorientation inverse(PositionReorientation);
 
 inline PositionReorientation compose(PositionReorientation const a, PositionReorientation const b)
 {

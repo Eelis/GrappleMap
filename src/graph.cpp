@@ -38,7 +38,7 @@ void Graph::replace(PositionInSequence const pis, Position const & p, bool const
 	optional<ReorientedNode> const rn = node(*this, pis);
 	if (!local && rn)
 	{
-		nodes[rn->node] = inverse(rn->reorientation)(p);
+		nodes[rn->node.index] = inverse(rn->reorientation)(p);
 		assert(basicallySame((*this)[*rn], p));
 
 		foreach (e : edges)

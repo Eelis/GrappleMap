@@ -1,5 +1,6 @@
 #include "positions.hpp"
 #include "util.hpp"
+#include "persistence.hpp"
 
 extern PerJoint<JointDef> const jointDefs =
 	{{ { LeftToe, 0.025, false}
@@ -84,6 +85,24 @@ namespace
 		std::swap(p[LeftHeel], p[RightHeel]);
 		std::swap(p[LeftKnee], p[RightKnee]);
 	}
+}
+
+PositionReorientation inverse(PositionReorientation const x)
+{
+	PositionReorientation r {inverse(x.reorientation), x.swap_players, x.mirror};
+	if (x.mirror)
+	{
+		r.reorientation.angle = -r.reorientation.angle;
+		r.reorientation.offset.x = -r.reorientation.offset.x;
+	}
+
+	#ifndef NDEBUG
+		Position test = decodePosition("QNaAvDERaAvTO1cNx2GIczysPQbDx6FJbyysRFaYEDEjaZE1MFdvAdI5dqAjMWl1CjHwlLBPOdhyCOFkhDByM8gPGOGegWFIMVhmHVGKg3GQNygSIZGkgwHTKGhkzmJ9mzCCJKoxEqHVazAXL7azAFIMaEEAMLaEEiIzbBDzMtbDDjEYfCHAOKfKH9HzbNMXK8bMMQGHkBMGL8kBMUFKf6LMOqgzMoEMgYHLNQg4H8EIhvGCOvhGHgFJh0FYN3hQF3JnfuOnJrloMrJznEKY");
+
+		assert(basicallySame(r(x(test)), test));
+	#endif
+
+	return r;
 }
 
 Position mirror(Position p)

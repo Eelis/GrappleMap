@@ -2,8 +2,19 @@
 #define JIUJITSUMAPPER_GRAPH_HPP
 
 #include "positions.hpp"
+#include <map>
+#include <iostream>
 
-using NodeNum = uint16_t;
+struct NodeNum { uint16_t index; };
+
+inline bool operator==(NodeNum const a, NodeNum const b) { return a.index == b.index; }
+inline bool operator!=(NodeNum const a, NodeNum const b) { return a.index != b.index; }
+inline bool operator<(NodeNum const a, NodeNum const b) { return a.index < b.index; }
+
+inline std::ostream & operator<<(std::ostream & o, NodeNum const n)
+{
+	return o << "node" << n.index;
+}
 
 struct ReorientedNode
 {
@@ -32,8 +43,8 @@ class Graph
 
 	optional<ReorientedNode> is_reoriented_node(Position const & p) const
 	{
-		for (NodeNum n = 0; n != nodes.size(); ++n)
-			if (auto r = is_reoriented(nodes[n], p))
+		for (NodeNum n{0}; n.index != nodes.size(); ++n.index)
+			if (auto r = is_reoriented(nodes[n.index], p))
 				return ReorientedNode{n, *r};
 
 		return none;
@@ -45,7 +56,7 @@ class Graph
 			return *m;
 
 		nodes.push_back(p);
-		return ReorientedNode{NodeNum(nodes.size() - 1), PositionReorientation{}};
+		return ReorientedNode{NodeNum{uint16_t(nodes.size() - 1)}, PositionReorientation{}};
 	}
 
 	void changed(PositionInSequence);
@@ -65,8 +76,10 @@ public:
 
 	Position operator[](ReorientedNode const & n) const
 	{
-		return n.reorientation(nodes[n.node]);
+		return n.reorientation(nodes[n.node.index]);
 	}
+
+	Position const & operator[](NodeNum const n) const { return nodes[n.index]; }
 
 	Sequence const & operator[](SeqNum const s) const { return edges[s.index].sequence; }
 
@@ -109,6 +122,22 @@ inline PositionInSequence first_pos_in(SeqNum const s)
 inline PositionInSequence last_pos_in(Graph const & g, SeqNum const s)
 {
 	return {s, last_pos(g, s)};
+}
+
+inline std::map<NodeNum, std::pair<
+	std::vector<SeqNum>, // sequences that end at the node
+	std::vector<SeqNum>>> // sequences that start at the node
+		nodes(Graph const & g)
+{
+	std::map<NodeNum, std::pair<std::vector<SeqNum>, std::vector<SeqNum>>> m;
+
+	for (SeqNum sn{0}; sn.index != g.num_sequences(); ++sn.index)
+	{
+		m[g.to(sn).node].first.push_back(sn);
+		m[g.from(sn).node].second.push_back(sn);
+	}
+
+	return m;
 }
 
 inline optional<PositionInSequence> prev(PositionInSequence const pis)

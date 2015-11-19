@@ -16,8 +16,15 @@ struct View
 	double fov;
 };
 
+struct Style
+{
+	V3 grid_color {.5, .5, .5};
+	V3 background_color {0, 0, 0};
+};
+
 void renderWindow(vector<View> const &,
 	Viables const *, Graph const &, GLFWwindow *, Position const &,
-	Camera, optional<PlayerJoint> highlight_joint, bool edit_mode);
+	Camera, optional<PlayerJoint> highlight_joint, bool edit_mode,
+	int width, int height, Style const & = Style());
 
 #endif

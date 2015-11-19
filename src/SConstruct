@@ -1,9 +1,13 @@
 env = Environment(CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3')
+#env = Environment(CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -g')
 
 common = env.Object(['graph.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp'])
 rendering = env.Object('rendering.cpp')
-guilibs =['glfw', 'GL', 'GLU', 'boost_program_options']
+gllibs = ['GL', 'GLU', 'glfw']
+cmdlibs = ['boost_program_options']
+guilibs = gllibs + cmdlibs
 
 env.Program('jjm-gui', ['gui.cpp', rendering, common], LIBS=guilibs)
 env.Program('jjm-playback', ['playback.cpp', rendering, common], LIBS=guilibs)
 env.Program('jjm-todot', ['todot.cpp', common])
+env.Program('jjm-browse', ['browse.cpp', rendering, common], LIBS=gllibs + cmdlibs + ['png'])
