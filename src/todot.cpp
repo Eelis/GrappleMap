@@ -10,7 +10,7 @@ void todot(Graph const & graph, std::ostream & o)
 
 	for (SeqNum s{0}; s.index != graph.num_sequences(); ++s.index)
 		o << graph.from(s).node.index << " -> " << graph.to(s).node.index
-		  << " [label=\"" << graph[s].description << " (" << graph[s].positions.size()-2 << ")\"];\n";
+		  << " [label=\"" << graph[s].description.front() << " (" << graph[s].positions.size()-2 << ")\"];\n";
 
 	o << "}\n";
 }

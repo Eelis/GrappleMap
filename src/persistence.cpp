@@ -43,23 +43,32 @@ Position decodePosition(string s)
 istream & operator>>(istream & i, vector<Sequence> & v)
 {
 	string line;
+	vector<string> desc;
+	bool last_was_position = false;
 
 	while(std::getline(i, line))
-		if (line.empty() or line.front() == '#')
-			continue;
-		else if (line.front() == ' ')
+	{
+		bool const is_position = line.front() == ' ';
+
+		if (is_position)
 		{
-			if (v.empty()) error("file contains position without preceding description");
+			if (!last_was_position)
+			{
+				assert(!desc.empty());
+				v.push_back(Sequence{desc, {}});
+				desc.clear();
+			}
 
 			while (line.front() == ' ') line.erase(0, 1);
 
+			if (v.empty()) error("malformed file");
+
 			v.back().positions.push_back(decodePosition(line));
 		}
-		else
-		{
-			v.push_back(Sequence{line, {}});
-			std::cerr << "Loading: " << line << '\n';
-		}
+		else desc.push_back(line);
+
+		last_was_position = is_position;
+	}
 
 	return i;
 }
@@ -86,7 +95,7 @@ ostream & operator<<(ostream & o, Position const & p)
 
 ostream & operator<<(ostream & o, Sequence const & s)
 {
-	o << s.description << '\n';
+	foreach (l : s.description) o << l << '\n';
 	foreach (p : s.positions) o << "    " << p << '\n';
 	return o;
 }

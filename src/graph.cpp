@@ -88,7 +88,7 @@ SeqNum insert(Graph & g, Sequence const & sequence)
 
 	std::cerr <<
 		"Inserted sequence " << num <<
-		" (\"" << sequence.description << "\")"
+		" (\"" << sequence.description.front() << "\")"
 		" of size " << sequence.positions.size() << std::endl;
 
 	return {num};
@@ -106,7 +106,7 @@ optional<SeqNum> erase_sequence(Graph & g, SeqNum const sn)
 
 	std::cerr <<
 		"Erasing sequence " << sn.index <<
-		" (\"" << seq.description << "\")"
+		" (\"" << seq.description.front() << "\")"
 		" and the " << seq.positions.size() << " positions in it." << std::endl;
 
 	g.set(sn, none);
@@ -137,7 +137,7 @@ optional<PosNum> Graph::erase(PositionInSequence const pis)
 optional<SeqNum> seq_by_desc(Graph const & graph, std::string const & desc)
 {
 	for (SeqNum seqNum{0}; seqNum.index != graph.num_sequences(); ++seqNum.index)
-		if (graph[seqNum].description == desc)
+		if (graph[seqNum].description.front() == desc)
 			return seqNum;
 	
 	return none;

@@ -96,8 +96,8 @@ using Position = PerPlayerJoint<V3>;
 
 struct Sequence
 {
-	std::string description;
-	std::vector<Position> positions; // invariant: .size()>=2
+	vector<string> description;
+	vector<Position> positions; // invariant: .size()>=2
 };
 
 using PosNum = unsigned;

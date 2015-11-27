@@ -138,7 +138,7 @@ void print_status(Window const & w)
 	std::cout
 		<< "\r[" << w.location.position + 1
 		<< '/' << seq.positions.size() << "] "
-		<< seq.description << string(30, ' ') << std::flush;
+		<< seq.description.front() << string(30, ' ') << std::flush;
 }
 
 void push_undo(Window & w)
@@ -299,7 +299,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 			{
 				push_undo(w);
 				auto const p = w.graph[w.location];
-				w.location.sequence = insert(w.graph, Sequence{"new", {p, p}});
+				w.location.sequence = insert(w.graph, Sequence{{"new"}, {p, p}});
 				w.location.position = 0;
 				break;
 			}
