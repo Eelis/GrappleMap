@@ -51,13 +51,13 @@ namespace
 	void make_png(GLFWwindow * const window, Graph const & graph, std::string const & name, Position const & pos)
 	{
 		Camera camera;
-		camera.zoom(-0.5);
+		camera.zoom(0.3);
 
 		Style style;
 		style.background_color = white;
 
 		renderWindow(
-			{ {0, 0, 1, 1, none, 90} }, // views
+			{ {0, 0, 1, 1, none, 45} }, // views
 			nullptr, // no viables
 			graph, window, pos, camera,
 			none, // no highlighted joint
@@ -77,7 +77,7 @@ namespace
 
 	void make_gif(GLFWwindow * const window, Graph const & graph, std::string const & name, std::vector<Position> const & frames)
 	{
-		std::cout << name << ": " << frames.size() << std::endl;
+		std::cout << ' ' << name << ": " << frames.size() << std::endl;
 
 		int i = 0;
 
@@ -117,7 +117,7 @@ namespace
 
 std::string img(Graph const & g, SeqNum const sn, bool const incoming)
 {
-	return std::string("<img src='") + (incoming ? "in" : "out") + std::to_string(sn.index) + ".gif' title='" + g[sn].description + "'></img>";
+	return std::string("<img src='") + (incoming ? "in" : "out") + std::to_string(sn.index) + ".gif' title='" + g[sn].description.front() + "'></img>";
 }
 
 std::string img(NodeNum const n)
@@ -146,7 +146,7 @@ void write_index(Graph const & graph)
 		foreach (sn : p.second.first)
 			html
 				<< "<tr>"
-				<< "<td style='text-align:right'>" << graph[sn].description << "</td>"
+				<< "<td style='text-align:right'>" << graph[sn].description.front() << "</td>"
 				<< "<td><a href='#" << graph.from(sn).node << "'>" << img(graph, sn, true) << "</a></td>"
 				<< "</tr>";
 
@@ -159,7 +159,7 @@ void write_index(Graph const & graph)
 			html
 				<< "<tr>"
 				<< "<td><a href='#" << graph.to(sn).node << "'>" << img(graph, sn, false) << "</a></td>"
-				<< "<td>" << graph[sn].description << "</td>"
+				<< "<td>" << graph[sn].description.front() << "</td>"
 				<< "</tr>\n";
 
 		html << "</table></td></tr>\n\n";
@@ -187,7 +187,7 @@ void write_node_pages(Graph const & graph)
 		foreach (sn : p.second.first)
 			html
 				<< "<tr>"
-				<< "<td style='text-align:right'>" << graph[sn].description << "</td>"
+				<< "<td style='text-align:right'>" << graph[sn].description.front() << "</td>"
 				<< "<td><a href='" << graph.from(sn).node << ".html'>" << img(graph, sn, true) << "</a></td>"
 				<< "</tr>";
 
@@ -200,7 +200,7 @@ void write_node_pages(Graph const & graph)
 			html
 				<< "<tr>"
 				<< "<td><a href='" << graph.to(sn).node << ".html'>" << img(graph, sn, false) << "</a></td>"
-				<< "<td>" << graph[sn].description << "</td>"
+				<< "<td>" << graph[sn].description.front() << "</td>"
 				<< "</tr>\n";
 
 		html << "</table></td></tr>\n\n";
@@ -246,24 +246,40 @@ int main(int const argc, char const * const * const argv)
 
 			make_png(window, graph, "browse/node" + std::to_string(n.index) + ".png", reo(pos));
 
-			foreach (in_sn : p.second.first)
 			{
-				auto v = frames_for_sequence(graph, in_sn);
-				foreach (p : v) p = reo(inverse(graph.to(in_sn).reorientation)(p));
+				size_t n = 0;
+				foreach (in_sn : p.second.first)
+					n = std::max(n, frames_for_sequence(graph, in_sn).size());
 
-				assert(basicallySame(v.back(), reo(pos)));
+				foreach (in_sn : p.second.first)
+				{
+					auto v = frames_for_sequence(graph, in_sn);
+					foreach (p : v) p = reo(inverse(graph.to(in_sn).reorientation)(p));
+					assert(basicallySame(v.back(), reo(pos)));
 
-				make_gif(window, graph, "in" + std::to_string(in_sn.index) + ".gif", v);
+					auto const p = v.front();
+					v.insert(v.begin(), n - v.size(), p);
+
+					make_gif(window, graph, "in" + std::to_string(in_sn.index) + ".gif", v);
+				}
 			}
 
-			foreach (out_sn : p.second.second)
 			{
-				auto v = frames_for_sequence(graph, out_sn);
-				foreach (p : v) p = reo(inverse(graph.from(out_sn).reorientation)(p));
+				size_t n = 0;
+				foreach (out_sn : p.second.second)
+					n = std::max(n, frames_for_sequence(graph, out_sn).size());
 
-				assert(basicallySame(v.front(), reo(pos)));
+				foreach (out_sn : p.second.second)
+				{
+					auto v = frames_for_sequence(graph, out_sn);
+					foreach (p : v) p = reo(inverse(graph.from(out_sn).reorientation)(p));
+					assert(basicallySame(v.front(), reo(pos)));
 
-				make_gif(window, graph, "out" + std::to_string(out_sn.index) + ".gif", v);
+					auto const p = v.back();
+					v.insert(v.end(), n - v.size(), p);
+
+					make_gif(window, graph, "out" + std::to_string(out_sn.index) + ".gif", v);
+				}
 			}
 		}
 	}
