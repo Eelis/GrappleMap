@@ -9,5 +9,5 @@ guilibs = gllibs + cmdlibs
 
 env.Program('jjm-gui', ['gui.cpp', rendering, common], LIBS=guilibs)
 env.Program('jjm-playback', ['playback.cpp', rendering, common], LIBS=guilibs)
-env.Program('jjm-todot', ['todot.cpp', common])
-env.Program('jjm-browse', ['browse.cpp', rendering, common], LIBS=gllibs + cmdlibs + ['png'])
+env.Program('jjm-todot', ['todot.cpp', common], LIBS=cmdlibs)
+env.Program('jjm-browse', ['browse.cpp', rendering, common], LIBS=guilibs + ['png'])

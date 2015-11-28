@@ -170,14 +170,20 @@ void write_index(Graph const & graph)
 
 void write_node_pages(Graph const & graph)
 {
-
 	foreach (p : nodes(graph))
 	{
 		std::ofstream html("browse/node" + std::to_string(p.first.index) + ".html");
 
-		html
-			<< "<html><body>"
-			<< "<table>";
+		html << "<html><body><h1>";
+
+		auto const & desc = graph[p.first].description;
+
+		if (desc.empty())
+			html << p.first.index;
+		else
+			html << desc.front() << " (" << p.first.index << ')';
+
+		html << "</h1><table>";
 
 		NodeNum const n = p.first;
 
@@ -216,7 +222,7 @@ int main(int const argc, char const * const * const argv)
 		optional<Config> const config = config_from_args(argc, argv);
 		if (!config) return 0;
 
-		Graph const graph(load(config->db));
+		Graph const graph = loadGraph(config->db);
 
 		if (!glfwInit()) error("could not initialize GLFW");
 
@@ -237,7 +243,7 @@ int main(int const argc, char const * const * const argv)
 
 			std::cout << n << std::endl;
 
-			auto pos = graph[n];
+			auto pos = graph[n].position;
 			V2 const center = xz(pos[0][Core] + pos[1][Core]) / 2;
 
 			PositionReorientation reo;

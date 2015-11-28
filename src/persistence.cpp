@@ -75,6 +75,8 @@ istream & operator>>(istream & i, vector<Sequence> & v)
 
 ostream & operator<<(ostream & o, Position const & p)
 {
+	o << "    ";
+
 	auto g = [&o](double const d)
 		{
 			int const i = int(std::round(d * 1000));
@@ -90,35 +92,53 @@ ostream & operator<<(ostream & o, Position const & p)
 		g(p[j].z + 2);
 	}
 
-	return o;
+	return o << '\n';
 }
 
 ostream & operator<<(ostream & o, Sequence const & s)
 {
 	foreach (l : s.description) o << l << '\n';
-	foreach (p : s.positions) o << "    " << p << '\n';
+	foreach (p : s.positions) o << p;
 	return o;
 }
 
-vector<Sequence> load(string const filename)
+Graph loadGraph(string const filename)
 {
-	std::vector<Sequence> r;
+	std::vector<Sequence> edges;
 	std::ifstream ff(filename);
 
 	if (!ff) error(filename + ": " + std::strerror(errno));
 
-	ff >> r;
+	ff >> edges;
 
-	size_t p = 0;
-	foreach (seq : r) p += seq.positions.size();
-	std::cerr << "Loaded " << p << " positions in " << r.size() << " sequences.\n";
+	// nodes have been read as sequences of size 1
 
-	return r;
+	std::vector<Graph::Node> nodes;
+
+	for (auto i = edges.begin(); i != edges.end(); )
+	{
+		if (i->positions.size() == 1)
+		{
+			nodes.push_back(Graph::Node{i->positions.front(), i->description});
+			i = edges.erase(i);
+		}
+		else ++i;
+	}
+
+	return Graph(nodes, edges);
 }
 
 void save(Graph const & g, std::string const filename)
 {
 	std::ofstream f(filename);
+
+	for (NodeNum n{0}; n.index != g.num_nodes(); ++n.index)
+		if (!g[n].description.empty())
+		{
+			foreach (l : g[n].description) f << l << '\n';
+			f << g[n].position;
+		}
+
 	for (SeqNum s{0}; s.index != g.num_sequences(); ++s.index) f << g[s];
 }
 

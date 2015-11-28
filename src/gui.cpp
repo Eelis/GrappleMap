@@ -107,7 +107,7 @@ optional<NextPosition> determineNextPos(
 struct Window
 {
 	explicit Window(string const f, NodeNum const start)
-		: filename(f), graph(load(filename))
+		: filename(f), graph(loadGraph(filename))
 	{
 		if (auto pis = node_as_posinseq(graph, start))
 			location = *pis;

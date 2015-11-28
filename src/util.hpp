@@ -11,6 +11,8 @@ using std::string;
 using std::vector;
 using std::istream;
 using std::ostream;
+using std::move;
+using std::cout;
 using boost::optional;
 using boost::none;
 

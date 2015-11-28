@@ -28,8 +28,14 @@ struct ReorientedSequence
 	PositionReorientation reorientation;
 };
 
-class Graph
+struct Graph
 {
+	struct Node
+	{
+		Position position;
+		vector<string> description;
+	};
+
 	struct Edge
 	{
 		ReorientedNode from, to;
@@ -38,13 +44,15 @@ class Graph
 			// invariant: g[to] == sequences.positions.back()
 	};
 
-	vector<Position> nodes;
+private:
+
+	vector<Node> nodes;
 	vector<Edge> edges; // indexed by seqnum
 
 	optional<ReorientedNode> is_reoriented_node(Position const & p) const
 	{
 		for (NodeNum n{0}; n.index != nodes.size(); ++n.index)
-			if (auto r = is_reoriented(nodes[n.index], p))
+			if (auto r = is_reoriented(nodes[n.index].position, p))
 				return ReorientedNode{n, *r};
 
 		return none;
@@ -55,7 +63,7 @@ class Graph
 		if (auto m = is_reoriented_node(p))
 			return *m;
 
-		nodes.push_back(p);
+		nodes.push_back({p, {}});
 		return ReorientedNode{NodeNum{uint16_t(nodes.size() - 1)}, PositionReorientation{}};
 	}
 
@@ -65,7 +73,7 @@ public:
 
 	// construction
 
-	explicit Graph(std::vector<Sequence> const &);
+	explicit Graph(std::vector<Node> const &, std::vector<Sequence> const &);
 
 	// const access
 
@@ -76,20 +84,22 @@ public:
 
 	Position operator[](ReorientedNode const & n) const
 	{
-		return n.reorientation(nodes[n.node.index]);
+		return n.reorientation(nodes[n.node.index].position);
 	}
 
-	Position const & operator[](NodeNum const n) const { return nodes[n.index]; }
+	Node const & operator[](NodeNum const n) const { return nodes[n.index]; }
 
 	Sequence const & operator[](SeqNum const s) const { return edges[s.index].sequence; }
 
 	ReorientedNode from(SeqNum const s) const { return edges[s.index].from; }
 	ReorientedNode to(SeqNum const s) const { return edges[s.index].to; }
 
-	unsigned num_sequences() const { return edges.size(); }
+	uint16_t num_sequences() const { return edges.size(); }
+	uint16_t num_nodes() const { return nodes.size(); }
 
 	// mutation
 
+	void insert(Node n) { nodes.emplace_back(move(n)); }
 	void replace(PositionInSequence, Position const &, bool local);
 		// The local flag only affects the case where the position denotes a node.
 		// In that case, if local is true, the existing node and connecting sequences

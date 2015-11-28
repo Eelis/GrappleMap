@@ -1,9 +1,10 @@
 #include "util.hpp"
 #include "graph.hpp"
 
-Graph::Graph(std::vector<Sequence> const & sequences)
+Graph::Graph(vector<Node> const & nodes, vector<Sequence> const & sequences)
 {
-	foreach (s : sequences) insert(*this, s);
+	foreach (n : nodes) insert(n);
+	foreach (s : sequences) ::insert(*this, s);
 	std::cerr << "Loaded " << nodes.size() << " nodes and " << edges.size() << " edges." << std::endl;
 }
 
@@ -38,7 +39,7 @@ void Graph::replace(PositionInSequence const pis, Position const & p, bool const
 	optional<ReorientedNode> const rn = node(*this, pis);
 	if (!local && rn)
 	{
-		nodes[rn->node.index] = inverse(rn->reorientation)(p);
+		nodes[rn->node.index].position = inverse(rn->reorientation)(p);
 		assert(basicallySame((*this)[*rn], p));
 
 		foreach (e : edges)
@@ -82,16 +83,15 @@ void Graph::set(optional<SeqNum> const num, optional<Sequence> const seq)
 
 SeqNum insert(Graph & g, Sequence const & sequence)
 {
-	unsigned const num = g.num_sequences();
+	SeqNum const num{g.num_sequences()};
 
 	g.set(none, sequence);
 
 	std::cerr <<
-		"Inserted sequence " << num <<
-		" (\"" << sequence.description.front() << "\")"
-		" of size " << sequence.positions.size() << std::endl;
+		g.from(num).node << " ---seq" << num.index << "(" << sequence.positions.size() << ")---> " << g.to(num).node <<
+		": \"" << sequence.description.front() << "\"" << std::endl;
 
-	return {num};
+	return num;
 }
 
 optional<SeqNum> erase_sequence(Graph & g, SeqNum const sn)
