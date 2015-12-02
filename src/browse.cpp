@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <vector>
 #include <fstream>
+#include <boost/algorithm/string/replace.hpp>
 
 #define int_p_NULL (int*)NULL // https://github.com/ignf/gilviewer/issues/8
 
@@ -22,6 +23,8 @@
 
 namespace
 {
+	char const headings[4] = {'n', 'e', 's', 'w'};
+
 	struct Config
 	{
 		string db;
@@ -46,12 +49,12 @@ namespace
 		return Config{ vm["db"].as<string>() };
 	}
 
-	unsigned const width = 320, height = 240;
-
-	void make_png(GLFWwindow * const window, Graph const & graph, std::string const & name, Position const & pos)
+	void make_png(GLFWwindow * const window, Graph const & graph, std::string const & name, Position const & pos, unsigned const width, unsigned const height, unsigned const heading)
 	{
 		Camera camera;
 		camera.zoom(0.3);
+
+		camera.rotateHorizontal(M_PI * 0.5 * heading);
 
 		Style style;
 		style.background_color = white;
@@ -75,7 +78,9 @@ namespace
 			boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf, width*3)));
 	}
 
-	void make_gif(GLFWwindow * const window, Graph const & graph, std::string const & name, std::vector<Position> const & frames)
+	void make_gif(
+		GLFWwindow * const window, Graph const & graph, string const & name,
+		vector<Position> const & frames, unsigned const width, unsigned const height, unsigned const heading)
 	{
 		std::cout << ' ' << name << ": " << frames.size() << std::endl;
 
@@ -84,14 +89,14 @@ namespace
 		foreach (pos : frames)
 		{
 			std::ostringstream f;
-			f << "browse/" << name << '-' << std::setw(3) << std::setfill('0') << i << ".png";
+			f << "browse/" << name << headings[heading] << '-' << std::setw(3) << std::setfill('0') << i << ".png";
 
-			make_png(window, graph, f.str(), pos);
+			make_png(window, graph, f.str(), pos, width, height, heading);
 
 			++i;
 		}
 
-		std::system(("convert -depth 8 -delay 4 -loop 0 'browse/" + name + "-*.png' browse/" + name).c_str());
+		std::system(("convert -depth 8 -delay 4 -loop 0 'browse/" + name + headings[heading] + "-*.png' browse/" + name + ".gif").c_str());
 	}
 
 	std::vector<Position> frames_for_sequence(Graph const & graph, SeqNum const seqNum)
@@ -113,105 +118,153 @@ namespace
 
 		return r;
 	}
-}
 
-std::string img(Graph const & g, SeqNum const sn, bool const incoming)
+string img(SeqNum const sn, bool const incoming, char const hc)
 {
-	return std::string("<img src='") + (incoming ? "in" : "out") + std::to_string(sn.index) + ".gif' title='" + g[sn].description.front() + "'></img>";
+	return string("<img src='")
+		+ (incoming ? "in" : "out")
+		+ to_string(sn.index) + hc + ".gif'"
+		+ " title='" + to_string(sn.index) + "'>";
 }
 
-std::string img(NodeNum const n)
+string desc(Graph const & g, NodeNum const n)
+{
+	auto desc = g[n].description;
+
+	if (desc.empty()) return to_string(n.index);
+
+	return desc.front();
+}
+
+string replace_all(string s, string what, string with)
+{
+	boost::algorithm::replace_all(s, what, with);
+	return s;
+}
+
+string img(NodeNum const n, char const hc)
+{
+	auto s = to_string(n.index);
+	return "<img title='" + s + "' src='node" + s + hc + ".png'>";
+}
+
+string big_img(NodeNum const n, char const hc)
+{
+	auto s = to_string(n.index);
+	return "<img title='" + s + "' src='node" + s + hc + "hi.png'>";
+}
+
+string link(Graph const & g, NodeNum const n, char const hc)
 {
 	std::ostringstream oss;
-	oss << "<img src='" << n << ".png'></img>";
+	oss
+		<< replace_all(desc(g, n), "\\n", "<br>") << "<br>"
+		<< "<a href='p" << n.index << hc << ".html'>" << img(n, hc) << "</a>";
 	return oss.str();
 }
 
-void write_index(Graph const & graph)
+string link(Graph const & g, SeqNum const s, bool incoming, char const hc)
+{
+	auto desc = replace_all(g[s].description.front(), "\\n", "<br>");
+	if (desc == "...") desc.clear();
+	if (!desc.empty()) desc += "<br>";
+	return desc + img(s, incoming, hc);
+}
+
+string const html5head =
+	"<!DOCTYPE html>"
+	"<html lang='en'>"
+	"<head><title>jjm</title>"
+	"<meta charset='UTF-8'/>"
+	"<link rel='stylesheet' type='text/css' href='jjm.css'/>"
+	"</head>";
+
+void write_index(Graph const & g)
 {
 	std::ofstream html("browse/index.html");
 
-	html
-		<< "<html><body>"
-		<< "<table>";
+	html << html5head << "<body><h2>Transitions</h2><ul>";
 
-	foreach (p : nodes(graph))
+	auto nlspace = [](string const & s){ return replace_all(s, "\\n", " "); };
+
+	for (SeqNum s{0}; s.index != g.num_sequences(); ++s.index)
 	{
-		NodeNum const n = p.first;
+		html
+			<< "<li><em>from</em>"
+			<< " <a href='p" << g.from(s).node.index << "n.html'>" << nlspace(desc(g, g.from(s).node)) << "</a>";
+
+		if (g[s].description.front() != "...")
+			html
+				<< " <em>via</em> "
+				<< nlspace(g[s].description.front());
 
 		html
-			<< "<tr><td colspan='3'><hr></td></tr>\n"
-			<< "<tr><td><table style='float:right'>\n";
-
-		foreach (sn : p.second.first)
-			html
-				<< "<tr>"
-				<< "<td style='text-align:right'>" << graph[sn].description.front() << "</td>"
-				<< "<td><a href='#" << graph.from(sn).node << "'>" << img(graph, sn, true) << "</a></td>"
-				<< "</tr>";
-
-		html
-			<< "</table></td>"
-			<< "<td id='" << n << "'>" << img(n) << "</td>"
-			<< "<td><table>";
-
-		foreach (sn : p.second.second)
-			html
-				<< "<tr>"
-				<< "<td><a href='#" << graph.to(sn).node << "'>" << img(graph, sn, false) << "</a></td>"
-				<< "<td>" << graph[sn].description.front() << "</td>"
-				<< "</tr>\n";
-
-		html << "</table></td></tr>\n\n";
+			<< " <em>to</em>"
+			<< " <a href='p" << g.to(s).node.index << "n.html'>" << nlspace(desc(g, g.to(s).node)) << "</a>"
+			<< "</li>";
 	}
 
-	html << "</table></body></html>";
+	html << "</ul></body></html>";
 }
 
-void write_node_pages(Graph const & graph)
+void write_position_pages(Graph const & graph)
 {
-	foreach (p : nodes(graph))
+	for (unsigned heading = 0; heading != 4; ++heading)
 	{
-		std::ofstream html("browse/node" + std::to_string(p.first.index) + ".html");
+		char const hc = headings[heading];
 
-		html << "<html><body><h1>";
+		foreach (p : nodes(graph))
+		{
+			std::ofstream html("browse/p" + to_string(p.first.index) + hc + ".html");
 
-		auto const & desc = graph[p.first].description;
+			html << html5head << "<body><table><tr>";
 
-		if (desc.empty())
-			html << p.first.index;
-		else
-			html << desc.front() << " (" << p.first.index << ')';
+			NodeNum const n = p.first;
 
-		html << "</h1><table>";
+			if (!p.second.first.empty())
+			{
+				html << "<td style='text-align:center;vertical-align:top'><b>incoming</b><table>\n";
 
-		NodeNum const n = p.first;
+				foreach (sn : p.second.first)
+					html
+						<< "<tr><td><hr>"
+						<< "<em>from</em> <div style='display:inline-block'>" << link(graph, graph.from(sn).node, hc) << "</div>"
+						<< " <em>via</em> <div style='display:inline-block'>" << link(graph, sn, true, hc) << "</div>"
+						<< " <em>to</em>"
+						<< "</td></tr>";
 
-		html
-			<< "<tr><td><table style='float:right'>\n";
+				html << "</table></td>";
+			}
 
-		foreach (sn : p.second.first)
+			char const next_heading = headings[(heading + 1) % 4];
+			char const prev_heading = headings[(heading + 3) % 4];
+
 			html
-				<< "<tr>"
-				<< "<td style='text-align:right'>" << graph[sn].description.front() << "</td>"
-				<< "<td><a href='" << graph.from(sn).node << ".html'>" << img(graph, sn, true) << "</a></td>"
-				<< "</tr>";
+				<< "<td style='text-align:center;vertical-align:top'><h1>"
+				<< replace_all(desc(graph, n), "\\n", "<br>") << "<br>"
+				<< big_img(n, hc) << "<br>"
+				<< "<a href='p" << p.first.index << prev_heading << ".html'>↻</a> "
+				<< "<a href='p" << p.first.index << next_heading << ".html'>↺</a> "
+				<< "</h1></td>";
 
-		html
-			<< "</table></td>"
-			<< "<td id='" << n << "'>" << img(n) << "</td>"
-			<< "<td><table>";
+			if (!p.second.second.empty())
+			{
+				html << "<td style='text-align:center;vertical-align:top'><b>outgoing</b><table>";
 
-		foreach (sn : p.second.second)
-			html
-				<< "<tr>"
-				<< "<td><a href='" << graph.to(sn).node << ".html'>" << img(graph, sn, false) << "</a></td>"
-				<< "<td>" << graph[sn].description.front() << "</td>"
-				<< "</tr>\n";
+				foreach (sn : p.second.second)
+					html
+						<< "<tr><td><hr>"
+						<< "<em>via</em> <div style='display:inline-block'>" << link(graph, sn, false, hc) << "</div>"
+						<< " <em>to</em> <div style='display:inline-block'>" << link(graph, graph.to(sn).node, hc) << "</div>"
+						<< "</td></tr>";
 
-		html << "</table></td></tr>\n\n";
-		html << "</table></body></html>";
+				html << "</table></td>";
+			}
+
+			html << "</tr></table></body></html>";
+		}
 	}
+}
 
 }
 
@@ -228,63 +281,69 @@ int main(int const argc, char const * const * const argv)
 
 		// glfwWindowHint(GLFW_VISIBLE, GL_FALSE); // TODO: figure out how to make this work
 
-		GLFWwindow * const window = glfwCreateWindow(width, height, "Jiu Jitsu Map", nullptr, nullptr);
+		GLFWwindow * const window = glfwCreateWindow(640, 480, "Jiu Jitsu Map", nullptr, nullptr);
 
 		if (!window) error("could not create window");
 
 		glfwMakeContextCurrent(window);
 
 		write_index(graph);
-		write_node_pages(graph);
+		write_position_pages(graph);
 
-		foreach (p : nodes(graph))
+		for (unsigned heading = 0; heading != 4; ++heading)
 		{
-			NodeNum const n = p.first;
+			char const hc = headings[heading];
 
-			std::cout << n << std::endl;
-
-			auto pos = graph[n].position;
-			V2 const center = xz(pos[0][Core] + pos[1][Core]) / 2;
-
-			PositionReorientation reo;
-			reo.reorientation.offset.x = -center.x;
-			reo.reorientation.offset.z = -center.y;
-
-			make_png(window, graph, "browse/node" + std::to_string(n.index) + ".png", reo(pos));
-
+			foreach (p : nodes(graph))
 			{
-				size_t n = 0;
-				foreach (in_sn : p.second.first)
-					n = std::max(n, frames_for_sequence(graph, in_sn).size());
+				NodeNum const n = p.first;
 
-				foreach (in_sn : p.second.first)
+				std::cout << n << std::endl;
+
+				auto pos = graph[n].position;
+				V2 const center = xz(pos[0][Core] + pos[1][Core]) / 2;
+
+				PositionReorientation reo;
+				reo.reorientation.offset.x = -center.x;
+				reo.reorientation.offset.z = -center.y;
+
+				make_png(window, graph, "browse/node" + to_string(n.index) + hc + ".png", reo(pos), 160, 120, heading);
+				make_png(window, graph, "browse/node" + to_string(n.index) + hc + "hi.png", reo(pos), 480, 360, heading);
+
 				{
-					auto v = frames_for_sequence(graph, in_sn);
-					foreach (p : v) p = reo(inverse(graph.to(in_sn).reorientation)(p));
-					assert(basicallySame(v.back(), reo(pos)));
+					size_t n = 0;
+					foreach (in_sn : p.second.first)
+						n = std::max(n, frames_for_sequence(graph, in_sn).size());
 
-					auto const p = v.front();
-					v.insert(v.begin(), n - v.size(), p);
+					foreach (in_sn : p.second.first)
+					{
+						auto v = frames_for_sequence(graph, in_sn);
+						foreach (p : v) p = reo(inverse(graph.to(in_sn).reorientation)(p));
+						assert(basicallySame(v.back(), reo(pos)));
 
-					make_gif(window, graph, "in" + std::to_string(in_sn.index) + ".gif", v);
+						auto const p = v.front();
+						v.insert(v.begin(), n - v.size(), p);
+
+						make_gif(window, graph, "in" + to_string(in_sn.index) + hc, v, 160, 120, heading);
+					}
 				}
-			}
 
-			{
-				size_t n = 0;
-				foreach (out_sn : p.second.second)
-					n = std::max(n, frames_for_sequence(graph, out_sn).size());
-
-				foreach (out_sn : p.second.second)
 				{
-					auto v = frames_for_sequence(graph, out_sn);
-					foreach (p : v) p = reo(inverse(graph.from(out_sn).reorientation)(p));
-					assert(basicallySame(v.front(), reo(pos)));
+					size_t n = 0;
+					foreach (out_sn : p.second.second)
+						n = std::max(n, frames_for_sequence(graph, out_sn).size());
 
-					auto const p = v.back();
-					v.insert(v.end(), n - v.size(), p);
+					foreach (out_sn : p.second.second)
+					{
+						auto v = frames_for_sequence(graph, out_sn);
+						foreach (p : v) p = reo(inverse(graph.from(out_sn).reorientation)(p));
+						assert(basicallySame(v.front(), reo(pos)));
 
-					make_gif(window, graph, "out" + std::to_string(out_sn.index) + ".gif", v);
+						auto const p = v.back();
+						v.insert(v.end(), n - v.size(), p);
+
+						make_gif(window, graph, "out" + to_string(out_sn.index) + hc, v, 160, 120, heading);
+					}
 				}
 			}
 		}

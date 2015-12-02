@@ -5,17 +5,63 @@
 #include <vector>
 #include <boost/program_options.hpp>
 
-void todot(Graph const & graph, std::ostream & o)
+bool connected(Graph const & g, NodeNum const a, NodeNum const b)
 {
+	for (SeqNum s{0}; s.index != g.num_sequences(); ++s.index)
+		if ((g.from(s).node == a && g.to(s).node == b) ||
+		    (g.to(s).node == a && g.from(s).node == b))
+			return true;
+
+	return false;
+}
+
+
+std::set<NodeNum> nodes_around(Graph const & g, NodeNum const n, unsigned const depth)
+{
+	std::set<NodeNum> r{n};
+
+	for (unsigned d = 0; d != depth; ++d)
+	{
+		auto prev = r;
+		for (NodeNum n{0}; n.index != g.num_nodes(); ++n.index)
+		{
+			foreach (v : prev)
+				if (connected(g, n, v)) { r.insert(n); break; }
+
+		}
+	}
+
+	return r;
+}
+
+void todot(Graph const & graph, std::ostream & o, boost::optional<std::pair<NodeNum, unsigned /* depth */>> const focus = boost::none)
+{
+	std::set<NodeNum> visited;
+/*
+	if (focus)
+		visited = nodes_around(graph, focus->first, focus->second);
+	else
+*/
+		for (NodeNum n{0}; n.index != graph.num_nodes(); ++n.index)
+			visited.insert(n);
+
 	o << "digraph G {\n";
 
-	for (NodeNum n{0}; n.index != graph.num_nodes(); ++n.index)
+	foreach (n : visited)
 		if (!graph[n].description.empty())
 			o << n.index << " [label=\"" << graph[n].description.front() << " (" << n.index << ")\"];\n";
 
 	for (SeqNum s{0}; s.index != graph.num_sequences(); ++s.index)
-		o << graph.from(s).node.index << " -> " << graph.to(s).node.index
-		  << " [label=\"" << graph[s].description.front() << " (" << graph[s].positions.size()-2 << ")\"];\n";
+	{
+		auto const
+			from = graph.from(s).node,
+			to = graph.to(s).node;
+
+		if (!visited.count(from) || !visited.count(to)) continue;
+
+		o << from.index << " -> " << to.index
+		  << " [label=\"" << graph[s].description.front() << " (" << s.index << ", " << graph[s].positions.size()-2 << ")\"];\n";
+	}
 
 	o << "}\n";
 }
@@ -53,5 +99,5 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 int main(int const argc, char const * const * const argv)
 {
 	if (auto config = config_from_args(argc, argv))
-		todot(loadGraph(config->db), cout);
+		todot(loadGraph(config->db), cout, make_pair(NodeNum{config->start}, unsigned(config->depth)));
 }

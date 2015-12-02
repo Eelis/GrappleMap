@@ -152,7 +152,9 @@ vector<SeqNum> readScript(Graph const & graph, string const filename)
 	unsigned lineNr = 0;
 
 	while (++lineNr, std::getline(f, seq))
-		if (optional<SeqNum> const sn = seq_by_desc(graph, seq))
+		if (std::all_of(seq.begin(), seq.end(), (int(*)(int))std::isdigit))
+			r.push_back(SeqNum{std::stoul(seq)});
+		else if (optional<SeqNum> const sn = seq_by_desc(graph, seq))
 			r.push_back(*sn);
 		else error(
 			filename + ": line " + std::to_string(lineNr)

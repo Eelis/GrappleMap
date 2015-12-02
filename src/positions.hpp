@@ -191,6 +191,12 @@ inline bool basicallySame(Position const & a, Position const & b)
 	return u < 0.03;
 }
 
+template<typename... A>
+bool basicallySame(Position const & a, Position const & b, A const & ... more)
+{
+	return basicallySame(a, b) && basicallySame(b, more...);
+}
+
 struct SeqNum { unsigned index; };
 
 inline bool operator==(SeqNum const a, SeqNum const b) { return a.index == b.index; }
@@ -261,11 +267,7 @@ inline PlayerJoint apply(PositionReorientation const & r, PlayerJoint pj)
 }
 
 PositionReorientation inverse(PositionReorientation);
-
-inline PositionReorientation compose(PositionReorientation const a, PositionReorientation const b)
-{
-	return PositionReorientation{compose(a.reorientation, b.reorientation), a.swap_players != b.swap_players, a.mirror != b.mirror};
-}
+PositionReorientation compose(PositionReorientation, PositionReorientation);
 
 optional<PositionReorientation> is_reoriented(Position const &, Position);
 

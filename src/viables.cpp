@@ -85,7 +85,7 @@ namespace
 
 			if (xydist < 0.0005) break;
 /*
-			auto const segment = std::make_pair(xy, via.beginxy);
+			auto const segment = make_pair(xy, via.beginxy);
 			foreach (old : vfj.segments) if (lineSegmentsIntersect(old, segment)) return;
 			vfj.segments.push_back(segment);
 */

@@ -318,7 +318,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 
 			case GLFW_KEY_DELETE:
 			{
-				auto const before = std::make_pair(w.graph, w.location);
+				auto const before = make_pair(w.graph, w.location);
 
 				if (mods & GLFW_MOD_CONTROL)
 				{

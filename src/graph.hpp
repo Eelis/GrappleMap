@@ -79,7 +79,7 @@ public:
 
 	Position const & operator[](PositionInSequence const i) const
 	{
-		return edges[i.sequence.index].sequence.positions[i.position];
+		return (*this)[i.sequence].positions[i.position];
 	}
 
 	Position operator[](ReorientedNode const & n) const
@@ -180,5 +180,7 @@ optional<SeqNum> seq_by_desc(Graph const &, std::string const & desc);
 
 optional<PositionInSequence> node_as_posinseq(Graph const &, NodeNum);
 	// may return either the beginning of a sequence or the end
+
+pair<vector<Position>, ReorientedNode> follow(Graph const &, ReorientedNode const &, SeqNum, unsigned const frames_per_pos);
 
 #endif

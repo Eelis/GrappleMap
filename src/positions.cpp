@@ -85,7 +85,12 @@ namespace
 		std::swap(p[LeftHeel], p[RightHeel]);
 		std::swap(p[LeftKnee], p[RightKnee]);
 	}
+
+	#ifndef NDEBUG
+	Position const testPos = decodePosition("QNaAvDERaAvTO1cNx2GIczysPQbDx6FJbyysRFaYEDEjaZE1MFdvAdI5dqAjMWl1CjHwlLBPOdhyCOFkhDByM8gPGOGegWFIMVhmHVGKg3GQNygSIZGkgwHTKGhkzmJ9mzCCJKoxEqHVazAXL7azAFIMaEEAMLaEEiIzbBDzMtbDDjEYfCHAOKfKH9HzbNMXK8bMMQGHkBMGL8kBMUFKf6LMOqgzMoEMgYHLNQg4H8EIhvGCOvhGHgFJh0FYN3hQF3JnfuOnJrloMrJznEKY");
+	#endif
 }
+
 
 PositionReorientation inverse(PositionReorientation const x)
 {
@@ -96,11 +101,26 @@ PositionReorientation inverse(PositionReorientation const x)
 		r.reorientation.offset.x = -r.reorientation.offset.x;
 	}
 
-	#ifndef NDEBUG
-		Position test = decodePosition("QNaAvDERaAvTO1cNx2GIczysPQbDx6FJbyysRFaYEDEjaZE1MFdvAdI5dqAjMWl1CjHwlLBPOdhyCOFkhDByM8gPGOGegWFIMVhmHVGKg3GQNygSIZGkgwHTKGhkzmJ9mzCCJKoxEqHVazAXL7azAFIMaEEAMLaEEiIzbBDzMtbDDjEYfCHAOKfKH9HzbNMXK8bMMQGHkBMGL8kBMUFKf6LMOqgzMoEMgYHLNQg4H8EIhvGCOvhGHgFJh0FYN3hQF3JnfuOnJrloMrJznEKY");
+	assert(basicallySame(r(x(testPos)), testPos));
 
-		assert(basicallySame(r(x(test)), test));
-	#endif
+	return r;
+}
+
+PositionReorientation compose(PositionReorientation const a, PositionReorientation const b)
+{
+	auto br = b.reorientation;
+
+	PositionReorientation r;
+
+	if (a.mirror)
+	{
+		br.angle = -br.angle;
+		br.offset.x = -br.offset.x;
+	}
+
+	r = PositionReorientation{compose(a.reorientation, br), a.swap_players != b.swap_players, a.mirror != b.mirror};
+
+	assert(basicallySame(b(a(testPos)), r(testPos)));
 
 	return r;
 }
