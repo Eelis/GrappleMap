@@ -183,4 +183,8 @@ optional<PositionInSequence> node_as_posinseq(Graph const &, NodeNum);
 
 pair<vector<Position>, ReorientedNode> follow(Graph const &, ReorientedNode const &, SeqNum, unsigned const frames_per_pos);
 
+bool connected(Graph const &, NodeNum, NodeNum);
+
+std::set<NodeNum> nodes_around(Graph const &, NodeNum, unsigned depth);
+
 #endif

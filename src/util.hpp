@@ -4,11 +4,14 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <set>
 #include <boost/optional.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <iostream>
 
 using std::string;
 using std::vector;
+using std::set;
 using std::istream;
 using std::ostream;
 using std::move;
@@ -39,6 +42,12 @@ I minimal(I i, I e, F f)
 
 #define foreach(x) for(auto && x)
 
-inline void error(std::string const & s) { throw std::runtime_error(s); }
+inline void error(string const & s) { throw std::runtime_error(s); }
+
+inline string replace_all(string s, string what, string with)
+{
+	boost::algorithm::replace_all(s, what, with);
+	return s;
+}
 
 #endif

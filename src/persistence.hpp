@@ -10,5 +10,6 @@ Graph loadGraph(string filename);
 void save(Graph const &, string filename);
 vector<SeqNum> readScript(Graph const &, string filename);
 Position decodePosition(string);
+void todot(Graph const &, std::ostream &, boost::optional<pair<NodeNum, unsigned /* depth */>> const focus = boost::none);
 
 #endif

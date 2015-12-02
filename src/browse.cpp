@@ -14,7 +14,6 @@
 #include <iomanip>
 #include <vector>
 #include <fstream>
-#include <boost/algorithm/string/replace.hpp>
 
 #define int_p_NULL (int*)NULL // https://github.com/ignf/gilviewer/issues/8
 
@@ -119,153 +118,171 @@ namespace
 		return r;
 	}
 
-string img(SeqNum const sn, bool const incoming, char const hc)
-{
-	return string("<img src='")
-		+ (incoming ? "in" : "out")
-		+ to_string(sn.index) + hc + ".gif'"
-		+ " title='" + to_string(sn.index) + "'>";
-}
-
-string desc(Graph const & g, NodeNum const n)
-{
-	auto desc = g[n].description;
-
-	if (desc.empty()) return to_string(n.index);
-
-	return desc.front();
-}
-
-string replace_all(string s, string what, string with)
-{
-	boost::algorithm::replace_all(s, what, with);
-	return s;
-}
-
-string img(NodeNum const n, char const hc)
-{
-	auto s = to_string(n.index);
-	return "<img title='" + s + "' src='node" + s + hc + ".png'>";
-}
-
-string big_img(NodeNum const n, char const hc)
-{
-	auto s = to_string(n.index);
-	return "<img title='" + s + "' src='node" + s + hc + "hi.png'>";
-}
-
-string link(Graph const & g, NodeNum const n, char const hc)
-{
-	std::ostringstream oss;
-	oss
-		<< replace_all(desc(g, n), "\\n", "<br>") << "<br>"
-		<< "<a href='p" << n.index << hc << ".html'>" << img(n, hc) << "</a>";
-	return oss.str();
-}
-
-string link(Graph const & g, SeqNum const s, bool incoming, char const hc)
-{
-	auto desc = replace_all(g[s].description.front(), "\\n", "<br>");
-	if (desc == "...") desc.clear();
-	if (!desc.empty()) desc += "<br>";
-	return desc + img(s, incoming, hc);
-}
-
-string const html5head =
-	"<!DOCTYPE html>"
-	"<html lang='en'>"
-	"<head><title>jjm</title>"
-	"<meta charset='UTF-8'/>"
-	"<link rel='stylesheet' type='text/css' href='jjm.css'/>"
-	"</head>";
-
-void write_index(Graph const & g)
-{
-	std::ofstream html("browse/index.html");
-
-	html << html5head << "<body><h2>Transitions</h2><ul>";
-
-	auto nlspace = [](string const & s){ return replace_all(s, "\\n", " "); };
-
-	for (SeqNum s{0}; s.index != g.num_sequences(); ++s.index)
+	string img(SeqNum const sn, bool const incoming, char const hc)
 	{
-		html
-			<< "<li><em>from</em>"
-			<< " <a href='p" << g.from(s).node.index << "n.html'>" << nlspace(desc(g, g.from(s).node)) << "</a>";
-
-		if (g[s].description.front() != "...")
-			html
-				<< " <em>via</em> "
-				<< nlspace(g[s].description.front());
-
-		html
-			<< " <em>to</em>"
-			<< " <a href='p" << g.to(s).node.index << "n.html'>" << nlspace(desc(g, g.to(s).node)) << "</a>"
-			<< "</li>";
+		return string("<img src='")
+			+ (incoming ? "in" : "out")
+			+ to_string(sn.index) + hc + ".gif'"
+			+ " title='" + to_string(sn.index) + "'>";
 	}
 
-	html << "</ul></body></html>";
-}
-
-void write_position_pages(Graph const & graph)
-{
-	for (unsigned heading = 0; heading != 4; ++heading)
+	string desc(Graph const & g, NodeNum const n)
 	{
-		char const hc = headings[heading];
+		auto desc = g[n].description;
 
+		if (desc.empty()) return to_string(n.index);
+
+		return desc.front();
+	}
+
+	string img(NodeNum const n, char const hc)
+	{
+		auto s = to_string(n.index);
+		return "<img title='" + s + "' src='node" + s + hc + ".png'>";
+	}
+
+	string big_img(NodeNum const n, char const hc)
+	{
+		auto s = to_string(n.index);
+		return "<img title='" + s + "' src='node" + s + hc + "hi.png'>";
+	}
+
+	string link(Graph const & g, NodeNum const n, char const hc)
+	{
+		std::ostringstream oss;
+		oss
+			<< replace_all(desc(g, n), "\\n", "<br>") << "<br>"
+			<< "<a href='p" << n.index << hc << ".html'>" << img(n, hc) << "</a>";
+		return oss.str();
+	}
+
+	string link(Graph const & g, SeqNum const s, bool incoming, char const hc)
+	{
+		auto desc = replace_all(g[s].description.front(), "\\n", "<br>");
+		if (desc == "...") desc.clear();
+		if (!desc.empty()) desc += "<br>";
+		return desc + img(s, incoming, hc);
+	}
+
+	string const html5head =
+		"<!DOCTYPE html>"
+		"<html lang='en'>"
+		"<head><title>jjm</title>"
+		"<meta charset='UTF-8'/>"
+		"<link rel='stylesheet' type='text/css' href='jjm.css'/>"
+		"</head>";
+
+	void write_index(Graph const & g)
+	{
+		std::ofstream html("browse/index.html");
+
+		html << html5head << "<body><h2>Transitions</h2><ul>";
+
+		auto nlspace = [](string const & s){ return replace_all(s, "\\n", " "); };
+
+		for (SeqNum s{0}; s.index != g.num_sequences(); ++s.index)
+		{
+			html
+				<< "<li><em>from</em>"
+				<< " <a href='p" << g.from(s).node.index << "n.html'>" << nlspace(desc(g, g.from(s).node)) << "</a>";
+
+			if (g[s].description.front() != "...")
+				html
+					<< " <em>via</em> "
+					<< nlspace(g[s].description.front());
+
+			html
+				<< " <em>to</em>"
+				<< " <a href='p" << g.to(s).node.index << "n.html'>" << nlspace(desc(g, g.to(s).node)) << "</a>"
+				<< "</li>";
+		}
+
+		html << "</ul></body></html>";
+	}
+
+	string make_svg(Graph const & g, NodeNum const n)
+	{
+		string const
+			pname = "p" + to_string(n.index),
+			svgpath = "browse/local" + to_string(n.index) + ".svg",
+			dotpath = "browse/" + pname + ".dot";
+
+		{
+			std::ofstream dotfile(dotpath);
+			todot(g, dotfile, make_pair(n, 2u));
+		}
+
+		auto cmd = "dot -Tsvg " + dotpath + " -o" + svgpath;
+		std::system(cmd.c_str());
+
+		std::ifstream svgfile(svgpath);
+		std::istreambuf_iterator<char> i(svgfile), e;
+		string const r(i, e);
+
+		return r.substr(r.find("<svg"));
+	}
+
+	void write_position_pages(Graph const & graph)
+	{
 		foreach (p : nodes(graph))
 		{
-			std::ofstream html("browse/p" + to_string(p.first.index) + hc + ".html");
-
-			html << html5head << "<body><table><tr>";
-
 			NodeNum const n = p.first;
+			string const pname = "p" + to_string(n.index);
+			string const svg = make_svg(graph, n);
 
-			if (!p.second.first.empty())
+			for (unsigned heading = 0; heading != 4; ++heading)
 			{
-				html << "<td style='text-align:center;vertical-align:top'><b>incoming</b><table>\n";
+				char const hc = headings[heading];
 
-				foreach (sn : p.second.first)
-					html
-						<< "<tr><td><hr>"
-						<< "<em>from</em> <div style='display:inline-block'>" << link(graph, graph.from(sn).node, hc) << "</div>"
-						<< " <em>via</em> <div style='display:inline-block'>" << link(graph, sn, true, hc) << "</div>"
-						<< " <em>to</em>"
-						<< "</td></tr>";
+				std::ofstream html("browse/" + pname + hc + ".html");
 
-				html << "</table></td>";
+				html << html5head << "<body><table><tr>";
+
+
+				if (!p.second.first.empty())
+				{
+					html << "<td style='text-align:center;vertical-align:top'><b>incoming</b><table>\n";
+
+					foreach (sn : p.second.first)
+						html
+							<< "<tr><td><hr>"
+							<< "<em>from</em> <div style='display:inline-block'>" << link(graph, graph.from(sn).node, hc) << "</div>"
+							<< " <em>via</em> <div style='display:inline-block'>" << link(graph, sn, true, hc) << "</div>"
+							<< " <em>to</em>"
+							<< "</td></tr>";
+
+					html << "</table></td>";
+				}
+
+				char const next_heading = headings[(heading + 1) % 4];
+				char const prev_heading = headings[(heading + 3) % 4];
+
+				html
+					<< "<td style='text-align:center;vertical-align:top'><h1>"
+					<< replace_all(desc(graph, n), "\\n", "<br>") << "<br>"
+					<< big_img(n, hc) << "<br>"
+					<< "<a href='" << pname << prev_heading << ".html'>↻</a> "
+					<< "<a href='" << pname << next_heading << ".html'>↺</a> "
+					<< "</h1><a href='index.html'>index</a></td>";
+
+				if (!p.second.second.empty())
+				{
+					html << "<td style='text-align:center;vertical-align:top'><b>outgoing</b><table>";
+
+					foreach (sn : p.second.second)
+						html
+							<< "<tr><td><hr>"
+							<< "<em>via</em> <div style='display:inline-block'>" << link(graph, sn, false, hc) << "</div>"
+							<< " <em>to</em> <div style='display:inline-block'>" << link(graph, graph.to(sn).node, hc) << "</div>"
+							<< "</td></tr>";
+
+					html << "</table></td>";
+				}
+
+				html << "</tr></table></div><hr>" << svg << "</body></html>";
 			}
-
-			char const next_heading = headings[(heading + 1) % 4];
-			char const prev_heading = headings[(heading + 3) % 4];
-
-			html
-				<< "<td style='text-align:center;vertical-align:top'><h1>"
-				<< replace_all(desc(graph, n), "\\n", "<br>") << "<br>"
-				<< big_img(n, hc) << "<br>"
-				<< "<a href='p" << p.first.index << prev_heading << ".html'>↻</a> "
-				<< "<a href='p" << p.first.index << next_heading << ".html'>↺</a> "
-				<< "</h1></td>";
-
-			if (!p.second.second.empty())
-			{
-				html << "<td style='text-align:center;vertical-align:top'><b>outgoing</b><table>";
-
-				foreach (sn : p.second.second)
-					html
-						<< "<tr><td><hr>"
-						<< "<em>via</em> <div style='display:inline-block'>" << link(graph, sn, false, hc) << "</div>"
-						<< " <em>to</em> <div style='display:inline-block'>" << link(graph, graph.to(sn).node, hc) << "</div>"
-						<< "</td></tr>";
-
-				html << "</table></td>";
-			}
-
-			html << "</tr></table></body></html>";
 		}
 	}
-}
-
 }
 
 int main(int const argc, char const * const * const argv)

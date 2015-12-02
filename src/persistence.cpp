@@ -128,7 +128,7 @@ Graph loadGraph(string const filename)
 	return Graph(nodes, edges);
 }
 
-void save(Graph const & g, std::string const filename)
+void save(Graph const & g, string const filename)
 {
 	std::ofstream f(filename);
 
@@ -153,12 +153,48 @@ vector<SeqNum> readScript(Graph const & graph, string const filename)
 
 	while (++lineNr, std::getline(f, seq))
 		if (std::all_of(seq.begin(), seq.end(), (int(*)(int))std::isdigit))
-			r.push_back(SeqNum{std::stoul(seq)});
+			r.push_back(SeqNum{unsigned(std::stoul(seq))});
 		else if (optional<SeqNum> const sn = seq_by_desc(graph, seq))
 			r.push_back(*sn);
 		else error(
-			filename + ": line " + std::to_string(lineNr)
+			filename + ": line " + to_string(lineNr)
 			+ ": unknown sequence: \"" + seq + '"');
 
 	return r;
+}
+
+void todot(Graph const & graph, std::ostream & o, optional<pair<NodeNum, unsigned /* depth */>> const focus)
+{
+	set<NodeNum> visited;
+
+	if (focus)
+		visited = nodes_around(graph, focus->first, focus->second);
+	else
+		for (NodeNum n{0}; n.index != graph.num_nodes(); ++n.index)
+			visited.insert(n);
+
+	o << "digraph G {\n";
+
+	foreach (n : visited)
+		if (!graph[n].description.empty())
+		
+			o	<< n.index << " [label=<<TABLE BORDER=\"0\"><TR>"
+				<< "<TD HREF=\"p" << n.index <<  "n.html\">"
+				<< replace_all(graph[n].description.front(), "\\n", "<BR/>")
+				<< "</TD></TR></TABLE>>];\n";
+//			o << n.index << " [label=\"" << graph[n].description.front() /*<< " (" << n.index << ")"*/ << "\"];\n";
+
+	for (SeqNum s{0}; s.index != graph.num_sequences(); ++s.index)
+	{
+		auto const
+			from = graph.from(s).node,
+			to = graph.to(s).node;
+
+		if (!visited.count(from) || !visited.count(to)) continue;
+
+		o << from.index << " -> " << to.index
+		  << " [label=\"" << graph[s].description.front() /*<< " (" << s.index << ", " << graph[s].positions.size()-2 << ")"*/ << "\"];\n";
+	}
+
+	o << "}\n";
 }

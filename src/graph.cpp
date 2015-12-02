@@ -263,3 +263,32 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 
 	return {positions, m};
 }
+
+bool connected(Graph const & g, NodeNum const a, NodeNum const b)
+{
+	for (SeqNum s{0}; s.index != g.num_sequences(); ++s.index)
+		if ((g.from(s).node == a && g.to(s).node == b) ||
+		    (g.to(s).node == a && g.from(s).node == b))
+			return true;
+
+	return false;
+}
+
+
+std::set<NodeNum> nodes_around(Graph const & g, NodeNum const n, unsigned const depth)
+{
+	std::set<NodeNum> r{n};
+
+	for (unsigned d = 0; d != depth; ++d)
+	{
+		auto prev = r;
+		for (NodeNum n{0}; n.index != g.num_nodes(); ++n.index)
+		{
+			foreach (v : prev)
+				if (connected(g, n, v)) { r.insert(n); break; }
+
+		}
+	}
+
+	return r;
+}
