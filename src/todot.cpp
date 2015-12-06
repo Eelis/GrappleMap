@@ -38,5 +38,5 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 int main(int const argc, char const * const * const argv)
 {
 	if (auto config = config_from_args(argc, argv))
-		todot(loadGraph(config->db), cout, make_pair(NodeNum{config->start}, unsigned(config->depth)));
+		todot(loadGraph(config->db), cout, /*make_pair(NodeNum{config->start}, unsigned(config->depth))*/boost::none);
 }

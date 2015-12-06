@@ -157,8 +157,8 @@ inline auto & segments()
 		, {{RightHand, RightFingers}, 0.08, 0.02, true}
 		, {{RightWrist, RightFingers}, 0.14, 0.02, false}
 
-		, {{LeftShoulder, RightShoulder}, 0.34, 0.1, false}
-		, {{LeftHip, RightHip}, 0.22, 0.1,  false}
+		//, {{LeftShoulder, RightShoulder}, 0.34, 0.1, false}
+		, {{LeftHip, RightHip}, 0.23, 0.1,  false}
 
 		, {{LeftShoulder, Neck}, 0.175, 0.065, true}
 		, {{RightShoulder, Neck}, 0.175, 0.065, true}
@@ -199,6 +199,7 @@ bool basicallySame(Position const & a, Position const & b, A const & ... more)
 
 struct SeqNum { unsigned index; };
 
+inline SeqNum & operator++(SeqNum & s) { ++s.index; return s; }
 inline bool operator==(SeqNum const a, SeqNum const b) { return a.index == b.index; }
 inline bool operator!=(SeqNum const a, SeqNum const b) { return a.index != b.index; }
 inline bool operator<(SeqNum const a, SeqNum const b) { return a.index < b.index; }

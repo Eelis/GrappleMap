@@ -2,11 +2,10 @@
 #define JIUJITSUMAPPER_GRAPH_HPP
 
 #include "positions.hpp"
-#include <map>
-#include <iostream>
 
 struct NodeNum { uint16_t index; };
 
+inline NodeNum & operator++(NodeNum & n) { ++n.index; return n; }
 inline bool operator==(NodeNum const a, NodeNum const b) { return a.index == b.index; }
 inline bool operator!=(NodeNum const a, NodeNum const b) { return a.index != b.index; }
 inline bool operator<(NodeNum const a, NodeNum const b) { return a.index < b.index; }
@@ -49,14 +48,7 @@ private:
 	vector<Node> nodes;
 	vector<Edge> edges; // indexed by seqnum
 
-	optional<ReorientedNode> is_reoriented_node(Position const & p) const
-	{
-		for (NodeNum n{0}; n.index != nodes.size(); ++n.index)
-			if (auto r = is_reoriented(nodes[n.index].position, p))
-				return ReorientedNode{n, *r};
-
-		return none;
-	}
+	optional<ReorientedNode> is_reoriented_node(Position const &) const;
 
 	ReorientedNode find_or_add(Position const & p)
 	{
@@ -114,77 +106,5 @@ public:
 		// neither means noop
 		// both means replace
 };
-
-SeqNum insert(Graph &, Sequence const &);
-optional<SeqNum> erase_sequence(Graph &, SeqNum);
-void split_at(Graph &, PositionInSequence);
-
-inline PosNum last_pos(Graph const & g, SeqNum const s)
-{
-	return g[s].positions.size() - 1;
-}
-
-inline PositionInSequence first_pos_in(SeqNum const s)
-{
-	return {s, 0};
-}
-
-inline PositionInSequence last_pos_in(Graph const & g, SeqNum const s)
-{
-	return {s, last_pos(g, s)};
-}
-
-inline std::map<NodeNum, std::pair<
-	std::vector<SeqNum>, // sequences that end at the node
-	std::vector<SeqNum>>> // sequences that start at the node
-		nodes(Graph const & g)
-{
-	std::map<NodeNum, std::pair<std::vector<SeqNum>, std::vector<SeqNum>>> m;
-
-	for (SeqNum sn{0}; sn.index != g.num_sequences(); ++sn.index)
-	{
-		m[g.to(sn).node].first.push_back(sn);
-		m[g.from(sn).node].second.push_back(sn);
-	}
-
-	return m;
-}
-
-inline optional<PositionInSequence> prev(PositionInSequence const pis)
-{
-	if (pis.position == 0) return none;
-	return PositionInSequence{pis.sequence, pis.position - 1};
-}
-
-inline optional<PositionInSequence> next(Graph const & g, PositionInSequence const pis)
-{
-	if (pis.position == last_pos(g, pis.sequence)) return none;
-	return PositionInSequence{pis.sequence, pis.position + 1};
-}
-
-inline optional<ReorientedNode> node(Graph const & g, PositionInSequence const pis)
-{
-	if (pis.position == 0) return g.from(pis.sequence);
-	if (!next(g, pis)) return g.to(pis.sequence);
-	return none;
-}
-
-inline void replace(Graph & graph, PositionInSequence const pis, PlayerJoint const j, V3 const v, bool const local)
-{
-	Position p = graph[pis];
-	p[j] = v;
-	graph.replace(pis, p, local);
-}
-
-optional<SeqNum> seq_by_desc(Graph const &, std::string const & desc);
-
-optional<PositionInSequence> node_as_posinseq(Graph const &, NodeNum);
-	// may return either the beginning of a sequence or the end
-
-pair<vector<Position>, ReorientedNode> follow(Graph const &, ReorientedNode const &, SeqNum, unsigned const frames_per_pos);
-
-bool connected(Graph const &, NodeNum, NodeNum);
-
-std::set<NodeNum> nodes_around(Graph const &, NodeNum, unsigned depth);
 
 #endif

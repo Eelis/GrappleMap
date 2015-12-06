@@ -11,8 +11,8 @@ extern PerJoint<JointDef> const jointDefs =
 	, { RightAnkle, 0.03, true}
 	, { LeftKnee, 0.05, true}
 	, { RightKnee, 0.05, true}
-	, { LeftHip, 0.10, true}
-	, { RightHip, 0.10, true}
+	, { LeftHip, 0.09, true}
+	, { RightHip, 0.09, true}
 	, { LeftShoulder, 0.08, true}
 	, { RightShoulder, 0.08, true}
 	, { LeftElbow, 0.045, true}

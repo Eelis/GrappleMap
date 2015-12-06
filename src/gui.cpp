@@ -1,11 +1,10 @@
-#include "util.hpp"
 #include "camera.hpp"
 #include "persistence.hpp"
 #include "math.hpp"
 #include "positions.hpp"
 #include "viables.hpp"
 #include "rendering.hpp"
-#include "graph.hpp"
+#include "graph_util.hpp"
 #include <GLFW/glfw3.h>
 #include <boost/program_options.hpp>
 #include <cmath>

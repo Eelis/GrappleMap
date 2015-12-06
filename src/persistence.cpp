@@ -1,6 +1,5 @@
 #include "persistence.hpp"
-#include "util.hpp"
-#include "graph.hpp"
+#include "graph_util.hpp"
 #include <fstream>
 #include <iterator>
 #include <cstring>
@@ -132,14 +131,14 @@ void save(Graph const & g, string const filename)
 {
 	std::ofstream f(filename);
 
-	for (NodeNum n{0}; n.index != g.num_nodes(); ++n.index)
+	foreach(n : nodenums(g))
 		if (!g[n].description.empty())
 		{
 			foreach (l : g[n].description) f << l << '\n';
 			f << g[n].position;
 		}
 
-	for (SeqNum s{0}; s.index != g.num_sequences(); ++s.index) f << g[s];
+	foreach(s : seqnums(g)) f << g[s];
 }
 
 vector<SeqNum> readScript(Graph const & graph, string const filename)
@@ -165,17 +164,13 @@ vector<SeqNum> readScript(Graph const & graph, string const filename)
 
 void todot(Graph const & graph, std::ostream & o, optional<pair<NodeNum, unsigned /* depth */>> const focus)
 {
-	set<NodeNum> visited;
-
-	if (focus)
-		visited = nodes_around(graph, focus->first, focus->second);
-	else
-		for (NodeNum n{0}; n.index != graph.num_nodes(); ++n.index)
-			visited.insert(n);
+	auto nodes = focus
+		? nodes_around(graph, focus->first, focus->second)
+		: std::set<NodeNum>(nodenums(graph).begin(), nodenums(graph).end());
 
 	o << "digraph G {\n";
 
-	foreach (n : visited)
+	foreach (n : nodes)
 		if (!graph[n].description.empty())
 		
 			o	<< n.index << " [label=<<TABLE BORDER=\"0\"><TR>"
@@ -184,13 +179,13 @@ void todot(Graph const & graph, std::ostream & o, optional<pair<NodeNum, unsigne
 				<< "</TD></TR></TABLE>>];\n";
 //			o << n.index << " [label=\"" << graph[n].description.front() /*<< " (" << n.index << ")"*/ << "\"];\n";
 
-	for (SeqNum s{0}; s.index != graph.num_sequences(); ++s.index)
+	foreach(s : seqnums(graph))
 	{
 		auto const
 			from = graph.from(s).node,
 			to = graph.to(s).node;
 
-		if (!visited.count(from) || !visited.count(to)) continue;
+		if (!nodes.count(from) || !nodes.count(to)) continue;
 
 		o << from.index << " -> " << to.index
 		  << " [label=\"" << graph[s].description.front() /*<< " (" << s.index << ", " << graph[s].positions.size()-2 << ")"*/ << "\"];\n";

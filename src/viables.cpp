@@ -1,6 +1,5 @@
 #include "viables.hpp"
-#include "util.hpp"
-#include "graph.hpp"
+#include "graph_util.hpp"
 #include "camera.hpp"
 
 namespace
@@ -113,7 +112,7 @@ namespace
 	{
 		if (depth >= 2) return;
 
-		for (SeqNum seqNum{0}; seqNum.index != graph.num_sequences(); ++seqNum.index)
+		foreach(seqNum : seqnums(graph))
 		{
 			#ifndef NDEBUG
 				auto const & s = graph[seqNum];

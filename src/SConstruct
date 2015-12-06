@@ -1,7 +1,7 @@
 env = Environment(CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3')
-#env = Environment(CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -g')
+# env = Environment(CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -g')
 
-common = env.Object(['graph.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp'])
+common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp'])
 rendering = env.Object('rendering.cpp')
 gllibs = ['GL', 'GLU', 'glfw']
 cmdlibs = ['boost_program_options']
