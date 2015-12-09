@@ -4,14 +4,17 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <map>
 #include <set>
 #include <boost/optional.hpp>
+#include <boost/range.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <iostream>
 
 using std::string;
 using std::vector;
 using std::set;
+using std::map;
 using std::istream;
 using std::ostream;
 using std::move;
@@ -48,6 +51,13 @@ inline string replace_all(string s, string what, string with)
 {
 	boost::algorithm::replace_all(s, what, with);
 	return s;
+}
+
+template<typename Range>
+auto make_set(Range const & r)
+{
+	using I = typename boost::range_iterator<Range>::type;
+	return set<typename std::iterator_traits<I>::value_type>(begin(r), end(r));
 }
 
 #endif

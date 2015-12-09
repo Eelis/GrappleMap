@@ -45,8 +45,11 @@ istream & operator>>(istream & i, vector<Sequence> & v)
 	vector<string> desc;
 	bool last_was_position = false;
 
+	unsigned line_nr = 0;
+
 	while(std::getline(i, line))
 	{
+		++line_nr;
 		bool const is_position = line.front() == ' ';
 
 		if (is_position)
@@ -54,7 +57,7 @@ istream & operator>>(istream & i, vector<Sequence> & v)
 			if (!last_was_position)
 			{
 				assert(!desc.empty());
-				v.push_back(Sequence{desc, {}});
+				v.push_back(Sequence{desc, {}, line_nr - desc.size()});
 				desc.clear();
 			}
 
@@ -162,22 +165,27 @@ vector<SeqNum> readScript(Graph const & graph, string const filename)
 	return r;
 }
 
-void todot(Graph const & graph, std::ostream & o, optional<pair<NodeNum, unsigned /* depth */>> const focus)
+void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* highlight */> const & nodes)
 {
-	auto nodes = focus
-		? nodes_around(graph, focus->first, focus->second)
-		: std::set<NodeNum>(nodenums(graph).begin(), nodenums(graph).end());
-
 	o << "digraph G {\n";
 
-	foreach (n : nodes)
+	foreach (p : nodes)
+	{
+		NodeNum const n = p.first;
+		bool const highlight = p.second;
+
 		if (!graph[n].description.empty())
-		
-			o	<< n.index << " [label=<<TABLE BORDER=\"0\"><TR>"
+		{
+			o	<< n.index << " [";
+
+			if (highlight) o << "style=filled fillcolor=lightgreen";
+
+			o	<< " label=<<TABLE BORDER=\"0\"><TR>"
 				<< "<TD HREF=\"p" << n.index <<  "n.html\">"
 				<< replace_all(graph[n].description.front(), "\\n", "<BR/>")
 				<< "</TD></TR></TABLE>>];\n";
-//			o << n.index << " [label=\"" << graph[n].description.front() /*<< " (" << n.index << ")"*/ << "\"];\n";
+		}
+	}
 
 	foreach(s : seqnums(graph))
 	{
@@ -187,8 +195,10 @@ void todot(Graph const & graph, std::ostream & o, optional<pair<NodeNum, unsigne
 
 		if (!nodes.count(from) || !nodes.count(to)) continue;
 
+		auto const d = graph[s].description.front();
+
 		o << from.index << " -> " << to.index
-		  << " [label=\"" << graph[s].description.front() /*<< " (" << s.index << ", " << graph[s].positions.size()-2 << ")"*/ << "\"];\n";
+		  << " [label=\"" << (d == "..." ? "" : d) << "\"];\n";
 	}
 
 	o << "}\n";

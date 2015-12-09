@@ -10,6 +10,7 @@
 #include <GLFW/glfw3.h>
 #include <GL/glu.h>
 #include <boost/program_options.hpp>
+#include <boost/range/distance.hpp>
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -82,7 +83,9 @@ namespace
 			graph, window, pos, camera,
 			none, // no highlighted joint
 			false, // not edit mode
-			width, height, style);
+			width, height,
+			{0},
+			style);
 
 		boost::gil::rgb8_pixel_t buf[width * height];
 
@@ -148,7 +151,7 @@ namespace
 	string img(NodeNum const n, char const hc)
 	{
 		auto s = to_string(n.index);
-		return "<img title='" + s + "' src='node" + s + hc + ".png'>";
+		return "<img alt='' title='" + s + "' src='node" + s + hc + ".png'>";
 	}
 
 	string desc(Graph const & g, SeqNum const s)
@@ -171,9 +174,25 @@ namespace
 	{
 		std::ofstream html("browse/index.html");
 
-		html << html5head << "<body><h2>Transitions</h2><ul>";
+		html << html5head << "<body><h1>Index</h1><h2>Tags (" << tags(g).size() << ")</h2><ul>";
+
+		foreach(tag : tags(g))
+		{
+			set<NodeNum> s;
+			foreach(n : tagged_nodes(g, tag)) s.insert(n);
+				// i can't figure out how to get the size of the tagged_nodes result directly
+
+			html << "<li><a href='tag-" << tag << ".html'>" << tag << "</a> (" << s.size() << ")</li>";
+		}
+
+		html << "</ul><h2>Positions (" << g.num_nodes() << ")</h2><ul>";
 
 		auto nlspace = [](string const & s){ return replace_all(s, "\\n", " "); };
+
+		foreach(n : nodenums(g))
+			html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g, n)) << "</a></li>";
+
+		html << "</ul><h2>Transitions (" << g.num_sequences() << ")</h2><ul>";
 
 		foreach(s : seqnums(g))
 		{
@@ -184,7 +203,7 @@ namespace
 			if (g[s].description.front() != "...")
 				html
 					<< " <em>via</em> "
-					<< nlspace(g[s].description.front());
+					<< "<b>" << nlspace(g[s].description.front()) << "</b>";
 
 			html
 				<< " <em>to</em>"
@@ -195,16 +214,15 @@ namespace
 		html << "</ul></body></html>";
 	}
 
-	string make_svg(Graph const & g, NodeNum const n)
+	string make_svg(Graph const & g, map<NodeNum, bool> const & nodes)
 	{
 		string const
-			pname = "p" + to_string(n.index),
-			svgpath = "browse/local" + to_string(n.index) + ".svg",
-			dotpath = "browse/" + pname + ".dot";
+			svgpath = "browse/tmp.svg",
+			dotpath = "browse/tmp.dot";
 
 		{
 			std::ofstream dotfile(dotpath);
-			todot(g, dotfile, make_pair(n, 2u));
+			todot(g, dotfile, nodes);
 		}
 
 		auto cmd = "dot -Tsvg " + dotpath + " -o" + svgpath;
@@ -217,6 +235,79 @@ namespace
 		return r.substr(r.find("<svg"));
 	}
 
+	void write_tag_page(Graph const & g, string const & tag, bool const nogifs)
+	{
+		std::ofstream html("browse/tag-" + tag + ".html");
+
+		html << html5head << "<body style='text-align:center'><h1>Tag: " << tag << "</h1><hr>";
+
+		// positions
+
+		html << "<h2>Positions</h2><p>Positions tagged '" << tag << "'</p>";
+
+		set<NodeNum> nodes;
+
+		foreach(n : tagged_nodes(g, tag))
+		{
+			html
+				<< "<div style='display:inline-block;text-align:center'>"
+				<< "<a href='p" << n.index << "e.html'>"
+				<< replace_all(desc(g, n), "\\n", "<br>") << "<br>"
+				<< "<img alt='' title='" << n.index << "' src='p" << n.index << "w.png'></a>"
+				<< "</div>";
+
+			nodes.insert(n);
+		}
+
+		map<NodeNum, bool> m;
+		foreach(n : nodes) m[n] = true;
+		foreach(n : nodes_around(g, nodes)) m[n] = false;
+
+		html << "<br><a href='index.html'>Index</a>";
+
+		// transitions
+
+		html << "<hr><h2>Transitions</h2><p>Transitions that preserve the '" << tag << "' tag</p><table style='margin:0px auto'>\n";
+
+		foreach(sn : seqnums(g))
+			if (is_internal(g, nodes, sn))
+			{
+				auto const
+					from = g.from(sn).node,
+					to = g.to(sn).node;
+
+				html
+					<< "<tr><td style='text-align:right'><em>from</em> "
+					<< "<a href='p" << from.index << "w.html'>"
+					<< replace_all(desc(g, from), "\\n", " ")
+					<< "</a> <em>via</em></td>"
+					<< "<td><div style='display:inline-block'>"
+					<< desc(g, sn)
+					<< "<img alt='' src='in" << sn.index << "w." << (nogifs ? "png" : "gif") << "' title='" << sn.index;
+
+				if (auto ln = g[sn].line_nr) html << " @ " << *ln;
+
+				html
+					<< "'></div></td><td style='text-align:left'><em>to</em> "
+					<< "<a href='p" << to.index << "w.html'>"
+					<< replace_all(desc(g, to), "\\n", " ")
+					<< "</a>";
+				
+				html << "</td></tr>";
+			}
+
+		html << "</table>";
+
+
+		html
+			<< "<hr><h2>Neighbourhood</h2>"
+			<< "<p>Positions up to one transition away from position";
+
+		if (nodes.size() > 1) html << 's';
+
+		html << " tagged '" << tag << "' (clickable)</p>" << make_svg(g, m) << "</body></html>";
+	}
+
 	void write_position_page(
 		GLFWwindow * const window,
 		Graph const & graph,
@@ -224,7 +315,16 @@ namespace
 		bool const nogifs)
 	{
 		string const pname = "p" + to_string(n.index);
-		string const svg = make_svg(graph, n);
+
+		std::cout << pname << std::endl;
+
+		set<NodeNum> nodes{n};
+
+		map<NodeNum, bool> m;
+		m[n] = true;
+		foreach(nn : nodes_around(graph, nodes, 2)) m[nn] = false;
+
+		string const svg = make_svg(graph, m);
 
 		vector<SeqNum> const
 			incoming = in(graph, n),
@@ -245,11 +345,11 @@ namespace
 
 			std::ofstream html("browse/" + pname + hc + ".html");
 
-			html << html5head << "<body><table><tr>";
+			html << html5head << "<body style='text-align:center'><table style='margin:0px auto'><tr>";
 
 			if (!incoming.empty())
 			{
-				html << "<td style='text-align:center;vertical-align:top'><b>incoming</b><table>\n";
+				html << "<td style='text-align:center;vertical-align:top'><b>Incoming transitions</b><table>\n";
 
 				size_t n = 0;
 				foreach (sn : incoming)
@@ -262,13 +362,16 @@ namespace
 					html
 						<< "<tr><td><hr>"
 						<< "<em>from</em> <div style='display:inline-block'>"
-						<< replace_all(desc(graph, from), "\\n", "<br>") << "<br>"
 						<< "<a href='p" << from.index << hc << ".html'>"
-						<< "<img title='" << from.index << "' src='from" << sn.index << hc << ".png'>"
+						<< replace_all(desc(graph, from), "\\n", "<br>") << "<br>"
+						<< "<img alt='' title='" << from.index << "' src='from" << sn.index << hc << ".png'>"
 						<< "</a></div> <em>via</em> <div style='display:inline-block'>"
 						<< desc(graph, sn)
-						<< "<img src='in" << sn.index << hc << "." << (nogifs ? "png" : "gif") << "' title='" << sn.index << "'>"
-						<< "</div> <em>to</em></td></tr>";
+						<< "<img alt='' src='in" << sn.index << hc << "." << (nogifs ? "png" : "gif") << "' title='" << sn.index;
+
+					if (auto ln = graph[sn].line_nr) html << " @ " << *ln;
+
+					html << "'></div> <em>to</em></td></tr>";
 
 					auto v = frames_for_sequence(graph, sn);
 					foreach (p : v) p = reo(inverse(graph.to(sn).reorientation)(p));
@@ -293,16 +396,29 @@ namespace
 			char const prev_heading = headings[(heading + 3) % 4];
 
 			html
-				<< "<td style='text-align:center;vertical-align:top'><h1>"
-				<< replace_all(desc(graph, n), "\\n", "<br>") << "<br>"
-				<< "<img title='" << n.index << "' src='p" << n.index << hc << ".png'><br>"
+				<< "<td style='text-align:center;vertical-align:top'><h3>Position:</h3><h1>"
+				<< replace_all(desc(graph, n), "\\n", "<br>") << "<br><br>"
+				<< "<img alt='' title='" << n.index << "' src='p" << n.index << hc << ".png'><br>"
 				<< "<a href='" << pname << prev_heading << ".html'>↻</a> "
 				<< "<a href='" << pname << next_heading << ".html'>↺</a> "
-				<< "</h1><a href='index.html'>index</a></td>";
+				<< "</h1>";
+			
+			auto const t = tags(graph, n);
+			if (!t.empty())
+			{
+				html << "Tags:";
+
+				foreach(tag : tags(graph, n))
+					html << " <a href='tag-" << tag << ".html'>" << tag << "</a>";
+
+				html << "<br><br>";
+			}
+
+			html << "<a href='index.html'>Index</a></td>";
 
 			if (!outgoing.empty())
 			{
-				html << "<td style='text-align:center;vertical-align:top'><b>outgoing</b><table>";
+				html << "<td style='text-align:center;vertical-align:top'><b>Outgoing transitions</b><table>";
 
 				size_t n = 0;
 				foreach (sn : outgoing)
@@ -316,11 +432,16 @@ namespace
 						<< "<tr><td><hr>"
 						<< "<em>via</em> <div style='display:inline-block'>"
 						<< desc(graph, sn)
-						<< "<img src='out" << sn.index << hc << "." << (nogifs ? "png" : "gif") << "' title='" << sn.index << "'>"
+						<< "<img alt='' src='out" << sn.index << hc << "." << (nogifs ? "png" : "gif") << "' title='" << sn.index;
+						
+					if (auto ln = graph[sn].line_nr) html << " @ " << *ln;
+
+					html
+						<< "'>"
 						<< "</div> <em>to</em> <div style='display:inline-block'>"
-						<< replace_all(desc(graph, to), "\\n", "<br>") << "<br>"
 						<< "<a href='p" << to.index << hc << ".html'>"
-						<< "<img title='" << to.index << "' src='to" << sn.index << hc << ".png'>"
+						<< replace_all(desc(graph, to), "\\n", "<br>") << "<br>"
+						<< "<img alt='' title='" << to.index << "' src='to" << sn.index << hc << ".png'>"
 						<< "</a></div></td></tr>";
 
 					auto v = frames_for_sequence(graph, sn);
@@ -342,7 +463,11 @@ namespace
 				html << "</table></td>";
 			}
 
-			html << "</tr></table></div><hr>" << svg << "</body></html>";
+			html
+				<< "</tr></table>"
+				<< "<hr><h2>Neighbourhood</h2>"
+				<< "<p>Positions up to two transitions away (clickable)</p>"
+				<< svg << "</body></html>";
 		}
 	}
 }
@@ -367,6 +492,8 @@ int main(int const argc, char const * const * const argv)
 		glfwMakeContextCurrent(window);
 
 		write_index(graph);
+
+		foreach(tag : tags(graph)) write_tag_page(graph, tag, config->nogifs);
 
 		if (config->node)
 			write_position_page(window, graph, *config->node, config->nogifs);

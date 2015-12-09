@@ -1,7 +1,6 @@
 #ifndef JIUJITSUMAPPER_PERSISTENCE_HPP
 #define JIUJITSUMAPPER_PERSISTENCE_HPP
 
-#include "util.hpp"
 #include "graph.hpp"
 
 ostream & operator<<(ostream &, Position const &);
@@ -10,6 +9,6 @@ Graph loadGraph(string filename);
 void save(Graph const &, string filename);
 vector<SeqNum> readScript(Graph const &, string filename);
 Position decodePosition(string);
-void todot(Graph const &, std::ostream &, boost::optional<pair<NodeNum, unsigned /* depth */>> const focus = boost::none);
+void todot(Graph const &, std::ostream &, std::map<NodeNum, bool /* highlight */> const &);
 
 #endif

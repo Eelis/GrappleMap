@@ -4,6 +4,7 @@
 #include "graph.hpp"
 #include <map>
 #include <boost/range/counting_range.hpp>
+#include <boost/range/adaptor/filtered.hpp>
 
 using NodeNumIter = boost::counting_iterator<NodeNum, boost::incrementable_traversal_tag, uint32_t>;
 using SeqNumIter = boost::counting_iterator<SeqNum, boost::incrementable_traversal_tag, uint32_t>;
@@ -98,6 +99,7 @@ inline void replace(Graph & graph, PositionInSequence const pis, PlayerJoint con
 }
 
 optional<SeqNum> seq_by_desc(Graph const &, std::string const & desc);
+optional<NodeNum> node_by_desc(Graph const &, std::string const & desc);
 
 optional<PositionInSequence> node_as_posinseq(Graph const &, NodeNum);
 	// may return either the beginning of a sequence or the end
@@ -106,13 +108,30 @@ pair<vector<Position>, ReorientedNode> follow(Graph const &, ReorientedNode cons
 
 bool connected(Graph const &, NodeNum, NodeNum);
 
-std::set<NodeNum> nodes_around(Graph const &, NodeNum, unsigned depth);
-
 inline optional<NodeNum> node_at(Graph const & g, PositionInSequence const pis)
 {
 	if (pis == first_pos_in(pis.sequence)) return g.from(pis.sequence).node;
 	if (pis == last_pos_in(g, pis.sequence)) return g.to(pis.sequence).node;
 	return boost::none;
+}
+
+set<string> tags(Graph const &);
+set<string> tags(Graph const &, NodeNum const &);
+
+inline auto tagged_nodes(Graph const & g, string const & tag)
+{
+	using boost::adaptors::filtered;
+	return nodenums(g) | filtered(
+		[&](NodeNum const & n){ return tags(g, n).count(tag) != 0; });
+}
+
+set<NodeNum> nodes_around(Graph const &, set<NodeNum> const &, unsigned depth = 1);
+
+set<NodeNum> grow(Graph const &, set<NodeNum>, unsigned depth);
+
+inline bool is_internal(Graph const & g, set<NodeNum> const & nodes, SeqNum const seq)
+{
+	return nodes.count(g.from(seq).node) && nodes.count(g.to(seq).node);
 }
 
 #endif

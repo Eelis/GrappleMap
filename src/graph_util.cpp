@@ -38,7 +38,19 @@ optional<SeqNum> seq_by_desc(Graph const & g, std::string const & desc)
 	foreach(sn : seqnums(g))
 		if (g[sn].description.front() == desc)
 			return sn;
-	
+
+	return none;
+}
+
+optional<NodeNum> node_by_desc(Graph const & g, std::string const & desc)
+{
+	foreach(n : nodenums(g))
+	{
+		auto const & d = g[n].description;
+		if (!d.empty() && d.front() == desc)
+			return n;
+	}
+
 	return none;
 }
 
@@ -161,6 +173,44 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 	return {positions, m};
 }
 
+set<string> tags(Graph const & g, NodeNum const & n)
+{
+	vector<string> const & desc = g[n].description;
+
+	set<string> r;
+
+	foreach(line : desc)
+	{
+		if (line.substr(0, 5) == "tags:")
+		{
+			std::istringstream iss(line.substr(5));
+			string tag;
+			while (iss >> tag) r.insert(tag);
+		}
+	}
+
+	return r;
+}
+
+set<string> tags(Graph const & g)
+{
+	set<string> r;
+
+	foreach(n : nodenums(g))
+		foreach(t : tags(g, n))
+			r.insert(t);
+
+	return r;
+}
+
+bool connected(Graph const & g, NodeNum const a, set<NodeNum> const & s)
+{
+	foreach(b : s)
+		if (connected(g, a, b)) return true;
+
+	return false;
+}
+
 bool connected(Graph const & g, NodeNum const a, NodeNum const b)
 {
 	foreach(s : seqnums(g))
@@ -171,16 +221,37 @@ bool connected(Graph const & g, NodeNum const a, NodeNum const b)
 	return false;
 }
 
-std::set<NodeNum> nodes_around(Graph const & g, NodeNum const n, unsigned const depth)
+std::set<NodeNum> grow(Graph const & g, std::set<NodeNum> const & nodes)
 {
-	std::set<NodeNum> r{n};
+	auto r = nodes;
+
+	foreach(n : nodenums(g))
+		if (connected(g, n, nodes)) { r.insert(n); break; }
+
+	return r;
+}
+
+std::set<NodeNum> grow(Graph const & g, std::set<NodeNum> nodes, unsigned const depth)
+{
+	for (unsigned d = 0; d != depth; ++d) nodes = grow(g, nodes);
+	return nodes;
+}
+
+set<NodeNum> nodes_around(Graph const & g, set<NodeNum> const & nodes, unsigned depth)
+{
+	set<NodeNum> all = nodes;
+	set<NodeNum> r;
 
 	for (unsigned d = 0; d != depth; ++d)
 	{
-		auto prev = r;
+		set<NodeNum> const prev = all;
+
 		foreach(n : nodenums(g))
-			foreach (v : prev)
-				if (connected(g, n, v)) { r.insert(n); break; }
+			if (connected(g, n, prev) && all.count(n) == 0)
+			{
+				all.insert(n);
+				r.insert(n);
+			}
 	}
 
 	return r;

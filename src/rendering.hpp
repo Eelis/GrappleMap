@@ -25,6 +25,7 @@ struct Style
 void renderWindow(vector<View> const &,
 	Viables const *, Graph const &, GLFWwindow *, Position const &,
 	Camera, optional<PlayerJoint> highlight_joint, bool edit_mode,
-	int width, int height, Style const & = Style());
+	int width, int height, SeqNum current_sequence,
+	Style const & = Style());
 
 #endif

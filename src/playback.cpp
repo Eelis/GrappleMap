@@ -147,7 +147,7 @@ int main(int const argc, char const * const * const argv)
 				graph, window, pos, camera,
 				none, // no highlighted joint
 				false, // not edit mode
-				width, height);
+				width, height, {0});
 		}
 
 		sleep(2);

@@ -41,6 +41,7 @@ struct Graph
 		Sequence sequence;
 			// invariant: g[from] == sequence.positions.front()
 			// invariant: g[to] == sequences.positions.back()
+		optional<unsigned> line_nr;
 	};
 
 private:

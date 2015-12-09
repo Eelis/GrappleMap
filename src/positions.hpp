@@ -98,6 +98,7 @@ struct Sequence
 {
 	vector<string> description;
 	vector<Position> positions; // invariant: .size()>=2
+	optional<unsigned> line_nr;
 };
 
 using PosNum = unsigned;
@@ -218,6 +219,11 @@ inline std::ostream & operator<<(std::ostream & o, PositionInSequence const pis)
 inline bool operator==(PositionInSequence const & a, PositionInSequence const & b)
 {
 	return a.sequence == b.sequence && a.position == b.position;
+}
+
+inline bool operator!=(PositionInSequence const & a, PositionInSequence const & b)
+{
+	return !(a == b);
 }
 
 inline Position apply(Reorientation const & r, Position p)

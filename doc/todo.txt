@@ -1,13 +1,27 @@
+documentation
+- readme
+- edit guidelines
+
+gui
 - in edit mode, make it possible to temporarily hide a player, to unobstruct the view to the other
-- experiment with different joint editing schemes, e.g. direct joint coordinate component manipulation
-- documentation
-- joint rotation limits
-- prevent joints moving through eachother (maybe, might be more annoying than useful)
-- sticky floor
-- direction signs ("to truck", "zombie")
-- oculus rift support
 - use opengl es so we can use emscripten and webgl without emulation
-- debug build
 - make rotation commands rotate around center between players, not area center
 - SDL 2.1 (should have emscripten support, see https://www.phoronix.com/scan.php?page=news_item&px=SDL2-Next-Version-Features )
-- only regenerate gifs/pngs if necessary
+- experiment with different joint editing schemes, e.g. direct joint coordinate component manipulation
+- prevent joints moving through eachother (maybe, might be more annoying than useful)
+- joint rotation limits
+- oculus rift support
+- sticky floor
+- direction signs ("to truck", "zombie")
+- editing selected joints as a group
+
+browseable pages:
+- find a faster tool/library for generating gifs
+- maybe embed videos encoded with e.g. x264?
+- only regenerate gifs/pngs if necessary (e.g. using hashing)
+- reorient positions on tag page to make them as similar as possible
+- don't re-use gifs on tag pages because they have padding
+- rotation for tag pages
+- nice urls for position pages
+- submission indicators in browsable pages
+- investigate graphviz alternatives

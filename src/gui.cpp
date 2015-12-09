@@ -105,18 +105,13 @@ optional<NextPosition> determineNextPos(
 
 struct Window
 {
-	explicit Window(string const f, NodeNum const start)
+	explicit Window(string const f)
 		: filename(f), graph(loadGraph(filename))
-	{
-		if (auto pis = node_as_posinseq(graph, start))
-			location = *pis;
-		else
-			throw std::runtime_error("cannot find sequence starting/ending at specified node");
-	}
+	{}
 
 	string filename;
 	Graph graph;
-	PositionInSequence location;
+	PositionInSequence location{{0}, 0};
 	PlayerJoint closest_joint = {0, LeftAnkle};
 	optional<PlayerJoint> chosen_joint;
 	bool edit_mode = false;
@@ -128,6 +123,9 @@ struct Window
 	PositionReorientation reorientation{};
 	optional<NextPosition> next_pos;
 	std::stack<std::pair<Graph, PositionInSequence>> undo;
+
+	std::map<NodeNum, unsigned> anim_next;
+		// the unsigned is an index into out(graph, n)
 };
 
 void print_status(Window const & w)
@@ -158,7 +156,6 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 	if (action == GLFW_PRESS)
 	{
 		if (mods & GLFW_MOD_CONTROL)
-		{
 			switch (key)
 			{
 				case GLFW_KEY_Z:
@@ -177,168 +174,190 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				case GLFW_KEY_V: // paste
 					if (w.clipboard) w.graph.replace(w.location, *w.clipboard, true);
 					return;
-			}
 
-			return;
-		}
-
-		switch (key)
-		{
-			case GLFW_KEY_INSERT:
-				push_undo(w);
-				w.graph.clone(w.location);
-				break;
-
-			case GLFW_KEY_PAGE_UP:
-				if (w.location.sequence.index != 0)
+				case GLFW_KEY_UP:
 				{
-					--w.location.sequence.index;
-					w.location.position = 0;
-					w.reorientation = PositionReorientation();
-					print_status(w);
+					NodeNum const n = w.graph.from(w.location.sequence).node;
+
+					vector<SeqNum> const v = out(w.graph, n);
+					if (v.empty()) return;
+					unsigned & an = w.anim_next[n];
+					an = (an == 0 ? v.size() - 1 : an - 1);
+					return;
 				}
-				break;
 
-			case GLFW_KEY_PAGE_DOWN:
-				if (w.location.sequence.index != w.graph.num_sequences() - 1)
+				case GLFW_KEY_DOWN:
 				{
-					++w.location.sequence.index;
-					w.location.position = 0;
-					w.reorientation = PositionReorientation();
-					print_status(w);
+					NodeNum const n = w.graph.from(w.location.sequence).node;
+
+					vector<SeqNum> const v = out(w.graph, n);
+					if (!v.empty())
+						++w.anim_next[n] %= v.size();
+					return;
 				}
-				break;
 
-			// swap players
-
-			case GLFW_KEY_X:
-			{
-				push_undo(w);
-				auto p = w.graph[w.location];
-				swap(p[0], p[1]);
-				w.graph.replace(w.location, p, true);
-				break;
+				default: return;
 			}
-
-			// mirror
-
-			case GLFW_KEY_M:
+		else
+			switch (key)
 			{
-				push_undo(w);
-				w.graph.replace(w.location, mirror(w.graph[w.location]), true);
-				break;
-			}
+				case GLFW_KEY_INSERT:
+					push_undo(w);
+					w.graph.clone(w.location);
+					break;
 
-			// set position to center
+				case GLFW_KEY_PAGE_UP:
+					if (w.location.sequence.index != 0)
+					{
+						--w.location.sequence.index;
+						w.location.position = 0;
+						w.reorientation = PositionReorientation();
+						print_status(w);
+					}
+					break;
 
-			case GLFW_KEY_U:
-				push_undo(w);
-				if (auto nextLoc = next(w.graph, w.location))
-				if (auto prevLoc = prev(w.location))
+				case GLFW_KEY_PAGE_DOWN:
+					if (w.location.sequence.index != w.graph.num_sequences() - 1)
+					{
+						++w.location.sequence.index;
+						w.location.position = 0;
+						w.reorientation = PositionReorientation();
+						print_status(w);
+					}
+					break;
+
+				// swap players
+
+				case GLFW_KEY_X:
 				{
-					auto p = between(w.graph[*prevLoc], w.graph[*nextLoc]);
-					for(int i = 0; i != 30; ++i) spring(p);
+					push_undo(w);
+					auto p = w.graph[w.location];
+					swap(p[0], p[1]);
 					w.graph.replace(w.location, p, true);
+					break;
 				}
-				break;
 
-			// set joint to prev/next/center
+				// mirror
 
-			case GLFW_KEY_H:
-				if (auto p = prev(w.location))
+				case GLFW_KEY_M:
 				{
 					push_undo(w);
-					replace(w.graph, w.location, w.closest_joint, w.graph[*p][w.closest_joint], false);
+					w.graph.replace(w.location, mirror(w.graph[w.location]), true);
+					break;
 				}
-				break;
-			case GLFW_KEY_K:
-				if (auto p = next(w.graph, w.location))
+
+				// set position to center
+
+				case GLFW_KEY_U:
+					push_undo(w);
+					if (auto nextLoc = next(w.graph, w.location))
+					if (auto prevLoc = prev(w.location))
+					{
+						auto p = between(w.graph[*prevLoc], w.graph[*nextLoc]);
+						for(int i = 0; i != 30; ++i) spring(p);
+						w.graph.replace(w.location, p, true);
+					}
+					break;
+
+				// set joint to prev/next/center
+
+				case GLFW_KEY_H:
+					if (auto p = prev(w.location))
+					{
+						push_undo(w);
+						auto const j = apply(w.reorientation, w.closest_joint);
+						replace(w.graph, w.location, j, w.graph[*p][j], false);
+					}
+					break;
+				case GLFW_KEY_K:
+					if (auto p = next(w.graph, w.location))
+					{
+						push_undo(w);
+						auto const j = apply(w.reorientation, w.closest_joint); // todo: also for KEY_J
+						replace(w.graph, w.location, j, w.graph[*p][j], false);
+					}
+					break;
+				case GLFW_KEY_J:
+					if (auto prevLoc = prev(w.location))
+					if (auto nextLoc = next(w.graph, w.location))
+					{
+						push_undo(w);
+						Position p = w.graph[w.location];
+						p[w.closest_joint] = (w.graph[*prevLoc][w.closest_joint] + w.graph[*nextLoc][w.closest_joint]) / 2;
+						for(int i = 0; i != 30; ++i) spring(p);
+						w.graph.replace(w.location, p, false);
+					}
+					break;
+
+				case GLFW_KEY_KP_4: translate(w, V3{-0.02, 0, 0}); break;
+				case GLFW_KEY_KP_6: translate(w, V3{0.02, 0, 0}); break;
+				case GLFW_KEY_KP_8: translate(w, V3{0, 0, -0.02}); break;
+				case GLFW_KEY_KP_2: translate(w, V3{0, 0, 0.02}); break;
+
+				case GLFW_KEY_KP_9:
 				{
 					push_undo(w);
-					replace(w.graph, w.location, w.closest_joint, w.graph[*p][w.closest_joint], false);
+					auto p = w.graph[w.location];
+					foreach (j : playerJoints) p[j] = xyz(yrot(-0.05) * V4(p[j], 1));
+					w.graph.replace(w.location, p, true);
+					break;
 				}
-				break;
-			case GLFW_KEY_J:
-				if (auto prevLoc = prev(w.location))
-				if (auto nextLoc = next(w.graph, w.location))
+				case GLFW_KEY_KP_7:
 				{
 					push_undo(w);
-					Position p = w.graph[w.location];
-					p[w.closest_joint] = (w.graph[*prevLoc][w.closest_joint] + w.graph[*nextLoc][w.closest_joint]) / 2;
-					for(int i = 0; i != 30; ++i) spring(p);
-					w.graph.replace(w.location, p, false);
+					auto p = w.graph[w.location];
+					foreach (j : playerJoints) p[j] = xyz(yrot(0.05) * V4(p[j], 1));
+					w.graph.replace(w.location, p, true);
+					break;
 				}
-				break;
 
-			case GLFW_KEY_KP_4: translate(w, V3{-0.02, 0, 0}); break;
-			case GLFW_KEY_KP_6: translate(w, V3{0.02, 0, 0}); break;
-			case GLFW_KEY_KP_8: translate(w, V3{0, 0, -0.02}); break;
-			case GLFW_KEY_KP_2: translate(w, V3{0, 0, 0.02}); break;
+				// new sequence
 
-			case GLFW_KEY_KP_9:
-			{
-				push_undo(w);
-				auto p = w.graph[w.location];
-				foreach (j : playerJoints) p[j] = xyz(yrot(-0.05) * V4(p[j], 1));
-				w.graph.replace(w.location, p, true);
-				break;
-			}
-			case GLFW_KEY_KP_7:
-			{
-				push_undo(w);
-				auto p = w.graph[w.location];
-				foreach (j : playerJoints) p[j] = xyz(yrot(0.05) * V4(p[j], 1));
-				w.graph.replace(w.location, p, true);
-				break;
-			}
-
-			// new sequence
-
-			case GLFW_KEY_N:
-			{
-				push_undo(w);
-				auto const p = w.graph[w.location];
-				w.location.sequence = insert(w.graph, Sequence{{"new"}, {p, p}});
-				w.location.position = 0;
-				break;
-			}
-			case GLFW_KEY_V: w.edit_mode = !w.edit_mode; break;
-
-			case GLFW_KEY_S: save(w.graph, w.filename); break;
-
-			case GLFW_KEY_1: w.split_view = !w.split_view; break;
-
-			case GLFW_KEY_B: // branch
-			{
-				push_undo(w);
-				split_at(w.graph, w.location);
-				break;
-			}
-
-			case GLFW_KEY_DELETE:
-			{
-				auto const before = make_pair(w.graph, w.location);
-
-				if (mods & GLFW_MOD_CONTROL)
+				case GLFW_KEY_N:
 				{
 					push_undo(w);
-
-					if (auto const new_seq = erase_sequence(w.graph, w.location.sequence))
-						w.location = {*new_seq, 0};
-					else w.undo.pop();
+					auto const p = w.graph[w.location];
+					w.location.sequence = insert(w.graph, Sequence{{"new"}, {p, p}});
+					w.location.position = 0;
+					break;
 				}
-				else
+				case GLFW_KEY_V: w.edit_mode = !w.edit_mode; break;
+
+				case GLFW_KEY_S: save(w.graph, w.filename); break;
+
+				case GLFW_KEY_1: w.split_view = !w.split_view; break;
+
+				case GLFW_KEY_B: // branch
 				{
 					push_undo(w);
-
-					if (auto const new_pos = w.graph.erase(w.location))
-						w.location.position = *new_pos;
-					else w.undo.pop();
+					split_at(w.graph, w.location);
+					break;
 				}
 
-				break;
+				case GLFW_KEY_DELETE:
+				{
+					auto const before = make_pair(w.graph, w.location);
+
+					if (mods & GLFW_MOD_CONTROL)
+					{
+						push_undo(w);
+
+						if (auto const new_seq = erase_sequence(w.graph, w.location.sequence))
+							w.location = {*new_seq, 0};
+						else w.undo.pop();
+					}
+					else
+					{
+						push_undo(w);
+
+						if (auto const new_pos = w.graph.erase(w.location))
+							w.location.position = *new_pos;
+						else w.undo.pop();
+					}
+
+					break;
+				}
 			}
-		}
 	}
 }
 
@@ -395,6 +414,61 @@ View const * main_view(std::vector<View> const & vv)
 	return nullptr;
 }
 
+void backward(Window & w)
+{
+	// TODO
+}
+
+void forward(Window & w)
+{
+	if (w.next_pos)
+	{
+		// todo: what if we're going backwards?
+
+		w.next_pos->howfar += 0.08;
+
+		if (w.next_pos->howfar >= 1)
+		{
+			w.location = w.next_pos->pis;
+			w.reorientation = w.next_pos->reorientation;
+
+			double const hf = w.next_pos->howfar - 1;
+
+			w.next_pos = none;
+
+			if (w.location == last_pos_in(w.graph, w.location.sequence))
+			{
+				auto const n = w.graph.to(w.location.sequence).node;
+				auto const v = out(w.graph, n);
+
+				if (!v.empty())
+				{
+					PositionReorientation r;
+
+					SeqNum const next_seq = v[w.anim_next[n]];
+
+					Position const before = w.reorientation(w.graph[w.location]);
+					Position const after = r(w.graph[first_pos_in(next_seq)]);
+
+					assert(basicallySame(
+						w.reorientation(w.graph[w.location]),
+						r(w.graph[first_pos_in(next_seq)])));
+
+					w.next_pos = NextPosition{{next_seq, 1}, hf, r};
+				}
+			}
+			else w.next_pos = NextPosition{{w.location.sequence, w.location.position+1}, hf, {}};
+
+			print_status(w);
+		}
+	}
+}
+
+bool all_digits(string const & s)
+{
+	return all_of(s.begin(), s.end(), [](char c){return std::isdigit(c);});
+}
+
 int main(int const argc, char const * const * const argv)
 {
 	namespace po = boost::program_options;
@@ -404,8 +478,8 @@ int main(int const argc, char const * const * const argv)
 		po::options_description desc("options");
 		desc.add_options()
 			("help", "show this help")
-			("start", po::value<uint16_t>()->default_value(0), "initial node")
-			("db", po::value<std::string>()->default_value("positions.txt"), "position database file");
+			("start", po::value<string>(), "initial node (by number or first line of description)")
+			("db", po::value<string>()->default_value("positions.txt"), "position database file");
 
 		po::variables_map vm;
 		po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -413,7 +487,24 @@ int main(int const argc, char const * const * const argv)
 
 		if (vm.count("help")) { std::cout << desc << '\n'; return 0; }
 
-		Window w(vm["db"].as<std::string>(), NodeNum{vm["start"].as<uint16_t>()});
+		Window w(vm["db"].as<std::string>());
+
+		string const start_str = vm["start"].as<string>();
+
+		NodeNum start_node;
+		
+		if (all_digits(start_str))
+			start_node.index = std::stol(start_str);
+		else if (auto o = node_by_desc(w.graph, start_str))
+			start_node = *o;
+		else if (auto o = seq_by_desc(w.graph, start_str))
+			start_node = w.graph.from(*o).node; // todo: set seq directly, because node_as_posinseq below may pick another seq
+		else throw std::runtime_error("no such node");
+
+		if (auto pis = node_as_posinseq(w.graph, start_node))
+			w.location = *pis;
+		else
+			throw std::runtime_error("cannot find sequence starting/ending at specified node");
 
 		if (!glfwInit()) return -1;
 
@@ -440,6 +531,8 @@ int main(int const argc, char const * const * const argv)
 			if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { w.camera.rotateHorizontal(0.03); w.jiggle = 0; }
 			if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) w.camera.zoom(-0.05);
 			if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) w.camera.zoom(0.05);
+			if (glfwGetKey(window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS) forward(w);
+			if (glfwGetKey(window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS) backward(w);
 
 			if (!w.edit_mode && !w.chosen_joint)
 			{
@@ -547,7 +640,7 @@ int main(int const argc, char const * const * const argv)
 
 			glfwGetFramebufferSize(window, &width, &height);
 			renderWindow(
-				views, &w.viable, w.graph, window, posToDraw, w.camera, special_joint, w.edit_mode, width, height);
+				views, &w.viable, w.graph, window, posToDraw, w.camera, special_joint, w.edit_mode, width, height, w.location.sequence);
 
 			if (w.chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && w.next_pos && w.next_pos->howfar >= 1)
 			{

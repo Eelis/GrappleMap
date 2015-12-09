@@ -117,16 +117,20 @@ namespace
 		}
 	}
 
-	void drawViables(Graph const & graph, Viables const & viable, PlayerJoint const j)
+	void drawViables(Graph const & graph, Viables const & viable, PlayerJoint const j, SeqNum const current_sequence)
 	{
 		foreach (v : viable[j].viables)
 		{
+
 			if (v.second.end - v.second.begin < 1) continue;
 
 			auto const r = v.second.reorientation;
 			auto & seq = graph[v.first].positions;
 
-			glColor4f(1, 1, 0, 0.3);
+			if (v.second.seqNum == current_sequence)
+				glColor4f(1, 1, 1, 0.6);
+			else
+				glColor4f(1, 1, 0, 0.3);
 
 			glDisable(GL_DEPTH_TEST);
 
@@ -155,6 +159,7 @@ void renderWindow(
 	optional<PlayerJoint> highlight_joint,
 	bool const edit_mode,
 	int const width, int const height,
+	SeqNum const current_sequence,
 	Style const & style)
 {
 	glEnable(GL_SCISSOR_TEST);
@@ -215,7 +220,7 @@ void renderWindow(
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glLineWidth(4);
 			glNormal3d(0, 1, 0);
-			drawViables(graph, *viables, *highlight_joint);
+			drawViables(graph, *viables, *highlight_joint, current_sequence);
 
 			glDisable(GL_DEPTH_TEST);
 			glPointSize(20);
