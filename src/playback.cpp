@@ -73,21 +73,30 @@ vector<SeqNum> randomScript(Graph const & g, NodeNum node, size_t size = 1000)
 
 	auto const m = nodes(g);
 
+	std::deque<NodeNum> recent;
+
 	while (v.size() < size)
 	{
 		vector<pair<SeqNum, NodeNum>> choices;
 
-		// incoming
-		foreach (s : m.at(node).first) choices.emplace_back(s, g.from(s).node);
+		foreach (s : m.at(node).second)
+		{
+			auto const to = g.to(s).node;
+			if (std::find(recent.begin(), recent.end(), to) == recent.end() || m.at(node).first.empty())
+				choices.push_back({s, g.to(s).node});
+		}
 
-		// outgoing
-		foreach (s : m.at(node).second) { choices.insert(choices.end(), 5, make_pair(s, g.to(s).node)); }
+		if (choices.empty())
+			foreach (s : m.at(node).first)
+				choices.push_back({s, g.from(s).node});
 
 		assert(!choices.empty());
 
 		auto p = choices[rand()%choices.size()];
 
 		v.push_back(p.first);
+		recent.push_back(p.second);
+		if (recent.size() > 10) recent.pop_front();
 
 		node = p.second;
 	}
@@ -99,6 +108,8 @@ int main(int const argc, char const * const * const argv)
 {
 	try
 	{
+		std::srand(std::time(nullptr));
+
 		optional<Config> const config = config_from_args(argc, argv);
 		if (!config) return 0;
 
@@ -139,7 +150,7 @@ int main(int const argc, char const * const * const argv)
 			renderWindow(
 				// views:
 				{ {0, 0, 1, 1, none, 90}
-		//		, {1-.3-.02, .02, .3, .3, optional<unsigned>(0), 60}
+				, {1-.3-.02, .02, .3, .3, optional<unsigned>(0), 60}
 		//		, {.02, .02, .3, .3, optional<unsigned>(1), 60}
 				},
 

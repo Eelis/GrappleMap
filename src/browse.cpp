@@ -347,6 +347,19 @@ namespace
 
 			html << html5head << "<body style='text-align:center'><table style='margin:0px auto'><tr>";
 
+			auto transition_img = [&](SeqNum const sn, string const & inout)
+				{
+					html
+						<< "<img alt='' src='" << inout << sn.index << hc << "." << (nogifs ? "png" : "gif") << "' title='transition " << sn.index;
+						
+					if (auto ln = graph[sn].line_nr) html << " @ line " << *ln;
+					auto d = graph[sn].description;
+					d.erase(d.begin());
+					foreach (l : d) html << '\n' << replace_all(l, "'", "\\'");
+
+					html << "'>";
+				};
+
 			if (!incoming.empty())
 			{
 				html << "<td style='text-align:center;vertical-align:top'><b>Incoming transitions</b><table>\n";
@@ -366,12 +379,11 @@ namespace
 						<< replace_all(desc(graph, from), "\\n", "<br>") << "<br>"
 						<< "<img alt='' title='" << from.index << "' src='from" << sn.index << hc << ".png'>"
 						<< "</a></div> <em>via</em> <div style='display:inline-block'>"
-						<< desc(graph, sn)
-						<< "<img alt='' src='in" << sn.index << hc << "." << (nogifs ? "png" : "gif") << "' title='" << sn.index;
+						<< desc(graph, sn);
 
-					if (auto ln = graph[sn].line_nr) html << " @ " << *ln;
+					transition_img(sn, "in");
 
-					html << "'></div> <em>to</em></td></tr>";
+					html << "</div> <em>to</em></td></tr>";
 
 					auto v = frames_for_sequence(graph, sn);
 					foreach (p : v) p = reo(inverse(graph.to(sn).reorientation)(p));
@@ -431,13 +443,11 @@ namespace
 					html
 						<< "<tr><td><hr>"
 						<< "<em>via</em> <div style='display:inline-block'>"
-						<< desc(graph, sn)
-						<< "<img alt='' src='out" << sn.index << hc << "." << (nogifs ? "png" : "gif") << "' title='" << sn.index;
-						
-					if (auto ln = graph[sn].line_nr) html << " @ " << *ln;
+						<< desc(graph, sn);
+
+					transition_img(sn, "out");
 
 					html
-						<< "'>"
 						<< "</div> <em>to</em> <div style='display:inline-block'>"
 						<< "<a href='p" << to.index << hc << ".html'>"
 						<< replace_all(desc(graph, to), "\\n", "<br>") << "<br>"

@@ -273,7 +273,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					if (auto p = next(w.graph, w.location))
 					{
 						push_undo(w);
-						auto const j = apply(w.reorientation, w.closest_joint); // todo: also for KEY_J
+						auto const j = apply(w.reorientation, w.closest_joint);
 						replace(w.graph, w.location, j, w.graph[*p][j], false);
 					}
 					break;
@@ -283,7 +283,8 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					{
 						push_undo(w);
 						Position p = w.graph[w.location];
-						p[w.closest_joint] = (w.graph[*prevLoc][w.closest_joint] + w.graph[*nextLoc][w.closest_joint]) / 2;
+						auto const j = apply(w.reorientation, w.closest_joint);
+						p[j] = (w.graph[*prevLoc][j] + w.graph[*nextLoc][j]) / 2;
 						for(int i = 0; i != 30; ++i) spring(p);
 						w.graph.replace(w.location, p, false);
 					}

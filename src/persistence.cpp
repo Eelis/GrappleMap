@@ -174,17 +174,19 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 		NodeNum const n = p.first;
 		bool const highlight = p.second;
 
+		o	<< n.index << " [";
+
+		if (highlight) o << "style=filled fillcolor=lightgreen";
+
+		o	<< " label=<<TABLE BORDER=\"0\"><TR>"
+			<< "<TD HREF=\"p" << n.index <<  "n.html\">";
+
 		if (!graph[n].description.empty())
-		{
-			o	<< n.index << " [";
+			o << replace_all(graph[n].description.front(), "\\n", "<BR/>");
+		else
+			o << n.index;
 
-			if (highlight) o << "style=filled fillcolor=lightgreen";
-
-			o	<< " label=<<TABLE BORDER=\"0\"><TR>"
-				<< "<TD HREF=\"p" << n.index <<  "n.html\">"
-				<< replace_all(graph[n].description.front(), "\\n", "<BR/>")
-				<< "</TD></TR></TABLE>>];\n";
-		}
+		o << "</TD></TR></TABLE>>];\n";
 	}
 
 	foreach(s : seqnums(graph))
