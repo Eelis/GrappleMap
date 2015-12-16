@@ -22,6 +22,7 @@ using std::cout;
 using std::pair;
 using std::to_string;
 using std::make_pair;
+using std::runtime_error;
 using boost::optional;
 using boost::none;
 

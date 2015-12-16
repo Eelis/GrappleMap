@@ -98,8 +98,8 @@ inline void replace(Graph & graph, PositionInSequence const pis, PlayerJoint con
 	graph.replace(pis, p, local);
 }
 
-optional<SeqNum> seq_by_desc(Graph const &, std::string const & desc);
-optional<NodeNum> node_by_desc(Graph const &, std::string const & desc);
+optional<SeqNum> seq_by_desc(Graph const &, string const & desc);
+optional<NodeNum> node_by_desc(Graph const &, string const & desc);
 
 optional<PositionInSequence> node_as_posinseq(Graph const &, NodeNum);
 	// may return either the beginning of a sequence or the end
@@ -133,5 +133,7 @@ inline bool is_internal(Graph const & g, set<NodeNum> const & nodes, SeqNum cons
 {
 	return nodes.count(g.from(seq).node) && nodes.count(g.to(seq).node);
 }
+
+NodeNum node_by_arg(Graph const &, string const & arg);
 
 #endif

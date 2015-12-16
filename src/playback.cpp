@@ -36,7 +36,7 @@ struct Config
 	string db;
 	string script;
 	unsigned frames_per_pos;
-	NodeNum start;
+	string start;
 };
 
 optional<Config> config_from_args(int const argc, char const * const * const argv)
@@ -46,11 +46,11 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 	po::options_description desc("options");
 	desc.add_options()
 		("help", "show this help")
-		("frames-per-pos", po::value<unsigned>()->default_value(20),
+		("frames-per-pos", po::value<unsigned>()->default_value(9),
 			"number of frames rendered per position")
 		("script", po::value<string>()->default_value(string()),
 			"script file")
-		("start", po::value<uint16_t>()->default_value(0), "initial node (only used if no script given)")
+		("start", po::value<string>()->default_value("deep half"), "initial node (only used if no script given)")
 		("db", po::value<string>()->default_value("positions.txt"),
 			"position database file");
 
@@ -64,7 +64,7 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 		{ vm["db"].as<string>()
 		, vm["script"].as<string>()
 		, vm["frames-per-pos"].as<unsigned>()
-		, NodeNum{vm["start"].as<uint16_t>()} };
+		, vm["start"].as<string>() };
 }
 
 vector<SeqNum> randomScript(Graph const & g, NodeNum node, size_t size = 1000)
@@ -115,8 +115,10 @@ int main(int const argc, char const * const * const argv)
 
 		Graph const graph = loadGraph(config->db);
 
+		NodeNum start = node_by_arg(graph, config->start);
+
 		vector<SeqNum> const seqs = config->script.empty()
-			? randomScript(graph, config->start)
+			? randomScript(graph, start)
 			: readScript(graph, config->script);
 
 		if (!glfwInit()) error("could not initialize GLFW");
@@ -150,7 +152,7 @@ int main(int const argc, char const * const * const argv)
 			renderWindow(
 				// views:
 				{ {0, 0, 1, 1, none, 90}
-				, {1-.3-.02, .02, .3, .3, optional<unsigned>(0), 60}
+		//		, {1-.3-.02, .02, .3, .3, optional<unsigned>(0), 90}
 		//		, {.02, .02, .3, .3, optional<unsigned>(1), 60}
 				},
 

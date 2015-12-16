@@ -465,11 +465,6 @@ void forward(Window & w)
 	}
 }
 
-bool all_digits(string const & s)
-{
-	return all_of(s.begin(), s.end(), [](char c){return std::isdigit(c);});
-}
-
 int main(int const argc, char const * const * const argv)
 {
 	namespace po = boost::program_options;
@@ -492,16 +487,8 @@ int main(int const argc, char const * const * const argv)
 
 		string const start_str = vm["start"].as<string>();
 
-		NodeNum start_node;
+		NodeNum const start_node = node_by_arg(w.graph, start_str);
 		
-		if (all_digits(start_str))
-			start_node.index = std::stol(start_str);
-		else if (auto o = node_by_desc(w.graph, start_str))
-			start_node = *o;
-		else if (auto o = seq_by_desc(w.graph, start_str))
-			start_node = w.graph.from(*o).node; // todo: set seq directly, because node_as_posinseq below may pick another seq
-		else throw std::runtime_error("no such node");
-
 		if (auto pis = node_as_posinseq(w.graph, start_node))
 			w.location = *pis;
 		else
