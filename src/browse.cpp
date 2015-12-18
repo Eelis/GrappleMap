@@ -116,7 +116,7 @@ namespace
 			++i;
 		}
 
-		std::system(("convert -depth 8 -delay 4 -loop 0 'browse/" + name + headings[heading] + "-*.png' browse/" + name + ".gif").c_str());
+		std::system(("convert -depth 8 -delay 3 -loop 0 'browse/" + name + headings[heading] + "-*.png' browse/" + name + ".gif").c_str());
 	}
 
 	vector<Position> frames_for_sequence(Graph const & graph, SeqNum const seqNum)
@@ -169,6 +169,33 @@ namespace
 		"<meta charset='UTF-8'/>"
 		"<link rel='stylesheet' type='text/css' href='jjm.css'/>"
 		"</head>";
+
+	void write_todo(Graph const & g)
+	{
+		std::ofstream html("browse/todo.html");
+
+		html << "</ul><h2>Dead ends</h2><ul>";
+
+		auto nlspace = [](string const & s){ return replace_all(s, "\\n", " "); };
+
+		foreach(n : nodenums(g))
+			if (out(g, n).empty())
+				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g, n)) << "</a></li>";
+
+		html << "</ul><h2>Dead starts</h2><ul>";
+
+		foreach(n : nodenums(g))
+			if (in(g, n).empty())
+				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g, n)) << "</a></li>";
+
+		html << "</ul><h2>Untagged positions</h2><ul>";
+
+		foreach(n : nodenums(g))
+			if (tags(g, n).empty())
+				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g, n)) << "</a></li>";
+
+		html << "</ul></body></html>";
+	}
 
 	void write_index(Graph const & g)
 	{
@@ -502,6 +529,7 @@ int main(int const argc, char const * const * const argv)
 		glfwMakeContextCurrent(window);
 
 		write_index(graph);
+		write_todo(graph);
 
 		foreach(tag : tags(graph)) write_tag_page(graph, tag, config->nogifs);
 
