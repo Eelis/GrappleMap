@@ -1,7 +1,7 @@
 *.o
 .sconsign.dblite
-src/jjm-gui
-src/jjm-playback
-src/jjm-todot
-src/jjm-browse
+src/grapplemap-gui
+src/grapplemap-playback
+src/grapplemap-todot
+src/grapplemap-browse
 src/browse
