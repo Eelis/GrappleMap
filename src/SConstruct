@@ -7,7 +7,7 @@ gllibs = ['GL', 'GLU', 'glfw']
 cmdlibs = ['boost_program_options']
 guilibs = gllibs + cmdlibs
 
-env.Program('jjm-gui', ['gui.cpp', rendering, common], LIBS=guilibs)
-env.Program('jjm-playback', ['playback.cpp', rendering, common], LIBS=guilibs)
-env.Program('jjm-todot', ['todot.cpp', common], LIBS=cmdlibs)
-env.Program('jjm-browse', ['browse.cpp', rendering, common], LIBS=guilibs + ['png'])
+env.Program('grapplemap-gui', ['gui.cpp', rendering, common], LIBS=guilibs)
+env.Program('grapplemap-playback', ['playback.cpp', rendering, common], LIBS=guilibs)
+env.Program('grapplemap-todot', ['todot.cpp', common], LIBS=cmdlibs)
+env.Program('grapplemap-browse', ['browse.cpp', rendering, common], LIBS=guilibs + ['png'])

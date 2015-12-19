@@ -165,9 +165,8 @@ namespace
 	string const html5head =
 		"<!DOCTYPE html>"
 		"<html lang='en'>"
-		"<head><title>jjm</title>"
+		"<head><title>GrappleMap</title>"
 		"<meta charset='UTF-8'/>"
-		"<link rel='stylesheet' type='text/css' href='jjm.css'/>"
 		"</head>";
 
 	void write_todo(Graph const & g)
