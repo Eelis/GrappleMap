@@ -21,7 +21,7 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 	po::options_description desc("options");
 	desc.add_options()
 		("help", "show this help")
-		("db", po::value<std::string>()->default_value("positions.txt"), "position database file")
+		("db", po::value<std::string>()->default_value("GrappleMap.txt"), "database file")
 		("start", po::value<uint16_t>(), "start from this node")
 		("depth", po::value<uint16_t>()->default_value(2), "include nodes up to this distance away from starting nodes")
 		("tag", po::value<string>(), "start from nodes with this tag");

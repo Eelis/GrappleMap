@@ -47,8 +47,8 @@ namespace
 				po::value<uint16_t>(),
 				"only generate position page for specified position")
 			("db",
-				po::value<string>()->default_value("positions.txt"),
-				"position database file");
+				po::value<string>()->default_value("GrappleMap.txt"),
+				"database file");
 
 		po::variables_map vm;
 		po::store(po::parse_command_line(argc, argv, desc), vm);

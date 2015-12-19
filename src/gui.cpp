@@ -475,7 +475,7 @@ int main(int const argc, char const * const * const argv)
 		desc.add_options()
 			("help", "show this help")
 			("start", po::value<string>(), "initial node (by number or first line of description)")
-			("db", po::value<string>()->default_value("positions.txt"), "position database file");
+			("db", po::value<string>()->default_value("GrappleMap.txt"), "database file");
 
 		po::variables_map vm;
 		po::store(po::parse_command_line(argc, argv, desc), vm);

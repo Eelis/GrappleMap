@@ -127,7 +127,7 @@ see in top level competition.
 
 ## What is the database format?
 
-The database is a <a href='https://github.com/Eelis/GrappleMap/blob/master/positions.txt'>plain text file</a> that declares:
+The database is a <a href='https://github.com/Eelis/GrappleMap/blob/master/GrappleMap.txt'>plain text file</a> that declares:
 
 1. Positions (with name, tags, description/reference, and joint coordinates)
 

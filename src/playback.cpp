@@ -51,8 +51,7 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 		("script", po::value<string>()->default_value(string()),
 			"script file")
 		("start", po::value<string>()->default_value("deep half"), "initial node (only used if no script given)")
-		("db", po::value<string>()->default_value("positions.txt"),
-			"position database file");
+		("db", po::value<string>()->default_value("GrappleMap.txt"), "database file");
 
 	po::variables_map vm;
 	po::store(po::parse_command_line(argc, argv, desc), vm);
