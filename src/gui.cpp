@@ -487,12 +487,17 @@ int main(int const argc, char const * const * const argv)
 
 		string const start_str = vm["start"].as<string>();
 
-		NodeNum const start_node = node_by_arg(w.graph, start_str);
-		
-		if (auto pis = node_as_posinseq(w.graph, start_node))
-			w.location = *pis;
+		if (auto s = seq_by_desc(w.graph, start_str))
+			w.location = {*s, 0};
+		else if (auto n = node_by_desc(w.graph, start_str))
+		{
+			if (auto pis = node_as_posinseq(w.graph, *n))
+				w.location = *pis;
+			else
+				throw runtime_error("no transitions start or end at specified position");
+		}
 		else
-			throw std::runtime_error("cannot find sequence starting/ending at specified node");
+			throw std::runtime_error("no such position/transition");
 
 		if (!glfwInit()) return -1;
 

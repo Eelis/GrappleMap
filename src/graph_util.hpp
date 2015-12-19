@@ -134,6 +134,7 @@ inline bool is_internal(Graph const & g, set<NodeNum> const & nodes, SeqNum cons
 	return nodes.count(g.from(seq).node) && nodes.count(g.to(seq).node);
 }
 
-NodeNum node_by_arg(Graph const &, string const & arg);
+optional<SeqNum> seq_by_arg(Graph const &, string const & arg);
+optional<NodeNum> node_by_arg(Graph const &, string const & arg);
 
 #endif

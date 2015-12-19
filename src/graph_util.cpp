@@ -52,6 +52,9 @@ optional<SeqNum> seq_by_desc(Graph const & g, std::string const & desc)
 
 optional<NodeNum> node_by_desc(Graph const & g, std::string const & desc)
 {
+	if (all_digits(desc))
+		return NodeNum{uint16_t(std::stoul(desc))};
+
 	foreach(n : nodenums(g))
 	{
 		auto const & d = g[n].description;
@@ -263,16 +266,4 @@ set<NodeNum> nodes_around(Graph const & g, set<NodeNum> const & nodes, unsigned 
 	}
 
 	return r;
-}
-
-NodeNum node_by_arg(Graph const & g, std::string const & arg)
-{
-	if (all_digits(arg)) return {uint16_t(std::stol(arg))};
-
-	if (auto o = node_by_desc(g, arg)) return *o;
-
-	if (auto o = seq_by_desc(g, arg)) return g.from(*o).node;
-		// todo: set seq directly, because node_as_posinseq below may pick another seq
-
-	throw runtime_error("no such node");
 }

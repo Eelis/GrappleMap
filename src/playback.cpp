@@ -67,13 +67,15 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 		, vm["start"].as<string>() };
 }
 
-vector<SeqNum> randomScript(Graph const & g, NodeNum node, size_t size = 1000)
+vector<SeqNum> randomScript(Graph const & g, SeqNum const start, size_t size = 1000)
 {
-	vector<SeqNum> v;
+	vector<SeqNum> v{start};
 
 	auto const m = nodes(g);
 
 	std::deque<NodeNum> recent;
+
+	NodeNum node = g.to(start).node;
 
 	while (v.size() < size)
 	{
@@ -104,6 +106,15 @@ vector<SeqNum> randomScript(Graph const & g, NodeNum node, size_t size = 1000)
 	return v;
 }
 
+vector<SeqNum> randomScript(Graph const & g, NodeNum const start, size_t size = 1000)
+{
+	auto o = out(g, start);
+	if (o.empty()) throw std::runtime_error("cannot start at node without outgoing nodes");
+
+	std::random_shuffle(o.begin(), o.end());
+	return randomScript(g, o.front(), size);
+}
+
 int main(int const argc, char const * const * const argv)
 {
 	try
@@ -115,11 +126,16 @@ int main(int const argc, char const * const * const argv)
 
 		Graph const graph = loadGraph(config->db);
 
-		NodeNum start = node_by_arg(graph, config->start);
+		vector<SeqNum> seqs;
 
-		vector<SeqNum> const seqs = config->script.empty()
-			? randomScript(graph, start)
-			: readScript(graph, config->script);
+		if (!config->script.empty())
+			seqs = readScript(graph, config->script);
+		else if (optional<NodeNum> start = node_by_desc(graph, config->start))
+			seqs = randomScript(graph, *start);
+		else if (optional<SeqNum> start = seq_by_desc(graph, config->start))
+			seqs = randomScript(graph, *start);
+		else
+			throw runtime_error("no such position/transition");
 
 		if (!glfwInit()) error("could not initialize GLFW");
 
