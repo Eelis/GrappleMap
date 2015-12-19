@@ -15,6 +15,9 @@ gui
 - direction signs ("to truck", "zombie")
 - editing selected joints as a group
 
+playback
+- position showcase mode where for a given position P, all A->B->P->C->D sequences are showed, rewinding quickly after each one
+
 browseable pages:
 - find a faster tool/library for generating gifs
 - maybe embed videos encoded with e.g. x264?
