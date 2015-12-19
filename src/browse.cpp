@@ -98,6 +98,8 @@ namespace
 			boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf, width*3)));
 	}
 
+	string const output_dir = "GrappleMap/";
+
 	void make_gif(
 		GLFWwindow * const window, Graph const & graph, string const & name,
 		vector<Position> const & frames, unsigned const width, unsigned const height, unsigned const heading)
@@ -109,14 +111,14 @@ namespace
 		foreach (pos : frames)
 		{
 			std::ostringstream f;
-			f << "browse/" << name << headings[heading] << '-' << std::setw(3) << std::setfill('0') << i << ".png";
+			f << output_dir << name << headings[heading] << '-' << std::setw(3) << std::setfill('0') << i << ".png";
 
 			make_png(window, graph, f.str(), pos, width, height, heading);
 
 			++i;
 		}
 
-		std::system(("convert -depth 8 -delay 3 -loop 0 'browse/" + name + headings[heading] + "-*.png' browse/" + name + ".gif").c_str());
+		std::system(("convert -depth 8 -delay 3 -loop 0 '" + output_dir + name + headings[heading] + "-*.png' " + output_dir + name + ".gif").c_str());
 	}
 
 	vector<Position> frames_for_sequence(Graph const & graph, SeqNum const seqNum)
@@ -171,7 +173,7 @@ namespace
 
 	void write_todo(Graph const & g)
 	{
-		std::ofstream html("browse/todo.html");
+		std::ofstream html(output_dir + "todo.html");
 
 		html << "</ul><h2>Dead ends</h2><ul>";
 
@@ -198,9 +200,9 @@ namespace
 
 	void write_index(Graph const & g)
 	{
-		std::ofstream html("browse/index.html");
+		std::ofstream html(output_dir + "index.html");
 
-		html << html5head << "<body><h1>Index</h1><h2>Tags (" << tags(g).size() << ")</h2><ul>";
+		html << html5head << "<body><h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a> Index</h1><h2>Tags (" << tags(g).size() << ")</h2><ul>";
 
 		foreach(tag : tags(g))
 		{
@@ -243,8 +245,8 @@ namespace
 	string make_svg(Graph const & g, map<NodeNum, bool> const & nodes)
 	{
 		string const
-			svgpath = "browse/tmp.svg",
-			dotpath = "browse/tmp.dot";
+			svgpath = output_dir + "tmp.svg",
+			dotpath = output_dir + "tmp.dot";
 
 		{
 			std::ofstream dotfile(dotpath);
@@ -263,7 +265,7 @@ namespace
 
 	void write_tag_page(Graph const & g, string const & tag, bool const nogifs)
 	{
-		std::ofstream html("browse/tag-" + tag + ".html");
+		std::ofstream html(output_dir + "tag-" + tag + ".html");
 
 		html << html5head << "<body style='text-align:center'><h1>Tag: " << tag << "</h1><hr>";
 
@@ -367,9 +369,9 @@ namespace
 			reo.reorientation.offset.x = -center.x;
 			reo.reorientation.offset.z = -center.y;
 
-			make_png(window, graph, "browse/p" + to_string(n.index) + hc + ".png", reo(pos), 480, 360, heading);
+			make_png(window, graph, output_dir + "p" + to_string(n.index) + hc + ".png", reo(pos), 480, 360, heading);
 
-			std::ofstream html("browse/" + pname + hc + ".html");
+			std::ofstream html(output_dir + pname + hc + ".html");
 
 			html << html5head << "<body style='text-align:center'><table style='margin:0px auto'><tr>";
 
@@ -416,7 +418,7 @@ namespace
 					assert(basicallySame(v.back(), reo(pos)));
 
 					auto const p = v.front();
-					make_png(window, graph, "browse/from" + to_string(sn.index) + hc + ".png", p, 160, 120, heading);
+					make_png(window, graph, output_dir + "from" + to_string(sn.index) + hc + ".png", p, 160, 120, heading);
 
 					if (!nogifs)
 					{
@@ -424,7 +426,7 @@ namespace
 						make_gif(window, graph, "in" + to_string(sn.index) + hc, v, 160, 120, heading);
 					}
 					else
-						make_png(window, graph, "browse/in" + to_string(sn.index) + hc + ".png", v[v.size() / 2], 160, 120, heading);
+						make_png(window, graph, output_dir + "in" + to_string(sn.index) + hc + ".png", v[v.size() / 2], 160, 120, heading);
 				}
 
 				html << "</table></td>";
@@ -485,7 +487,7 @@ namespace
 					assert(basicallySame(v.front(), reo(pos)));
 
 					auto const p = v.back();
-					make_png(window, graph, "browse/to" + to_string(sn.index) + hc + ".png", p, 160, 120, heading);
+					make_png(window, graph, output_dir + "to" + to_string(sn.index) + hc + ".png", p, 160, 120, heading);
 
 					if (!nogifs)
 					{
@@ -493,7 +495,7 @@ namespace
 						make_gif(window, graph, "out" + to_string(sn.index) + hc, v, 160, 120, heading);
 					}
 					else
-						make_png(window, graph, "browse/out" + to_string(sn.index) + hc + ".png", v[v.size() / 2], 160, 120, heading);
+						make_png(window, graph, output_dir + "out" + to_string(sn.index) + hc + ".png", v[v.size() / 2], 160, 120, heading);
 				}
 
 				html << "</table></td>";
