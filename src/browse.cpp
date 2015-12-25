@@ -69,7 +69,6 @@ namespace
 
 	void make_png(GLFWwindow * const window, Graph const & graph, std::string const & name, Position const & pos, unsigned const width, unsigned const height, unsigned const heading)
 	{
-
 		double ymax = 0.6;
 		foreach (j : playerJoints) ymax = std::max(ymax, pos[j].y);
 
@@ -77,6 +76,7 @@ namespace
 		camera.hardSetOffset({0, ymax - 0.6, 0});
 		camera.zoom(0.6);
 		camera.rotateHorizontal(M_PI * 0.5 * heading);
+		camera.rotateVertical((ymax - 0.6)/2);
 
 		Style style;
 		style.background_color = white;
@@ -175,13 +175,16 @@ namespace
 		"<meta charset='UTF-8'/>"
 		"</head>";
 
+	string nlspace(string const & s)
+	{
+		return replace_all(s, "\\n", " ");
+	}
+
 	void write_todo(Graph const & g)
 	{
 		std::ofstream html(output_dir + "todo.html");
 
 		html << "</ul><h2>Dead ends</h2><ul>";
-
-		auto nlspace = [](string const & s){ return replace_all(s, "\\n", " "); };
 
 		foreach(n : nodenums(g))
 			if (out(g, n).empty())
@@ -214,12 +217,13 @@ namespace
 			foreach(n : tagged_nodes(g, tag)) s.insert(n);
 				// i can't figure out how to get the size of the tagged_nodes result directly
 
-			html << "<li><a href='tag-" << tag << ".html'>" << tag << "</a> (" << s.size() << ")</li>";
+			set<SeqNum> t;
+			foreach(n : tagged_sequences(g, tag)) t.insert(n);
+
+			html << "<li><a href='tag-" << tag << ".html'>" << tag << "</a> (" << s.size() << " positions, " << t.size() << " transitions)</li>";
 		}
 
 		html << "</ul><h2>Positions (" << g.num_nodes() << ")</h2><ul>";
-
-		auto nlspace = [](string const & s){ return replace_all(s, "\\n", " "); };
 
 		foreach(n : nodenums(g))
 			html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g, n)) << "</a></li>";
@@ -271,10 +275,10 @@ namespace
 	{
 		std::ofstream html(output_dir + "tag-" + tag + ".html");
 
-		html << html5head << "<body style='text-align:center'><h1>Tag: " << tag << "</h1><hr>";
+		html << html5head << "<body style='text-align:center'><h1>Tag: " << tag << "</h1>";
+		html << "<a href='index.html'>Index</a>";
 
 		// positions
-
 
 		set<NodeNum> nodes;
 		foreach(n : tagged_nodes(g, tag))
@@ -282,59 +286,63 @@ namespace
 
 		if (!nodes.empty())
 		{
-			html << "<h2>Positions</h2><p>Positions tagged '" << tag << "'</p>";
+			html << "<hr><h2>Positions</h2><p>Positions tagged '" << tag << "'</p>";
 
 			foreach(n : nodes)
 				html
 					<< "<div style='display:inline-block;text-align:center'>"
 					<< "<a href='p" << n.index << "e.html'>"
-					<< replace_all(desc(g, n), "\\n", "<br>") << "<br>"
-					<< "<img alt='' title='" << n.index << "' src='p" << n.index << "w.png'></a>"
-					<< "</div>";
+					<< nlspace(desc(g, n)) << "<br>"
+					<< "<img alt='' title='" << n.index << "' src='p" << n.index << "w.png'>"
+					<< "</a></div>";
 
 			html << "<br>";
 		}
-
-		html << "<a href='index.html'>Index</a>";
 
 		map<NodeNum, bool> m;
 		foreach(n : nodes) m[n] = true;
 		foreach(n : nodes_around(g, nodes)) m[n] = false;
 
-
 		// transitions
 
-		html << "<hr><h2>Transitions</h2><p>Transitions that either go from one position tagged '" << tag << "' to another, or are themselves tagged '" << tag << "'</p><table style='margin:0px auto'>\n";
+		set<SeqNum> seqs;
+		foreach(sn : tagged_sequences(g, tag))
+			seqs.insert(sn);
 
-		foreach(sn : seqnums(g))
-			if (is_internal(g, nodes, sn) || tags_in_desc(g[sn].description).count(tag) != 0)
-			{
-				auto const
-					from = g.from(sn).node,
-					to = g.to(sn).node;
+		if (!seqs.empty())
+		{
+			html << "<hr><h2>Transitions</h2><p>Transitions that either go from one position tagged '" << tag << "' to another, or are themselves tagged '" << tag << "'</p><table style='margin:0px auto'>\n";
 
-				html
-					<< "<tr><td style='text-align:right'><em>from</em> "
-					<< "<a href='p" << from.index << "w.html'>"
-					<< replace_all(desc(g, from), "\\n", " ")
-					<< "</a> <em>via</em></td>"
-					<< "<td><div style='display:inline-block'>"
-					<< desc(g, sn)
-					<< "<img alt='' src='in" << sn.index << "w." << (nogifs ? "png" : "gif") << "' title='" << sn.index;
+			foreach(sn : seqs)
+				if (is_tagged(g, tag, sn))
+				{
+					auto const
+						from = g.from(sn).node,
+						to = g.to(sn).node;
 
-				if (auto ln = g[sn].line_nr) html << " @ " << *ln;
+					html
+						<< "<tr><td style='text-align:right'><em>from</em> "
+						<< "<a href='p" << from.index << "w.html'>"
+						<< replace_all(desc(g, from), "\\n", " ")
+						<< "</a> <em>via</em></td>"
+						<< "<td><div style='display:inline-block'>"
+						<< desc(g, sn)
+						<< "<img alt='' src='in" << sn.index << "w." << (nogifs ? "png" : "gif") << "' title='" << sn.index;
 
-				html
-					<< "'></div></td><td style='text-align:left'><em>to</em> "
-					<< "<a href='p" << to.index << "w.html'>"
-					<< replace_all(desc(g, to), "\\n", " ")
-					<< "</a>";
-				
-				html << "</td></tr>";
-			}
+					if (auto ln = g[sn].line_nr) html << " @ " << *ln;
 
-		html << "</table>";
+					html
+						<< "'></div></td><td style='text-align:left'><em>to</em> "
+						<< "<a href='p" << to.index << "w.html'>"
+						<< replace_all(desc(g, to), "\\n", " ")
+						<< "</a>";
+					
+					html << "</td></tr>";
+				}
 
+			html << "</table>";
+
+		}
 
 		html
 			<< "<hr><h2>Neighbourhood</h2>"
@@ -463,7 +471,7 @@ namespace
 				html << "<br><br>";
 			}
 
-			html << "<a href='index.html'>Index</a></td>";
+			html << "(<a href='index.html'>Index</a>)</td>";
 
 			if (!outgoing.empty())
 			{

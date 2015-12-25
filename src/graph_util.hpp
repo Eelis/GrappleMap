@@ -118,21 +118,33 @@ inline optional<NodeNum> node_at(Graph const & g, PositionInSequence const pis)
 set<string> tags(Graph const &);
 set<string> tags_in_desc(vector<string> const &);
 
+inline bool is_tagged(Graph const & g, string const & tag, NodeNum const n)
+{
+	return tags_in_desc(g[n].description).count(tag) != 0;
+}
+
+inline bool is_tagged(Graph const & g, string const & tag, SeqNum const sn)
+{
+	return tags_in_desc(g[sn].description).count(tag) != 0
+		|| (is_tagged(g, tag, g.from(sn).node)
+		&& is_tagged(g, tag, g.to(sn).node));
+}
+
 inline auto tagged_nodes(Graph const & g, string const & tag)
 {
-	using boost::adaptors::filtered;
-	return nodenums(g) | filtered(
-		[&](NodeNum const & n){ return tags_in_desc(g[n].description).count(tag) != 0; });
+	return nodenums(g) | boost::adaptors::filtered(
+		[&](NodeNum n){ return is_tagged(g, tag, n); });
+}
+
+inline auto tagged_sequences(Graph const & g, string const & tag)
+{
+	return seqnums(g) | boost::adaptors::filtered(
+		[&](SeqNum n){ return is_tagged(g, tag, n); });
 }
 
 set<NodeNum> nodes_around(Graph const &, set<NodeNum> const &, unsigned depth = 1);
 
 set<NodeNum> grow(Graph const &, set<NodeNum>, unsigned depth);
-
-inline bool is_internal(Graph const & g, set<NodeNum> const & nodes, SeqNum const seq)
-{
-	return nodes.count(g.from(seq).node) && nodes.count(g.to(seq).node);
-}
 
 optional<SeqNum> seq_by_arg(Graph const &, string const & arg);
 optional<NodeNum> node_by_arg(Graph const &, string const & arg);
