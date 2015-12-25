@@ -28,3 +28,4 @@ browseable pages:
 - nice urls for position pages
 - submission indicators in browsable pages
 - investigate graphviz alternatives
+- take tagged transitions into account in neighbourhood graphs on tag pages

@@ -275,27 +275,32 @@ namespace
 
 		// positions
 
-		html << "<h2>Positions</h2><p>Positions tagged '" << tag << "'</p>";
 
 		set<NodeNum> nodes;
-
 		foreach(n : tagged_nodes(g, tag))
-		{
-			html
-				<< "<div style='display:inline-block;text-align:center'>"
-				<< "<a href='p" << n.index << "e.html'>"
-				<< replace_all(desc(g, n), "\\n", "<br>") << "<br>"
-				<< "<img alt='' title='" << n.index << "' src='p" << n.index << "w.png'></a>"
-				<< "</div>";
-
 			nodes.insert(n);
+
+		if (!nodes.empty())
+		{
+			html << "<h2>Positions</h2><p>Positions tagged '" << tag << "'</p>";
+
+			foreach(n : nodes)
+				html
+					<< "<div style='display:inline-block;text-align:center'>"
+					<< "<a href='p" << n.index << "e.html'>"
+					<< replace_all(desc(g, n), "\\n", "<br>") << "<br>"
+					<< "<img alt='' title='" << n.index << "' src='p" << n.index << "w.png'></a>"
+					<< "</div>";
+
+			html << "<br>";
 		}
+
+		html << "<a href='index.html'>Index</a>";
 
 		map<NodeNum, bool> m;
 		foreach(n : nodes) m[n] = true;
 		foreach(n : nodes_around(g, nodes)) m[n] = false;
 
-		html << "<br><a href='index.html'>Index</a>";
 
 		// transitions
 
