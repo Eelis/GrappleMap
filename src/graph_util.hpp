@@ -116,13 +116,13 @@ inline optional<NodeNum> node_at(Graph const & g, PositionInSequence const pis)
 }
 
 set<string> tags(Graph const &);
-set<string> tags(Graph const &, NodeNum const &);
+set<string> tags_in_desc(vector<string> const &);
 
 inline auto tagged_nodes(Graph const & g, string const & tag)
 {
 	using boost::adaptors::filtered;
 	return nodenums(g) | filtered(
-		[&](NodeNum const & n){ return tags(g, n).count(tag) != 0; });
+		[&](NodeNum const & n){ return tags_in_desc(g[n].description).count(tag) != 0; });
 }
 
 set<NodeNum> nodes_around(Graph const &, set<NodeNum> const &, unsigned depth = 1);

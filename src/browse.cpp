@@ -196,7 +196,7 @@ namespace
 		html << "</ul><h2>Untagged positions</h2><ul>";
 
 		foreach(n : nodenums(g))
-			if (tags(g, n).empty())
+			if (tags_in_desc(g[n].description).empty())
 				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g, n)) << "</a></li>";
 
 		html << "</ul></body></html>";
@@ -299,10 +299,10 @@ namespace
 
 		// transitions
 
-		html << "<hr><h2>Transitions</h2><p>Transitions that preserve the '" << tag << "' tag</p><table style='margin:0px auto'>\n";
+		html << "<hr><h2>Transitions</h2><p>Transitions that either go from one position tagged '" << tag << "' to another, or are themselves tagged '" << tag << "'</p><table style='margin:0px auto'>\n";
 
 		foreach(sn : seqnums(g))
-			if (is_internal(g, nodes, sn))
+			if (is_internal(g, nodes, sn) || tags_in_desc(g[sn].description).count(tag) != 0)
 			{
 				auto const
 					from = g.from(sn).node,
@@ -447,12 +447,12 @@ namespace
 				<< "<a href='" << pname << next_heading << ".html'>↺</a> "
 				<< "</h1>";
 			
-			auto const t = tags(graph, n);
+			auto const t = tags_in_desc(graph[n].description);
 			if (!t.empty())
 			{
 				html << "Tags:";
 
-				foreach(tag : tags(graph, n))
+				foreach(tag : t)
 					html << " <a href='tag-" << tag << ".html'>" << tag << "</a>";
 
 				html << "<br><br>";

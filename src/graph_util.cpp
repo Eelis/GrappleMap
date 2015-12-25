@@ -184,10 +184,8 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 	return {positions, m};
 }
 
-set<string> tags(Graph const & g, NodeNum const & n)
+set<string> tags_in_desc(vector<string> const & desc)
 {
-	vector<string> const & desc = g[n].description;
-
 	set<string> r;
 
 	foreach(line : desc)
@@ -207,9 +205,8 @@ set<string> tags(Graph const & g)
 {
 	set<string> r;
 
-	foreach(n : nodenums(g))
-		foreach(t : tags(g, n))
-			r.insert(t);
+	foreach(n : nodenums(g)) foreach(t : tags_in_desc(g[n].description)) r.insert(t);
+	foreach(s : seqnums(g)) foreach(t : tags_in_desc(g[s].description)) r.insert(t);
 
 	return r;
 }
