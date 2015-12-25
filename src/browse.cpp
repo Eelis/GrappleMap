@@ -69,9 +69,13 @@ namespace
 
 	void make_png(GLFWwindow * const window, Graph const & graph, std::string const & name, Position const & pos, unsigned const width, unsigned const height, unsigned const heading)
 	{
-		Camera camera;
-		camera.zoom(0.6);
 
+		double ymax = 0.6;
+		foreach (j : playerJoints) ymax = std::max(ymax, pos[j].y);
+
+		Camera camera;
+		camera.hardSetOffset({0, ymax - 0.6, 0});
+		camera.zoom(0.6);
 		camera.rotateHorizontal(M_PI * 0.5 * heading);
 
 		Style style;

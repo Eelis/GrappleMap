@@ -47,13 +47,13 @@ inline M xrot(double a)
 		, 0, 0, 0, 1 };
 }
 
-inline M translate(double x, double y, double z)
+inline M translate(V3 v)
 {
 	return {
 		{ 1, 0, 0, 0
 		, 0, 1, 0, 0
 		, 0, 0, 1, 0
-		, x, y, z, 1 }};
+		, v.x, v.y, v.z, 1 }};
 }
 
 inline V3 cross(V3 a, V3 b)
