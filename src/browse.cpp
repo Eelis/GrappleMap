@@ -212,7 +212,11 @@ namespace
 		std::ofstream html(output_dir + "index.html");
 
 		html
-			<< html5head << "<body style='vertical-align:top'><h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a> Index</h1>"
+			<< html5head
+			<< "<body style='vertical-align:top;text-align:center'>"
+			<< "<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>"
+			<< "<video autoplay loop><source src='random.mp4' type='video/mp4'></video>"
+			<< "<br><br><h1>Index</h1><hr>"
 			<< "<table><tr><td style='vertical-align:top;padding:50px'>"
 			<< "<h2>Tags (" << tags(g).size() << ")</h2>"
 			<< "<table style='display:inline-block;border:solid 1px' class='sortable'>"

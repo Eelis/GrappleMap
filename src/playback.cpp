@@ -68,6 +68,7 @@ struct Config
 	string db;
 	string script;
 	unsigned frames_per_pos;
+	unsigned num_transitions;
 	string start;
 	optional<string /* seq desc */> demo;
 };
@@ -84,6 +85,7 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 		("script", po::value<string>()->default_value(string()),
 			"script file")
 		("start", po::value<string>()->default_value("deep half"), "initial node (only used if no script given)")
+		("length", po::value<unsigned>()->default_value(50), "number of transitions")
 		("db", po::value<string>()->default_value("GrappleMap.txt"), "database file")
 		("demo", po::value<string>(), "show all chains of three transitions that have the given transition in the middle");
 
@@ -97,13 +99,34 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 		{ vm["db"].as<string>()
 		, vm["script"].as<string>()
 		, vm["frames-per-pos"].as<unsigned>()
+		, vm["length"].as<unsigned>()
 		, vm["start"].as<string>()
 		, vm.count("demo") ? optional<string>(vm["demo"].as<string>()) : boost::none};
 }
 
-Script randomScript(Graph const & g, SeqNum const start, size_t size = 1000)
+bool dfsScene(Graph const & g, NodeNum const n, size_t const size, Scene & scene)
 {
-	vector<SeqNum> v{start};
+	if (size == 0) return true;
+
+	foreach (s : out(g, n))
+	{
+		if (find(scene.begin(), scene.end(), s) != scene.end()) continue;
+
+		scene.push_back(s);
+
+		if (dfsScene(g, g.to(s).node, size - 1, scene))
+			return true;
+
+		scene.pop_back();
+	}
+
+	return false;
+}
+
+/*
+Scene randomScene(Graph const & g, SeqNum const start, size_t const size)
+{
+	Scene v{start};
 
 	auto const m = nodes(g);
 
@@ -137,17 +160,34 @@ Script randomScript(Graph const & g, SeqNum const start, size_t size = 1000)
 		node = p.second;
 	}
 
-	return {v};
+	return v;
+}
+*/
+
+Scene randomScene(Graph const & g, NodeNum const start, size_t const size)
+{
+	Scene s;
+
+	if (!dfsScene(g, start, size, s))
+		throw runtime_error("could not find sequence");
+
+	set<SeqNum> ss;
+	foreach (x : s) ss.insert(x);
+	std::cout << ss.size() << " unique sequences\n";
+
+	return s;
 }
 
-Script randomScript(Graph const & g, NodeNum const start, size_t size = 1000)
+/*
+Scene randomScene(Graph const & g, NodeNum const start, size_t const size)
 {
 	auto o = out(g, start);
 	if (o.empty()) throw runtime_error("cannot start at node without outgoing nodes");
 
 	std::random_shuffle(o.begin(), o.end());
-	return randomScript(g, o.front(), size);
+	return randomScene(g, o.front(), size);
 }
+*/
 
 Frames demoFrames(Graph const & g, SeqNum const s, unsigned const frames_per_pos)
 {
@@ -195,9 +235,9 @@ int main(int const argc, char const * const * const argv)
 		else if (!config->script.empty())
 			fr = frames(graph, readScript(graph, config->script), config->frames_per_pos);
 		else if (optional<NodeNum> start = node_by_desc(graph, config->start))
-			fr = frames(graph, randomScript(graph, *start), config->frames_per_pos);
-		else if (optional<SeqNum> start = seq_by_desc(graph, config->start))
-			fr = frames(graph, randomScript(graph, *start), config->frames_per_pos);
+			fr = frames(graph, Scene{randomScene(graph, *start, config->num_transitions)}, config->frames_per_pos);
+//		else if (optional<SeqNum> start = seq_by_desc(graph, config->start))
+//			fr = frames(graph, Scene{randomScene(graph, *start, config->num_transitions)}, config->frames_per_pos);
 		else
 			throw runtime_error("no such position/transition");
 
@@ -211,6 +251,8 @@ int main(int const argc, char const * const * const argv)
 
 		Camera camera;
 		Style style;
+		style.background_color = white;
+		camera.zoom(-.3);
 
 		string const separator = "      ";
 
@@ -254,7 +296,7 @@ int main(int const argc, char const * const * const argv)
 					false, // not edit mode
 					width, height, {0} /* todo */, style);
 
-				renderText(style.sequenceFont, textpos, caption);
+				//renderText(style.sequenceFont, textpos, caption);
 				textpos.x -= textwidth / (i->second.size()-1);
 
 				glfwSwapBuffers(window);
