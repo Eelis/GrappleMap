@@ -12,23 +12,55 @@
 #include <vector>
 #include <fstream>
 
-vector<Position> frames(Graph const & g, vector<SeqNum> const & seqs, unsigned const frames_per_pos)
+using Frames = vector<pair<string, vector<Position>>>;
+
+Frames frames(Graph const & g, Scene const & scene, unsigned const frames_per_pos)
 {
-	vector<Position> r;
+	Frames r;
 
 	ReorientedNode n =
-		g.to(seqs.front()).node == g.from(seqs[1]).node
-			? g.from(seqs.front())
-			: g.to(seqs.front());
+		g.to(scene.front()).node == g.from(scene[1]).node
+			? g.from(scene.front())
+			: g.to(scene.front());
 
-	foreach (s : seqs)
+	auto d = [&](SeqNum seq)
+		{
+			string desc = g[seq].description.front();
+			if (desc == "...") desc = g[g.to(seq).node].description.front();
+			desc = replace_all(desc, "\\n", " ");
+			return desc;
+		};
+
+	auto i = scene.begin();
+
+	for (; i != scene.end(); ++i)
 	{
-		pair<vector<Position>, ReorientedNode> p = follow(g, n, s, frames_per_pos);
-		r.insert(r.end(), p.first.begin(), p.first.end());
+		SeqNum const seq = *i;
+
+		pair<vector<Position>, ReorientedNode> p = follow(g, n, seq, frames_per_pos);
+
+		p.first.pop_back();
+
+		r.emplace_back(d(*i), p.first);
+
 		n = p.second;
 	}
 
 	return r;
+}
+
+Frames frames(Graph const & g, Script const & script, unsigned const frames_per_pos)
+{
+	Frames full;
+
+	foreach (scene : script)
+	{
+		Frames r = frames(g, scene, frames_per_pos);
+
+		full.insert(full.end(), r.begin(), r.end());
+	}
+
+	return full;
 }
 
 struct Config
@@ -37,6 +69,7 @@ struct Config
 	string script;
 	unsigned frames_per_pos;
 	string start;
+	optional<string /* seq desc */> demo;
 };
 
 optional<Config> config_from_args(int const argc, char const * const * const argv)
@@ -51,7 +84,8 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 		("script", po::value<string>()->default_value(string()),
 			"script file")
 		("start", po::value<string>()->default_value("deep half"), "initial node (only used if no script given)")
-		("db", po::value<string>()->default_value("GrappleMap.txt"), "database file");
+		("db", po::value<string>()->default_value("GrappleMap.txt"), "database file")
+		("demo", po::value<string>(), "show all chains of three transitions that have the given transition in the middle");
 
 	po::variables_map vm;
 	po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -63,10 +97,11 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 		{ vm["db"].as<string>()
 		, vm["script"].as<string>()
 		, vm["frames-per-pos"].as<unsigned>()
-		, vm["start"].as<string>() };
+		, vm["start"].as<string>()
+		, vm.count("demo") ? optional<string>(vm["demo"].as<string>()) : boost::none};
 }
 
-vector<SeqNum> randomScript(Graph const & g, SeqNum const start, size_t size = 1000)
+Script randomScript(Graph const & g, SeqNum const start, size_t size = 1000)
 {
 	vector<SeqNum> v{start};
 
@@ -102,17 +137,35 @@ vector<SeqNum> randomScript(Graph const & g, SeqNum const start, size_t size = 1
 		node = p.second;
 	}
 
-	return v;
+	return {v};
 }
 
-vector<SeqNum> randomScript(Graph const & g, NodeNum const start, size_t size = 1000)
+Script randomScript(Graph const & g, NodeNum const start, size_t size = 1000)
 {
 	auto o = out(g, start);
-	if (o.empty()) throw std::runtime_error("cannot start at node without outgoing nodes");
+	if (o.empty()) throw runtime_error("cannot start at node without outgoing nodes");
 
 	std::random_shuffle(o.begin(), o.end());
 	return randomScript(g, o.front(), size);
 }
+
+Frames demoFrames(Graph const & g, SeqNum const s, unsigned const frames_per_pos)
+{
+	Frames f;
+
+	foreach (x : in(g, g.from(s).node))
+	foreach (y : out(g, g.to(s).node))
+	{
+		auto scene = {x, s, y};
+		Frames const x = frames(g, scene, frames_per_pos);
+		f.push_back({"      ", vector<Position>(70, x.front().second.front())});
+		f.insert(f.end(), x.begin(), x.end());
+		f.push_back({"      ", vector<Position>(70, x.back().second.back())});
+	}
+
+	return f;
+}
+
 
 int main(int const argc, char const * const * const argv)
 {
@@ -125,14 +178,26 @@ int main(int const argc, char const * const * const argv)
 
 		Graph const graph = loadGraph(config->db);
 
-		vector<SeqNum> seqs;
+		Frames fr;
 
-		if (!config->script.empty())
-			seqs = readScript(graph, config->script);
+		if (config->demo)
+		{
+			SeqNum seq;
+			
+			if (all_digits(*config->demo))
+				seq = SeqNum{uint16_t(std::stoul(*config->demo))};
+			else if (auto o = seq_by_desc(graph, *config->demo))
+				seq = *o;
+			else throw runtime_error("no such transition");
+
+			fr = demoFrames(graph, seq, config->frames_per_pos);
+		}
+		else if (!config->script.empty())
+			fr = frames(graph, readScript(graph, config->script), config->frames_per_pos);
 		else if (optional<NodeNum> start = node_by_desc(graph, config->start))
-			seqs = randomScript(graph, *start);
+			fr = frames(graph, randomScript(graph, *start), config->frames_per_pos);
 		else if (optional<SeqNum> start = seq_by_desc(graph, config->start))
-			seqs = randomScript(graph, *start);
+			fr = frames(graph, randomScript(graph, *start), config->frames_per_pos);
 		else
 			throw runtime_error("no such position/transition");
 
@@ -145,37 +210,56 @@ int main(int const argc, char const * const * const argv)
 		glfwSwapInterval(1);
 
 		Camera camera;
+		Style style;
 
-		for (Position const & pos : frames(graph, seqs, config->frames_per_pos))
+		string const separator = "      ";
+
+		for (auto i = fr.begin(); i != fr.end(); ++i)
 		{
-			glfwPollEvents();
-			if (glfwWindowShouldClose(window)) return 0;
+			double const textwidth = style.sequenceFont.Advance((i->first + separator).c_str(), -1);
+			V2 textpos{10,20};
 
-			camera.rotateHorizontal(-0.005);
-			camera.setOffset(xz(between(pos[0][Core], pos[1][Core])));
+			string caption = i->first;
+			for (auto j = i+1; j != i + std::min(fr.end() - i, 6l); ++j)
+				caption += separator + j->first;
 
-			if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) camera.rotateVertical(-0.05);
-			if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) camera.rotateVertical(0.05);
-			if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) camera.rotateHorizontal(-0.03);
-			if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) camera.rotateHorizontal(0.03);
-			if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) camera.zoom(-0.05);
-			if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) camera.zoom(0.05);
+			foreach (pos : i->second)
+			{
+				glfwPollEvents();
+				if (glfwWindowShouldClose(window)) return 0;
 
-			int width, height;
-			glfwGetFramebufferSize(window, &width, &height);
+				camera.rotateHorizontal(-0.005);
+				camera.setOffset(xz(between(pos[0][Core], pos[1][Core])));
 
-			renderWindow(
-				// views:
-				{ {0, 0, 1, 1, none, 90}
-		//		, {1-.3-.02, .02, .3, .3, optional<unsigned>(0), 90}
-		//		, {.02, .02, .3, .3, optional<unsigned>(1), 60}
-				},
+				if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) camera.rotateVertical(-0.05);
+				if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) camera.rotateVertical(0.05);
+				if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) camera.rotateHorizontal(-0.03);
+				if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) camera.rotateHorizontal(0.03);
+				if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) camera.zoom(-0.05);
+				if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) camera.zoom(0.05);
 
-				nullptr, // no viables
-				graph, window, pos, camera,
-				none, // no highlighted joint
-				false, // not edit mode
-				width, height, {0});
+				int width, height;
+				glfwGetFramebufferSize(window, &width, &height);
+
+				renderWindow(
+					// views:
+					{ {0, 0, 1, 1, none, 90}
+			//		, {1-.3-.02, .02, .3, .3, optional<unsigned>(0), 90}
+			//		, {.02, .02, .3, .3, optional<unsigned>(1), 60}
+					},
+
+					nullptr, // no viables
+					graph, window, pos, camera,
+					none, // no highlighted joint
+					false, // not edit mode
+					width, height, {0} /* todo */, style);
+
+				renderText(style.sequenceFont, textpos, caption);
+				textpos.x -= textwidth / (i->second.size()-1);
+
+				glfwSwapBuffers(window);
+			}
+
 		}
 
 		sleep(2);

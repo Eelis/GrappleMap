@@ -69,8 +69,7 @@ namespace
 
 	void make_png(GLFWwindow * const window, Graph const & graph, std::string const & name, Position const & pos, unsigned const width, unsigned const height, unsigned const heading)
 	{
-		double ymax = 0.6;
-		foreach (j : playerJoints) ymax = std::max(ymax, pos[j].y);
+		double const ymax = std::max(.8, std::max(pos[0][Head].y, pos[1][Head].y));
 
 		Camera camera;
 		camera.hardSetOffset({0, ymax - 0.6, 0});
@@ -90,6 +89,8 @@ namespace
 			width, height,
 			{0},
 			style);
+
+		glfwSwapBuffers(window);
 
 		boost::gil::rgb8_pixel_t buf[width * height];
 
@@ -173,6 +174,7 @@ namespace
 		"<html lang='en'>"
 		"<head><title>GrappleMap</title>"
 		"<meta charset='UTF-8'/>"
+		"<script src='sorttable.js'></script>"
 		"</head>";
 
 	string nlspace(string const & s)
@@ -209,7 +211,12 @@ namespace
 	{
 		std::ofstream html(output_dir + "index.html");
 
-		html << html5head << "<body><h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a> Index</h1><h2>Tags (" << tags(g).size() << ")</h2><ul>";
+		html
+			<< html5head << "<body style='vertical-align:top'><h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a> Index</h1>"
+			<< "<table><tr><td style='vertical-align:top;padding:50px'>"
+			<< "<h2>Tags (" << tags(g).size() << ")</h2>"
+			<< "<table style='display:inline-block;border:solid 1px' class='sortable'>"
+			<< "<tr><th>Tag</th><th>Positions</th><th>Transitions</th></tr>";
 
 		foreach(tag : tags(g))
 		{
@@ -220,34 +227,50 @@ namespace
 			set<SeqNum> t;
 			foreach(n : tagged_sequences(g, tag)) t.insert(n);
 
-			html << "<li><a href='tag-" << tag << ".html'>" << tag << "</a> (" << s.size() << " positions, " << t.size() << " transitions)</li>";
+			html
+				<< "<tr>"
+				<< "<td><a href='tag-" << tag << ".html'>" << tag << "</a></td>"
+				<< "<td>" << s.size() << "</td>"
+				<< "<td>" << t.size() << "</td>"
+				<< "</tr>";
 		}
 
-		html << "</ul><h2>Positions (" << g.num_nodes() << ")</h2><ul>";
+		html
+			<< "</table></td><td style='padding:50px'>"
+			<< "<h2>Positions (" << g.num_nodes() << ")</h2>"
+			<< "<table style='display:inline-block;border: solid 1px' class='sortable'>"
+			<< "<tr><th>Name</th><th>Incoming</th><th>Outgoing</th><th>Tags</th></tr>";
+
 
 		foreach(n : nodenums(g))
-			html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g, n)) << "</a></li>";
+			html
+				<< "<tr>"
+				<< "<td><a href='p" << n.index << "n.html'>" << nlspace(desc(g, n)) << "</a></td>"
+				<< "<td>" << in(g, n).size() << "</td>"
+				<< "<td>" << out(g, n).size() << "</td>"
+				<< "<td>" << tags_in_desc(g[n].description).size() << "</td>"
+				<< "</tr>";
 
-		html << "</ul><h2>Transitions (" << g.num_sequences() << ")</h2><ul>";
+		html
+			<< "</table></td></tr></table>"
+			<< "<h2>Transitions (" << g.num_sequences() << ")</h2>";
+
+		html << "<table style='border: solid 1px' class='sortable'><tr><th>From</th><th>Via</th><th>To</th><th>Frames</th></tr>";
 
 		foreach(s : seqnums(g))
 		{
 			html
-				<< "<li><em>from</em>"
-				<< " <a href='p" << g.from(s).node.index << "n.html'>" << nlspace(desc(g, g.from(s).node)) << "</a>";
-
-			if (g[s].description.front() != "...")
-				html
-					<< " <em>via</em> "
-					<< "<b>" << nlspace(g[s].description.front()) << "</b>";
-
-			html
-				<< " <em>to</em>"
-				<< " <a href='p" << g.to(s).node.index << "n.html'>" << nlspace(desc(g, g.to(s).node)) << "</a>"
-				<< "</li>";
+				<< "<tr>"
+				<< "<td><a href='p" << g.from(s).node.index << "n.html'>" << nlspace(desc(g, g.from(s).node)) << "</a></td>"
+				<< "<td><b>" << nlspace(g[s].description.front()) << "</b></td>"
+				<< "<td><a href='p" << g.to(s).node.index << "n.html'>" << nlspace(desc(g, g.to(s).node)) << "</a></td>"
+				<< "<td>" << g[s].positions.size() << "</td>"
+				<< "</tr>";
 		}
 
-		html << "</ul></body></html>";
+		html << "</table>";
+
+		html << "</body></html>";
 	}
 
 	string make_svg(Graph const & g, map<NodeNum, bool> const & nodes)

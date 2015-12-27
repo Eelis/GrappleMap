@@ -3,6 +3,7 @@
 #include "graph.hpp"
 #include "camera.hpp"
 #include <GLFW/glfw3.h>
+#include <FTGL/ftgl.h>
 
 namespace
 {
@@ -66,7 +67,8 @@ namespace
 
 	void render(Viables const * const viables, Position const & pos,
 		optional<PlayerJoint> const highlight_joint,
-		optional<PlayerNum> const first_person_player, bool const edit_mode)
+		optional<PlayerNum> const first_person_player, bool const edit_mode,
+		Camera const & camera, Style const & style)
 	{
 		// draw limbs:
 
@@ -117,7 +119,8 @@ namespace
 		}
 	}
 
-	void drawViables(Graph const & graph, Viables const & viable, PlayerJoint const j, SeqNum const current_sequence)
+	void drawViables(Graph const & graph, Viables const & viable, PlayerJoint const j, SeqNum const current_sequence,
+		Camera const & camera, Style const & style, bool const edit_mode)
 	{
 		foreach (v : viable[j].viables)
 		{
@@ -145,8 +148,27 @@ namespace
 					glVertex(apply(r, seq[i], j));
 			glEnd();
 			glEnable(GL_DEPTH_TEST);
+
+			if (edit_mode && v.second.seqNum == current_sequence)
+				for (PosNum i = v.second.begin + 1; i != v.second.end; ++i)
+					renderText(style.frameFont, world2screen(camera, apply(r, seq[i], j)), to_string(i));
 		}
 	}
+}
+
+Style::Style()
+{
+	if (frameFont.Error()) throw runtime_error("could not load font");
+	if (sequenceFont.Error()) throw runtime_error("could not load font");
+
+	frameFont.FaceSize(16);
+	sequenceFont.FaceSize(64);
+}
+
+void renderText(FTGLBitmapFont const & font, V2 where, string const & text)
+{
+	const_cast<FTGLBitmapFont &>(font)
+		.Render(text.c_str(), -1, FTPoint(where.x, where.y, 0));
 }
 
 void renderWindow(
@@ -212,7 +234,7 @@ void renderWindow(
 		glEnable(GL_DEPTH_TEST);
 
 		grid(style.grid_color);
-		render(viables, position, highlight_joint, v.first_person, edit_mode);
+		render(viables, position, highlight_joint, v.first_person, edit_mode, camera, style);
 
 		if (viables && highlight_joint)
 		{
@@ -220,7 +242,7 @@ void renderWindow(
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glLineWidth(4);
 			glNormal3d(0, 1, 0);
-			drawViables(graph, *viables, *highlight_joint, current_sequence);
+			drawViables(graph, *viables, *highlight_joint, current_sequence, camera, style, edit_mode);
 
 			glDisable(GL_DEPTH_TEST);
 			glPointSize(20);
@@ -230,7 +252,14 @@ void renderWindow(
 			glVertex(position[*highlight_joint]);
 			glEnd();
 		}
-	};
+	}
 
-	glfwSwapBuffers(window);
+/*
+	string desc = graph[current_sequence].description.front();
+
+	if (desc == "...") desc = "to " + graph[graph.to(current_sequence).node].description.front();
+	desc = replace_all(desc, "\\n", " ");
+
+	renderText(style.sequenceFont, V2{10,20}, desc);
+*/
 }

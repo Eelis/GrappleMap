@@ -62,12 +62,21 @@ public:
 	}
 
 	double getHorizontalRotation() const { return orientation.x; }
+
+	V2 getViewportSize() const { return viewportSize; }
 };
 
 inline V2 world2xy(Camera const & camera, V3 v)
 {
 	auto cs = camera.full() * V4(v, 1);
 	return xy(cs) / cs.w;
+}
+
+inline V2 world2screen(Camera const & camera, V3 v)
+{
+	auto t = world2xy(camera, v);
+	auto vps = camera.getViewportSize();
+	return {(t.x + 1) * 0.5 * vps.x, (t.y + 1) * 0.5 * vps.y};
 }
 
 #endif

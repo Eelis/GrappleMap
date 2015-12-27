@@ -61,4 +61,9 @@ auto make_set(Range const & r)
 	return set<typename std::iterator_traits<I>::value_type>(begin(r), end(r));
 }
 
+inline bool all_digits(string const & s)
+{
+	return all_of(s.begin(), s.end(), [](char c){return std::isdigit(c);});
+}
+
 #endif

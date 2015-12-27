@@ -123,6 +123,7 @@ struct Window
 	PositionReorientation reorientation{};
 	optional<NextPosition> next_pos;
 	std::stack<std::pair<Graph, PositionInSequence>> undo;
+	Style style;
 
 	std::map<NodeNum, unsigned> anim_next;
 		// the unsigned is an index into out(graph, n)
@@ -633,7 +634,9 @@ int main(int const argc, char const * const * const argv)
 
 			glfwGetFramebufferSize(window, &width, &height);
 			renderWindow(
-				views, &w.viable, w.graph, window, posToDraw, w.camera, special_joint, w.edit_mode, width, height, w.location.sequence);
+				views, &w.viable, w.graph, window, posToDraw, w.camera, special_joint, w.edit_mode, width, height, w.location.sequence, w.style);
+
+			glfwSwapBuffers(window);
 
 			if (w.chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && w.next_pos && w.next_pos->howfar >= 1)
 			{

@@ -14,6 +14,7 @@ gui
 - sticky floor
 - direction signs ("to truck", "zombie")
 - editing selected joints as a group
+- editing joints while the reorientation is mirrored goes wrong
 
 playback
 - position showcase mode where for a given position P, all A->B->P->C->D sequences are showed, rewinding quickly after each one
@@ -29,3 +30,7 @@ browseable pages:
 - submission indicators in browsable pages
 - investigate graphviz alternatives
 - take tagged transitions into account in neighbourhood graphs on tag pages
+- make camera movement less jerky
+
+new tools:
+- diff, to visualize changes made to transitions

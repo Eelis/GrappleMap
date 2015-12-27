@@ -1,13 +1,5 @@
 #include "graph_util.hpp"
 
-namespace
-{
-	bool all_digits(string const & s)
-	{
-		return all_of(s.begin(), s.end(), [](char c){return std::isdigit(c);});
-	}
-}
-
 SeqNum insert(Graph & g, Sequence const & sequence)
 {
 	SeqNum const num{g.num_sequences()};

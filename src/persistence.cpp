@@ -144,7 +144,7 @@ void save(Graph const & g, string const filename)
 	foreach(s : seqnums(g)) f << g[s];
 }
 
-vector<SeqNum> readScript(Graph const & graph, string const filename)
+Script readScript(Graph const & graph, string const filename)
 {
 	std::ifstream f(filename);
 	if (!f) error(filename + ": " + std::strerror(errno));
@@ -162,7 +162,7 @@ vector<SeqNum> readScript(Graph const & graph, string const filename)
 			filename + ": line " + to_string(lineNr)
 			+ ": unknown sequence: \"" + seq + '"');
 
-	return r;
+	return {r};
 }
 
 void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* highlight */> const & nodes)
