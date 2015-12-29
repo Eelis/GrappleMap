@@ -33,16 +33,16 @@ optional<SeqNum> erase_sequence(Graph & g, SeqNum const sn)
 	return SeqNum{sn.index == 0 ? 0 : sn.index - 1};
 }
 
-optional<SeqNum> seq_by_desc(Graph const & g, std::string const & desc)
+optional<SeqNum> seq_by_desc(Graph const & g, string const & desc)
 {
 	foreach(sn : seqnums(g))
-		if (g[sn].description.front() == desc)
+		if (replace_all(g[sn].description.front(), "\\n", " ") == desc)
 			return sn;
 
 	return none;
 }
 
-optional<NodeNum> node_by_desc(Graph const & g, std::string const & desc)
+optional<NodeNum> node_by_desc(Graph const & g, string const & desc)
 {
 	if (all_digits(desc))
 		return NodeNum{uint16_t(std::stoul(desc))};
@@ -50,7 +50,7 @@ optional<NodeNum> node_by_desc(Graph const & g, std::string const & desc)
 	foreach(n : nodenums(g))
 	{
 		auto const & d = g[n].description;
-		if (!d.empty() && d.front() == desc)
+		if (!d.empty() && replace_all(d.front(), "\\n", " ") == desc)
 			return n;
 	}
 
