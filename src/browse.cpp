@@ -298,6 +298,18 @@ namespace
 		return r.substr(r.find("<svg"));
 	}
 
+	string transition_image_title(Graph const & g, SeqNum const sn)
+	{
+		string r = "transition " + to_string( sn.index);
+						
+		if (auto ln = g[sn].line_nr) r += " @ line " + to_string(*ln);
+		auto d = g[sn].description;
+		d.erase(d.begin());
+		foreach (l : d) r += '\n' + replace_all(l, "'", "&#39;");
+
+		return r;
+	}
+
 	void write_tag_page(Graph const & g, string const & tag, bool const nogifs)
 	{
 		std::ofstream html(output_dir + "tag-" + tag + ".html");
@@ -354,11 +366,8 @@ namespace
 						<< "</a> <em>via</em></td>"
 						<< "<td><div style='display:inline-block'>"
 						<< desc(g, sn)
-						<< "<img alt='' src='in" << sn.index << "w." << (nogifs ? "png" : "gif") << "' title='" << sn.index;
-
-					if (auto ln = g[sn].line_nr) html << " @ " << *ln;
-
-					html
+						<< "<img alt='' src='in" << sn.index << "w." << (nogifs ? "png" : "gif") << "'"
+						<< " title='" << transition_image_title(g, sn)
 						<< "'></div></td><td style='text-align:left'><em>to</em> "
 						<< "<a href='p" << to.index << "w.html'>"
 						<< replace_all(desc(g, to), "\\n", " ")
@@ -422,14 +431,8 @@ namespace
 			auto transition_img = [&](SeqNum const sn, string const & inout)
 				{
 					html
-						<< "<img alt='' src='" << inout << sn.index << hc << "." << (nogifs ? "png" : "gif") << "' title='transition " << sn.index;
-						
-					if (auto ln = graph[sn].line_nr) html << " @ line " << *ln;
-					auto d = graph[sn].description;
-					d.erase(d.begin());
-					foreach (l : d) html << '\n' << replace_all(l, "'", "\\'");
-
-					html << "'>";
+						<< "<img alt='' src='" << inout << sn.index << hc << "." << (nogifs ? "png" : "gif") << "'"
+						<< " title='" << transition_image_title(graph, sn) << "'>";
 				};
 
 			if (!incoming.empty())
