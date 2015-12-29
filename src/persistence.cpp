@@ -167,7 +167,7 @@ Script readScript(Graph const & graph, string const filename)
 
 void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* highlight */> const & nodes)
 {
-	o << "digraph G {\n";
+	o << "digraph G {rankdir=\"LR\";\n";
 
 	foreach (p : nodes)
 	{
