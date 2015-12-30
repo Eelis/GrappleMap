@@ -126,8 +126,8 @@ namespace
 		{
 			string const filename
 				= to_string(boost::hash_value(frames))
-				+ headings[heading]
 				+ to_string(width) + 'x' + to_string(height)
+				+ headings[heading]
 				+ ".gif";
 
 			if (!boost::filesystem::exists(output_dir + filename))
@@ -144,6 +144,36 @@ namespace
 			}
 
 			return filename;
+		}
+
+		string gifs(
+			string const output_dir,
+			vector<Position> const & frames,
+			unsigned const width, unsigned const height) const
+		{
+			string const base_filename
+				= to_string(boost::hash_value(frames))
+				+ to_string(width) + 'x' + to_string(height);
+
+			for (unsigned heading = 0; heading != 4; ++heading)
+			{
+				string const filename = base_filename + headings[heading] + ".gif";
+
+				if (!boost::filesystem::exists(output_dir + filename))
+				{
+					vector<string> png_files;
+					string const gif_frames_dir = output_dir + "gifframes/";
+					foreach (pos : frames) png_files.push_back(png(gif_frames_dir, pos, heading, width, height));
+
+					string command = "convert -depth 8 -delay 3 -loop 0 ";
+					foreach (f : png_files) command += gif_frames_dir + f + ' ';
+					command += output_dir + filename;
+
+					std::system(command.c_str());
+				}
+			}
+
+			return base_filename;
 		}
 	};
 
@@ -297,17 +327,20 @@ namespace
 
 	string make_svg(Graph const & g, map<NodeNum, bool> const & nodes)
 	{
+		std::ostringstream dotstream;
+		todot(g, dotstream, nodes);
+		string const dot = dotstream.str();
+
 		string const
-			svgpath = output_dir + "tmp.svg",
-			dotpath = output_dir + "tmp.dot";
+			dotpath = output_dir + "tmp.dot",
+			svgpath = output_dir + to_string(boost::hash_value(dot)) + ".svg";
 
+		if (!boost::filesystem::exists(svgpath))
 		{
-			std::ofstream dotfile(dotpath);
-			todot(g, dotfile, nodes);
+			{ std::ofstream dotfile(dotpath); dotfile << dot; }
+			auto cmd = "dot -Tsvg " + dotpath + " -o" + svgpath;
+			std::system(cmd.c_str());
 		}
-
-		auto cmd = "dot -Tsvg " + dotpath + " -o" + svgpath;
-		std::system(cmd.c_str());
 
 		std::ifstream svgfile(svgpath);
 		std::istreambuf_iterator<char> i(svgfile), e;
@@ -330,6 +363,8 @@ namespace
 
 	void write_tag_page(ImageMaker const mkimg, Graph const & g, string const & tag)
 	{
+		cout << '.' << std::flush;
+
 		std::ofstream html(output_dir + "tag-" + tag + ".html");
 
 		html << html5head << "<body style='text-align:center'><h1>Tag: " << tag << "</h1>";
@@ -406,7 +441,6 @@ namespace
 		html << " tagged '" << tag << "' (clickable)</p>" << make_svg(g, m) << "</body></html>";
 	}
 
-
 	void write_position_page(
 		ImageMaker const mkimg,
 		Graph const & graph,
@@ -414,7 +448,7 @@ namespace
 	{
 		string const pname = "p" + to_string(n.index);
 
-		std::cout << pname << std::endl;
+		cout << '.' << std::flush;
 
 		set<NodeNum> nodes{n};
 
@@ -424,20 +458,56 @@ namespace
 
 		string const svg = make_svg(graph, m);
 
-		vector<SeqNum> const
-			incoming = in(graph, n),
-			outgoing = out(graph, n);
+		struct Trans { SeqNum seq; vector<Position> frames; string base_filename; };
+
+		auto const pos = graph[n].position;
+		V2 const center = xz(pos[0][Core] + pos[1][Core]) / 2;
+
+		PositionReorientation reo;
+		reo.reorientation.offset.x = -center.x;
+		reo.reorientation.offset.z = -center.y;
+
+		vector<Trans> incoming, outgoing;
+
+		size_t longest_in = 0, longest_out = 0;
+
+		foreach (sn : in(graph, n))
+		{
+			auto v = frames_for_sequence(graph, sn);
+			foreach (p : v) p = reo(inverse(graph.to(sn).reorientation)(p));
+			assert(basicallySame(v.back(), reo(pos)));
+
+			incoming.push_back({sn, v});
+			longest_in = std::max(longest_in, v.size());
+		}
+
+		foreach (trans : incoming)
+		{
+			auto const p = trans.frames.front();
+			trans.frames.insert(trans.frames.begin(), longest_in - trans.frames.size(), p);
+			trans.base_filename = mkimg.gifs(output_dir, trans.frames, 160, 120);
+		}
+
+		foreach (sn : out(graph, n))
+		{
+			auto v = frames_for_sequence(graph, sn);
+			foreach (p : v) p = reo(inverse(graph.from(sn).reorientation)(p));
+			assert(basicallySame(v.front(), reo(pos)));
+
+			outgoing.push_back({sn, v});
+			longest_out = std::max(longest_out, v.size());
+		}
+
+		foreach (trans : outgoing)
+		{
+			auto const p = trans.frames.back();
+			trans.frames.insert(trans.frames.end(), longest_out - trans.frames.size(), p);
+			trans.base_filename = mkimg.gifs(output_dir, trans.frames, 160, 120);
+		}
 
 		for (unsigned heading = 0; heading != 4; ++heading)
 		{
 			char const hc = headings[heading];
-
-			auto pos = graph[n].position;
-			V2 const center = xz(pos[0][Core] + pos[1][Core]) / 2;
-
-			PositionReorientation reo;
-			reo.reorientation.offset.x = -center.x;
-			reo.reorientation.offset.z = -center.y;
 
 			std::ofstream html(output_dir + pname + hc + ".html");
 
@@ -447,33 +517,23 @@ namespace
 			{
 				html << "<td style='text-align:center;vertical-align:top'><b>Incoming transitions</b><table>\n";
 
-				size_t n = 0;
-				foreach (sn : incoming)
-					n = std::max(n, frames_for_sequence(graph, sn).size());
-
-				foreach (sn : incoming)
+				foreach (trans : incoming)
 				{
+					auto sn = trans.seq;
 					auto const from = graph.from(sn).node;
-
-					html << "</div> <em>to</em></td></tr>";
-
-					auto v = frames_for_sequence(graph, sn);
-					foreach (p : v) p = reo(inverse(graph.to(sn).reorientation)(p));
-					assert(basicallySame(v.back(), reo(pos)));
-
-					auto const p = v.front();
-					v.insert(v.begin(), n - v.size(), p);
 
 					html
 						<< "<tr><td><hr>"
 						<< "<em>from</em> <div style='display:inline-block'>"
 						<< "<a href='p" << from.index << hc << ".html'>"
 						<< replace_all(desc(graph, from), "\\n", "<br>") << "<br>"
-						<< "<img alt='' title='" << from.index << "' src='" << mkimg.png(output_dir, p, heading, 160, 120) << "'>"
+						<< "<img alt='' title='" << from.index << "'"
+						<< " src='" << mkimg.png(output_dir, trans.frames.front(), heading, 160, 120) << "'>"
 						<< "</a></div> <em>via</em> <div style='display:inline-block'>"
 						<< desc(graph, sn)
-						<< "<img alt='' src='" << mkimg.gif(output_dir, v, heading, 160, 120)
-						<< "' title='" << transition_image_title(graph, sn) << "'>";
+						<< "<img alt='' src='" << trans.base_filename << hc << ".gif'"
+						<< " title='" << transition_image_title(graph, sn) << "'>"
+						<< "</div> <em>to</em></td></tr>";
 				}
 
 				html << "</table></td>";
@@ -507,34 +567,22 @@ namespace
 			{
 				html << "<td style='text-align:center;vertical-align:top'><b>Outgoing transitions</b><table>";
 
-				size_t n = 0;
-				foreach (sn : outgoing)
-					n = std::max(n, frames_for_sequence(graph, sn).size());
-
-				foreach (sn : outgoing)
+				foreach (trans : outgoing)
 				{
+					auto const sn = trans.seq;
 					auto const to = graph.to(sn).node;
 
 					html
 						<< "<tr><td><hr>"
 						<< "<em>via</em> <div style='display:inline-block'>"
-						<< desc(graph, sn);
-
-					auto v = frames_for_sequence(graph, sn);
-					foreach (p : v) p = reo(inverse(graph.from(sn).reorientation)(p));
-					assert(basicallySame(v.front(), reo(pos)));
-
-					auto const p = v.back();
-
-					v.insert(v.end(), n - v.size(), p);
-
-					html
-						<< "<img alt='' src='" << mkimg.gif(output_dir, v, heading, 160, 120)
-						<< "' title='" << transition_image_title(graph, sn) << "'>"
+						<< desc(graph, sn)
+						<< "<img alt='' src='" << trans.base_filename << hc << ".gif'"
+						<< " title='" << transition_image_title(graph, sn) << "'>"
 						<< "</div> <em>to</em> <div style='display:inline-block'>"
 						<< "<a href='p" << to.index << hc << ".html'>"
 						<< replace_all(desc(graph, to), "\\n", "<br>") << "<br>"
-						<< "<img alt='' title='" << to.index << "' src='" << mkimg.png(output_dir, p, heading, 160, 120) << "'>"
+						<< "<img alt='' title='" << to.index << "'"
+						<< " src='" << mkimg.png(output_dir, trans.frames.back(), heading, 160, 120) << "'>"
 						<< "</a></div></td></tr>";
 				}
 
@@ -577,6 +625,8 @@ int main(int const argc, char const * const * const argv)
 		foreach (t : tags(graph)) write_tag_page(mkimg, graph, t);
 
 		foreach (n : nodenums(graph)) write_position_page(mkimg, graph, n);
+
+		std::endl(cout);
 	}
 	catch (std::exception const & e)
 	{
