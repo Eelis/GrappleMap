@@ -16,10 +16,21 @@
 #include <vector>
 #include <fstream>
 
+inline std::size_t hash_value(V3 const v) // todo: put elsewhere
+{
+	size_t seed = 0;
+	boost::hash_combine(seed, v.x);
+	boost::hash_combine(seed, v.y);
+	boost::hash_combine(seed, v.z);
+	return seed;
+}
+
+#include <boost/functional/hash.hpp>
 #define int_p_NULL (int*)NULL // https://github.com/ignf/gilviewer/issues/8
 
 #include <boost/gil/extension/io/png_io.hpp>
 #include <boost/gil/gil_all.hpp>
+#include <boost/filesystem.hpp>
 
 namespace
 {
@@ -28,8 +39,6 @@ namespace
 	struct Config
 	{
 		string db;
-		bool nogifs;
-		optional<NodeNum> node;
 	};
 
 	optional<Config> config_from_args(int const argc, char const * const * const argv)
@@ -40,12 +49,6 @@ namespace
 		desc.add_options()
 			("help",
 				"show this help")
-			("nogifs",
-				po::value<bool>()->default_value(false),
-				"instead of animated gifs, only show midpoints (the gifs take ages)")
-			("position",
-				po::value<uint16_t>(),
-				"only generate position page for specified position")
 			("db",
 				po::value<string>()->default_value("GrappleMap.txt"),
 				"database file");
@@ -56,75 +59,94 @@ namespace
 
 		if (vm.count("help")) { std::cout << desc << '\n'; return none; }
 
-		Config cfg{
-			vm["db"].as<string>(),
-			vm["nogifs"].as<bool>(),
-			boost::none};
-
-		if (vm.count("position"))
-			cfg.node = NodeNum{vm["position"].as<uint16_t>()};
-
-		return cfg;
+		return Config{ vm["db"].as<string>() };
 	}
 
-	void make_png(GLFWwindow * const window, Graph const & graph, std::string const & name, Position const & pos, unsigned const width, unsigned const height, unsigned const heading)
+	struct ImageMaker
 	{
-		double const ymax = std::max(.8, std::max(pos[0][Head].y, pos[1][Head].y));
+		GLFWwindow * const window;
+		Graph const & graph;
 
-		Camera camera;
-		camera.hardSetOffset({0, ymax - 0.6, 0});
-		camera.zoom(0.6);
-		camera.rotateHorizontal(M_PI * 0.5 * heading);
-		camera.rotateVertical((ymax - 0.6)/2);
-
-		Style style;
-		style.background_color = white;
-
-		renderWindow(
-			{ {0, 0, 1, 1, none, 45} }, // views
-			nullptr, // no viables
-			graph, window, pos, camera,
-			none, // no highlighted joint
-			false, // not edit mode
-			width, height,
-			{0},
-			style);
-
-		glfwSwapBuffers(window);
-
-		boost::gil::rgb8_pixel_t buf[width * height];
-
-		glFlush();
-		glFinish();
-
-		glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buf);
-
-		boost::gil::png_write_view(name,
-			boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf, width*3)));
-	}
-
-	string const output_dir = "GrappleMap/";
-
-	void make_gif(
-		GLFWwindow * const window, Graph const & graph, string const & name,
-		vector<Position> const & frames, unsigned const width, unsigned const height, unsigned const heading)
-	{
-		std::cout << ' ' << name << ": " << frames.size() << std::endl;
-
-		int i = 0;
-
-		foreach (pos : frames)
+		string png(
+			string const output_dir,
+			Position const pos,
+			unsigned const heading,
+			unsigned const width, unsigned const height) const
 		{
-			std::ostringstream f;
-			f << output_dir << name << headings[heading] << '-' << std::setw(3) << std::setfill('0') << i << ".png";
+			string const filename
+				= to_string(boost::hash_value(pos))
+				+ headings[heading]
+				+ to_string(width) + 'x' + to_string(height)
+				+ ".png";
 
-			make_png(window, graph, f.str(), pos, width, height, heading);
+			if (!boost::filesystem::exists(output_dir + filename))
+			{
+				double const ymax = std::max(.8, std::max(pos[0][Head].y, pos[1][Head].y));
 
-			++i;
+				Camera camera;
+				camera.hardSetOffset({0, ymax - 0.6, 0});
+				camera.zoom(0.6);
+				camera.rotateHorizontal(M_PI * 0.5 * heading);
+				camera.rotateVertical((ymax - 0.6)/2);
+
+				Style style;
+				style.background_color = white;
+
+				renderWindow(
+					{ {0, 0, 1, 1, none, 45} }, // views
+					nullptr, // no viables
+					graph, window, pos, camera,
+					none, // no highlighted joint
+					false, // not edit mode
+					width, height,
+					{0},
+					style);
+
+				glfwSwapBuffers(window);
+
+				boost::gil::rgb8_pixel_t buf[width * height];
+
+				glFlush();
+				glFinish();
+
+				glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buf);
+
+				boost::gil::png_write_view(output_dir + filename,
+					boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf, width*3)));
+			}
+
+			return filename;
 		}
 
-		std::system(("convert -depth 8 -delay 3 -loop 0 '" + output_dir + name + headings[heading] + "-*.png' " + output_dir + name + ".gif").c_str());
-	}
+		string gif(
+			string const output_dir,
+			vector<Position> const & frames,
+			unsigned const heading,
+			unsigned const width, unsigned const height) const
+		{
+			string const filename
+				= to_string(boost::hash_value(frames))
+				+ headings[heading]
+				+ to_string(width) + 'x' + to_string(height)
+				+ ".gif";
+
+			if (!boost::filesystem::exists(output_dir + filename))
+			{
+				vector<string> png_files;
+				string const gif_frames_dir = output_dir + "gifframes/";
+				foreach (pos : frames) png_files.push_back(png(gif_frames_dir, pos, heading, width, height));
+
+				string command = "convert -depth 8 -delay 3 -loop 0 ";
+				foreach (f : png_files) command += gif_frames_dir + f + ' ';
+				command += output_dir + filename;
+
+				std::system(command.c_str());
+			}
+
+			return filename;
+		}
+	};
+
 
 	vector<Position> frames_for_sequence(Graph const & graph, SeqNum const seqNum)
 	{
@@ -132,7 +154,7 @@ namespace
 
 		PositionInSequence location{seqNum, 0};
 
-		std::vector<Position> r(10, graph[location]);
+		vector<Position> r(10, graph[location]);
 
 		for (; next(graph, location); location = *next(graph, location))
 			for (unsigned howfar = 0; howfar != frames_per_pos; ++howfar)
@@ -155,12 +177,6 @@ namespace
 		return desc.front();
 	}
 
-	string img(NodeNum const n, char const hc)
-	{
-		auto s = to_string(n.index);
-		return "<img alt='' title='" + s + "' src='node" + s + hc + ".png'>";
-	}
-
 	string desc(Graph const & g, SeqNum const s)
 	{
 		auto desc = replace_all(g[s].description.front(), "\\n", "<br>");
@@ -181,6 +197,8 @@ namespace
 	{
 		return replace_all(s, "\\n", " ");
 	}
+
+	string const output_dir = "GrappleMap/";
 
 	void write_todo(Graph const & g)
 	{
@@ -310,7 +328,7 @@ namespace
 		return r;
 	}
 
-	void write_tag_page(Graph const & g, string const & tag, bool const nogifs)
+	void write_tag_page(ImageMaker const mkimg, Graph const & g, string const & tag)
 	{
 		std::ofstream html(output_dir + "tag-" + tag + ".html");
 
@@ -332,7 +350,7 @@ namespace
 					<< "<div style='display:inline-block;text-align:center'>"
 					<< "<a href='p" << n.index << "e.html'>"
 					<< nlspace(desc(g, n)) << "<br>"
-					<< "<img alt='' title='" << n.index << "' src='p" << n.index << "w.png'>"
+					<< "<img alt='' title='" << n.index << "' src='" << mkimg.png(output_dir, g[n].position, 0, 480, 360) << "'>"
 					<< "</a></div>";
 
 			html << "<br>";
@@ -360,24 +378,23 @@ namespace
 						to = g.to(sn).node;
 
 					html
-						<< "<tr><td style='text-align:right'><em>from</em> "
-						<< "<a href='p" << from.index << "w.html'>"
-						<< replace_all(desc(g, from), "\\n", " ")
-						<< "</a> <em>via</em></td>"
-						<< "<td><div style='display:inline-block'>"
-						<< desc(g, sn)
-						<< "<img alt='' src='in" << sn.index << "w." << (nogifs ? "png" : "gif") << "'"
-						<< " title='" << transition_image_title(g, sn)
-						<< "'></div></td><td style='text-align:left'><em>to</em> "
-						<< "<a href='p" << to.index << "w.html'>"
-						<< replace_all(desc(g, to), "\\n", " ")
-						<< "</a>";
-					
-					html << "</td></tr>";
+						<< "<tr>"
+						<<   "<td style='text-align:right'><em>from</em> "
+						<<      "<a href='p" << from.index << "w.html'>" << nlspace(desc(g, from)) << "</a> <em>via</em>"
+						<<   "</td>"
+						<<   "<td><div style='display:inline-block'>" << desc(g, sn)
+						<<     "<img alt=''"
+						<<     " src='" << mkimg.gif(output_dir, frames_for_sequence(g, sn), 0, 160, 120) << "'"
+						<<     " title='" << transition_image_title(g, sn) << "'>"
+						<<     "</div>"
+						<<   "</td>"
+						<<   "<td style='text-align:left'><em>to</em> "
+						<<     "<a href='p" << to.index << "w.html'>" << nlspace(desc(g, to)) << "</a>"
+						<<   "</td>"
+						<< "</tr>";
 				}
 
 			html << "</table>";
-
 		}
 
 		html
@@ -389,11 +406,11 @@ namespace
 		html << " tagged '" << tag << "' (clickable)</p>" << make_svg(g, m) << "</body></html>";
 	}
 
+
 	void write_position_page(
-		GLFWwindow * const window,
+		ImageMaker const mkimg,
 		Graph const & graph,
-		NodeNum const n,
-		bool const nogifs)
+		NodeNum const n)
 	{
 		string const pname = "p" + to_string(n.index);
 
@@ -422,18 +439,9 @@ namespace
 			reo.reorientation.offset.x = -center.x;
 			reo.reorientation.offset.z = -center.y;
 
-			make_png(window, graph, output_dir + "p" + to_string(n.index) + hc + ".png", reo(pos), 480, 360, heading);
-
 			std::ofstream html(output_dir + pname + hc + ".html");
 
 			html << html5head << "<body style='text-align:center'><table style='margin:0px auto'><tr>";
-
-			auto transition_img = [&](SeqNum const sn, string const & inout)
-				{
-					html
-						<< "<img alt='' src='" << inout << sn.index << hc << "." << (nogifs ? "png" : "gif") << "'"
-						<< " title='" << transition_image_title(graph, sn) << "'>";
-				};
 
 			if (!incoming.empty())
 			{
@@ -447,17 +455,6 @@ namespace
 				{
 					auto const from = graph.from(sn).node;
 
-					html
-						<< "<tr><td><hr>"
-						<< "<em>from</em> <div style='display:inline-block'>"
-						<< "<a href='p" << from.index << hc << ".html'>"
-						<< replace_all(desc(graph, from), "\\n", "<br>") << "<br>"
-						<< "<img alt='' title='" << from.index << "' src='from" << sn.index << hc << ".png'>"
-						<< "</a></div> <em>via</em> <div style='display:inline-block'>"
-						<< desc(graph, sn);
-
-					transition_img(sn, "in");
-
 					html << "</div> <em>to</em></td></tr>";
 
 					auto v = frames_for_sequence(graph, sn);
@@ -465,15 +462,18 @@ namespace
 					assert(basicallySame(v.back(), reo(pos)));
 
 					auto const p = v.front();
-					make_png(window, graph, output_dir + "from" + to_string(sn.index) + hc + ".png", p, 160, 120, heading);
+					v.insert(v.begin(), n - v.size(), p);
 
-					if (!nogifs)
-					{
-						v.insert(v.begin(), n - v.size(), p);
-						make_gif(window, graph, "in" + to_string(sn.index) + hc, v, 160, 120, heading);
-					}
-					else
-						make_png(window, graph, output_dir + "in" + to_string(sn.index) + hc + ".png", v[v.size() / 2], 160, 120, heading);
+					html
+						<< "<tr><td><hr>"
+						<< "<em>from</em> <div style='display:inline-block'>"
+						<< "<a href='p" << from.index << hc << ".html'>"
+						<< replace_all(desc(graph, from), "\\n", "<br>") << "<br>"
+						<< "<img alt='' title='" << from.index << "' src='" << mkimg.png(output_dir, p, heading, 160, 120) << "'>"
+						<< "</a></div> <em>via</em> <div style='display:inline-block'>"
+						<< desc(graph, sn)
+						<< "<img alt='' src='" << mkimg.gif(output_dir, v, heading, 160, 120)
+						<< "' title='" << transition_image_title(graph, sn) << "'>";
 				}
 
 				html << "</table></td>";
@@ -485,7 +485,7 @@ namespace
 			html
 				<< "<td style='text-align:center;vertical-align:top'><h3>Position:</h3><h1>"
 				<< replace_all(desc(graph, n), "\\n", "<br>") << "<br><br>"
-				<< "<img alt='' title='" << n.index << "' src='p" << n.index << hc << ".png'><br>"
+				<< "<img alt='' title='" << n.index << "' src='" << mkimg.png(output_dir, reo(pos), heading, 480, 360) << "'><br>"
 				<< "<a href='" << pname << prev_heading << ".html'>↻</a> "
 				<< "<a href='" << pname << next_heading << ".html'>↺</a> "
 				<< "</h1>";
@@ -520,29 +520,22 @@ namespace
 						<< "<em>via</em> <div style='display:inline-block'>"
 						<< desc(graph, sn);
 
-					transition_img(sn, "out");
-
-					html
-						<< "</div> <em>to</em> <div style='display:inline-block'>"
-						<< "<a href='p" << to.index << hc << ".html'>"
-						<< replace_all(desc(graph, to), "\\n", "<br>") << "<br>"
-						<< "<img alt='' title='" << to.index << "' src='to" << sn.index << hc << ".png'>"
-						<< "</a></div></td></tr>";
-
 					auto v = frames_for_sequence(graph, sn);
 					foreach (p : v) p = reo(inverse(graph.from(sn).reorientation)(p));
 					assert(basicallySame(v.front(), reo(pos)));
 
 					auto const p = v.back();
-					make_png(window, graph, output_dir + "to" + to_string(sn.index) + hc + ".png", p, 160, 120, heading);
 
-					if (!nogifs)
-					{
-						v.insert(v.end(), n - v.size(), p);
-						make_gif(window, graph, "out" + to_string(sn.index) + hc, v, 160, 120, heading);
-					}
-					else
-						make_png(window, graph, output_dir + "out" + to_string(sn.index) + hc + ".png", v[v.size() / 2], 160, 120, heading);
+					v.insert(v.end(), n - v.size(), p);
+
+					html
+						<< "<img alt='' src='" << mkimg.gif(output_dir, v, heading, 160, 120)
+						<< "' title='" << transition_image_title(graph, sn) << "'>"
+						<< "</div> <em>to</em> <div style='display:inline-block'>"
+						<< "<a href='p" << to.index << hc << ".html'>"
+						<< replace_all(desc(graph, to), "\\n", "<br>") << "<br>"
+						<< "<img alt='' title='" << to.index << "' src='" << mkimg.png(output_dir, p, heading, 160, 120) << "'>"
+						<< "</a></div></td></tr>";
 				}
 
 				html << "</table></td>";
@@ -579,13 +572,11 @@ int main(int const argc, char const * const * const argv)
 		write_index(graph);
 		write_todo(graph);
 
-		foreach(tag : tags(graph)) write_tag_page(graph, tag, config->nogifs);
+		ImageMaker const mkimg{ window, graph };
 
-		if (config->node)
-			write_position_page(window, graph, *config->node, config->nogifs);
-		else
-			foreach(n : nodenums(graph))
-				write_position_page(window, graph, n, config->nogifs);
+		foreach (t : tags(graph)) write_tag_page(mkimg, graph, t);
+
+		foreach (n : nodenums(graph)) write_position_page(mkimg, graph, n);
 	}
 	catch (std::exception const & e)
 	{
