@@ -16,21 +16,15 @@ gui
 - editing selected joints as a group
 - editing joints while the reorientation is mirrored goes wrong
 
-playback
-- position showcase mode where for a given position P, all A->B->P->C->D sequences are showed, rewinding quickly after each one
-
 browseable pages:
 - find a faster tool/library for generating gifs
 - maybe embed videos encoded with e.g. x264?
-- only regenerate gifs/pngs if necessary (e.g. using hashing)
 - reorient positions on tag page to make them as similar as possible
-- don't re-use gifs on tag pages because they have padding
 - rotation for tag pages
 - nice urls for position pages
 - submission indicators in browsable pages
 - investigate graphviz alternatives
 - take tagged transitions into account in neighbourhood graphs on tag pages
-- make camera movement less jerky
 
 new tools:
 - diff, to visualize changes made to transitions
