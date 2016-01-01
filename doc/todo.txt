@@ -26,6 +26,7 @@ browseable pages:
 - show bidirectional transitions with a bidirectional arrow
 - make randomly generated scripts use bidirectional transitions in both directions
 - figure out better colors
+- in the graphs, it would be good to be able to tell really long and really short transitions apart
 
 new tools:
 - diff, to visualize changes made to transitions

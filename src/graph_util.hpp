@@ -150,4 +150,9 @@ set<NodeNum> grow(Graph const &, set<NodeNum>, unsigned depth);
 optional<SeqNum> seq_by_arg(Graph const &, string const & arg);
 optional<NodeNum> node_by_arg(Graph const &, string const & arg);
 
+inline bool is_sweep(Graph const & g, SeqNum const s)
+{
+	return g.from(s).reorientation.swap_players != g.to(s).reorientation.swap_players;
+}
+
 #endif

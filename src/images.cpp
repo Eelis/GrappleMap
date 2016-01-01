@@ -23,6 +23,24 @@ inline std::size_t hash_value(V3 const v) // todo: put elsewhere
 namespace
 {
 	char const headings[4] = {'n', 'e', 's', 'w'};
+
+	void make_gif(
+		string const output_dir,
+		string const filename,
+		unsigned const delay,
+		std::function<vector<string>(string)> make_frames)
+	{
+		if (!boost::filesystem::exists(output_dir + filename))
+		{
+			string const gif_frames_dir = output_dir + "gifframes/";
+
+			string command = "convert -depth 8 -delay " + to_string(delay) + " -loop 0 ";
+			foreach (f : make_frames(gif_frames_dir)) command += gif_frames_dir + f + ' ';
+			command += output_dir + filename;
+
+			std::system(command.c_str());
+		}
+	}
 }
 
 void ImageMaker::png(
@@ -92,27 +110,21 @@ string ImageMaker::rotation_gif(
 	unsigned const width, unsigned const height, BgColor const bg_color) const
 {
 	string const base_filename = to_string(boost::hash_value(p)) + "rot" + to_string(bg_color);
-
 	string const gif_filename = base_filename + ".gif";
 
-	if (!boost::filesystem::exists(output_dir + gif_filename))
-	{
-		vector<string> png_files;
-		string const gif_frames_dir = output_dir + "gifframes/";
-
-		for (auto i = 0; i < 360; i += 5)
+	make_gif(output_dir, gif_filename, 9, [&](string const gif_frames_dir)
 		{
-			string const frame_filename = base_filename + "-" + to_string(i) + "-" + to_string(bg_color) + ".png";
-			png(gif_frames_dir, p, i/180.*M_PI, frame_filename, width, height, color(bg_color));
-			png_files.push_back(frame_filename);
-		}
+			vector<string> frames;
 
-		string command = "convert -depth 8 -delay 9 -loop 0 ";
-		foreach (f : png_files) command += gif_frames_dir + f + ' ';
-		command += output_dir + gif_filename;
+			for (auto i = 0; i < 360; i += 5)
+			{
+				string const frame_filename = base_filename + "-" + to_string(i) + "-" + to_string(bg_color) + ".png";
+				png(gif_frames_dir, p, i/180.*M_PI, frame_filename, width, height, color(bg_color));
+				frames.push_back(frame_filename);
+			}
 
-		std::system(command.c_str());
-	}
+			return frames;
+		});
 
 	return gif_filename;
 }
@@ -130,18 +142,12 @@ string ImageMaker::gif(
 		+ '-' + to_string(bg_color)
 		+ ".gif";
 
-	if (!boost::filesystem::exists(output_dir + filename))
-	{
-		vector<string> png_files;
-		string const gif_frames_dir = output_dir + "gifframes/";
-		foreach (pos : frames) png_files.push_back(png(gif_frames_dir, pos, heading, width, height, bg_color));
-
-		string command = "convert -depth 8 -delay 3 -loop 0 ";
-		foreach (f : png_files) command += gif_frames_dir + f + ' ';
-		command += output_dir + filename;
-
-		std::system(command.c_str());
-	}
+	make_gif(output_dir, filename, 3, [&](string const gif_frames_dir)
+		{
+			vector<string> v;
+			foreach (pos : frames) v.push_back(png(gif_frames_dir, pos, heading, width, height, bg_color));
+			return v;
+		});
 
 	return filename;
 }
@@ -153,25 +159,16 @@ string ImageMaker::gifs(
 {
 	string const base_filename
 		= to_string(boost::hash_value(frames))
-		+ to_string(width) + 'x' + to_string(height);
+		+ to_string(width) + 'x' + to_string(height)
+		+ '-' + to_string(bg_color);
 
 	for (unsigned heading = 0; heading != 4; ++heading)
-	{
-		string const filename = base_filename + headings[heading] + ".gif";
-
-		if (!boost::filesystem::exists(output_dir + filename))
-		{
-			vector<string> png_files;
-			string const gif_frames_dir = output_dir + "gifframes/";
-			foreach (pos : frames) png_files.push_back(png(gif_frames_dir, pos, heading, width, height, bg_color));
-
-			string command = "convert -depth 8 -delay 3 -loop 0 ";
-			foreach (f : png_files) command += gif_frames_dir + f + ' ';
-			command += output_dir + filename;
-
-			std::system(command.c_str());
-		}
-	}
+		make_gif(output_dir, base_filename + headings[heading] + ".gif", 3, [&](string const gif_frames_dir)
+			{
+				vector<string> v;
+				foreach (pos : frames) v.push_back(png(gif_frames_dir, pos, heading, width, height, bg_color));
+				return v;
+			});
 
 	return base_filename;
 }

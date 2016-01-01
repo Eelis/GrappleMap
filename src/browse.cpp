@@ -416,22 +416,17 @@ namespace
 				{
 					auto sn = trans.seq;
 					auto const from = ctx.graph.from(sn).node;
-
-					ctx.html << "<tr><td";
-
-					if (trans.top) ctx.html << " style='background:#ffe0e0'";
-					else if (trans.bottom) ctx.html << " style='background:#e0e0ff'";
+					auto c = bg_color(trans);
 
 					ctx.html
-						<< ">"
+						<< "<tr><td style='" << ImageMaker::css(c) << "'>"
 						<< "<em>from</em> <div style='display:inline-block'>"
 						<< "<a href='p" << from.index << hc << ".html'>"
 						<< nlbr(desc(ctx.graph, from)) << "<br>"
 						<< "<img alt='' title='" << from.index << "'"
 						<< " src='"
-						<< ctx.mkimg.rotation_gif(output_dir, orient_canonically(trans.frames.front()), 160, 120, bg_color(trans))
-						<< "'>"
-						<< "</a></div> <em>via</em> <div style='display:inline-block'>"
+						<< ctx.mkimg.rotation_gif(output_dir, orient_canonically(trans.frames.front()), 160, 120, c)
+						<< "'></a></div> <em>via</em> <div style='display:inline-block'>"
 						<< desc(ctx.graph, sn)
 						<< "<img alt='' src='" << trans.base_filename << hc << ".gif'"
 						<< " title='" << transition_image_title(ctx.graph, sn) << "'>"
@@ -454,14 +449,11 @@ namespace
 				{
 					auto const sn = trans.seq;
 					auto const to = ctx.graph.to(sn).node;
-
-					ctx.html << "<tr><td";
-
-					if (trans.top) ctx.html << " style='background:#ffe0e0'";
-					else if (trans.bottom) ctx.html << " style='background:#e0e0ff'";
+					auto c = bg_color(trans);
 
 					ctx.html
-						<< "><em>via</em> <div style='display:inline-block'>"
+						<< "<tr><td style='" << ImageMaker::css(c) << "'>"
+						<< "<em>via</em> <div style='display:inline-block'>"
 						<< desc(ctx.graph, sn)
 						<< "<img alt='' src='" << trans.base_filename << hc << ".gif'"
 						<< " title='" << transition_image_title(ctx.graph, sn) << "'>"
@@ -483,7 +475,7 @@ namespace
 		{
 			string const pname = "p" + to_string(n.index);
 
-			cout << '.' << std::flush;
+			cout << ' ' << n.index << std::flush;
 
 			set<NodeNum> nodes{n};
 
@@ -509,7 +501,18 @@ namespace
 
 				auto const props = properties_in_desc(graph[sn].description);
 
-				incoming.push_back({sn, props.count("top")!=0, props.count("bottom")!=0, v, {}});
+				bool top = props.count("top")!=0;
+				bool bottom = props.count("bottom")!=0;
+
+				bool const sweep = is_sweep(graph, sn);
+
+				if (top && sweep)
+				{ top = false; bottom = true; }
+				else if (bottom && sweep)
+				{ bottom = false; top = true; }
+
+				incoming.push_back({sn, top, bottom, v, {}});
+
 				longest_in = std::max(longest_in, v.size());
 			}
 

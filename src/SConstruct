@@ -10,4 +10,4 @@ guilibs = gllibs + cmdlibs
 env.Program('grapplemap-gui', ['gui.cpp', rendering, common], LIBS=guilibs)
 env.Program('grapplemap-playback', ['playback.cpp', rendering, common], LIBS=guilibs)
 env.Program('grapplemap-todot', ['todot.cpp', common], LIBS=cmdlibs)
-env.Program('grapplemap-browse', ['browse.cpp', rendering, common], LIBS=guilibs + ['png', 'boost_filesystem', 'boost_system'])
+env.Program('grapplemap-browse', ['browse.cpp', 'images.cpp', rendering, common], LIBS=guilibs + ['png', 'boost_filesystem', 'boost_system'])

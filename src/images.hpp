@@ -22,6 +22,17 @@ struct ImageMaker
 		}
 	}
 
+	static string css(BgColor const c)
+	{
+		switch (c)
+		{
+			case RedBg: return "background:#ffe0e0";
+			case BlueBg: return "background:#e0e0ff";
+			case WhiteBg: return "";
+			default: abort();
+		}
+	}
+
 	void png(
 		string output_dir,
 		Position pos,
@@ -34,7 +45,6 @@ struct ImageMaker
 		Position const pos,
 		unsigned const heading,
 		unsigned const width, unsigned const height, BgColor const bg_color) const;
-
 
 	string rotation_gif(
 		string const output_dir, Position const p,
