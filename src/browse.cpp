@@ -6,6 +6,7 @@
 #include "positions.hpp"
 #include "viables.hpp"
 #include "rendering.hpp"
+#include "images.hpp"
 #include "graph_util.hpp"
 #include <GLFW/glfw3.h>
 #include <GL/glu.h>
@@ -61,177 +62,6 @@ namespace
 
 		return Config{ vm["db"].as<string>() };
 	}
-
-	struct ImageMaker
-	{
-		GLFWwindow * const window;
-		Graph const & graph;
-
-		enum BgColor { RedBg, BlueBg, WhiteBg };
-
-		static V3 color(BgColor const c)
-		{
-			switch (c)
-			{
-				case RedBg: return V3{1,.878,.878};
-				case BlueBg: return V3{.878,.878,1};
-				case WhiteBg: return V3{1,1,1};
-				default: abort();
-			}
-		}
-
-		void png(
-			string const output_dir,
-			Position const pos,
-			double const angle,
-			string const filename,
-			unsigned const width, unsigned const height, V3 const bg_color) const
-		{
-			if (!boost::filesystem::exists(output_dir + filename))
-			{
-				double const ymax = std::max(.8, std::max(pos[0][Head].y, pos[1][Head].y));
-
-				Camera camera;
-				camera.hardSetOffset({0, ymax - 0.6, 0});
-				camera.zoom(0.6);
-				camera.rotateHorizontal(angle);
-				camera.rotateVertical((ymax - 0.6)/2);
-
-				Style style;
-				style.background_color = bg_color;
-
-				renderWindow(
-					{ {0, 0, 1, 1, none, 45} }, // views
-					nullptr, // no viables
-					graph, window, pos, camera,
-					none, // no highlighted joint
-					false, // not edit mode
-					width, height,
-					{0},
-					style);
-
-				glfwSwapBuffers(window);
-
-				boost::gil::rgb8_pixel_t buf[width * height];
-
-				glFlush();
-				glFinish();
-
-				glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buf);
-
-				boost::gil::png_write_view(output_dir + filename,
-					boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf, width*3)));
-			}
-		}
-
-		string png(
-			string const output_dir,
-			Position const pos,
-			unsigned const heading,
-			unsigned const width, unsigned const height, BgColor const bg_color) const
-		{
-			string const filename
-				= to_string(boost::hash_value(pos))
-				+ headings[heading]
-				+ to_string(width) + 'x' + to_string(height)
-				+ '-' + to_string(bg_color)
-				+ ".png";
-
-			png(output_dir, pos, M_PI * 0.5 * heading, filename, width, height, color(bg_color));
-
-			return filename;
-		}
-
-
-		string rotation_gif(
-			string const output_dir, Position const p,
-			unsigned const width, unsigned const height, BgColor const bg_color) const
-		{
-			string const base_filename = to_string(boost::hash_value(p)) + "rot" + to_string(bg_color);
-
-			string const gif_filename = base_filename + ".gif";
-
-			if (!boost::filesystem::exists(output_dir + gif_filename))
-			{
-				vector<string> png_files;
-				string const gif_frames_dir = output_dir + "gifframes/";
-
-				for (auto i = 0; i < 360; i += 5)
-				{
-					string const frame_filename = base_filename + "-" + to_string(i) + "-" + to_string(bg_color) + ".png";
-					png(gif_frames_dir, p, i/180.*M_PI, frame_filename, width, height, color(bg_color));
-					png_files.push_back(frame_filename);
-				}
-
-				string command = "convert -depth 8 -delay 9 -loop 0 ";
-				foreach (f : png_files) command += gif_frames_dir + f + ' ';
-				command += output_dir + gif_filename;
-
-				std::system(command.c_str());
-			}
-
-			return gif_filename;
-		}
-
-		string gif(
-			string const output_dir,
-			vector<Position> const & frames,
-			unsigned const heading,
-			unsigned const width, unsigned const height, BgColor const bg_color) const
-		{
-			string const filename
-				= to_string(boost::hash_value(frames))
-				+ to_string(width) + 'x' + to_string(height)
-				+ headings[heading]
-				+ ".gif";
-
-			if (!boost::filesystem::exists(output_dir + filename))
-			{
-				vector<string> png_files;
-				string const gif_frames_dir = output_dir + "gifframes/";
-				foreach (pos : frames) png_files.push_back(png(gif_frames_dir, pos, heading, width, height, bg_color));
-
-				string command = "convert -depth 8 -delay 3 -loop 0 ";
-				foreach (f : png_files) command += gif_frames_dir + f + ' ';
-				command += output_dir + filename;
-
-				std::system(command.c_str());
-			}
-
-			return filename;
-		}
-
-		string gifs(
-			string const output_dir,
-			vector<Position> const & frames,
-			unsigned const width, unsigned const height, BgColor bg_color) const
-		{
-			string const base_filename
-				= to_string(boost::hash_value(frames))
-				+ to_string(width) + 'x' + to_string(height);
-
-			for (unsigned heading = 0; heading != 4; ++heading)
-			{
-				string const filename = base_filename + headings[heading] + ".gif";
-
-				if (!boost::filesystem::exists(output_dir + filename))
-				{
-					vector<string> png_files;
-					string const gif_frames_dir = output_dir + "gifframes/";
-					foreach (pos : frames) png_files.push_back(png(gif_frames_dir, pos, heading, width, height, bg_color));
-
-					string command = "convert -depth 8 -delay 3 -loop 0 ";
-					foreach (f : png_files) command += gif_frames_dir + f + ' ';
-					command += output_dir + filename;
-
-					std::system(command.c_str());
-				}
-			}
-
-			return base_filename;
-		}
-	};
-
 
 	vector<Position> frames_for_sequence(Graph const & graph, SeqNum const seqNum)
 	{
@@ -417,6 +247,13 @@ namespace
 		return r;
 	}
 
+	ImageMaker::BgColor bg_color(bool const top, bool const bottom)
+	{
+		if (top) return ImageMaker::RedBg;
+		if (bottom) return ImageMaker::BlueBg;
+		return ImageMaker::WhiteBg;
+	}
+
 	void write_tag_page(ImageMaker const mkimg, Graph const & g, string const & tag)
 	{
 		cout << '.' << std::flush;
@@ -522,7 +359,7 @@ namespace
 						html
 							<< "><div style='display:inline-block'>" << desc(g, trans.seq)
 							<<     "<img alt=''"
-							<<     " src='" << mkimg.gif(output_dir, frames, heading, 160, 120, mkimg.WhiteBg) << "'"
+							<<     " src='" << mkimg.gif(output_dir, frames, heading, 160, 120, bg_color(trans.top, trans.bottom)) << "'"
 							<<     " title='" << transition_image_title(g, trans.seq) << "'>"
 							<<     "</div>"
 							<<   "</td>"
@@ -555,12 +392,7 @@ namespace
 			string base_filename;
 		};
 
-		ImageMaker::BgColor bg_color(Trans const & t)
-		{
-			if (t.top) return ImageMaker::RedBg;
-			if (t.bottom) return ImageMaker::BlueBg;
-			return ImageMaker::WhiteBg;
-		}
+		ImageMaker::BgColor bg_color(Trans const & t) { return ::bg_color(t.top, t.bottom); }
 
 		struct Context
 		{
@@ -737,7 +569,8 @@ namespace
 				html
 					<< "<td style='text-align:center;vertical-align:top'><h3>Position:</h3><h1>"
 					<< nlbr(desc(graph, n)) << "<br><br>"
-					<< "<img alt='' title='" << n.index << "' src='" << mkimg.png(output_dir, reo(pos), heading, 480, 360, mkimg.WhiteBg) << "'><br>"
+					<< "<img alt='' title='" << n.index << "' src='"
+					<< mkimg.png(output_dir, reo(pos), heading, 480, 360, mkimg.WhiteBg) << "'><br>"
 					<< "<a href='" << pname << prev_heading << ".html'>↻</a> "
 					<< "<a href='" << pname << next_heading << ".html'>↺</a> "
 					<< "</h1>";
