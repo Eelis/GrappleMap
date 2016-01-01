@@ -165,7 +165,7 @@ Script readScript(Graph const & graph, string const filename)
 	return {r};
 }
 
-void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* highlight */> const & nodes)
+void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* highlight */> const & nodes, char const heading)
 {
 	o << "digraph G {rankdir=\"LR\";\n";
 
@@ -179,7 +179,7 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 		if (highlight) o << "style=filled fillcolor=lightgrey";
 
 		o	<< " label=<<TABLE BORDER=\"0\"><TR>"
-			<< "<TD HREF=\"p" << n.index <<  "n.html\">";
+			<< "<TD HREF=\"p" << n.index <<  heading << ".html\">";
 
 		if (!graph[n].description.empty())
 			o << replace_all(graph[n].description.front(), "\\n", "<BR/>");

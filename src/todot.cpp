@@ -64,6 +64,6 @@ int main(int const argc, char const * const * const argv)
 		map<NodeNum, bool> m;
 		foreach(n : nodes) m[n] = false;
 
-		todot(g, cout, m);
+		todot(g, cout, m, 'n');
 	}
 }

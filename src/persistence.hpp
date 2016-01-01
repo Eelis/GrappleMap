@@ -12,6 +12,6 @@ Graph loadGraph(string filename);
 void save(Graph const &, string filename);
 Script readScript(Graph const &, string filename);
 Position decodePosition(string);
-void todot(Graph const &, std::ostream &, std::map<NodeNum, bool /* highlight */> const &);
+void todot(Graph const &, std::ostream &, std::map<NodeNum, bool /* highlight */> const &, char heading);
 
 #endif

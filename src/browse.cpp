@@ -211,10 +211,10 @@ namespace
 		html << "</body></html>";
 	}
 
-	string make_svg(Graph const & g, map<NodeNum, bool> const & nodes)
+	string make_svg(Graph const & g, map<NodeNum, bool> const & nodes, char const heading)
 	{
 		std::ostringstream dotstream;
-		todot(g, dotstream, nodes);
+		todot(g, dotstream, nodes, heading);
 		string const dot = dotstream.str();
 
 		string const
@@ -288,7 +288,6 @@ namespace
 		map<NodeNum, bool> m;
 		foreach(n : nodes) m[n] = true;
 		foreach(n : nodes_around(g, nodes)) m[n] = false;
-		string const neighbourhood = make_svg(g, m);
 
 		string const base_filename = "tag-" + tag + '-';
 
@@ -298,6 +297,8 @@ namespace
 				hc = headings[heading],
 				next_heading = headings[(heading + 1) % 4],
 				prev_heading = headings[(heading + 3) % 4];
+
+			string const neighbourhood = make_svg(g, m, hc);
 
 			ofstream html(output_dir + base_filename + hc + ".html");
 
@@ -488,8 +489,6 @@ namespace
 			m[n] = true;
 			foreach(nn : nodes_around(graph, nodes, 2)) m[nn] = false;
 
-			string const svg = make_svg(graph, m);
-
 			auto const pos = graph[n].position;
 
 			PositionReorientation const reo = canonical_reorientation(pos);
@@ -563,7 +562,7 @@ namespace
 			{
 				char const hc = headings[heading];
 
-				std::ofstream html(output_dir + pname + hc + ".html");
+				ofstream html(output_dir + pname + hc + ".html");
 
 				html << html5head("position: " + nlspace(desc(graph, n))) << "<body style='text-align:center'><table style='margin:0px auto'><tr>";
 
@@ -602,7 +601,7 @@ namespace
 					<< "</tr></table>"
 					<< "<hr><h2>Neighbourhood</h2>"
 					<< "<p>Positions up to two transitions away (clickable)</p>"
-					<< svg << "</body></html>";
+					<< make_svg(graph, m, hc) << "</body></html>";
 			}
 		}
 	}
