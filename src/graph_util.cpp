@@ -182,7 +182,24 @@ set<string> tags_in_desc(vector<string> const & desc)
 
 	foreach(line : desc)
 	{
-		if (line.substr(0, 5) == "tags:")
+		if (line.substr(0, sizeof("tags:") - 1) == "tags:")
+		{
+			std::istringstream iss(line.substr(5));
+			string tag;
+			while (iss >> tag) r.insert(tag);
+		}
+	}
+
+	return r;
+}
+
+set<string> properties_in_desc(vector<string> const & desc)
+{
+	set<string> r;
+
+	foreach(line : desc)
+	{
+		if (line.substr(0, sizeof("properties:") - 1) == "properties:")
 		{
 			std::istringstream iss(line.substr(5));
 			string tag;

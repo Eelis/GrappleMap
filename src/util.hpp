@@ -10,6 +10,7 @@
 #include <boost/range.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <iostream>
+#include <fstream>
 
 using std::string;
 using std::vector;
@@ -17,6 +18,7 @@ using std::set;
 using std::map;
 using std::istream;
 using std::ostream;
+using std::ofstream;
 using std::move;
 using std::cout;
 using std::pair;

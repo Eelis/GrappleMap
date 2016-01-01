@@ -117,6 +117,7 @@ inline optional<NodeNum> node_at(Graph const & g, PositionInSequence const pis)
 
 set<string> tags(Graph const &);
 set<string> tags_in_desc(vector<string> const &);
+set<string> properties_in_desc(vector<string> const &);
 
 inline bool is_tagged(Graph const & g, string const & tag, NodeNum const n)
 {

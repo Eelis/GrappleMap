@@ -176,7 +176,7 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 
 		o	<< n.index << " [";
 
-		if (highlight) o << "style=filled fillcolor=lightgreen";
+		if (highlight) o << "style=filled fillcolor=lightgrey";
 
 		o	<< " label=<<TABLE BORDER=\"0\"><TR>"
 			<< "<TD HREF=\"p" << n.index <<  "n.html\">";
@@ -199,8 +199,17 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 
 		auto const d = graph[s].description.front();
 
+		set<string> const properties = properties_in_desc(graph[s].description);
+
 		o << from.index << " -> " << to.index
-		  << " [label=\"" << (d == "..." ? "" : d) << "\"];\n";
+		  << " [label=\"" << (d == "..." ? "" : d) << "\"";
+
+		if (properties.count("top"))
+			o << ",color=red";
+		else if(properties.count("bottom"))
+			o << ",color=blue";
+
+		o << "];\n";
 	}
 
 	o << "}\n";

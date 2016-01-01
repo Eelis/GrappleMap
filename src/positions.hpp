@@ -250,7 +250,7 @@ struct PositionReorientation
 	}
 };
 
-inline std::ostream & operator<<(std::ostream & o, PositionReorientation const & r)
+inline ostream & operator<<(ostream & o, PositionReorientation const & r)
 {
 	return o
 		<< "{" << r.reorientation
@@ -281,6 +281,13 @@ optional<PositionReorientation> is_reoriented(Position const &, Position);
 inline bool operator==(PositionReorientation const & a, PositionReorientation const & b)
 {
 	return a.reorientation == b.reorientation && a.swap_players == b.swap_players && a.mirror == b.mirror;
+}
+
+PositionReorientation canonical_reorientation(Position const &);
+
+inline Position orient_canonically(Position const & p)
+{
+	return canonical_reorientation(p)(p);
 }
 
 #endif

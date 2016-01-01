@@ -243,3 +243,18 @@ optional<PositionReorientation> is_reoriented(Position const & a, Position b)
 
 	return r;
 }
+
+PositionReorientation canonical_reorientation(Position const & p)
+{
+	V2 const center = xz(p[0][Core] + p[1][Core]) / 2;
+
+	PositionReorientation reo;
+	reo.reorientation.offset.x = -center.x;
+	reo.reorientation.offset.z = -center.y;
+
+	PositionReorientation r2;
+	auto ding = xz(p[1][Head]) - xz(p[1][LeftToe]);
+	r2.reorientation.angle = atan2(ding.x, ding.y);
+
+	return compose(reo, r2);
+}
