@@ -180,11 +180,13 @@ set<string> tags_in_desc(vector<string> const & desc)
 {
 	set<string> r;
 
+	string const decl = "tags:";
+
 	foreach(line : desc)
 	{
-		if (line.substr(0, sizeof("tags:") - 1) == "tags:")
+		if (line.substr(0, decl.size()) == decl)
 		{
-			std::istringstream iss(line.substr(5));
+			std::istringstream iss(line.substr(decl.size()));
 			string tag;
 			while (iss >> tag) r.insert(tag);
 		}
@@ -197,13 +199,15 @@ set<string> properties_in_desc(vector<string> const & desc)
 {
 	set<string> r;
 
+	string const decl = "properties:";
+
 	foreach(line : desc)
 	{
-		if (line.substr(0, sizeof("properties:") - 1) == "properties:")
+		if (line.substr(0, decl.size()) == decl)
 		{
-			std::istringstream iss(line.substr(5));
-			string tag;
-			while (iss >> tag) r.insert(tag);
+			std::istringstream iss(line.substr(decl.size()));
+			string prop;
+			while (iss >> prop) r.insert(prop);
 		}
 	}
 

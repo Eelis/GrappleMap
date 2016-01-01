@@ -253,7 +253,7 @@ PositionReorientation canonical_reorientation(Position const & p)
 	reo.reorientation.offset.z = -center.y;
 
 	PositionReorientation r2;
-	auto ding = xz(p[1][Head]) - xz(p[1][LeftToe]);
+	auto ding = xz(p[1][Head]) - (xz(p[1][LeftToe]) + xz(p[1][RightToe])) / 2;
 	r2.reorientation.angle = atan2(ding.x, ding.y);
 
 	return compose(reo, r2);

@@ -206,8 +206,11 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 
 		if (properties.count("top"))
 			o << ",color=red";
-		else if(properties.count("bottom"))
+		else if (properties.count("bottom"))
 			o << ",color=blue";
+
+		if (properties.count("bidirectional"))
+			o << ",dir=\"both\"";
 
 		o << "];\n";
 	}

@@ -224,15 +224,20 @@ namespace
 		if (!boost::filesystem::exists(svgpath))
 		{
 			{ std::ofstream dotfile(dotpath); dotfile << dot; }
-			auto cmd = "dot -Tsvg " + dotpath + " -o" + svgpath;
-			std::system(cmd.c_str());
+			auto const cmd = "dot -Tsvg " + dotpath + " -o" + svgpath;
+			if (std::system(cmd.c_str()) != 0)
+				throw runtime_error("dot fail");
 		}
 
 		std::ifstream svgfile(svgpath);
 		std::istreambuf_iterator<char> i(svgfile), e;
 		string const r(i, e);
 
-		return r.substr(r.find("<svg"));
+		auto svgpos = r.find("<svg");
+
+		if (svgpos == string::npos) throw runtime_error("svg fail");
+
+		return r.substr(svgpos);
 	}
 
 	string transition_image_title(Graph const & g, SeqNum const sn)
