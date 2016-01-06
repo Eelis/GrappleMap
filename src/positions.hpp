@@ -118,6 +118,8 @@ inline Position operator-(Position const & p, V3 const off)
 	return p + -off;
 }
 
+bool top_is_on_bottoms_left_side(Position const &);
+
 struct PlayerDef { V3 color; };
 
 extern PerPlayer<PlayerDef> const playerDefs;

@@ -199,17 +199,15 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 
 		auto const d = graph[s].description.front();
 
-		set<string> const properties = properties_in_desc(graph[s].description);
-
 		o << from.index << " -> " << to.index
 		  << " [label=\"" << (d == "..." ? "" : d) << "\"";
 
-		if (properties.count("top"))
+		if (is_top_move(graph[s]))
 			o << ",color=red";
-		else if (properties.count("bottom"))
+		else if (is_bottom_move(graph[s]))
 			o << ",color=blue";
 
-		if (properties.count("bidirectional"))
+		if (is_bidirectional(graph[s]))
 			o << ",dir=\"both\"";
 
 		o << "];\n";

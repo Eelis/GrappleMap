@@ -319,7 +319,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				{
 					push_undo(w);
 					auto const p = w.graph[w.location];
-					w.location.sequence = insert(w.graph, Sequence{{"new"}, {p, p}});
+					w.location.sequence = insert(w.graph, Sequence{{"new"}, {p, p}, none});
 					w.location.position = 0;
 					break;
 				}
@@ -449,8 +449,10 @@ void forward(Window & w)
 
 					SeqNum const next_seq = v[w.anim_next[n]];
 
-					Position const before = w.reorientation(w.graph[w.location]);
-					Position const after = r(w.graph[first_pos_in(next_seq)]);
+					#ifndef NDEBUG
+						Position const before = w.reorientation(w.graph[w.location]);
+						Position const after = r(w.graph[first_pos_in(next_seq)]);
+					#endif
 
 					assert(basicallySame(
 						w.reorientation(w.graph[w.location]),
@@ -634,7 +636,8 @@ int main(int const argc, char const * const * const argv)
 
 			glfwGetFramebufferSize(window, &width, &height);
 			renderWindow(
-				views, &w.viable, w.graph, window, posToDraw, w.camera, special_joint, w.edit_mode, width, height, w.location.sequence, w.style);
+				views, &w.viable, w.graph, window, posToDraw, w.camera, special_joint,
+				w.edit_mode, 0, 0, width, height, w.location.sequence, w.style);
 
 			glfwSwapBuffers(window);
 

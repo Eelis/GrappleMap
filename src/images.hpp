@@ -2,6 +2,7 @@
 #define GRAPPLEMAP_IMAGES_HPP
 
 #include "graph.hpp"
+#include "headings.hpp"
 #include <GLFW/glfw3.h>
 
 struct ImageMaker
@@ -33,17 +34,10 @@ struct ImageMaker
 		}
 	}
 
-	void png(
-		string output_dir,
-		Position pos,
-		double angle,
-		string filename,
-		unsigned width, unsigned height, V3 bg_color) const;
-
 	string png(
 		string const output_dir,
 		Position const pos,
-		unsigned const heading,
+		MirroredHeading,
 		unsigned const width, unsigned const height, BgColor const bg_color) const;
 
 	string rotation_gif(
@@ -53,13 +47,22 @@ struct ImageMaker
 	string gif(
 		string const output_dir,
 		vector<Position> const & frames,
-		unsigned const heading,
+		MirroredHeading,
 		unsigned const width, unsigned const height, BgColor const bg_color) const;
 
 	string gifs(
 		string const output_dir,
 		vector<Position> const & frames,
 		unsigned const width, unsigned const height, BgColor bg_color) const;
+
+private:
+
+	void png(
+		string output_dir,
+		Position pos,
+		double angle,
+		string filename,
+		unsigned width, unsigned height, V3 bg_color) const;
 };
 
 #endif

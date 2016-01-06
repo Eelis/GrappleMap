@@ -32,7 +32,8 @@ void renderText(FTGLBitmapFont const &, V2 where, string const &);
 void renderWindow(vector<View> const &,
 	Viables const *, Graph const &, GLFWwindow *, Position const &,
 	Camera, optional<PlayerJoint> highlight_joint, bool edit_mode,
-	int width, int height, SeqNum current_sequence,
+	int left, int bottom, int width, int height,
+	SeqNum current_sequence,
 	Style const &);
 
 #endif

@@ -230,7 +230,9 @@ optional<PositionReorientation> is_reoriented(Position const & a, Position b)
 {
 	optional<PositionReorientation> r = is_reoriented_without_swap(a, b);
 
-	Position const c = b;
+	#ifndef NDEBUG
+		Position const c = b;
+	#endif
 
 	if (!r)
 	{
@@ -255,6 +257,18 @@ PositionReorientation canonical_reorientation(Position const & p)
 	PositionReorientation r2;
 	auto ding = xz(p[1][Head]) - (xz(p[1][LeftToe]) + xz(p[1][RightToe])) / 2;
 	r2.reorientation.angle = atan2(ding.x, ding.y);
+	r2.mirror = top_is_on_bottoms_left_side(p);
 
 	return compose(reo, r2);
+}
+
+bool top_is_on_bottoms_left_side(Position const & p)
+{
+	auto a = xz(p[1][LeftHip] - p[1][Head]);
+	auto b = xz(p[0][LeftHip] - p[1][Head]);
+
+	auto v = atan2(a.x, a.y);
+	auto w = atan2(b.x, b.y);
+
+	return relative_angle(v, w) < 0;
 }

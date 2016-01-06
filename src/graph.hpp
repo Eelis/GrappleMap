@@ -41,7 +41,6 @@ struct Graph
 		Sequence sequence;
 			// invariant: g[from] == sequence.positions.front()
 			// invariant: g[to] == sequences.positions.back()
-		optional<unsigned> line_nr;
 	};
 
 private:
@@ -84,8 +83,8 @@ public:
 
 	Sequence const & operator[](SeqNum const s) const { return edges[s.index].sequence; }
 
-	ReorientedNode from(SeqNum const s) const { return edges[s.index].from; }
-	ReorientedNode to(SeqNum const s) const { return edges[s.index].to; }
+	ReorientedNode const & from(SeqNum const s) const { return edges[s.index].from; }
+	ReorientedNode const & to(SeqNum const s) const { return edges[s.index].to; }
 
 	uint16_t num_sequences() const { return edges.size(); }
 	uint16_t num_nodes() const { return nodes.size(); }

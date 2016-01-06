@@ -71,6 +71,7 @@ struct Config
 	unsigned num_transitions;
 	string start;
 	optional<string /* seq desc */> demo;
+	optional<pair<unsigned, unsigned>> dimensions;
 };
 
 optional<Config> config_from_args(int const argc, char const * const * const argv)
@@ -86,6 +87,7 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 			"script file")
 		("start", po::value<string>()->default_value("deep half"), "initial node (only used if no script given)")
 		("length", po::value<unsigned>()->default_value(50), "number of transitions")
+		("dimensions", po::value<string>(), "window dimensions")
 		("db", po::value<string>()->default_value("GrappleMap.txt"), "database file")
 		("demo", po::value<string>(), "show all chains of three transitions that have the given transition in the middle");
 
@@ -95,13 +97,24 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 
 	if (vm.count("help")) { std::cout << desc << '\n'; return none; }
 
+	optional<pair<unsigned, unsigned>> dimensions;
+	if (vm.count("dimensions"))
+	{
+		string const dims = vm["dimensions"].as<string>();
+		auto x = dims.find('x');
+		if (x == dims.npos) throw runtime_error("invalid dimensions");
+		dimensions = pair<unsigned, unsigned>(std::stoul(dims.substr(0, x)), std::stoul(dims.substr(x + 1)));
+	}
+
 	return Config
 		{ vm["db"].as<string>()
 		, vm["script"].as<string>()
 		, vm["frames-per-pos"].as<unsigned>()
 		, vm["length"].as<unsigned>()
 		, vm["start"].as<string>()
-		, vm.count("demo") ? optional<string>(vm["demo"].as<string>()) : boost::none};
+		, vm.count("demo") ? optional<string>(vm["demo"].as<string>()) : boost::none
+		, dimensions
+		};
 }
 
 bool dfsScene(Graph const & g, NodeNum const n, size_t const size, Scene & scene)
@@ -177,8 +190,8 @@ Scene randomScene(Graph const & g, NodeNum const start, size_t const size)
 
 	return s;
 }
-
 /*
+
 Scene randomScene(Graph const & g, NodeNum const start, size_t const size)
 {
 	auto o = out(g, start);
@@ -223,7 +236,7 @@ int main(int const argc, char const * const * const argv)
 		if (config->demo)
 		{
 			SeqNum seq;
-			
+
 			if (all_digits(*config->demo))
 				seq = SeqNum{uint16_t(std::stoul(*config->demo))};
 			else if (auto o = seq_by_desc(graph, *config->demo))
@@ -252,7 +265,7 @@ int main(int const argc, char const * const * const argv)
 		Camera camera;
 		Style style;
 		style.background_color = white;
-		camera.zoom(-.3);
+		camera.zoom(0.6);
 
 		string const separator = "      ";
 
@@ -280,8 +293,17 @@ int main(int const argc, char const * const * const argv)
 				if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) camera.zoom(-0.05);
 				if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) camera.zoom(0.05);
 
+				int bottom = 0;
 				int width, height;
 				glfwGetFramebufferSize(window, &width, &height);
+
+				if (config->dimensions)
+				{
+					width = config->dimensions->first;
+
+					bottom = height - config->dimensions->second;
+					height = config->dimensions->second;
+				}
 
 				renderWindow(
 					// views:
@@ -294,6 +316,7 @@ int main(int const argc, char const * const * const argv)
 					graph, window, pos, camera,
 					none, // no highlighted joint
 					false, // not edit mode
+					0, bottom,
 					width, height, {0} /* todo */, style);
 
 				//renderText(style.sequenceFont, textpos, caption);

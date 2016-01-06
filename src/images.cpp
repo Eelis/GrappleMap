@@ -22,8 +22,6 @@ inline std::size_t hash_value(V3 const v) // todo: put elsewhere
 
 namespace
 {
-	char const headings[4] = {'n', 'e', 's', 'w'};
-
 	void make_gif(
 		string const output_dir,
 		string const filename,
@@ -55,12 +53,13 @@ void ImageMaker::png(
 		double const ymax = std::max(.8, std::max(pos[0][Head].y, pos[1][Head].y));
 
 		Camera camera;
-		camera.hardSetOffset({0, ymax - 0.6, 0});
-		camera.zoom(0.6);
+		camera.hardSetOffset({0, ymax - 0.57, 0});
+		camera.zoom(0.55);
 		camera.rotateHorizontal(angle);
 		camera.rotateVertical((ymax - 0.6)/2);
 
 		Style style;
+		style.grid_color = bg_color * .8;
 		style.background_color = bg_color;
 
 		renderWindow(
@@ -69,7 +68,7 @@ void ImageMaker::png(
 			graph, window, pos, camera,
 			none, // no highlighted joint
 			false, // not edit mode
-			width, height,
+			0, 0, width, height,
 			{0},
 			style);
 
@@ -89,18 +88,20 @@ void ImageMaker::png(
 
 string ImageMaker::png(
 	string const output_dir,
-	Position const pos,
-	unsigned const heading,
+	Position pos,
+	MirroredHeading const heading,
 	unsigned const width, unsigned const height, BgColor const bg_color) const
 {
 	string const filename
 		= to_string(boost::hash_value(pos))
-		+ headings[heading]
+		+ code(heading)
 		+ to_string(width) + 'x' + to_string(height)
 		+ '-' + to_string(bg_color)
 		+ ".png";
 
-	png(output_dir, pos, M_PI * 0.5 * heading, filename, width, height, color(bg_color));
+	if (heading.mirror) pos = mirror(pos);
+
+	png(output_dir, pos, angle(heading.heading), filename, width, height, color(bg_color));
 
 	return filename;
 }
@@ -112,7 +113,7 @@ string ImageMaker::rotation_gif(
 	string const base_filename = to_string(boost::hash_value(p)) + "rot" + to_string(bg_color);
 	string const gif_filename = base_filename + ".gif";
 
-	make_gif(output_dir, gif_filename, 9, [&](string const gif_frames_dir)
+	make_gif(output_dir, gif_filename, 8, [&](string const gif_frames_dir)
 		{
 			vector<string> frames;
 
@@ -132,13 +133,13 @@ string ImageMaker::rotation_gif(
 string ImageMaker::gif(
 	string const output_dir,
 	vector<Position> const & frames,
-	unsigned const heading,
+	MirroredHeading const heading,
 	unsigned const width, unsigned const height, BgColor const bg_color) const
 {
 	string const filename
 		= to_string(boost::hash_value(frames))
 		+ to_string(width) + 'x' + to_string(height)
-		+ headings[heading]
+		+ code(heading)
 		+ '-' + to_string(bg_color)
 		+ ".gif";
 
@@ -162,11 +163,11 @@ string ImageMaker::gifs(
 		+ to_string(width) + 'x' + to_string(height)
 		+ '-' + to_string(bg_color);
 
-	for (unsigned heading = 0; heading != 4; ++heading)
-		make_gif(output_dir, base_filename + headings[heading] + ".gif", 3, [&](string const gif_frames_dir)
+	foreach (h : headings())
+		make_gif(output_dir, base_filename + code(h) + ".gif", 3, [&](string const gif_frames_dir)
 			{
 				vector<string> v;
-				foreach (pos : frames) v.push_back(png(gif_frames_dir, pos, heading, width, height, bg_color));
+				foreach (pos : frames) v.push_back(png(gif_frames_dir, pos, h, width, height, bg_color));
 				return v;
 			});
 

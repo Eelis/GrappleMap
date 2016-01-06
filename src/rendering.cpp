@@ -180,6 +180,7 @@ void renderWindow(
 	Camera camera,
 	optional<PlayerJoint> highlight_joint,
 	bool const edit_mode,
+	int const left, int const bottom,
 	int const width, int const height,
 	SeqNum const current_sequence,
 	Style const & style)
@@ -189,8 +190,8 @@ void renderWindow(
 	foreach (v : views)
 	{
 		int
-			x = v.x * width,
-			y = v.y * height,
+			x = left + v.x * width,
+			y = bottom + v.y * height,
 			w = v.w * width,
 			h = v.h * height;
 

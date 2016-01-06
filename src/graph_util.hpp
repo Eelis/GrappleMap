@@ -34,12 +34,12 @@ inline PositionInSequence last_pos_in(Graph const & g, SeqNum const s)
 	return {s, last_pos(g, s)};
 }
 
-inline std::map<NodeNum, std::pair<
+inline map<NodeNum, std::pair<
 	vector<SeqNum>, // sequences that end at the node
 	vector<SeqNum>>> // sequences that start at the node
 		nodes(Graph const & g)
 {
-	std::map<NodeNum, std::pair<vector<SeqNum>, vector<SeqNum>>> m;
+	map<NodeNum, std::pair<vector<SeqNum>, vector<SeqNum>>> m;
 
 	foreach(sn : seqnums(g))
 	{
@@ -70,6 +70,18 @@ inline vector<SeqNum> out(Graph const & g, NodeNum const n)
 			v.push_back(sn);
 
 	return v;
+}
+
+struct Step { SeqNum seq; bool reverse; };
+
+inline ReorientedNode const & from(Graph const & g, Step const s)
+{
+	return s.reverse ? g.to(s.seq) : g.from(s.seq);
+}
+
+inline ReorientedNode const & to(Graph const & g, Step const s)
+{
+	return s.reverse ? g.from(s.seq) : g.to(s.seq);
 }
 
 inline optional<PositionInSequence> prev(PositionInSequence const pis)
@@ -119,6 +131,26 @@ set<string> tags(Graph const &);
 set<string> tags_in_desc(vector<string> const &);
 set<string> properties_in_desc(vector<string> const &);
 
+inline set<string> properties(Graph const & g, SeqNum const s)
+{
+	return properties_in_desc(g[s].description);
+}
+
+inline bool is_bidirectional(Sequence const & s)
+{
+	return properties_in_desc(s.description).count("bidirectional") != 0;
+}
+
+inline bool is_top_move(Sequence const & s)
+{
+	return properties_in_desc(s.description).count("top") != 0;
+}
+
+inline bool is_bottom_move(Sequence const & s)
+{
+	return properties_in_desc(s.description).count("bottom") != 0;
+}
+
 inline bool is_tagged(Graph const & g, string const & tag, NodeNum const n)
 {
 	return tags_in_desc(g[n].description).count(tag) != 0;
@@ -153,6 +185,38 @@ optional<NodeNum> node_by_arg(Graph const &, string const & arg);
 inline bool is_sweep(Graph const & g, SeqNum const s)
 {
 	return g.from(s).reorientation.swap_players != g.to(s).reorientation.swap_players;
+}
+
+inline vector<Step> out_steps(Graph const & g, NodeNum const n)
+{
+	vector<Step> v;
+
+	foreach(sn : seqnums(g))
+	{
+		if (g.from(sn).node == n)
+			v.push_back({sn, false});
+
+		if (is_bidirectional(g[sn]) && g.to(sn).node == n)
+			v.push_back({sn, true});
+	}
+
+	return v;
+}
+
+inline vector<Step> in_steps(Graph const & g, NodeNum const n)
+{
+	vector<Step> v;
+
+	foreach(sn : seqnums(g))
+	{
+		if (g.to(sn).node == n)
+			v.push_back({sn, false});
+
+		if (is_bidirectional(g[sn]) && g.from(sn).node == n)
+			v.push_back({sn, true});
+	}
+
+	return v;
 }
 
 #endif

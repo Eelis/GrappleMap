@@ -25,6 +25,7 @@ using std::pair;
 using std::to_string;
 using std::make_pair;
 using std::runtime_error;
+using std::swap;
 using boost::optional;
 using boost::none;
 

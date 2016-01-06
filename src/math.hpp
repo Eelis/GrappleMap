@@ -227,4 +227,18 @@ inline Reorientation compose(Reorientation const a, Reorientation const b)
 
 inline double angle(V2 const v) { return atan2(v.y, v.x); }
 
+inline double relative_angle(double a, double base)
+{
+	if (base < a)
+	{
+		double d = a - base;
+		return d < M_PI ? d : d - 2*M_PI;
+	}
+	else
+	{
+		double d = base - a;
+		return d < M_PI ? -d : 2*M_PI - d;
+	}
+}
+
 #endif
