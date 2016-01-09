@@ -17,7 +17,7 @@ using Frames = vector<pair<string, vector<Position>>>;
 Frames frames(Graph const & g, Scene const & scene, unsigned const frames_per_pos)
 {
 	Frames r;
-
+	
 	ReorientedNode n =
 		g.to(scene.front()).node == g.from(scene[1]).node
 			? g.from(scene.front())
@@ -25,8 +25,9 @@ Frames frames(Graph const & g, Scene const & scene, unsigned const frames_per_po
 
 	auto d = [&](SeqNum seq)
 		{
+			assert(!g[seq].description.empty());
 			string desc = g[seq].description.front();
-			if (desc == "...") desc = g[g.to(seq).node].description.front();
+			if (desc == "..." && !g[g.to(seq).node].description.empty()) desc = g[g.to(seq).node].description.front();
 			desc = replace_all(desc, "\\n", " ");
 			return desc;
 		};
