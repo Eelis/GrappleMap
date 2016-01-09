@@ -424,6 +424,9 @@ namespace
 					auto const from_node = from(ctx.graph, trans.step).node;
 					auto c = bg_color(trans);
 
+					auto rotate_pos = orient_canonically(trans.frames.front(), true);
+					if (ctx.heading.mirror) rotate_pos = mirror(rotate_pos);
+
 					ctx.html
 						<< "<tr><td style='" << ImageMaker::css(c) << "'>"
 						<< "<em>from</em> <div style='display:inline-block'>"
@@ -431,7 +434,7 @@ namespace
 						<< nlbr(desc(ctx.graph, from_node)) << "<br>"
 						<< "<img alt='' title='" << from_node.index << "'"
 						<< " src='"
-						<< ctx.mkimg.rotation_gif(output_dir, orient_canonically(trans.frames.front()), 160, 120, c)
+						<< ctx.mkimg.rotation_gif(output_dir, rotate_pos, 160, 120, c)
 						<< "'></a></div> <em>via</em> <div style='display:inline-block'>"
 						<< desc(ctx.graph, trans.step.seq)
 						<< "<img alt='' src='" << trans.base_filename << hc << ".gif'"
@@ -456,6 +459,9 @@ namespace
 					auto const to_node = to(ctx.graph, trans.step).node;
 					auto c = bg_color(trans);
 
+					auto rotate_pos = orient_canonically(trans.frames.back(), true);
+					if (ctx.heading.mirror) rotate_pos = mirror(rotate_pos);
+
 					ctx.html
 						<< "<tr><td style='" << ImageMaker::css(c) << "'>"
 						<< "<em>via</em> <div style='display:inline-block'>"
@@ -467,7 +473,7 @@ namespace
 						<< nlbr(desc(ctx.graph, to_node)) << "<br>"
 						<< "<img alt='' title='" << to_node.index << "'"
 						<< " src='"
-						<< ctx.mkimg.rotation_gif(output_dir, orient_canonically(trans.frames.back()), 160, 120, bg_color(trans))
+						<< ctx.mkimg.rotation_gif(output_dir, rotate_pos, 160, 120, bg_color(trans))
 						<< "'>"
 						<< "</a></div></td></tr>";
 				}

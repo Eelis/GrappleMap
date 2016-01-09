@@ -285,11 +285,11 @@ inline bool operator==(PositionReorientation const & a, PositionReorientation co
 	return a.reorientation == b.reorientation && a.swap_players == b.swap_players && a.mirror == b.mirror;
 }
 
-PositionReorientation canonical_reorientation(Position const &);
+PositionReorientation canonical_reorientation(Position const &, bool dont_mirror = false);
 
-inline Position orient_canonically(Position const & p)
+inline Position orient_canonically(Position const & p, bool const dont_mirror = false)
 {
-	return canonical_reorientation(p)(p);
+	return canonical_reorientation(p, dont_mirror)(p);
 }
 
 #endif

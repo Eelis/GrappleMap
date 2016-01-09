@@ -246,7 +246,7 @@ optional<PositionReorientation> is_reoriented(Position const & a, Position b)
 	return r;
 }
 
-PositionReorientation canonical_reorientation(Position const & p)
+PositionReorientation canonical_reorientation(Position const & p, bool const dont_mirror)
 {
 	V2 const center = xz(p[0][Core] + p[1][Core]) / 2;
 
@@ -257,7 +257,7 @@ PositionReorientation canonical_reorientation(Position const & p)
 	PositionReorientation r2;
 	auto ding = xz(p[1][Head]) - (xz(p[1][LeftToe]) + xz(p[1][RightToe])) / 2;
 	r2.reorientation.angle = atan2(ding.x, ding.y);
-	r2.mirror = top_is_on_bottoms_left_side(p);
+	r2.mirror = !dont_mirror && top_is_on_bottoms_left_side(p);
 
 	return compose(reo, r2);
 }
