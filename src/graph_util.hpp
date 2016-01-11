@@ -72,6 +72,19 @@ inline vector<SeqNum> out(Graph const & g, NodeNum const n)
 	return v;
 }
 
+inline vector<std::pair<
+	vector<SeqNum>, // sequences that end at the node
+	vector<SeqNum>>> // sequences that start at the node
+		in_out(Graph const & g)
+{
+	vector<std::pair<vector<SeqNum>, vector<SeqNum>>> v;
+
+	foreach(n : nodenums(g))
+		v.emplace_back(in(g, n), out(g, n));
+
+	return v;
+}
+
 struct Step { SeqNum seq; bool reverse; };
 
 inline ReorientedNode const & from(Graph const & g, Step const s)

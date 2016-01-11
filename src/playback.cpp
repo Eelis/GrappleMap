@@ -118,17 +118,20 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 		};
 }
 
-bool dfsScene(Graph const & g, NodeNum const n, size_t const size, Scene & scene)
+bool dfsScene(
+	Graph const & g,
+	vector<pair<vector<SeqNum>, vector<SeqNum>>> const & in_out,
+	NodeNum const n, size_t const size, Scene & scene)
 {
 	if (size == 0) return true;
 
-	foreach (s : out(g, n))
+	foreach (s : in_out[n.index].second)
 	{
 		if (find(scene.begin(), scene.end(), s) != scene.end()) continue;
 
 		scene.push_back(s);
 
-		if (dfsScene(g, g.to(s).node, size - 1, scene))
+		if (dfsScene(g, in_out, g.to(s).node, size - 1, scene))
 			return true;
 
 		scene.pop_back();
@@ -182,7 +185,7 @@ Scene randomScene(Graph const & g, NodeNum const start, size_t const size)
 {
 	Scene s;
 
-	if (!dfsScene(g, start, size, s))
+	if (!dfsScene(g, in_out(g), start, size, s))
 		throw runtime_error("could not find sequence");
 
 	set<SeqNum> ss;

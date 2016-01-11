@@ -65,7 +65,7 @@ public:
 
 	// construction
 
-	explicit Graph(std::vector<Node> const &, std::vector<Sequence> const &);
+	explicit Graph(vector<Node> const &, vector<Sequence> const &);
 
 	// const access
 
