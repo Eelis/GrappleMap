@@ -264,6 +264,36 @@ namespace
 		return ImageMaker::WhiteBg;
 	}
 
+	vector<Position> smoothen(vector<Position> v)
+	{
+		Position last_pos = v[0];
+
+		foreach (p : v)
+		foreach (j : playerJoints)
+			p[j] = last_pos[j] = last_pos[j] * 0.6 + p[j] * 0.4;
+
+		return v;
+	}
+
+	string transition_gif(
+		ImageMaker const & mkimg,
+		string const output_dir,
+		vector<Position> frames,
+		MirroredHeading const h,
+		ImageMaker::BgColor const bg_color)
+	{
+		return mkimg.gif(output_dir, smoothen(frames), h, 160, 120, bg_color);
+	}
+
+	string transition_gifs(
+		ImageMaker const & mkimg,
+		string const output_dir,
+		vector<Position> frames,
+		ImageMaker::BgColor const bg_color)
+	{
+		return mkimg.gifs(output_dir, smoothen(frames), 160, 120, bg_color);
+	}
+
 	void write_tag_page(ImageMaker const mkimg, Graph const & g, string const & tag)
 	{
 		cout << '.' << std::flush;
@@ -366,7 +396,7 @@ namespace
 						html
 							<< "><div style='display:inline-block'>" << desc(g, trans.seq)
 							<<     "<img alt=''"
-							<<     " src='" << mkimg.gif(output_dir, frames, h, 160, 120, bg_color(trans.top, trans.bottom)) << "'"
+							<<     " src='" << transition_gif(mkimg, output_dir, frames, h, bg_color(trans.top, trans.bottom)) << "'"
 							<<     " title='" << transition_image_title(g, trans.seq) << "'>"
 							<<     "</div>"
 							<<   "</td>"
@@ -531,7 +561,7 @@ namespace
 			{
 				auto const p = trans.frames.front();
 				trans.frames.insert(trans.frames.begin(), longest_in - trans.frames.size(), p);
-				trans.base_filename = mkimg.gifs(output_dir, trans.frames, 160, 120, bg_color(trans));
+				trans.base_filename = transition_gifs(mkimg, output_dir, trans.frames, bg_color(trans));
 			}
 
 			foreach (step : out_steps(graph, n))
@@ -552,7 +582,7 @@ namespace
 			{
 				auto const p = trans.frames.back();
 				trans.frames.insert(trans.frames.end(), longest_out - trans.frames.size(), p);
-				trans.base_filename = mkimg.gifs(output_dir, trans.frames, 160, 120, bg_color(trans));
+				trans.base_filename = transition_gifs(mkimg, output_dir, trans.frames, bg_color(trans));
 			}
 
 			auto order_transitions = [](vector<Trans> & v)

@@ -14,6 +14,23 @@
 
 using Frames = vector<pair<string, vector<Position>>>;
 
+Frames smoothen(Frames f)
+{
+	Position last_pos = f[0].second[0];
+
+	foreach (x : f)
+	foreach (p : x.second)
+	foreach (j : playerJoints)
+	{
+		if (p[j].y < 0.1)
+			p[j] = last_pos[j] = last_pos[j] * 0.6 + p[j] * 0.4;
+		else
+			p[j] = last_pos[j] = last_pos[j] * 0.83 + p[j] * 0.17;
+	}
+
+	return f;
+}
+
 Frames frames(Graph const & g, Scene const & scene, unsigned const frames_per_pos)
 {
 	Frames r;
@@ -214,7 +231,7 @@ Frames demoFrames(Graph const & g, SeqNum const s, unsigned const frames_per_pos
 	foreach (y : out(g, g.to(s).node))
 	{
 		auto scene = {x, s, y};
-		Frames const x = frames(g, scene, frames_per_pos);
+		Frames const x = smoothen(frames(g, scene, frames_per_pos));
 		f.push_back({"      ", vector<Position>(70, x.front().second.front())});
 		f.insert(f.end(), x.begin(), x.end());
 		f.push_back({"      ", vector<Position>(70, x.back().second.back())});
@@ -252,7 +269,7 @@ int main(int const argc, char const * const * const argv)
 		else if (!config->script.empty())
 			fr = frames(graph, readScript(graph, config->script), config->frames_per_pos);
 		else if (optional<NodeNum> start = node_by_desc(graph, config->start))
-			fr = frames(graph, Scene{randomScene(graph, *start, config->num_transitions)}, config->frames_per_pos);
+			fr = smoothen(frames(graph, Scene{randomScene(graph, *start, config->num_transitions)}, config->frames_per_pos));
 //		else if (optional<SeqNum> start = seq_by_desc(graph, config->start))
 //			fr = frames(graph, Scene{randomScene(graph, *start, config->num_transitions)}, config->frames_per_pos);
 		else
