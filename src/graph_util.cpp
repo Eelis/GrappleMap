@@ -171,8 +171,6 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 	assert(basicallySame(positions.front(), g[n]));
 	assert(basicallySame(positions.back(), g[m]));
 
-	positions.pop_back();
-
 	return {positions, m};
 }
 

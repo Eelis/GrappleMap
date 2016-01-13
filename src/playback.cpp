@@ -22,10 +22,8 @@ Frames smoothen(Frames f)
 	foreach (p : x.second)
 	foreach (j : playerJoints)
 	{
-		if (p[j].y < 0.1)
-			p[j] = last_pos[j] = last_pos[j] * 0.6 + p[j] * 0.4;
-		else
-			p[j] = last_pos[j] = last_pos[j] * 0.83 + p[j] * 0.17;
+		double const lag = std::min(0.83, 0.6 + p[j].y);
+		p[j] = last_pos[j] = last_pos[j] * lag + p[j] * (1 - lag);
 	}
 
 	return f;
@@ -231,10 +229,14 @@ Frames demoFrames(Graph const & g, SeqNum const s, unsigned const frames_per_pos
 	foreach (y : out(g, g.to(s).node))
 	{
 		auto scene = {x, s, y};
-		Frames const x = smoothen(frames(g, scene, frames_per_pos));
+		Frames z = frames(g, scene, frames_per_pos);
+
+		Position const last = z.back().second.back();
+		z.back().second.insert(z.back().second.end(), 70, last);
+
+		Frames const x = smoothen(z);
 		f.push_back({"      ", vector<Position>(70, x.front().second.front())});
 		f.insert(f.end(), x.begin(), x.end());
-		f.push_back({"      ", vector<Position>(70, x.back().second.back())});
 	}
 
 	return f;

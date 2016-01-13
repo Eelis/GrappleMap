@@ -270,7 +270,10 @@ namespace
 
 		foreach (p : v)
 		foreach (j : playerJoints)
-			p[j] = last_pos[j] = last_pos[j] * 0.6 + p[j] * 0.4;
+		{
+			double const lag = std::min(0.55, 0.3 + p[j].y);
+			p[j] = last_pos[j] = last_pos[j] * lag + p[j] * (1 - lag);
+		}
 
 		return v;
 	}
