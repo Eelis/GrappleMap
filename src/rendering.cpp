@@ -151,7 +151,7 @@ namespace
 
 			if (edit_mode && v.second.seqNum == current_sequence)
 				for (PosNum i = v.second.begin + 1; i != v.second.end; ++i)
-					renderText(style.frameFont, world2screen(camera, apply(r, seq[i], j)), to_string(i));
+					renderText(style.frameFont, world2screen(camera, apply(r, seq[i], j)), to_string(i), white);
 		}
 	}
 }
@@ -165,9 +165,13 @@ Style::Style()
 	sequenceFont.FaceSize(64);
 }
 
-void renderText(FTGLBitmapFont const & font, V2 where, string const & text)
+void renderText(FTGLPixmapFont const & font, V2 where, string const & text, V3 const color)
 {
-	const_cast<FTGLBitmapFont &>(font)
+	glPixelTransferf(GL_RED_BIAS, color.x - 1);
+	glPixelTransferf(GL_GREEN_BIAS, color.y - 1);
+	glPixelTransferf(GL_BLUE_BIAS, color.z - 1);
+
+	const_cast<FTGLPixmapFont &>(font)
 		.Render(text.c_str(), -1, FTPoint(where.x, where.y, 0));
 }
 

@@ -340,7 +340,7 @@ int main(int const argc, char const * const * const argv)
 					0, bottom,
 					width, height, {0} /* todo */, style);
 
-				//renderText(style.sequenceFont, textpos, caption);
+//				renderText(style.sequenceFont, textpos, caption, black);
 				textpos.x -= textwidth / (i->second.size()-1);
 
 				glfwSwapBuffers(window);

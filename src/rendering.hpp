@@ -21,13 +21,13 @@ struct Style
 {
 	V3 grid_color {.5, .5, .5};
 	V3 background_color {0, 0, 0};
-	FTGLBitmapFont frameFont{"DejaVuSans.ttf"};
-	FTGLBitmapFont sequenceFont{"DejaVuSans.ttf"};
+	FTGLPixmapFont frameFont{"DejaVuSans.ttf"};
+	FTGLPixmapFont sequenceFont{"DejaVuSans.ttf"};
 
 	Style();
 };
 
-void renderText(FTGLBitmapFont const &, V2 where, string const &);
+void renderText(FTGLPixmapFont const &, V2 where, string const &, V3 color);
 
 void renderWindow(vector<View> const &,
 	Viables const *, Graph const &, GLFWwindow *, Position const &,
