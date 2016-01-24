@@ -35,6 +35,21 @@ inline std::size_t hash_value(V3 const v) // todo: put elsewhere
 
 namespace
 {
+	string img(string title, string src, string alt)
+	{
+		return "<img alt='" + alt + "' src='" + src + "' title='" + title + "'>";
+	}
+
+	string link(string href, string content)
+	{
+		return "<a href='" + href + "'>" + content + "</a>";
+	}
+
+	string div(string style, string content)
+	{
+		return "<div style='" + style + "'>" + content + "</div>";
+	}
+
 	struct Config
 	{
 		string db;
@@ -88,13 +103,10 @@ namespace
 		return v;
 	}
 
-	string desc(Graph const & g, NodeNum const n)
+	string desc(Graph::Node const & n)
 	{
-		auto desc = g[n].description;
-
-		if (desc.empty()) return to_string(n.index);
-
-		return desc.front();
+		auto desc = n.description;
+		return desc.empty() ? "" : desc.front();
 	}
 
 	string desc(Graph const & g, SeqNum const s)
@@ -113,6 +125,7 @@ namespace
 			"<head><title>" + title + "</title>"
 			"<meta charset='UTF-8'/>"
 			"<script src='sorttable.js'></script>"
+			"<style>a{text-decoration:none}</style>"
 			"</head>";
 	}
 
@@ -129,19 +142,19 @@ namespace
 
 		foreach(n : nodenums(g))
 			if (out(g, n).empty())
-				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g, n)) << "</a></li>";
+				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g[n])) << "</a></li>";
 
 		html << "</ul><h2>Dead starts</h2><ul>";
 
 		foreach(n : nodenums(g))
 			if (in(g, n).empty())
-				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g, n)) << "</a></li>";
+				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g[n])) << "</a></li>";
 
 		html << "</ul><h2>Untagged positions</h2><ul>";
 
 		foreach(n : nodenums(g))
 			if (tags_in_desc(g[n].description).empty())
-				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g, n)) << "</a></li>";
+				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g[n])) << "</a></li>";
 
 		html << "</ul></body></html>";
 	}
@@ -188,7 +201,7 @@ namespace
 		foreach(n : nodenums(g))
 			html
 				<< "<tr>"
-				<< "<td><a href='p" << n.index << "n.html'>" << nlspace(desc(g, n)) << "</a></td>"
+				<< "<td><a href='p" << n.index << "n.html'>" << nlspace(desc(g[n])) << "</a></td>"
 				<< "<td>" << in(g, n).size() << "</td>"
 				<< "<td>" << out(g, n).size() << "</td>"
 				<< "<td>" << tags_in_desc(g[n].description).size() << "</td>"
@@ -204,9 +217,9 @@ namespace
 		{
 			html
 				<< "<tr>"
-				<< "<td><a href='p" << g.from(s).node.index << "n.html'>" << nlspace(desc(g, g.from(s).node)) << "</a></td>"
+				<< "<td><a href='p" << g.from(s).node.index << "n.html'>" << nlspace(desc(g[g.from(s).node])) << "</a></td>"
 				<< "<td><b>" << nlspace(g[s].description.front()) << "</b></td>"
-				<< "<td><a href='p" << g.to(s).node.index << "n.html'>" << nlspace(desc(g, g.to(s).node)) << "</a></td>"
+				<< "<td><a href='p" << g.to(s).node.index << "n.html'>" << nlspace(desc(g[g.to(s).node])) << "</a></td>"
 				<< "<td>" << g[s].positions.size() << "</td>"
 				<< "</tr>";
 		}
@@ -282,10 +295,10 @@ namespace
 		ImageMaker const & mkimg,
 		string const output_dir,
 		vector<Position> frames,
-		MirroredHeading const h,
+		ImageView const v,
 		ImageMaker::BgColor const bg_color)
 	{
-		return mkimg.gif(output_dir, smoothen(frames), h, 160, 120, bg_color);
+		return mkimg.gif(output_dir, smoothen(frames), v, 160, 120, bg_color);
 	}
 
 	string transition_gifs(
@@ -295,6 +308,35 @@ namespace
 		ImageMaker::BgColor const bg_color)
 	{
 		return mkimg.gifs(output_dir, smoothen(frames), 160, 120, bg_color);
+	}
+
+	void write_view_controls(std::ostream & html, ImageView const view, string const base)
+	{
+		if (view.heading)
+		{
+			html
+				<< link(base + code(ImageView{view.mirror, rotate_left(*view.heading), {}}) + ".html", "↻")
+				<< ' '
+				<< link(base + code(ImageView{!view.mirror, view.heading, view.player}) + ".html", "⇄")
+				<< ' '
+				<< link(base + code(ImageView{view.mirror, rotate_right(*view.heading), {}}) + ".html", "↺")
+				<< "<br>"
+				<< link(base + "t.html", "<span style='color:red'>☻</span>")
+				<< link(base + "b.html", "<span style='color:blue'>☻</span>"); // todo: don't waste mirroring here or below
+		}
+		else if (view.player)
+		{
+			char const player_code[2] = {'t', 'b'};
+
+			html
+				<< link(base + player_code[1 - *view.player] + ".html",
+					string("<span style='color:") + (*view.player == 0 ? "blue" : "red") + "'>☻</span>")
+				<< ' '
+				<< link(base + code(ImageView{!view.mirror, view.heading, view.player}) + ".html", "⇄")
+				<< ' '
+				<< link(base + "n.html", "3<sup><span style='font-size:smaller'>rd</span></sup>");
+		}
+		else abort();
 	}
 
 	void write_tag_page(ImageMaker const mkimg, Graph const & g, string const & tag)
@@ -329,19 +371,20 @@ namespace
 
 		string const base_filename = "tag-" + tag + '-';
 
-		foreach (h : headings())
+		foreach (v : views())
 		{
-			string const neighbourhood = make_svg(g, m, code(h));
+			string const neighbourhood = make_svg(g, m, code(v));
 
-			ofstream html(output_dir + base_filename + code(h) + ".html");
+			ofstream html(output_dir + base_filename + code(v) + ".html");
 
 			html
 				<< html5head("tag: " + tag)
 				<< "<body style='text-align:center'>"
-				<< "<h1>Tag: " << tag << "<br><br>"
-				<< "<a href='" << base_filename << code(rotate_left(h)) << ".html'>↻</a> "
-				<< "<a href='" << base_filename << code(mirror(h)) << ".html'>⇄</a> "
-				<< "<a href='" << base_filename << code(rotate_right(h)) << ".html'>↺</a>"
+				<< "<h1>Tag: " << tag << "<br><br>";
+
+			write_view_controls(html, v, base_filename);
+
+			html
 				<< "</h1>"
 				<< "<a href='index.html'>(index)</a>";
 
@@ -353,10 +396,10 @@ namespace
 				{
 					html
 						<< "<div style='display:inline-block;text-align:center'>"
-						<< "<a href='p" << n.index << code(h) << ".html'>"
-						<< nlspace(desc(g, n)) << "<br>"
+						<< "<a href='p" << n.index << code(v) << ".html'>"
+						<< nlspace(desc(g[n])) << "<br>"
 						<< "<img alt='' title='" << n.index << "' src='"
-						<< mkimg.png(output_dir, orient_canonically(g[n].position), h, 480, 360, ImageMaker::WhiteBg) << "'>"
+						<< mkimg.png(output_dir, orient_canonically(g[n].position), v, 480, 360, ImageMaker::WhiteBg) << "'>"
 						<< "</a></div>";
 				}
 
@@ -380,7 +423,7 @@ namespace
 						html
 							<< "<tr>"
 							<<   "<td style='text-align:right'><em>from</em> "
-							<<      "<a href='p" << from.index << "w.html'>" << nlspace(desc(g, from)) << "</a> <em>via</em>"
+							<<      "<a href='p" << from.index << "w.html'>" << nlspace(desc(g[from])) << "</a> <em>via</em>"
 							<<   "</td>"
 							<<   "<td";
 
@@ -399,12 +442,12 @@ namespace
 						html
 							<< "><div style='display:inline-block'>" << desc(g, trans.seq)
 							<<     "<img alt=''"
-							<<     " src='" << transition_gif(mkimg, output_dir, frames, h, bg_color(trans.top, trans.bottom)) << "'"
+							<<     " src='" << transition_gif(mkimg, output_dir, frames, v, bg_color(trans.top, trans.bottom)) << "'"
 							<<     " title='" << transition_image_title(g, trans.seq) << "'>"
 							<<     "</div>"
 							<<   "</td>"
 							<<   "<td style='text-align:left'><em>to</em> "
-							<<     "<a href='p" << to.index << "w.html'>" << nlspace(desc(g, to)) << "</a>"
+							<<     "<a href='p" << to.index << "w.html'>" << nlspace(desc(g[to])) << "</a>"
 							<<   "</td>"
 							<< "</tr>";
 					}
@@ -433,7 +476,7 @@ namespace
 		};
 
 		ImageMaker::BgColor bg_color(Trans const & t) { return ::bg_color(t.top, t.bottom); }
-
+		
 		struct Context
 		{
 			ImageMaker mkimg;
@@ -441,78 +484,117 @@ namespace
 			Graph const & graph;
 			NodeNum n;
 			vector<Trans> incoming, outgoing;
-			MirroredHeading heading;
+			ImageView view;
 		};
 
 		void write_incoming(Context const & ctx)
 		{
-			char const hc = code(ctx.heading);
+			if (ctx.incoming.empty()) return;
 
-			if (!ctx.incoming.empty())
+			ctx.html << "<td style='text-align:center;vertical-align:top'><b>Incoming transitions</b><table>\n";
+
+			foreach (trans : ctx.incoming)
 			{
-				ctx.html << "<td style='text-align:center;vertical-align:top'><b>Incoming transitions</b><table>\n";
+				auto const from_node = from(ctx.graph, trans.step).node;
 
-				foreach (trans : ctx.incoming)
-				{
-					auto const from_node = from(ctx.graph, trans.step).node;
-					auto c = bg_color(trans);
+				auto rotate_pos = orient_canonically(ctx.graph[from(ctx.graph, trans.step).node].position, true);
+				if (ctx.view.mirror) rotate_pos = mirror(rotate_pos);
+				if (is_sweep(ctx.graph, trans.step.seq)) std::swap(rotate_pos[0], rotate_pos[1]);
 
-					auto rotate_pos = orient_canonically(trans.frames.front(), true);
-					if (ctx.heading.mirror) rotate_pos = mirror(rotate_pos);
-
-					ctx.html
-						<< "<tr><td style='" << ImageMaker::css(c) << "'>"
-						<< "<em>from</em> <div style='display:inline-block'>"
-						<< "<a href='p" << from_node.index << hc << ".html'>"
-						<< nlbr(desc(ctx.graph, from_node)) << "<br>"
-						<< "<img alt='' title='" << from_node.index << "'"
-						<< " src='"
-						<< ctx.mkimg.rotation_gif(output_dir, rotate_pos, 160, 120, c)
-						<< "'></a></div> <em>via</em> <div style='display:inline-block'>"
-						<< desc(ctx.graph, trans.step.seq)
-						<< "<img alt='' src='" << trans.base_filename << hc << ".gif'"
-						<< " title='" << transition_image_title(ctx.graph, trans.step.seq) << "'>"
-						<< "</div> <em>to</em></td></tr>";
-				}
-
-				ctx.html << "</table></td>";
+				ctx.html
+					<< "<tr><td style='" << ImageMaker::css(bg_color(trans)) << "'>"
+					<< "<em>from</em> "
+					<< div("display:inline-block",
+						link("p" + to_string(from_node.index) + code(ctx.view) + ".html",
+							nlbr(desc(ctx.graph[from_node])) + "<br>"
+							+ img(to_string(from_node.index),
+								ctx.mkimg.rotation_gif(output_dir, rotate_pos, 160, 120, bg_color(trans)), "")))
+					<< " <em>via</em> "
+					<< div("display:inline-block",
+						desc(ctx.graph, trans.step.seq) +
+						img(transition_image_title(ctx.graph, trans.step.seq), trans.base_filename + code(ctx.view) + ".gif", ""))
+					<< "</div> <em>to</em></td></tr>";
 			}
+
+			ctx.html << "</table></td>";
 		}
 
 		void write_outgoing(Context const & ctx)
 		{
-			char const hc = code(ctx.heading);
+			if (ctx.outgoing.empty()) return;
 
-			if (!ctx.outgoing.empty())
+			ctx.html << "<td style='text-align:center;vertical-align:top'><b>Outgoing transitions</b><table>";
+
+			foreach (trans : ctx.outgoing)
 			{
-				ctx.html << "<td style='text-align:center;vertical-align:top'><b>Outgoing transitions</b><table>";
+				auto const to_node = to(ctx.graph, trans.step).node;
 
-				foreach (trans : ctx.outgoing)
-				{
-					auto const to_node = to(ctx.graph, trans.step).node;
-					auto c = bg_color(trans);
+				auto rotate_pos = orient_canonically(ctx.graph[to(ctx.graph, trans.step).node].position, true);
+				if (ctx.view.mirror) rotate_pos = mirror(rotate_pos);
+				if (is_sweep(ctx.graph, trans.step.seq)) std::swap(rotate_pos[0], rotate_pos[1]);
 
-					auto rotate_pos = orient_canonically(trans.frames.back(), true);
-					if (ctx.heading.mirror) rotate_pos = mirror(rotate_pos);
-
-					ctx.html
-						<< "<tr><td style='" << ImageMaker::css(c) << "'>"
-						<< "<em>via</em> <div style='display:inline-block'>"
-						<< desc(ctx.graph, trans.step.seq)
-						<< "<img alt='' src='" << trans.base_filename << hc << ".gif'"
-						<< " title='" << transition_image_title(ctx.graph, trans.step.seq) << "'>"
-						<< "</div> <em>to</em> <div style='display:inline-block'>"
-						<< "<a href='p" << to_node.index << hc << ".html'>"
-						<< nlbr(desc(ctx.graph, to_node)) << "<br>"
-						<< "<img alt='' title='" << to_node.index << "'"
-						<< " src='"
-						<< ctx.mkimg.rotation_gif(output_dir, rotate_pos, 160, 120, bg_color(trans))
-						<< "'>"
-						<< "</a></div></td></tr>";
-				}
-
-				ctx.html << "</table></td>";
+				ctx.html
+					<< "<tr><td style='" << ImageMaker::css(bg_color(trans)) << "'>"
+					<< "<em>via</em> <div style='display:inline-block'>"
+					<< desc(ctx.graph, trans.step.seq)
+					<< img(transition_image_title(ctx.graph, trans.step.seq), trans.base_filename + code(ctx.view) + ".gif", "")
+					<< "</div> <em>to</em> <div style='display:inline-block'>"
+					<< "<a href='p" << to_node.index << code(ctx.view) << ".html'>"
+					<< nlbr(desc(ctx.graph[to_node])) << "<br>"
+					<< img(to_string(to_node.index), ctx.mkimg.rotation_gif(output_dir, rotate_pos, 160, 120, bg_color(trans)), "")
+					<< "</a></div></td></tr>";
 			}
+
+			ctx.html << "</table></td>";
+		}
+
+		void write_center(Context const & ctx)
+		{
+			auto const pos = ctx.graph[ctx.n].position;
+
+			PositionReorientation const reo = canonical_reorientation(pos);
+
+			ctx.html
+				<< "<td style='text-align:center;vertical-align:top'><h3>Position:</h3>"
+				<< "<h1>" << nlbr(desc(ctx.graph[ctx.n])) << "</h1>"
+				<< "<br><br>"
+				<< img(to_string(ctx.n.index), ctx.mkimg.png(output_dir, reo(pos), ctx.view, 480, 360, ctx.mkimg.WhiteBg), "")
+				<< "<br>";
+
+			write_view_controls(ctx.html, ctx.view, "p" + to_string(ctx.n.index));
+
+			auto const t = tags_in_desc(ctx.graph[ctx.n].description);
+
+			if (!t.empty())
+			{
+				ctx.html << "<br><br>Tags:";
+
+				foreach(tag : t)
+					ctx.html << " <a href='tag-" << tag << "-" << code(ctx.view) << ".html'>" << tag << "</a>";
+			}
+
+			ctx.html << "<br><br>(<a href='index.html'>Index</a>)</td>";
+		}
+
+		void write_page(Context const & ctx)
+		{
+			char const hc = code(ctx.view);
+
+			ctx.html << html5head("position: " + nlspace(desc(ctx.graph[ctx.n]))) << "<body style='text-align:center'><table style='margin:0px auto'><tr>";
+
+			write_incoming(ctx);
+			write_center(ctx);
+			write_outgoing(ctx);
+
+			map<NodeNum, bool> m;
+			m[ctx.n] = true;
+			foreach(nn : nodes_around(ctx.graph, set<NodeNum>{ctx.n}, 2)) m[nn] = false;
+
+			ctx.html
+				<< "</tr></table>"
+				<< "<hr><h2>Neighbourhood</h2>"
+				<< "<p>Positions up to two transitions away (clickable)</p>"
+				<< make_svg(ctx.graph, m, hc) << "</body></html>";
 		}
 
 		void write_it(ImageMaker const mkimg, Graph const & graph, NodeNum const n)
@@ -522,10 +604,6 @@ namespace
 			cout << ' ' << n.index << std::flush;
 
 			set<NodeNum> nodes{n};
-
-			map<NodeNum, bool> m;
-			m[n] = true;
-			foreach(nn : nodes_around(graph, nodes, 2)) m[nn] = false;
 
 			auto const pos = graph[n].position;
 
@@ -600,48 +678,13 @@ namespace
 			order_transitions(incoming);
 			order_transitions(outgoing);
 
-			foreach (h : headings())
+			foreach (v : views())
 			{
-				char const hc = code(h);
+				char const vc = code(v);
 
-				ofstream html(output_dir + pname + hc + ".html");
-
-				html << html5head("position: " + nlspace(desc(graph, n))) << "<body style='text-align:center'><table style='margin:0px auto'><tr>";
-
-				Context ctx{mkimg, html, graph, n, incoming, outgoing, h};
-
-				write_incoming(ctx);
-
-				html
-					<< "<td style='text-align:center;vertical-align:top'><h3>Position:</h3><h1>"
-					<< nlbr(desc(graph, n)) << "<br><br>"
-					<< "<img alt='' title='" << n.index << "' src='"
-					<< mkimg.png(output_dir, reo(pos), h, 480, 360, mkimg.WhiteBg) << "'><br>"
-					<< "<a href='" << pname << code(rotate_left(h)) << ".html'>↻</a> "
-					<< "<a href='" << pname << code(mirror(h)) << ".html'>⇄</a> "
-					<< "<a href='" << pname << code(rotate_right(h)) << ".html'>↺</a> "
-					<< "</h1>";
-				
-				auto const t = tags_in_desc(graph[n].description);
-				if (!t.empty())
-				{
-					html << "Tags:";
-
-					foreach(tag : t)
-						html << " <a href='tag-" << tag << "-" << hc << ".html'>" << tag << "</a>";
-
-					html << "<br><br>";
-				}
-
-				html << "(<a href='index.html'>Index</a>)</td>";
-
-				write_outgoing(ctx);
-
-				html
-					<< "</tr></table>"
-					<< "<hr><h2>Neighbourhood</h2>"
-					<< "<p>Positions up to two transitions away (clickable)</p>"
-					<< make_svg(graph, m, hc) << "</body></html>";
+				ofstream html(output_dir + pname + vc + ".html");
+				Context ctx{mkimg, html, graph, n, incoming, outgoing, v};
+				write_page(ctx);
 			}
 		}
 	}

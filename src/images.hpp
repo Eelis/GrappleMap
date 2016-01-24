@@ -36,24 +36,24 @@ struct ImageMaker
 
 	string png(
 		string const output_dir,
-		Position const pos,
-		MirroredHeading,
-		unsigned const width, unsigned const height, BgColor const bg_color) const;
+		Position pos,
+		ImageView,
+		unsigned width, unsigned height, BgColor bg_color) const;
 
 	string rotation_gif(
-		string const output_dir, Position const p,
-		unsigned const width, unsigned const height, BgColor const bg_color) const;
+		string output_dir, Position const p,
+		unsigned width, unsigned height, BgColor bg_color) const;
 
 	string gif(
-		string const output_dir,
+		string output_dir,
 		vector<Position> const & frames,
-		MirroredHeading,
-		unsigned const width, unsigned const height, BgColor const bg_color) const;
+		ImageView,
+		unsigned width, unsigned height, BgColor bg_color) const;
 
 	string gifs(
-		string const output_dir,
+		string output_dir,
 		vector<Position> const & frames,
-		unsigned const width, unsigned const height, BgColor bg_color) const;
+		unsigned width, unsigned height, BgColor bg_color) const;
 
 private:
 

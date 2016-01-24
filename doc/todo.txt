@@ -14,16 +14,16 @@ gui
 - sticky floor
 - direction signs ("to truck", "zombie")
 - editing selected joints as a group
-- editing joints while the reorientation is mirrored goes wrong
+- editing joints while the reorientation is mirrored is broken
+- make {pre,post}fix length for demo mode configurable
 
 browseable pages:
-- find a better tool/library for generating gifs (need more speed and compression)
+- find a better tool/library for generating gifs (need more speed and compression) (Magick++ seems worth a try even though it's also ImageMagick..)
 - maybe embed videos encoded with e.g. x264?
 - nice urls for position pages
 - submission indicators
 - investigate graphviz alternatives
 - take tagged transitions into account in neighbourhood graphs on tag pages
-- show bidirectional transitions with a bidirectional arrow
 - make randomly generated scripts use bidirectional transitions in both directions
 - figure out better colors
 - in the graphs, it would be good to be able to tell really long and really short transitions apart

@@ -1,52 +1,51 @@
 #ifndef GRAPPLEMAP_HEADINGS_HPP
 #define GRAPPLEMAP_HEADINGS_HPP
 
-enum class Heading: unsigned { N, E, S, W };
+#include <array>
+#include "positions.hpp"
 
-struct MirroredHeading
+enum class Heading: uint8_t { N, E, S, W };
+
+struct ImageView
 {
-	Heading heading;
 	bool mirror;
+	optional<Heading> heading;
+	optional<PlayerNum> player;
 };
 
-inline vector<MirroredHeading> const headings() // todo: replace with something less silly
+inline std::array<Heading, 4> headings()
 {
-	return
-		{ {Heading::N, false}, {Heading::E, false}, {Heading::S, false}, {Heading::W, false}
-		, {Heading::N, true}, {Heading::E, true}, {Heading::S, true}, {Heading::W, true}
-		};
+	return { Heading::N, Heading::E, Heading::S, Heading::W };
+}
+
+inline char code(Heading const h) { return "nesw"[unsigned(h)]; }
+
+inline char code(ImageView const & view)
+{
+	char r;
+	if (view.heading) r = ::code(*view.heading);
+	else if (view.player) r = (*view.player == 0 ? 't' : 'b');
+	else abort();
+	return view.mirror ? std::toupper(r) : r;
+}
+
+inline vector<ImageView> views()
+{
+	vector<ImageView> vv;
+
+	foreach (h : headings())
+	foreach (b : {true, false})
+		vv.push_back(ImageView{b, h, {}});
+
+	foreach (p : playerNums())
+	foreach (b : {true, false})
+		vv.push_back(ImageView{b, {}, p});
+
+	return vv;
 }
 
 inline Heading rotate_left(Heading const h) { return Heading((unsigned(h) + 3) % 4); }
 inline Heading rotate_right(Heading const h) { return Heading((unsigned(h) + 1) % 4); }
-
-inline MirroredHeading rotate_left(MirroredHeading const mh)
-{
-	return MirroredHeading{rotate_left(mh.heading), mh.mirror};
-}
-
-inline MirroredHeading rotate_right(MirroredHeading const mh)
-{
-	return MirroredHeading{rotate_right(mh.heading), mh.mirror};
-}
-
-inline char code(MirroredHeading const mh)
-{
-	switch (mh.heading)
-	{
-		case Heading::N: return mh.mirror ? 'N' : 'n';
-		case Heading::E: return mh.mirror ? 'E' : 'e';
-		case Heading::S: return mh.mirror ? 'S' : 's';
-		case Heading::W: return mh.mirror ? 'W' : 'w';
-	}
-
-	abort();
-}
-
-inline MirroredHeading mirror(MirroredHeading const mh)
-{
-	return MirroredHeading{mh.heading, !mh.mirror};
-}
 
 inline double angle(Heading const h)
 {

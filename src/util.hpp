@@ -47,7 +47,7 @@ I minimal(I i, I e, F f)
 	return r;
 }
 
-#define foreach(x) for(auto && x)
+#define foreach(...) for(auto && __VA_ARGS__)
 
 inline void error(string const & s) { throw std::runtime_error(s); }
 

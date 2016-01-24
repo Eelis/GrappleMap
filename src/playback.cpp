@@ -140,9 +140,26 @@ bool dfsScene(
 {
 	if (size == 0) return true;
 
+	std::multimap<size_t, SeqNum> choices;
+
 	foreach (s : in_out[n.index].second)
 	{
-		if (find(scene.begin(), scene.end(), s) != scene.end()) continue;
+		if (std::find(scene.end() - std::min(scene.size(), 15ul), scene.end(), s) != scene.end()) continue;
+
+		size_t const c = std::count(scene.begin(), scene.end(), s);
+
+		if (c >= 2) continue;
+
+		if (scene.size() < 50 && c >= 1) continue;
+
+//		if (c == 1 && g[s].positions.size() > 5) continue;
+
+		choices.insert({c, s});
+	}
+
+	foreach (c : choices)
+	{
+		SeqNum const s = c.second;
 
 		scene.push_back(s);
 
@@ -330,7 +347,8 @@ int main(int const argc, char const * const * const argv)
 
 				renderWindow(
 					// views:
-					{ {0, 0, 1, 1, none, 90}
+					{ {0, 0, 1, 1, none, 80}
+					//{ {0, 0, 1, 1, optional<unsigned>(0), 90}
 			//		, {1-.3-.02, .02, .3, .3, optional<unsigned>(0), 90}
 			//		, {.02, .02, .3, .3, optional<unsigned>(1), 60}
 					},

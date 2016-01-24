@@ -32,6 +32,10 @@ constexpr uint32_t joint_count = sizeof(joints) / sizeof(Joint);
 
 using PlayerNum = unsigned;
 
+inline std::array<PlayerNum, 2> playerNums() { return {0, 1}; }
+
+inline char playerCode(PlayerNum const p){ return "tb"[p]; }
+
 inline PlayerNum opponent(PlayerNum const p) { return 1 - p; }
 
 struct PlayerJoint { PlayerNum player; Joint joint; };

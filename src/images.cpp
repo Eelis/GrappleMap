@@ -36,7 +36,46 @@ namespace
 			foreach (f : make_frames(gif_frames_dir)) command += gif_frames_dir + f + ' ';
 			command += output_dir + filename;
 
-			std::system(command.c_str());
+			if (std::system(command.c_str()) != 0)
+				throw std::runtime_error("command failed: " + command);
+		}
+	}
+
+	void make_png(
+		Graph const & graph,
+		GLFWwindow * window,
+		Position pos,
+		Camera const & camera,
+		unsigned width, unsigned height,
+		string const path, V3 const bg_color, View const view)
+	{
+		if (!boost::filesystem::exists(path))
+		{
+			Style style;
+			style.grid_color = bg_color * .8;
+			style.background_color = bg_color;
+
+			renderWindow(
+				{view},
+				nullptr, // no viables
+				graph, window, pos, camera,
+				none, // no highlighted joint
+				false, // not edit mode
+				0, 0, width, height,
+				{0},
+				style);
+
+			glfwSwapBuffers(window);
+
+			boost::gil::rgb8_pixel_t buf[width * height];
+
+			glFlush();
+			glFinish();
+
+			glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buf);
+
+			boost::gil::png_write_view(path,
+				boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf, width*3)));
 		}
 	}
 }
@@ -58,50 +97,36 @@ void ImageMaker::png(
 		camera.rotateHorizontal(angle);
 		camera.rotateVertical((ymax - 0.6)/2);
 
-		Style style;
-		style.grid_color = bg_color * .8;
-		style.background_color = bg_color;
-
-		renderWindow(
-			{ {0, 0, 1, 1, none, 45} }, // views
-			nullptr, // no viables
-			graph, window, pos, camera,
-			none, // no highlighted joint
-			false, // not edit mode
-			0, 0, width, height,
-			{0},
-			style);
-
-		glfwSwapBuffers(window);
-
-		boost::gil::rgb8_pixel_t buf[width * height];
-
-		glFlush();
-		glFinish();
-
-		glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buf);
-
-		boost::gil::png_write_view(output_dir + filename,
-			boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf, width*3)));
+		make_png(graph, window, pos, camera, width, height, output_dir + filename, bg_color, {0, 0, 1, 1, none, 45});
 	}
 }
 
 string ImageMaker::png(
 	string const output_dir,
 	Position pos,
-	MirroredHeading const heading,
-	unsigned const width, unsigned const height, BgColor const bg_color) const
+	ImageView const view,
+	unsigned const width, unsigned const height,
+	BgColor const bg_color) const
 {
-	string const filename
-		= to_string(boost::hash_value(pos))
-		+ code(heading)
+	string const filename =
+		to_string(boost::hash_value(pos))
+		+ code(view)
 		+ to_string(width) + 'x' + to_string(height)
 		+ '-' + to_string(bg_color)
 		+ ".png";
 
-	if (heading.mirror) pos = mirror(pos);
+	if (view.mirror) pos = mirror(pos);
 
-	png(output_dir, pos, angle(heading.heading), filename, width, height, color(bg_color));
+	if (view.heading)
+		png(output_dir, pos, angle(*view.heading), filename, width, height, color(bg_color));
+	else if (view.player)
+	{
+		Camera camera;
+
+		make_png(graph, window, pos, camera, width, height, output_dir + filename, color(bg_color),
+			{0, 0, 1, 1, *view.player, 80});
+	}
+	else abort();
 
 	return filename;
 }
@@ -133,20 +158,20 @@ string ImageMaker::rotation_gif(
 string ImageMaker::gif(
 	string const output_dir,
 	vector<Position> const & frames,
-	MirroredHeading const heading,
+	ImageView const view,
 	unsigned const width, unsigned const height, BgColor const bg_color) const
 {
 	string const filename
 		= to_string(boost::hash_value(frames))
 		+ to_string(width) + 'x' + to_string(height)
-		+ code(heading)
+		+ code(view)
 		+ '-' + to_string(bg_color)
 		+ ".gif";
 
 	make_gif(output_dir, filename, 3, [&](string const gif_frames_dir)
 		{
 			vector<string> v;
-			foreach (pos : frames) v.push_back(png(gif_frames_dir, pos, heading, width, height, bg_color));
+			foreach (pos : frames) v.push_back(png(gif_frames_dir, pos, view, width, height, bg_color));
 			return v;
 		});
 
@@ -163,11 +188,11 @@ string ImageMaker::gifs(
 		+ to_string(width) + 'x' + to_string(height)
 		+ '-' + to_string(bg_color);
 
-	foreach (h : headings())
-		make_gif(output_dir, base_filename + code(h) + ".gif", 3, [&](string const gif_frames_dir)
+	foreach (view : views())
+		make_gif(output_dir, base_filename + code(view) + ".gif", 3, [&](string const gif_frames_dir)
 			{
 				vector<string> v;
-				foreach (pos : frames) v.push_back(png(gif_frames_dir, pos, h, width, height, bg_color));
+				foreach (pos : frames) v.push_back(png(gif_frames_dir, pos, view, width, height, bg_color));
 				return v;
 			});
 
