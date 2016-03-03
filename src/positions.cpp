@@ -92,7 +92,7 @@ namespace
 }
 
 
-PositionReorientation inverse(PositionReorientation const x)
+PositionReorientation inverse(PositionReorientation const x) // formalized
 {
 	PositionReorientation r {inverse(x.reorientation), x.swap_players, x.mirror};
 	if (x.mirror)
@@ -106,7 +106,7 @@ PositionReorientation inverse(PositionReorientation const x)
 	return r;
 }
 
-PositionReorientation compose(PositionReorientation const a, PositionReorientation const b)
+PositionReorientation compose(PositionReorientation const a, PositionReorientation const b) // todo: formalize
 {
 	auto br = b.reorientation;
 
@@ -125,7 +125,7 @@ PositionReorientation compose(PositionReorientation const a, PositionReorientati
 	return r;
 }
 
-Position mirror(Position p)
+Position mirror(Position p) // formalized
 {
 	foreach (j : playerJoints) p[j].x = -p[j].x;
 	swapLimbs(p[0]);
@@ -246,29 +246,65 @@ optional<PositionReorientation> is_reoriented(Position const & a, Position b)
 	return r;
 }
 
-PositionReorientation canonical_reorientation(Position const & p, bool const dont_mirror)
+V2 heading(Position const & p) // formalized
 {
-	V2 const center = xz(p[0][Core] + p[1][Core]) / 2;
-
-	PositionReorientation reo;
-	reo.reorientation.offset.x = -center.x;
-	reo.reorientation.offset.z = -center.y;
-
-	PositionReorientation r2;
-	auto ding = xz(p[1][Head]) - (xz(p[1][LeftToe]) + xz(p[1][RightToe])) / 2;
-	r2.reorientation.angle = atan2(ding.x, ding.y);
-	r2.mirror = !dont_mirror && top_is_on_bottoms_left_side(p);
-
-	return compose(reo, r2);
+	return xz(p[1][Core] - p[0][Core]);
 }
 
-bool top_is_on_bottoms_left_side(Position const & p)
+double normalRotation(Position const & p) // formalized
 {
-	auto a = xz(p[1][LeftHip] - p[1][Head]);
-	auto b = xz(p[0][LeftHip] - p[1][Head]);
+	return -angle(heading(p));
+}
 
-	auto v = atan2(a.x, a.y);
-	auto w = atan2(b.x, b.y);
+V2 center(Position const & p) // formalized
+{
+	return xz(between(p[0][Core], p[1][Core]));
+}
 
-	return relative_angle(v, w) < 0;
+V3 y0(V2 v) { return {v.x, 0, v.y}; }
+
+V3 normalTranslation(Position const & p) { return y0(-center(p)); } // formalized
+
+template<typename F>
+Position mapCoords(Position p, F f) // formalized
+{
+	foreach (j : playerJoints) p[j] = f(p[j]);
+	return p;
+}
+
+Position rotate(double const a, Position const p) // formalized
+{
+	return mapCoords(p, [a](V3 v){ return yrot(a) * v; });
+}
+
+PositionReorientation canonical_reorientation_with_mirror(Position const & p) // formalized
+{
+	PositionReorientation reo;
+	reo.reorientation.angle = normalRotation(p);
+	reo.reorientation.offset = normalTranslation(rotate(reo.reorientation.angle, p));
+	reo.swap_players = false;
+	reo.mirror = apply(reo.reorientation, p)[1][Head].x >= 0;
+
+	return reo;
+}
+
+PositionReorientation canonical_reorientation_without_mirror(Position const & p)
+{
+	PositionReorientation reo;
+	reo.reorientation.angle = normalRotation(p);
+	reo.reorientation.offset = normalTranslation(rotate(reo.reorientation.angle, p));
+	reo.swap_players = false;
+	reo.mirror = false;
+
+	return reo;
+}
+
+Position orient_canonically_without_mirror(Position const & p)
+{
+	return canonical_reorientation_without_mirror(p)(p);
+}
+
+Position orient_canonically_with_mirror(Position const & p)
+{
+	return canonical_reorientation_with_mirror(p)(p);
 }

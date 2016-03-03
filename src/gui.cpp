@@ -300,7 +300,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				{
 					push_undo(w);
 					auto p = w.graph[w.location];
-					foreach (j : playerJoints) p[j] = xyz(yrot(-0.05) * V4(p[j], 1));
+					foreach (j : playerJoints) p[j] = yrot(-0.05) * p[j];
 					w.graph.replace(w.location, p, true);
 					break;
 				}
@@ -308,7 +308,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				{
 					push_undo(w);
 					auto p = w.graph[w.location];
-					foreach (j : playerJoints) p[j] = xyz(yrot(0.05) * V4(p[j], 1));
+					foreach (j : playerJoints) p[j] = yrot(0.05) * p[j];
 					w.graph.replace(w.location, p, true);
 					break;
 				}
@@ -523,8 +523,8 @@ int main(int const argc, char const * const * const argv)
 
 			if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) w.camera.rotateVertical(-0.05);
 			if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) w.camera.rotateVertical(0.05);
-			if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { w.camera.rotateHorizontal(-0.03); w.jiggle = M_PI; }
-			if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { w.camera.rotateHorizontal(0.03); w.jiggle = 0; }
+			if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { w.camera.rotateHorizontal(0.03); w.jiggle = M_PI; }
+			if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { w.camera.rotateHorizontal(-0.03); w.jiggle = 0; }
 			if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) w.camera.zoom(-0.05);
 			if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) w.camera.zoom(0.05);
 			if (glfwGetKey(window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS) forward(w);

@@ -106,7 +106,7 @@ namespace
 	string desc(Graph::Node const & n)
 	{
 		auto desc = n.description;
-		return desc.empty() ? "" : desc.front();
+		return desc.empty() ? "?" : desc.front();
 	}
 
 	string desc(Graph const & g, SeqNum const s)
@@ -310,19 +310,43 @@ namespace
 		return mkimg.gifs(output_dir, smoothen(frames), 160, 120, bg_color);
 	}
 
+	ImageView xmirror(ImageView const v)
+	{
+		assert(v.heading);
+
+		return
+			{ !v.mirror
+			, *v.heading == Heading::W || *v.heading == Heading::E
+				? opposite(*v.heading)
+				: *v.heading
+			, {}};
+	}
+
+	ImageView zmirror(ImageView const v)
+	{
+		assert(v.heading);
+
+		return
+			{ !v.mirror
+			, *v.heading == Heading::N || *v.heading == Heading::S
+				? opposite(*v.heading)
+				: *v.heading
+			, {}};
+	}
+
 	void write_view_controls(std::ostream & html, ImageView const view, string const base)
 	{
+		html << "View: ";
+
 		if (view.heading)
 		{
 			html
-				<< link(base + code(ImageView{view.mirror, rotate_left(*view.heading), {}}) + ".html", "↻")
-				<< ' '
-				<< link(base + code(ImageView{!view.mirror, view.heading, view.player}) + ".html", "⇄")
-				<< ' '
-				<< link(base + code(ImageView{view.mirror, rotate_right(*view.heading), {}}) + ".html", "↺")
-				<< "<br>"
-				<< link(base + "t.html", "<span style='color:red'>☻</span>")
-				<< link(base + "b.html", "<span style='color:blue'>☻</span>"); // todo: don't waste mirroring here or below
+				<< link(base + code(ImageView{view.mirror, rotate_left(*view.heading), {}}) + ".html", "↻") << ' '
+				<< link(base + code(ImageView{view.mirror, rotate_right(*view.heading), {}}) + ".html", "↺") << ", "
+				<< link(base + code(xmirror(view)) + ".html", "⇄") << ' '
+				<< link(base + code(zmirror(view)) + ".html", "⇅") << ", "
+				<< link(base + code(ImageView{view.mirror, {}, 0u}) + ".html", "<span style='color:red'>☻</span>")
+				<< link(base + code(ImageView{view.mirror, {}, 1u}) + ".html", "<span style='color:blue'>☻</span>");
 		}
 		else if (view.player)
 		{
@@ -332,21 +356,31 @@ namespace
 				<< link(base + player_code[1 - *view.player] + ".html",
 					string("<span style='color:") + (*view.player == 0 ? "blue" : "red") + "'>☻</span>")
 				<< ' '
-				<< link(base + code(ImageView{!view.mirror, view.heading, view.player}) + ".html", "⇄")
+				<< link(base + code(ImageView{!view.mirror, {}, view.player}) + ".html", "⇄")
 				<< ' '
-				<< link(base + "n.html", "3<sup><span style='font-size:smaller'>rd</span></sup>");
+				<< link(base + code(ImageView{view.mirror, Heading::N, {}}) + ".html", "3<sup><span style='font-size:smaller'>rd</span></sup>");
 		}
 		else abort();
+	}
+
+	double range(Position const & p)
+	{
+		return distanceSquared(p[0][Core], p[1][Core]);
 	}
 
 	void write_tag_page(ImageMaker const mkimg, Graph const & g, string const & tag)
 	{
 		cout << '.' << std::flush;
 
-		set<NodeNum> nodes;
+		vector<NodeNum> nodes;
 		foreach(n : tagged_nodes(g, tag))
-			nodes.insert(n);
+			nodes.push_back(n);
 
+		std::sort(nodes.begin(), nodes.end(),
+			[&](NodeNum a, NodeNum b)
+			{
+				return range(g[a].position) < range(g[b].position);
+			});
 
 		struct Trans { SeqNum seq; bool top, bottom; };
 
@@ -367,7 +401,7 @@ namespace
 
 		map<NodeNum, bool> m;
 		foreach(n : nodes) m[n] = true;
-		foreach(n : nodes_around(g, nodes)) m[n] = false;
+		foreach(n : nodes_around(g, std::set<NodeNum>(nodes.begin(), nodes.end()))) m[n] = false;
 
 		string const base_filename = "tag-" + tag + '-';
 
@@ -380,13 +414,10 @@ namespace
 			html
 				<< html5head("tag: " + tag)
 				<< "<body style='text-align:center'>"
-				<< "<h1>Tag: " << tag << "<br><br>";
+				<< "<h1>Tag: " << tag << "</h1><br>"
+				<< "(<a href='index.html'>back to index</a>)<br><br>";
 
 			write_view_controls(html, v, base_filename);
-
-			html
-				<< "</h1>"
-				<< "<a href='index.html'>(index)</a>";
 
 			if (!nodes.empty())
 			{
@@ -399,7 +430,7 @@ namespace
 						<< "<a href='p" << n.index << code(v) << ".html'>"
 						<< nlspace(desc(g[n])) << "<br>"
 						<< "<img alt='' title='" << n.index << "' src='"
-						<< mkimg.png(output_dir, orient_canonically(g[n].position), v, 480, 360, ImageMaker::WhiteBg) << "'>"
+						<< mkimg.png(output_dir, orient_canonically_with_mirror(g[n].position), v, 480, 360, ImageMaker::WhiteBg) << "'>"
 						<< "</a></div>";
 				}
 
@@ -435,7 +466,7 @@ namespace
 						if (g.from(trans.seq).reorientation.swap_players)
 							foreach (p : frames)  std::swap(p[0], p[1]);
 
-						auto const reo = canonical_reorientation(frames.front());
+						auto const reo = canonical_reorientation_with_mirror(frames.front());
 
 						foreach (p : frames)  p = reo(p);
 
@@ -473,6 +504,7 @@ namespace
 			bool top, bottom;
 			vector<Position> frames;
 			string base_filename;
+			NodeNum other_node;
 		};
 
 		ImageMaker::BgColor bg_color(Trans const & t) { return ::bg_color(t.top, t.bottom); }
@@ -494,27 +526,22 @@ namespace
 			ctx.html << "<td style='text-align:center;vertical-align:top'><b>Incoming transitions</b><table>\n";
 
 			foreach (trans : ctx.incoming)
-			{
-				auto const from_node = from(ctx.graph, trans.step).node;
-
-				auto rotate_pos = orient_canonically(ctx.graph[from(ctx.graph, trans.step).node].position, true);
-				if (ctx.view.mirror) rotate_pos = mirror(rotate_pos);
-				if (is_sweep(ctx.graph, trans.step.seq)) std::swap(rotate_pos[0], rotate_pos[1]);
-
 				ctx.html
 					<< "<tr><td style='" << ImageMaker::css(bg_color(trans)) << "'>"
 					<< "<em>from</em> "
 					<< div("display:inline-block",
-						link("p" + to_string(from_node.index) + code(ctx.view) + ".html",
-							nlbr(desc(ctx.graph[from_node])) + "<br>"
-							+ img(to_string(from_node.index),
-								ctx.mkimg.rotation_gif(output_dir, rotate_pos, 160, 120, bg_color(trans)), "")))
+						link("p" + to_string(trans.other_node.index) + code(ctx.view) + ".html",
+							nlbr(desc(ctx.graph[trans.other_node])) + "<br>"
+							+ img(to_string(trans.other_node.index),
+								ctx.mkimg.rotation_gif(
+									output_dir, trans.frames.front(),
+									ctx.view, 160, 120, bg_color(trans)),
+								"")))
 					<< " <em>via</em> "
 					<< div("display:inline-block",
 						desc(ctx.graph, trans.step.seq) +
 						img(transition_image_title(ctx.graph, trans.step.seq), trans.base_filename + code(ctx.view) + ".gif", ""))
 					<< "</div> <em>to</em></td></tr>";
-			}
 
 			ctx.html << "</table></td>";
 		}
@@ -526,39 +553,33 @@ namespace
 			ctx.html << "<td style='text-align:center;vertical-align:top'><b>Outgoing transitions</b><table>";
 
 			foreach (trans : ctx.outgoing)
-			{
-				auto const to_node = to(ctx.graph, trans.step).node;
-
-				auto rotate_pos = orient_canonically(ctx.graph[to(ctx.graph, trans.step).node].position, true);
-				if (ctx.view.mirror) rotate_pos = mirror(rotate_pos);
-				if (is_sweep(ctx.graph, trans.step.seq)) std::swap(rotate_pos[0], rotate_pos[1]);
-
 				ctx.html
 					<< "<tr><td style='" << ImageMaker::css(bg_color(trans)) << "'>"
 					<< "<em>via</em> <div style='display:inline-block'>"
 					<< desc(ctx.graph, trans.step.seq)
 					<< img(transition_image_title(ctx.graph, trans.step.seq), trans.base_filename + code(ctx.view) + ".gif", "")
 					<< "</div> <em>to</em> <div style='display:inline-block'>"
-					<< "<a href='p" << to_node.index << code(ctx.view) << ".html'>"
-					<< nlbr(desc(ctx.graph[to_node])) << "<br>"
-					<< img(to_string(to_node.index), ctx.mkimg.rotation_gif(output_dir, rotate_pos, 160, 120, bg_color(trans)), "")
+					<< "<a href='p" << trans.other_node.index << code(ctx.view) << ".html'>"
+					<< nlbr(desc(ctx.graph[trans.other_node])) << "<br>"
+					<< img(to_string(trans.other_node.index),
+						ctx.mkimg.rotation_gif(
+							output_dir, trans.frames.back(),
+							ctx.view, 160, 120, bg_color(trans)),
+						"")
 					<< "</a></div></td></tr>";
-			}
 
 			ctx.html << "</table></td>";
 		}
 
 		void write_center(Context const & ctx)
 		{
-			auto const pos = ctx.graph[ctx.n].position;
-
-			PositionReorientation const reo = canonical_reorientation(pos);
+			auto const pos_to_show = orient_canonically_with_mirror(ctx.graph[ctx.n].position);
 
 			ctx.html
 				<< "<td style='text-align:center;vertical-align:top'><h3>Position:</h3>"
 				<< "<h1>" << nlbr(desc(ctx.graph[ctx.n])) << "</h1>"
 				<< "<br><br>"
-				<< img(to_string(ctx.n.index), ctx.mkimg.png(output_dir, reo(pos), ctx.view, 480, 360, ctx.mkimg.WhiteBg), "")
+				<< img(to_string(ctx.n.index), ctx.mkimg.png(output_dir, pos_to_show, ctx.view, 480, 360, ctx.mkimg.WhiteBg), "")
 				<< "<br>";
 
 			write_view_controls(ctx.html, ctx.view, "p" + to_string(ctx.n.index));
@@ -607,7 +628,8 @@ namespace
 
 			auto const pos = graph[n].position;
 
-			PositionReorientation const reo = canonical_reorientation(pos);
+			PositionReorientation const reo = canonical_reorientation_with_mirror(pos);
+			assert(!reo.swap_players);
 
 			vector<Trans> incoming, outgoing;
 
@@ -616,7 +638,9 @@ namespace
 			foreach (step : in_steps(graph, n))
 			{
 				auto v = frames_for_step(graph, step);
-				auto const this_side = step.reverse ? graph.from(step.seq) : graph.to(step.seq);
+
+				auto const this_side = to(graph, step);
+				auto const other_side = from(graph, step);
 
 				foreach (p : v) p = reo(inverse(this_side.reorientation)(p));
 				assert(basicallySame(v.back(), reo(pos)));
@@ -633,7 +657,7 @@ namespace
 				else if (bottom && sweep)
 				{ bottom = false; top = true; }
 
-				incoming.push_back({step, top, bottom, v, {}});
+				incoming.push_back({step, top, bottom, v, {}, other_side.node});
 
 				longest_in = std::max(longest_in, v.size());
 			}
@@ -648,14 +672,16 @@ namespace
 			foreach (step : out_steps(graph, n))
 			{
 				auto v = frames_for_step(graph, step);
-				auto const this_side = step.reverse ? graph.to(step.seq) : graph.from(step.seq);
+
+				auto const this_side = from(graph, step);
+				auto const other_side = to(graph, step);
 
 				foreach (p : v) p = reo(inverse(this_side.reorientation)(p));
 				assert(basicallySame(v.front(), reo(pos)));
 
 				auto const props = properties(graph, step.seq);
 
-				outgoing.push_back({step, props.count("top")!=0, props.count("bottom")!=0, v, {}});
+				outgoing.push_back({step, props.count("top")!=0, props.count("bottom")!=0, v, {}, other_side.node});
 				longest_out = std::max(longest_out, v.size());
 			}
 

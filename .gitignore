@@ -1,5 +1,9 @@
 *.o
+*.pyc
+*.vo
+*.glob
 .sconsign.dblite
+proofs/deps
 src/grapplemap-gui
 src/grapplemap-playback
 src/grapplemap-todot

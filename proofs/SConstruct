@@ -1,0 +1,11 @@
+import os
+
+env = DefaultEnvironment(ENV = os.environ, tools=['default', 'Coq'])
+(vs, vos, globs) = env.SConscript(dirs='.')
+
+Default('.')
+
+vs_string = ' '.join(map(str, vs))
+
+os.system('coqdep -R . . ' + vs_string + ' > deps')
+ParseDepends('deps')

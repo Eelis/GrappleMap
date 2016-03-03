@@ -47,6 +47,19 @@ inline vector<ImageView> views()
 inline Heading rotate_left(Heading const h) { return Heading((unsigned(h) + 3) % 4); }
 inline Heading rotate_right(Heading const h) { return Heading((unsigned(h) + 1) % 4); }
 
+inline Heading opposite(Heading h)
+{
+	switch (h)
+	{
+		case Heading::N: return Heading::S;
+		case Heading::S: return Heading::N;
+		case Heading::E: return Heading::W;
+		case Heading::W: return Heading::E;
+	}
+
+	abort();
+}
+
 inline double angle(Heading const h)
 {
 	return M_PI * 0.5 * unsigned(h);

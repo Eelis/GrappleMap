@@ -238,6 +238,11 @@ inline Position apply(Reorientation const & r, Position p)
 	return p;
 }
 
+inline void swap_players(Position & p)
+{
+	std::swap(p[0], p[1]);
+}
+
 struct PositionReorientation
 {
 	Reorientation reorientation;
@@ -251,7 +256,7 @@ struct PositionReorientation
 	{
 		p = apply(reorientation, p);
 		if (mirror) p = ::mirror(p);
-		if (swap_players) std::swap(p[0], p[1]);
+		if (swap_players) ::swap_players(p);
 		return p;
 	}
 };
@@ -289,11 +294,10 @@ inline bool operator==(PositionReorientation const & a, PositionReorientation co
 	return a.reorientation == b.reorientation && a.swap_players == b.swap_players && a.mirror == b.mirror;
 }
 
-PositionReorientation canonical_reorientation(Position const &, bool dont_mirror = false);
+PositionReorientation canonical_reorientation_without_mirror(Position const &);
+PositionReorientation canonical_reorientation_with_mirror(Position const &);
 
-inline Position orient_canonically(Position const & p, bool const dont_mirror = false)
-{
-	return canonical_reorientation(p, dont_mirror)(p);
-}
+Position orient_canonically_without_mirror(Position const &);
+Position orient_canonically_with_mirror(Position const &);
 
 #endif

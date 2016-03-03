@@ -41,7 +41,7 @@ struct ImageMaker
 		unsigned width, unsigned height, BgColor bg_color) const;
 
 	string rotation_gif(
-		string output_dir, Position const p,
+		string output_dir, Position, ImageView,
 		unsigned width, unsigned height, BgColor bg_color) const;
 
 	string gif(

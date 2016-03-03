@@ -29,12 +29,12 @@ inline double inner_prod(V3 a, V3 b) { return a.x * b.x + a.y * b.y + a.z * b.z;
 
 using M = std::array<double, 16>;
 
-inline M yrot(double a)
+inline M yrot(double a) // formalized
 {
 	return
-		{ cos(a), 0, sin(a), 0
+		{ cos(a), 0, -sin(a), 0
 		, 0, 1, 0, 0
-		, -sin(a), 0, cos(a), 0
+		, sin(a), 0, cos(a), 0
 		, 0, 0, 0, 1 };
 }
 
@@ -86,6 +86,7 @@ inline double norm2(V3 v){ return sqrt(inner_prod(v, v)); }
 
 inline V2 operator-(V2 a, V2 b) { return {a.x - b.x, a.y - b.y}; }
 inline V3 operator-(V3 a, V3 b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
+inline V2 operator-(V2 v) { return {-v.x, -v.y}; }
 inline V3 operator-(V3 v) { return {-v.x, -v.y, -v.z}; }
 inline V4 operator-(V4 a, V4 b) { return {{a.x - b.x, a.y - b.y, a.z - b.z}, a.w - b.w}; }
 inline V2 operator+(V2 a, V2 b) { return {a.x + b.x, a.y + b.y}; }
@@ -119,14 +120,20 @@ inline double distanceSquared(V2 from, V2 to) { return inner_prod(to - from, to 
 inline double distanceSquared(V3 from, V3 to) { return inner_prod(to - from, to - from); }
 
 inline V3 between(V3 const a, V3 const b) { return (a + b) / 2; }
+inline V2 between(V2 const a, V2 const b) { return (a + b) / 2; }
 
-inline V4 operator*(M const & m, V4 const v)
+inline V4 operator*(M const & m, V4 const v) // TODO: formalize
 {
 	return
 		{{ m[0]*v.x + m[4]*v.y + m[8]*v.z + m[12]
 		, m[1]*v.x + m[5]*v.y + m[9]*v.z + m[13]
 		, m[2]*v.x + m[6]*v.y + m[10]*v.z + m[14]}
 		, m[3]*v.x + m[7]*v.y + m[11]*v.z + m[15]};
+}
+
+inline V3 operator*(M const & m, V3 const v)
+{
+	return xyz(m * V4(v, 1));
 }
 
 inline M operator*(M const & a, M const & b)
@@ -198,47 +205,21 @@ inline auto members(Reorientation const & r) { return std::tie(r.offset, r.angle
 inline bool operator==(Reorientation const & a, Reorientation const & b) { return members(a) == members(b); }
 inline bool operator<(Reorientation const & a, Reorientation const & b) { return members(a) < members(b); }
 
-inline V3 apply(Reorientation const & r, V3 v)
+inline V3 apply(Reorientation const & r, V3 v) // formalized
 {
-	return xyz(yrot(r.angle) * (V4(v, 1))) + r.offset;
+	return (yrot(r.angle) * v) + r.offset;
 }
 
-inline Reorientation inverse(Reorientation x)
+inline Reorientation inverse(Reorientation x) // formalized
 {
-	Reorientation r{xyz(yrot(-x.angle)*V4(-x.offset, 1)), -x.angle};
-	#ifndef NDEBUG
-		V3 test{1,0,1};
-		assert(distanceSquared(apply(r, apply(x, test)), test) < 0.001);
-	#endif
-	return r;
+	return {(yrot(-x.angle) * -x.offset), -x.angle};
 }
 
-inline Reorientation compose(Reorientation const a, Reorientation const b)
+inline Reorientation compose(Reorientation const a, Reorientation const b) // formalized
 {
-	auto const r = Reorientation{b.offset + xyz(yrot(b.angle) * V4(a.offset, 1)), a.angle + b.angle};
-
-	#ifndef NDEBUG
-		V3 test{1,0,1};
-		assert(distanceSquared(apply(r, test), apply(b, apply(a, test))) < 0.001);
-	#endif
-
-	return r;
+	return {b.offset + (yrot(b.angle) * a.offset), a.angle + b.angle};
 }
 
-inline double angle(V2 const v) { return atan2(v.y, v.x); }
-
-inline double relative_angle(double a, double base)
-{
-	if (base < a)
-	{
-		double d = a - base;
-		return d < M_PI ? d : d - 2*M_PI;
-	}
-	else
-	{
-		double d = base - a;
-		return d < M_PI ? -d : 2*M_PI - d;
-	}
-}
+inline double angle(V2 const v) { return atan2(v.x, v.y); }
 
 #endif

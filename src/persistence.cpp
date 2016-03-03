@@ -182,7 +182,7 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 			<< "<TD HREF=\"p" << n.index <<  heading << ".html\">";
 
 		if (!graph[n].description.empty())
-			o << replace_all(graph[n].description.front(), "\\n", "<BR/>");
+			o << replace_all(replace_all(graph[n].description.front(), "\\n", "<BR/>"), "&", "&amp;");
 		else
 			o << n.index;
 

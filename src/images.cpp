@@ -132,9 +132,11 @@ string ImageMaker::png(
 }
 
 string ImageMaker::rotation_gif(
-	string const output_dir, Position const p,
+	string const output_dir, Position p, ImageView const view,
 	unsigned const width, unsigned const height, BgColor const bg_color) const
 {
+	if (view.mirror) p = mirror(p);
+
 	string const base_filename = to_string(boost::hash_value(p)) + "rot" + to_string(bg_color);
 	string const gif_filename = base_filename + ".gif";
 
