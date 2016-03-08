@@ -260,6 +260,11 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					}
 					break;
 
+
+				case GLFW_KEY_I:
+					w.reorientation.mirror = !w.reorientation.mirror;
+					break;
+
 				// set joint to prev/next/center
 
 				case GLFW_KEY_H:
