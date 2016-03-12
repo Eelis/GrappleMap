@@ -30,7 +30,7 @@ struct Style
 void renderText(FTGLPixmapFont const &, V2 where, string const &, V3 color);
 
 void renderWindow(vector<View> const &,
-	Viables const *, Graph const &, GLFWwindow *, Position const &,
+	Viables const *, Graph const &, Position const &,
 	Camera, optional<PlayerJoint> highlight_joint, bool edit_mode,
 	int left, int bottom, int width, int height,
 	SeqNum current_sequence,

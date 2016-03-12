@@ -144,25 +144,51 @@ void save(Graph const & g, string const filename)
 	foreach(s : seqnums(g)) f << g[s];
 }
 
-Script readScript(Graph const & graph, string const filename)
+Path readScene(Graph const & graph, string const filename)
 {
 	std::ifstream f(filename);
 	if (!f) error(filename + ": " + std::strerror(errno));
 
-	vector<SeqNum> r;
-	string seq;
+	optional<NodeNum> prev_node;
+
+	Path path;
+	string desc;
 	unsigned lineNr = 0;
 
-	while (++lineNr, std::getline(f, seq))
-		if (std::all_of(seq.begin(), seq.end(), (int(*)(int))std::isdigit))
-			r.push_back(SeqNum{unsigned(std::stoul(seq))});
-		else if (optional<SeqNum> const sn = seq_by_desc(graph, seq))
-			r.push_back(*sn);
-		else error(
-			filename + ": line " + to_string(lineNr)
-			+ ": unknown sequence: \"" + seq + '"');
+	while (++lineNr, std::getline(f, desc))
+		try
+		{
+			if (optional<NodeNum> const n = node_by_desc(graph, desc))
+			{
+				if (prev_node)
+				{
+					foreach (step : out_steps(graph, *prev_node))
+						if (to(graph, step).node == *n)
+						{
+							path.push_back(step);
+							goto found;
+						}
 
-	return {r};
+					error("could not find transition");
+
+					found:;
+				}
+
+				prev_node = n;
+			}
+			else if (auto const step = step_by_desc(graph, desc, prev_node))
+			{
+				path.push_back(*step);
+				prev_node = to(graph, *step).node;
+			}
+			else error("unknown: \"" + desc + '"');
+		}
+		catch (std::exception const & e)
+		{
+			error(filename + ": line " + to_string(lineNr) + ": " + e.what());
+		}
+
+	return path;
 }
 
 void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* highlight */> const & nodes, char const heading)

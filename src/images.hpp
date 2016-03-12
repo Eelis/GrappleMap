@@ -4,11 +4,35 @@
 #include "graph.hpp"
 #include "headings.hpp"
 #include <GLFW/glfw3.h>
+#include <GL/osmesa.h>
 
-struct ImageMaker
+#define USE_OSMESA 0
+	// TODO: Figure out how to make anti-aliasing work with osmesa.
+
+class ImageMaker
 {
-	GLFWwindow * const window;
 	Graph const & graph;
+
+	#if USE_OSMESA
+		OSMesaContext ctx = nullptr;
+	#else
+		GLFWwindow * window = nullptr;
+	#endif
+
+	void png(
+		string output_dir,
+		Position pos,
+		double angle,
+		string filename,
+		unsigned width, unsigned height, V3 bg_color) const;
+
+public:
+
+	ImageMaker(Graph const &);
+	~ImageMaker();
+
+	ImageMaker(ImageMaker const &) = delete;
+	ImageMaker & operator=(ImageMaker const &) = delete;
 
 	enum BgColor { RedBg, BlueBg, WhiteBg };
 
@@ -35,34 +59,23 @@ struct ImageMaker
 	}
 
 	string png(
-		string const output_dir,
-		Position pos,
-		ImageView,
-		unsigned width, unsigned height, BgColor bg_color) const;
+		string output_dir, Position, ImageView,
+		unsigned width, unsigned height, BgColor) const;
 
 	string rotation_gif(
 		string output_dir, Position, ImageView,
-		unsigned width, unsigned height, BgColor bg_color) const;
+		unsigned width, unsigned height, BgColor) const;
 
 	string gif(
 		string output_dir,
 		vector<Position> const & frames,
 		ImageView,
-		unsigned width, unsigned height, BgColor bg_color) const;
+		unsigned width, unsigned height, BgColor) const;
 
 	string gifs(
 		string output_dir,
 		vector<Position> const & frames,
-		unsigned width, unsigned height, BgColor bg_color) const;
-
-private:
-
-	void png(
-		string output_dir,
-		Position pos,
-		double angle,
-		string filename,
-		unsigned width, unsigned height, V3 bg_color) const;
+		unsigned width, unsigned height, BgColor) const;
 };
 
 #endif

@@ -33,19 +33,25 @@ optional<SeqNum> erase_sequence(Graph & g, SeqNum const sn)
 	return SeqNum{sn.index == 0 ? 0 : sn.index - 1};
 }
 
-optional<SeqNum> seq_by_desc(Graph const & g, string const & desc)
+optional<Step> step_by_desc(Graph const & g, string const & desc, optional<NodeNum> const from)
 {
 	foreach(sn : seqnums(g))
-		if (replace_all(g[sn].description.front(), "\\n", " ") == desc)
-			return sn;
+		if (replace_all(g[sn].description.front(), "\\n", " ") == desc
+			|| desc == "t" + to_string(sn.index))
+		{
+			if (!from || g.from(sn).node == *from)
+				return Step{sn, false};
+			if (is_bidirectional(g[sn]) && g.to(sn).node == *from)
+				return Step{sn, true};
+		}
 
 	return none;
 }
 
 optional<NodeNum> node_by_desc(Graph const & g, string const & desc)
 {
-	if (all_digits(desc))
-		return NodeNum{uint16_t(std::stoul(desc))};
+	if (desc.size() >= 2 && desc.front() == 'p' && all_digits(desc.substr(1)))
+		return NodeNum{uint16_t(std::stoul(desc.substr(1)))};
 
 	foreach(n : nodenums(g))
 	{
@@ -53,6 +59,15 @@ optional<NodeNum> node_by_desc(Graph const & g, string const & desc)
 		if (!d.empty() && replace_all(d.front(), "\\n", " ") == desc)
 			return n;
 	}
+
+	return none;
+}
+
+optional<PositionInSequence> posinseq_by_desc(Graph const & g, string const & s)
+{
+	if (auto step = step_by_desc(g, s)) return first_pos_in(step->seq);
+
+	if (auto n = node_by_desc(g, s)) return node_as_posinseq(g, *n);
 
 	return none;
 }
@@ -68,7 +83,7 @@ optional<PositionInSequence> node_as_posinseq(Graph const & g, NodeNum const nod
 
 void split_at(Graph & g, PositionInSequence const pis)
 {
-	if (node(g, pis)) throw std::runtime_error("cannot split node");
+	if (node(g, pis)) throw runtime_error("cannot split node");
 
 	Sequence a = g[pis.sequence], b = a;
 	
@@ -272,6 +287,38 @@ set<NodeNum> nodes_around(Graph const & g, set<NodeNum> const & nodes, unsigned 
 				r.insert(n);
 			}
 	}
+
+	return r;
+}
+
+vector<Path> in_paths(Graph const & g, NodeNum const node, unsigned size)
+{
+	if (size == 0) return {{}};
+
+	vector<Path> r;
+
+	foreach (x : in_steps(g, node))
+		foreach (e : in_paths(g, from(g, x).node, size - 1))
+		{
+			e.push_back(x);
+			r.push_back(e);
+		}
+
+	return r;
+}
+
+vector<Path> out_paths(Graph const & g, NodeNum const node, unsigned size)
+{
+	if (size == 0) return {{}};
+
+	vector<Path> r;
+
+	foreach (x : out_steps(g, node))
+		foreach (e : out_paths(g, to(g, x).node, size - 1))
+		{
+			e.insert(e.begin(), x);
+			r.push_back(e);
+		}
 
 	return r;
 }

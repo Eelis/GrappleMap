@@ -8,10 +8,7 @@
 #include "rendering.hpp"
 #include "images.hpp"
 #include "graph_util.hpp"
-#include <GLFW/glfw3.h>
-#include <GL/glu.h>
 #include <boost/program_options.hpp>
-#include <boost/range/distance.hpp>
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -298,7 +295,7 @@ namespace
 		ImageView const v,
 		ImageMaker::BgColor const bg_color)
 	{
-		return mkimg.gif(output_dir, smoothen(frames), v, 160, 120, bg_color);
+		return mkimg.gif(output_dir, smoothen(frames), v, 200, 150, bg_color);
 	}
 
 	string transition_gifs(
@@ -307,7 +304,7 @@ namespace
 		vector<Position> frames,
 		ImageMaker::BgColor const bg_color)
 	{
-		return mkimg.gifs(output_dir, smoothen(frames), 160, 120, bg_color);
+		return mkimg.gifs(output_dir, smoothen(frames), 200, 150, bg_color);
 	}
 
 	ImageView xmirror(ImageView const v)
@@ -368,7 +365,7 @@ namespace
 		return distanceSquared(p[0][Core], p[1][Core]);
 	}
 
-	void write_tag_page(ImageMaker const mkimg, Graph const & g, string const & tag)
+	void write_tag_page(ImageMaker const & mkimg, Graph const & g, string const & tag)
 	{
 		cout << '.' << std::flush;
 
@@ -511,13 +508,22 @@ namespace
 		
 		struct Context
 		{
-			ImageMaker mkimg;
+			ImageMaker const & mkimg;
 			std::ostream & html;
 			Graph const & graph;
 			NodeNum n;
 			vector<Trans> incoming, outgoing;
 			ImageView view;
 		};
+
+		string transition_card(Context const & ctx, Trans const & trans)
+		{
+			return "<em>via</em> "
+				+ div("display:inline-block",
+					desc(ctx.graph, trans.step.seq) +
+					img(transition_image_title(ctx.graph, trans.step.seq), trans.base_filename + code(ctx.view) + ".gif", ""))
+				+ " <em>to</em>";
+		}
 
 		void write_incoming(Context const & ctx)
 		{
@@ -526,22 +532,22 @@ namespace
 			ctx.html << "<td style='text-align:center;vertical-align:top'><b>Incoming transitions</b><table>\n";
 
 			foreach (trans : ctx.incoming)
+			{
+				auto const v = is_sweep(ctx.graph, trans.step.seq) ? xmirror(ctx.view) : ctx.view;
+
 				ctx.html
 					<< "<tr><td style='" << ImageMaker::css(bg_color(trans)) << "'>"
 					<< "<em>from</em> "
 					<< div("display:inline-block",
-						link("p" + to_string(trans.other_node.index) + code(ctx.view) + ".html",
+						link("p" + to_string(trans.other_node.index) + code(v) + ".html",
 							nlbr(desc(ctx.graph[trans.other_node])) + "<br>"
 							+ img(to_string(trans.other_node.index),
 								ctx.mkimg.rotation_gif(
-									output_dir, trans.frames.front(),
-									ctx.view, 160, 120, bg_color(trans)),
+									output_dir, translateNormal(trans.frames.front()),
+									ctx.view, 200, 150, bg_color(trans)),
 								"")))
-					<< " <em>via</em> "
-					<< div("display:inline-block",
-						desc(ctx.graph, trans.step.seq) +
-						img(transition_image_title(ctx.graph, trans.step.seq), trans.base_filename + code(ctx.view) + ".gif", ""))
-					<< "</div> <em>to</em></td></tr>";
+					<< ' ' << transition_card(ctx, trans) << "</td></tr>";
+			}
 
 			ctx.html << "</table></td>";
 		}
@@ -553,20 +559,22 @@ namespace
 			ctx.html << "<td style='text-align:center;vertical-align:top'><b>Outgoing transitions</b><table>";
 
 			foreach (trans : ctx.outgoing)
+			{
+				auto const v = is_sweep(ctx.graph, trans.step.seq) ? xmirror(ctx.view) : ctx.view;
+
 				ctx.html
 					<< "<tr><td style='" << ImageMaker::css(bg_color(trans)) << "'>"
-					<< "<em>via</em> <div style='display:inline-block'>"
-					<< desc(ctx.graph, trans.step.seq)
-					<< img(transition_image_title(ctx.graph, trans.step.seq), trans.base_filename + code(ctx.view) + ".gif", "")
-					<< "</div> <em>to</em> <div style='display:inline-block'>"
-					<< "<a href='p" << trans.other_node.index << code(ctx.view) << ".html'>"
+					<< transition_card(ctx, trans)
+					<< " <div style='display:inline-block'>"
+					<< "<a href='p" << trans.other_node.index << code(v) << ".html'>"
 					<< nlbr(desc(ctx.graph[trans.other_node])) << "<br>"
 					<< img(to_string(trans.other_node.index),
 						ctx.mkimg.rotation_gif(
-							output_dir, trans.frames.back(),
-							ctx.view, 160, 120, bg_color(trans)),
+							output_dir, translateNormal(trans.frames.back()),
+							ctx.view, 200, 150, bg_color(trans)),
 						"")
 					<< "</a></div></td></tr>";
+			}
 
 			ctx.html << "</table></td>";
 		}
@@ -618,7 +626,7 @@ namespace
 				<< make_svg(ctx.graph, m, hc) << "</body></html>";
 		}
 
-		void write_it(ImageMaker const mkimg, Graph const & graph, NodeNum const n)
+		void write_it(ImageMaker const & mkimg, Graph const & graph, NodeNum const n)
 		{
 			string const pname = "p" + to_string(n.index);
 
@@ -725,20 +733,10 @@ int main(int const argc, char const * const * const argv)
 
 		Graph const graph = loadGraph(config->db);
 
-		if (!glfwInit()) error("could not initialize GLFW");
-
-		// glfwWindowHint(GLFW_VISIBLE, GL_FALSE); // TODO: figure out how to make this work
-
-		GLFWwindow * const window = glfwCreateWindow(640, 480, "Jiu Jitsu Map", nullptr, nullptr);
-
-		if (!window) error("could not create window");
-
-		glfwMakeContextCurrent(window);
-
 		write_index(graph);
 		write_todo(graph);
 
-		ImageMaker const mkimg{ window, graph };
+		ImageMaker const mkimg(graph);
 
 		foreach (t : tags(graph)) write_tag_page(mkimg, graph, t);
 

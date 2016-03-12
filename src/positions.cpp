@@ -246,37 +246,6 @@ optional<PositionReorientation> is_reoriented(Position const & a, Position b)
 	return r;
 }
 
-V2 heading(Position const & p) // formalized
-{
-	return xz(p[1][Core] - p[0][Core]);
-}
-
-double normalRotation(Position const & p) // formalized
-{
-	return -angle(heading(p));
-}
-
-V2 center(Position const & p) // formalized
-{
-	return xz(between(p[0][Core], p[1][Core]));
-}
-
-V3 y0(V2 v) { return {v.x, 0, v.y}; }
-
-V3 normalTranslation(Position const & p) { return y0(-center(p)); } // formalized
-
-template<typename F>
-Position mapCoords(Position p, F f) // formalized
-{
-	foreach (j : playerJoints) p[j] = f(p[j]);
-	return p;
-}
-
-Position rotate(double const a, Position const p) // formalized
-{
-	return mapCoords(p, [a](V3 v){ return yrot(a) * v; });
-}
-
 PositionReorientation canonical_reorientation_with_mirror(Position const & p) // formalized
 {
 	PositionReorientation reo;

@@ -69,4 +69,10 @@ inline bool all_digits(string const & s)
 	return all_of(s.begin(), s.end(), [](char c){return std::isdigit(c);});
 }
 
+template<typename T>
+void append(vector<T> & v, vector<T> const & w)
+{
+	v.insert(v.end(), w.begin(), w.end());
+}
+
 #endif

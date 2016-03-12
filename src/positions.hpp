@@ -294,6 +294,45 @@ inline bool operator==(PositionReorientation const & a, PositionReorientation co
 	return a.reorientation == b.reorientation && a.swap_players == b.swap_players && a.mirror == b.mirror;
 }
 
+inline V2 heading(Position const & p) // formalized
+{
+	return xz(p[1][Core] - p[0][Core]);
+}
+
+inline double normalRotation(Position const & p) // formalized
+{
+	return -angle(heading(p));
+}
+
+inline V2 center(Position const & p) // formalized
+{
+	return xz(between(p[0][Core], p[1][Core]));
+}
+
+template<typename F>
+Position mapCoords(Position p, F f) // formalized
+{
+	foreach (j : playerJoints) p[j] = f(p[j]);
+	return p;
+}
+
+inline Position rotate(double const a, Position const & p) // formalized
+{
+	return mapCoords(p, [a](V3 v){ return yrot(a) * v; });
+}
+
+inline Position translate(V3 const off, Position const & p)
+{
+	return mapCoords(p, [off](V3 v){ return v + off; });
+}
+
+inline V3 normalTranslation(Position const & p) { return y0(-center(p)); } // formalized
+
+inline Position translateNormal(Position const & p)
+{
+	return translate(normalTranslation(p), p);
+}
+
 PositionReorientation canonical_reorientation_without_mirror(Position const &);
 PositionReorientation canonical_reorientation_with_mirror(Position const &);
 

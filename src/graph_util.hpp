@@ -12,6 +12,10 @@ using SeqNumIter = boost::counting_iterator<SeqNum, boost::incrementable_travers
 using NodeNumRange = boost::iterator_range<NodeNumIter>;
 using SeqNumRange = boost::iterator_range<SeqNumIter>;
 
+struct Step { SeqNum seq; bool reverse; };
+
+using Path = vector<Step>;
+
 inline NodeNumRange nodenums(Graph const & g) { return {NodeNum{0}, NodeNum{g.num_nodes()}}; }
 inline SeqNumRange seqnums(Graph const & g) { return {SeqNum{0}, SeqNum{g.num_sequences()}}; }
 
@@ -72,20 +76,10 @@ inline vector<SeqNum> out(Graph const & g, NodeNum const n)
 	return v;
 }
 
-inline vector<std::pair<
-	vector<SeqNum>, // sequences that end at the node
-	vector<SeqNum>>> // sequences that start at the node
-		in_out(Graph const & g)
+inline bool operator==(Step const a, Step const b)
 {
-	vector<std::pair<vector<SeqNum>, vector<SeqNum>>> v;
-
-	foreach(n : nodenums(g))
-		v.emplace_back(in(g, n), out(g, n));
-
-	return v;
+	return a.seq == b.seq && a.reverse == b.reverse;
 }
-
-struct Step { SeqNum seq; bool reverse; };
 
 inline ReorientedNode const & from(Graph const & g, Step const s)
 {
@@ -123,8 +117,9 @@ inline void replace(Graph & graph, PositionInSequence const pis, PlayerJoint con
 	graph.replace(pis, p, local);
 }
 
-optional<SeqNum> seq_by_desc(Graph const &, string const & desc);
+optional<Step> step_by_desc(Graph const &, string const & desc, optional<NodeNum> from = none);
 optional<NodeNum> node_by_desc(Graph const &, string const & desc);
+optional<PositionInSequence> posinseq_by_desc(Graph const & g, string const & desc);
 
 optional<PositionInSequence> node_as_posinseq(Graph const &, NodeNum);
 	// may return either the beginning of a sequence or the end
@@ -232,4 +227,21 @@ inline vector<Step> in_steps(Graph const & g, NodeNum const n)
 	return v;
 }
 
+vector<Path> in_paths(Graph const &, NodeNum, unsigned size);
+	// returns all possible paths of given size that end at given node
+vector<Path> out_paths(Graph const &, NodeNum, unsigned size);
+	// returns all possible paths of given size that start at given node
+
+inline vector<std::pair<
+	vector<Step>, // sequences that end at the node
+	vector<Step>>> // sequences that start at the node
+		in_out(Graph const & g)
+{
+	vector<pair<vector<Step>, vector<Step>>> v;
+
+	foreach(n : nodenums(g))
+		v.emplace_back(in_steps(g, n), out_steps(g, n));
+
+	return v;
+}
 #endif

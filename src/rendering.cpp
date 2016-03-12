@@ -179,7 +179,6 @@ void renderWindow(
 	std::vector<View> const & views,
 	Viables const * const viables,
 	Graph const & graph,
-	GLFWwindow * const window,
 	Position const & position,
 	Camera camera,
 	optional<PlayerJoint> highlight_joint,

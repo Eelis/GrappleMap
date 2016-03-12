@@ -11,6 +11,8 @@
 struct V2 { GLdouble x, y; };
 struct V3 { GLdouble x, y, z; };
 
+inline V3 y0(V2 v) { return {v.x, 0, v.y}; }
+
 struct V4
 {
 	GLdouble x, y, z, w;

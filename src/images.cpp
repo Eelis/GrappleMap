@@ -43,40 +43,54 @@ namespace
 
 	void make_png(
 		Graph const & graph,
-		GLFWwindow * window,
+		#if USE_OSMESA
+			OSMesaContext const mesa,
+		#else
+			GLFWwindow * window,
+		#endif
 		Position pos,
 		Camera const & camera,
 		unsigned width, unsigned height,
 		string const path, V3 const bg_color, View const view)
 	{
-		if (!boost::filesystem::exists(path))
-		{
-			Style style;
-			style.grid_color = bg_color * .8;
-			style.background_color = bg_color;
+		if (boost::filesystem::exists(path)) return;
 
-			renderWindow(
-				{view},
-				nullptr, // no viables
-				graph, window, pos, camera,
-				none, // no highlighted joint
-				false, // not edit mode
-				0, 0, width, height,
-				{0},
-				style);
+		vector<boost::gil::rgb8_pixel_t> buf(width * height * 3);
 
+		#if USE_OSMESA
+			if (!OSMesaMakeCurrent(mesa, buf.data(), GL_UNSIGNED_BYTE, width, height))
+				error("OSMesaMakeCurrent");
+		#endif
+
+		Style style;
+		style.grid_color = bg_color * .8;
+		style.background_color = bg_color;
+
+		renderWindow(
+			{view},
+			nullptr, // no viables
+			graph, pos, camera,
+			none, // no highlighted joint
+			false, // not edit mode
+			0, 0, width, height,
+			{0},
+			style);
+
+		#if !USE_OSMESA
 			glfwSwapBuffers(window);
+		#endif
 
-			boost::gil::rgb8_pixel_t buf[width * height];
+		glFlush();
+		glFinish();
 
-			glFlush();
-			glFinish();
+		#if !USE_OSMESA
+			glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buf.data());
+		#endif
 
-			glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buf);
+		boost::gil::png_write_view(path,
+			boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf.data(), width*3)));
 
-			boost::gil::png_write_view(path,
-				boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf, width*3)));
-		}
+		std::cout << "wrote " << path << '\n';
 	}
 }
 
@@ -97,7 +111,13 @@ void ImageMaker::png(
 		camera.rotateHorizontal(angle);
 		camera.rotateVertical((ymax - 0.6)/2);
 
-		make_png(graph, window, pos, camera, width, height, output_dir + filename, bg_color, {0, 0, 1, 1, none, 45});
+		make_png(graph,
+			#if USE_OSMESA
+				ctx,
+			#else
+				window,
+			#endif
+			pos, camera, width, height, output_dir + filename, bg_color, {0, 0, 1, 1, none, 45});
 	}
 }
 
@@ -123,7 +143,13 @@ string ImageMaker::png(
 	{
 		Camera camera;
 
-		make_png(graph, window, pos, camera, width, height, output_dir + filename, color(bg_color),
+		make_png(graph,
+			#if USE_OSMESA
+				ctx,
+			#else
+				window,
+			#endif
+			pos, camera, width, height, output_dir + filename, color(bg_color),
 			{0, 0, 1, 1, *view.player, 80});
 	}
 	else abort();
@@ -200,3 +226,34 @@ string ImageMaker::gifs(
 
 	return base_filename;
 }
+
+#if USE_OSMESA
+	ImageMaker::ImageMaker(Graph const & g)
+		: graph(g)
+		, ctx(OSMesaCreateContextExt(OSMESA_RGB, 16, 0, 0, nullptr))
+	{
+		if (!ctx) error("OSMeseCreateContextExt failed");
+	}
+#else
+	ImageMaker::ImageMaker(Graph const & g)
+		: graph(g)
+	{
+		if (!glfwInit()) error("could not initialize GLFW");
+
+//		glfwWindowHint(GLFW_VISIBLE, GL_FALSE); // TODO: figure out how to make this work
+
+		window = glfwCreateWindow(640, 480, "Jiu Jitsu Map", nullptr, nullptr);
+
+		if (!window) error("could not create window");
+
+		glfwMakeContextCurrent(window);
+	}
+#endif
+
+ImageMaker::~ImageMaker()
+{
+	#if USE_OSMESA
+		OSMesaDestroyContext(ctx);
+	#endif
+}
+

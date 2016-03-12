@@ -337,7 +337,13 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				case GLFW_KEY_B: // branch
 				{
 					push_undo(w);
-					split_at(w.graph, w.location);
+
+					try { split_at(w.graph, w.location); }
+					catch (std::exception const & e)
+					{
+						std::cerr << "split_at: " << e.what() << '\n';
+					}
+
 					break;
 				}
 
@@ -493,19 +499,10 @@ int main(int const argc, char const * const * const argv)
 
 		Window w(vm["db"].as<std::string>());
 
-		string const start_str = vm["start"].as<string>();
-
-		if (auto s = seq_by_desc(w.graph, start_str))
-			w.location = {*s, 0};
-		else if (auto n = node_by_desc(w.graph, start_str))
-		{
-			if (auto pis = node_as_posinseq(w.graph, *n))
-				w.location = *pis;
-			else
-				throw runtime_error("no transitions start or end at specified position");
-		}
+		if (auto start = posinseq_by_desc(w.graph, vm["start"].as<string>()))
+			w.location = *start;
 		else
-			throw std::runtime_error("no such position/transition");
+			throw runtime_error("no such position/transition");
 
 		if (!glfwInit()) return -1;
 
@@ -641,7 +638,7 @@ int main(int const argc, char const * const * const argv)
 
 			glfwGetFramebufferSize(window, &width, &height);
 			renderWindow(
-				views, &w.viable, w.graph, window, posToDraw, w.camera, special_joint,
+				views, &w.viable, w.graph, posToDraw, w.camera, special_joint,
 				w.edit_mode, 0, 0, width, height, w.location.sequence, w.style);
 
 			glfwSwapBuffers(window);
