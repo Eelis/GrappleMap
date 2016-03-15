@@ -380,6 +380,8 @@ function follow(seqs)
 	var reo = id_reo;
 	var r = [];
 
+	var cores = v3(0,0,0);
+
 	for (var i = 0; i != seqs.length; ++i)
 	{
 		var seq = seqs[i];
@@ -398,8 +400,18 @@ function follow(seqs)
 			reo = transitions[seqs[i]].reo_from;
 
 		for (var j = 0; j != newframes.length; ++j)
-			r.push(apply_reo(reo, newframes[j]));
+		{
+			var f = apply_reo(reo, newframes[j]);
+			r.push(f);
+			cores = cores.add(f[0][Core]).add(f[1][Core]);
+		}
 	}
+
+	cores.y = 0;
+
+	var centerer = { mirror: false, swap_players: false, angle: 0, offset: cores.scale(-1 / (r.length * 2)) };
+	for (var i = 0; i != r.length; ++i)
+		r[i] = apply_reo(centerer, r[i]);
 
 	return r;
 }
