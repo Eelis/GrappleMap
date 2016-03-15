@@ -17,6 +17,12 @@ namespace
 		
 		throw std::runtime_error("not a base 62 digit: " + std::string(1, c));
 	}
+
+	string desc(Graph::Node const & n) // TODO: bad, tojs should not alter description strings
+	{
+		auto desc = n.description;
+		return desc.empty() ? "?" : desc.front();
+	}
 }
 
 Position decodePosition(string s)
@@ -240,4 +246,79 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 	}
 
 	o << "}\n";
+}
+
+void tojs(V3 const v, std::ostream & js)
+{
+	js << "v3(" << v.x << "," << v.y << "," << v.z << ")";
+}
+
+void tojs(PositionReorientation const & reo, std::ostream & js)
+{
+	js
+		<< "{mirror:" << reo.mirror
+		<< ",swap_players:" << reo.swap_players
+		<< ",angle:" << reo.reorientation.angle
+		<< ",offset:";
+		
+	tojs(reo.reorientation.offset, js);
+
+	js << "}\n";
+}
+
+void tojs(Position const & p, std::ostream & js)
+{
+	js << '[';
+
+	for (int player = 0; player != 2; ++player)
+	{
+		js << '[';
+
+		foreach (j : joints)
+		{
+			tojs(p[player][j], js);
+			js << ',';
+		}
+
+		js << "],";
+	}
+
+	js << ']';
+}
+
+void tojs(Graph const & graph, std::ostream & js)
+{
+	js << "nodes=[";
+	foreach (n : nodenums(graph))
+	{
+		js << "{incoming:[";
+		foreach (s : in(graph, n)) js << s.index << ',';
+		js << "],outgoing:[";
+		foreach (s : out(graph, n)) js << s.index << ',';
+		js << "],position:";
+		tojs(graph[n].position, js);
+		js << ",description:'" << replace_all(desc(graph[n]), "'", "&#39;") << "'";
+		js << "},\n";
+	}
+	js << "];\n\n";
+
+	js << "transitions=[";
+	foreach (s : seqnums(graph))
+	{
+		js << "{from:" << graph.from(s).node.index;
+		js << ",to:" << graph.to(s).node.index;
+		js << ",reo_from:";
+		tojs(graph.from(s).reorientation, js);
+		js << ",reo_to:";
+		tojs(graph.to(s).reorientation, js);
+		js << ",frames:[";
+		foreach (pos : graph[s].positions)
+		{
+			tojs(pos, js);
+			js << ',';
+		}
+		js << "],description:'" << replace_all(graph[s].description.front(), "'", "&#39;") << '\'';
+		js << "},\n";
+	}
+	js << "];\n\n";
 }

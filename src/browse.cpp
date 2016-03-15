@@ -1,3 +1,6 @@
+#define BOOST_NO_CXX11_SCOPED_ENUMS
+	// see https://www.robertnitsch.de/notes/cpp/cpp11_boost_filesystem_undefined_reference_copy_file
+
 #include "util.hpp"
 #include "headings.hpp"
 #include "camera.hpp"
@@ -193,7 +196,6 @@ namespace
 			<< "<h2>Positions (" << g.num_nodes() << ")</h2>"
 			<< "<table style='display:inline-block;border: solid 1px' class='sortable'>"
 			<< "<tr><th>Name</th><th>Incoming</th><th>Outgoing</th><th>Tags</th></tr>";
-
 
 		foreach(n : nodenums(g))
 			html
@@ -602,6 +604,8 @@ namespace
 					ctx.html << " <a href='tag-" << tag << "-" << code(ctx.view) << ".html'>" << tag << "</a>";
 			}
 
+			ctx.html << "<br><br><a href='composer/?p" << ctx.n.index << "'>Compose Drill</a>";
+
 			ctx.html << "<br><br>(<a href='index.html'>Index</a>)</td>";
 		}
 
@@ -724,6 +728,28 @@ namespace
 	}
 }
 
+void write_composer(Graph const & graph)
+{
+	auto cp =
+		[](string from, string to)
+		{
+			boost::filesystem::copy_file(from, to,
+				boost::filesystem::copy_option::overwrite_if_exists);
+		};
+
+	// todo: mkdir output_dir+"composer"
+
+	cp("gm.js", output_dir + "composer/gm.js");
+	cp("babylon.js", output_dir + "composer/babylon.js");
+	cp("hand.js", output_dir + "composer/hand.js");
+	cp("composer.html", output_dir + "composer/index.html");
+	cp("composer.js", output_dir + "composer/composer.js");
+
+	ofstream js(output_dir + "composer/transitions.js");
+	js << std::boolalpha;
+	tojs(graph, js);
+}
+
 int main(int const argc, char const * const * const argv)
 {
 	try
@@ -733,6 +759,7 @@ int main(int const argc, char const * const * const argv)
 
 		Graph const graph = loadGraph(config->db);
 
+		write_composer(graph);
 		write_index(graph);
 		write_todo(graph);
 
