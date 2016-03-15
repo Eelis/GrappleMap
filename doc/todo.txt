@@ -2,15 +2,17 @@ documentation
 - readme
 - edit guidelines
 
-gui
+db
+- cage/fence
+
+editor
 - in edit mode, make it possible to temporarily hide a player, to unobstruct the view to the other
-- use opengl es so we can use emscripten and webgl without emulation
 - make rotation commands rotate around center between players, not area center
-- SDL 2.1 (should have emscripten support, see https://www.phoronix.com/scan.php?page=news_item&px=SDL2-Next-Version-Features )
 - experiment with different joint editing schemes, e.g. direct joint coordinate component manipulation
 - prevent joints moving through eachother (maybe, might be more annoying than useful)
 - joint rotation limits
-- oculus rift support
+- vr headset support
+- diagnose ice skating
 - sticky floor
 - direction signs ("to truck", "zombie")
 - editing selected joints as a group
@@ -30,3 +32,15 @@ browseable pages:
 
 new tools:
 - diff, to visualize changes made to transitions
+
+drill composer
+- mirror button
+- first person view
+- full screen
+- speed dial
+- fps and other metrics display
+- toggle information about transitions
+- clean up code
+- leave animation undisturbed when manipulating drill
+- integrated transition editor
+- fix occlusion(?) artifacts
