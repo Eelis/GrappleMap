@@ -220,6 +220,16 @@ function refreshDrill()
 		controls.appendChild(node_link(to_node));
 		controls.appendChild(document.createElement("br"));
 	}
+
+	if (seqs.length != 0)
+	{
+		var sharelink = document.createElement("a");
+		sharelink.href="?" + seqs.join(',');
+		sharelink.text = "share";
+		controls.appendChild(document.createTextNode("("));
+		controls.appendChild(sharelink);
+		controls.appendChild(document.createTextNode(")"));
+	}
 }
 
 function on_slide()
