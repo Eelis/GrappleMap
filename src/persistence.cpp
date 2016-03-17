@@ -317,7 +317,7 @@ void tojs(Graph const & graph, std::ostream & js)
 			tojs(pos, js);
 			js << ',';
 		}
-		js << "],description:'" << replace_all(graph[s].description.front(), "'", "&#39;") << '\'';
+		js << "],description:'" << replace_all(graph[s].description.front(), "'", "\\'") << '\'';
 		js << "},\n";
 	}
 	js << "];\n\n";
