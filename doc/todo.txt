@@ -34,8 +34,6 @@ new tools:
 - diff, to visualize changes made to transitions
 
 drill composer
-- mirror button
-- first person view
 - full screen
 - speed dial
 - fps and other metrics display
@@ -43,4 +41,3 @@ drill composer
 - clean up code
 - leave animation undisturbed when manipulating drill
 - integrated transition editor
-- fix occlusion(?) artifacts

@@ -16,6 +16,11 @@
 		<p>
 			<button onclick='on_pause_button_clicked()' id='pause_button'>pause</button>
 			<button onclick='on_mirror_button_clicked()'>mirror</button>
+			<select id='view_select' onchange='on_view_change()'> 
+				<option value="external">3rd person view</option>
+				<option value="0">view from red</option>
+				<option value="1">view from blue</option>
+			</select>
 		</p>
 
 		<div style='display:inline-block; margin:35px'>

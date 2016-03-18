@@ -11,6 +11,8 @@ var frame_in_seq = 0;
 var mirror_view = false;
 var keyframes;
 var thepos;
+var externalCamera;
+var firstPersonCamera;
 
 function seq_index_to_frame_index(s)
 {
@@ -273,43 +275,75 @@ function interpolate_position(a, b, c)
 	return p;
 }
 
-function tick()
+function on_view_change()
 {
-	if (sliding || paused) return;
+	var vv = document.getElementById("view_select").value;
 
-	k += engine.getDeltaTime() / speed;
-	if (k >= 1)
-	{
-		k -= 1;
-		if (k <= 0) k = 0;
+	scene.activeCamera = (vv == "external" ? externalCamera : firstPersonCamera);
+}
 
-		++frame_in_seq;
+function updateCamera()
+{
+	var vv = document.getElementById("view_select").value;
+	if (vv == "external") return;
+	var pl = parseInt(vv);
+	var opp = 1 - pl;
 
-		var last_frame_in_seq = transitions[seqs[seqindex]].frames.length - 1;
-		if (seqindex == seqs.length - 1) last_frame_in_seq += 6;
+	firstPersonCamera.setTarget(
+		thepos[pl][LeftFingers]
+		.add(thepos[pl][RightFingers])
+		.add(thepos[opp][Head].scale(2))
+		.scale(0.25));
 
-		if (frame_in_seq == last_frame_in_seq)
-		{
-			++seqindex;
-			if (seqindex == seqs.length)
-			{
-				seqindex = 0;
-				frame_in_seq = -5;
-			}
-			else frame_in_seq = 0;
+	firstPersonCamera.position = thepos[pl][Head];
+}
 
-			pick_bullet();
-		}
-
-		frame = seq_index_to_frame_index(seqindex) + frame_in_seq;
-		document.getElementById("slider").value = frame;
-	}
-
+function updateDrawnPos()
+{
 	var therealpos = interpolate_position(
 		keyframe(frame),
 		keyframe(frame + 1), k);
 
 	thepos = (thepos ? interpolate_position(thepos, therealpos, drag) : therealpos);
+}
+
+function tick()
+{
+	if (!sliding && !paused)
+	{
+		k += engine.getDeltaTime() / speed;
+		if (k >= 1)
+		{
+			k -= 1;
+			if (k <= 0) k = 0;
+
+			++frame_in_seq;
+
+			var last_frame_in_seq = transitions[seqs[seqindex]].frames.length - 1;
+			if (seqindex == seqs.length - 1) last_frame_in_seq += 6;
+
+			if (frame_in_seq == last_frame_in_seq)
+			{
+				++seqindex;
+				if (seqindex == seqs.length)
+				{
+					seqindex = 0;
+					frame_in_seq = -5;
+				}
+				else frame_in_seq = 0;
+
+				pick_bullet();
+			}
+
+			frame = seq_index_to_frame_index(seqindex) + frame_in_seq;
+			document.getElementById("slider").value = frame;
+		}
+	}
+
+	updateDrawnPos();
+
+
+	updateCamera();
 }
 
 function follow(seqs, mirror)
@@ -389,6 +423,8 @@ function resetScene()
 
 	if (seqs.length != 0) scene.registerBeforeRender(tick);
 
+	on_view_change();
+
 	engine.runRenderLoop(function(){ scene.render(); });
 }
 
@@ -426,19 +462,22 @@ function showpos(pos, engine)
 
 	scene.clearColor = new BABYLON.Color3(1,1,1);
 
-	var camera = new BABYLON.ArcRotateCamera("ArcRotateCamera",
+	externalCamera = new BABYLON.ArcRotateCamera("ArcRotateCamera",
 		0, // rotation around Y axis
 		3.14/4, // rotation around X axis
 		2.5, // radius
 		new BABYLON.Vector3(0, 0, 0),
 		scene);
 
-	camera.wheelPrecision = 30;
-	camera.lowerBetaLimit = 0;
-	camera.upperRadiusLimit = 4;
-	camera.lowerRadiusLimit = 1;
+	externalCamera.wheelPrecision = 30;
+	externalCamera.lowerBetaLimit = 0;
+	externalCamera.upperRadiusLimit = 4;
+	externalCamera.lowerRadiusLimit = 1;
 
-	camera.attachControl(canvas, false);
+	firstPersonCamera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 1, -5), scene);
+	firstPersonCamera.minZ = 0.05;
+
+	externalCamera.attachControl(canvas);
 
 	var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), scene);
 

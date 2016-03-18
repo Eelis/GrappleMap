@@ -174,7 +174,7 @@ function animatedCylinder(from_radius, to_radius, from, to, faces, scene)
 				}
 			}
 
-			mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions);
+			mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions, true);
 
 			BABYLON.VertexData.ComputeNormals(positions, indices, normals);
 
