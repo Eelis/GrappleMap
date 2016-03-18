@@ -113,48 +113,6 @@ var joints =
 	, [0.11, true]
 	];
 
-function player_from_array(a, material, scene)
-{
-	for (var i = 0; i != segments.length; ++i)
-	{
-		if (segments[i][3])
-		{
-			var j_from = segments[i][0][0];
-			var j_to = segments[i][0][1];
-
-			var radius_to = joints[j_to][0];
-			var radius_from = joints[j_from][0];
-
-			var pos_from = a[j_from];
-			var pos_to = a[j_to];
-
-			var center = pos_from.add(pos_to).scale(0.5);
-
-			var radius_center = segments[i][2];
-
-			var c_from = cylinder(pos_from, center, radius_from, radius_center, 32, scene);
-			var c_to = cylinder(center, pos_to, radius_center, radius_to, 32, scene);
-
-			c_from.material = material;
-			c_to.material = material;
-		}
-	}
-
-	for (var i = 0; i != joints.length; ++i)
-	{
-		var sphere = BABYLON.Mesh.CreateSphere('sphere1',
-			16, // faces
-			joints[i][0] * 2, // diameter
-			scene);
-
-		sphere.material = material
-		sphere.position = a[i];
-	}
-}
-
-
-
-
 function cylinderPaths(from_radius, to_radius, from, to, faces)
 {
     var p0 = [];
@@ -189,43 +147,26 @@ function bound_frame_index(i, n)
 	return i;
 }
 
-function animatedCylinder(from_radius, to_radius, froms, tos, faces, scene)
+function animatedCylinder(from_radius, to_radius, from, to, faces, scene)
 {
-	var paths = [];
+	var path = cylinderPaths(from_radius, to_radius, from, to, faces);
 
-	for (var i = 0; i != froms.length; ++i)
-		paths.push(cylinderPaths(from_radius, to_radius, froms[i], tos[i], faces));
-
-	var mesh = BABYLON.Mesh.CreateRibbon("ribbon", paths[0], false, false, 0, scene, true, BABYLON.Mesh.SINGLESIDE);
+	var mesh = BABYLON.Mesh.CreateRibbon("ribbon", path, false, false, 0, scene, true, BABYLON.Mesh.SINGLESIDE);
 
 	var positions = new Float32Array(mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind) );
 	var indices = new Uint16Array(mesh.getIndices());
 	var normals = new Float32Array(positions.length);
 
-	if (froms.length > 1)
-	{
-		var dragged_from = froms[0];
-		var dragged_to = tos[0];
-
-		function tick()
+	mesh.update = function(from_, to_)
 		{
-			var this_frame = bound_frame_index(frame, froms.length);
-			var next_frame = bound_frame_index(frame + 1, froms.length);
-
-			var current_from = froms[this_frame].scale(1-k).add(froms[next_frame].scale(k));
-			var current_to = tos[this_frame].scale(1-k).add(tos[next_frame].scale(k));
-
-			dragged_from = dragged_from.scale(1-drag).add(current_from.scale(drag));
-			dragged_to = dragged_to.scale(1-drag).add(current_to.scale(drag));
-
-			var some_paths = cylinderPaths(from_radius, to_radius, dragged_from, dragged_to, faces);
+			var paths = cylinderPaths(from_radius, to_radius, from_, to_, faces);
 
 			var i = 0;
 			for (var pl = 0; pl != 2; ++pl)
 			{
 				for (var face = 0; face <= faces; ++face)
 				{
-					var ding = some_paths[pl][face];
+					var ding = paths[pl][face];
 
 					positions[i] = ding.x; ++i;
 					positions[i] = ding.y; ++i;
@@ -238,17 +179,15 @@ function animatedCylinder(from_radius, to_radius, froms, tos, faces, scene)
 			BABYLON.VertexData.ComputeNormals(positions, indices, normals);
 
 			mesh.updateVerticesData(BABYLON.VertexBuffer.NormalKind, normals);
-		}
-
-		scene.registerBeforeRender(tick);
-	}
+		};
 
 	return mesh;
 }
 
-
-function animated_player_from_array(aa, pl, material, scene)
+function animated_player_from_array(position, material, scene)
 {
+	var segment_updaters = [];
+
 	for (var i = 0; i != segments.length; ++i)
 	{
 		if (segments[i][3])
@@ -260,106 +199,80 @@ function animated_player_from_array(aa, pl, material, scene)
 			var radius_from = joints[j_from][0];
 			var radius_center = segments[i][2];
 
-			var pos_froms = [];
-			var centers = [];
-			var pos_tos = [];
+			var from = position[j_from];
+			var to = position[j_to];
+			var center = from.add(to).scale(0.5);
 
-			for (var u = 0; u != aa.length; ++u)
-			{
-				var from = aa[u][pl][j_from];
-				var to = aa[u][pl][j_to];
-				var center = from.add(to).scale(0.5);
-
-				pos_froms.push(from);
-				centers.push(center);
-				pos_tos.push(to);
-			}
-
-			var ac = animatedCylinder(radius_from, radius_center, pos_froms, centers, 16, scene);
-			var ac2 = animatedCylinder(radius_center, radius_to, centers, pos_tos, 16, scene);
+			var ac = animatedCylinder(radius_from, radius_center, from, center, 16, scene);
+			var ac2 = animatedCylinder(radius_center, radius_to, center, to, 16, scene);
 			ac.material = material;
 			ac2.material = material;
+
+			segment_updaters.push(function(ac_, ac2_) { return function(from, to)
+				{
+					var center = from.add(to).scale(0.5);
+					ac_.update(from, center);
+					ac2_.update(center, to);
+				};
+				}(ac, ac2));
 		}
+		else
+			segment_updaters.push(null);
 	}
 
 	var spheres = [];
 
-	for (var i = 0; i != joints.length; ++i)
+	for (var j = 0; j != joints.length; ++j)
 	{
 		var sphere = BABYLON.Mesh.CreateSphere('sphere1',
 			8, // faces
-			joints[i][0] * 2, // diameter
+			joints[j][0] * 2, // diameter
 			scene);
 
 		sphere.material = material
-		sphere.position = aa[0][pl][i];
+		sphere.position = position[j];
 
 		spheres.push(sphere);
 	}
 
-	if (aa.length > 1)
+	return function(player)
 	{
-		function tick()
-		{
-			for (var j = 0; j != joints.length; ++j)
+		for (var j = 0; j != joints.length; ++j)
+			spheres[j].position = player[j];
+
+		for (var s = 0; s != segments.length; ++s)
+			if (segment_updaters[s] != null)
 			{
-				var t = aa[bound_frame_index(frame, aa.length)][pl][j].scale(1 - k).add(aa[bound_frame_index(frame + 1, aa.length)][pl][j].scale(k));
+				var j_from = segments[s][0][0];
+				var j_to = segments[s][0][1];
 
-				spheres[j].position = t.scale(drag).add(spheres[j].position.scale(1 - drag));
+				var from = player[j_from];
+				var to = player[j_to];
+				segment_updaters[s](from, to);
 			}
-		}
-
-		scene.registerBeforeRender(tick);
-	}
-}
-
-function position_from_array(a, scene)
-{
-	var redskin = new BABYLON.StandardMaterial("redskin", scene);
-	var blueskin = new BABYLON.StandardMaterial("blueskin", scene);
-
-	redskin.diffuseColor = new BABYLON.Color3(0.1,0,0);
-	blueskin.diffuseColor = new BABYLON.Color3(0,0,0.1);
-
-	redskin.specularColor = new BABYLON.Color3.Red;
-	blueskin.specularColor = new BABYLON.Color3.Blue;
-
-	blueskin.specularPower = 0;
-	redskin.specularPower = 0;
-
-	player_from_array(a[0], redskin, scene);
-	player_from_array(a[1], blueskin, scene);
-
-	var grey = new BABYLON.Color3(0.7, 0.7, 0.7);
-
-	for (var i = -4; i <= 4; ++i)
-	{
-		var line = BABYLON.Mesh.CreateLines("l", [v3(i/2, 0, -2), v3(i/2, 0, 2)], scene);
-		line.color = grey;
-
-		line = BABYLON.Mesh.CreateLines("l", [v3(-2, 0, i/2), v3(2, 0, i/2)], scene);
-		line.color = grey;
 	}
 }
 
 var speed = 200;
 
-function animated_position_from_array(aa, scene)
+function animated_position_from_array(frame, scene)
 {
-	var redskin = new BABYLON.StandardMaterial("redskin", scene);
-	var blueskin = new BABYLON.StandardMaterial("blueskin", scene);
+	var skins =
+		[ new BABYLON.StandardMaterial("redskin", scene)
+		, new BABYLON.StandardMaterial("blueskin", scene) ];
 
-	redskin.diffuseColor = new BABYLON.Color3(0.1,0,0);
-	blueskin.diffuseColor = new BABYLON.Color3(0,0,0.1);
+	skins[0].diffuseColor = new BABYLON.Color3(0.1,0,0);
+	skins[1].diffuseColor = new BABYLON.Color3(0,0,0.1);
 
-	redskin.specularColor = new BABYLON.Color3.Red;
-	blueskin.specularColor = new BABYLON.Color3.Blue;
+	skins[0].specularColor = new BABYLON.Color3.Red;
+	skins[1].specularColor = new BABYLON.Color3.Blue;
 
-	blueskin.specularPower = 0;
-	redskin.specularPower = 0;
+	skins[0].specularPower = 0;
+	skins[1].specularPower = 0;
 
-	animated_player_from_array(aa, 0, redskin, scene);
-	animated_player_from_array(aa, 1, blueskin, scene);
+	var updaters = [];
+	for (var pl = 0; pl != 2; ++pl)
+		updaters.push(animated_player_from_array(frame[0], skins[pl], scene));
 
 	var grey = new BABYLON.Color3(0.7, 0.7, 0.7);
 
@@ -371,35 +284,12 @@ function animated_position_from_array(aa, scene)
 		line = BABYLON.Mesh.CreateLines("l", [v3(-2, 0, i/2), v3(2, 0, i/2)], scene);
 		line.color = grey;
 	}
-}
 
-function showpos(a, engine)
-{
-	var canvas = document.getElementById('renderCanvas');
-
-	var scene = new BABYLON.Scene(engine);
-
-	scene.clearColor = new BABYLON.Color3(1,1,1);
-
-	var camera = new BABYLON.ArcRotateCamera("ArcRotateCamera",
-		0, // rotation around Y axis
-		3.14/4, // rotation around X axis
-		2.5, // radius
-		new BABYLON.Vector3(0, 0, 0),
-		scene);
-
-	camera.wheelPrecision = 30;
-	camera.lowerBetaLimit = 0;
-	camera.upperRadiusLimit = 4;
-	camera.lowerRadiusLimit = 1;
-
-	camera.attachControl(canvas, false);
-
-	var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), scene);
-
-	animated_position_from_array(a, scene);
-
-	return scene;
+	return function(p)
+		{
+			for (var pl = 0; pl != 2; ++pl)
+				updaters[pl](p[pl]);
+		};
 }
 
 function mirror(p)
@@ -412,7 +302,7 @@ function mirror(p)
 	swapLimbs(p[1]);
 }
 
-Array.prototype.swap = function (x,y) {
+Array.prototype.swap = function(x,y) {
   var b = this[x];
   this[x] = this[y];
   this[y] = b;
