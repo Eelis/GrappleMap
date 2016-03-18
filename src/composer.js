@@ -7,6 +7,7 @@ var seq_bullets = [];
 var sliding = false;
 var seqindex = 0;
 var frame_in_seq = 0;
+var mirror_view = false;
 
 function seq_index_to_frame_index(s)
 {
@@ -274,12 +275,6 @@ function tick()
 	document.getElementById("slider").value = frame;
 }
 
-var id_reo =
-	{ mirror: false
-	, swap_players: false
-	, angle: 0
-	, offset: v3(0, 0, 0) };
-
 Array.prototype.swap = function (x,y) {
   var b = this[x];
   this[x] = this[y];
@@ -372,7 +367,6 @@ function compose_reo(a, b)
 	}
 
 	return c;
-	
 }
 
 function follow(seqs, mirror)
@@ -419,15 +413,19 @@ function follow(seqs, mirror)
 	return r;
 }
 
+function on_mirror()
+{
+	mirror_view = !mirror_view;
+	resetScene();
+}
+
 function resetScene()
 {
 	engine.stopRenderLoop();
 
 	if (scene) scene.dispose();
 
-	var do_mirror = document.getElementById("mirror_checkbox").checked;
-
-	var keyframes = (seqs.length == 0 ? [nodes[start_node].position] : follow(seqs, do_mirror));
+	var keyframes = (seqs.length == 0 ? [nodes[start_node].position] : follow(seqs, mirror_view));
 
 	scene = showpos(keyframes, engine);
 

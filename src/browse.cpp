@@ -604,9 +604,11 @@ namespace
 					ctx.html << " <a href='tag-" << tag << "-" << code(ctx.view) << ".html'>" << tag << "</a>";
 			}
 
-			ctx.html << "<br><br><a href='composer/?p" << ctx.n.index << "'>Compose Drill</a>";
-
-			ctx.html << "<br><br>(<a href='index.html'>Index</a>)</td>";
+			ctx.html
+				<< "<br><br>Navigate: "
+				<< "<a href='index.html'>index</a>"
+				<< ", <a href='composer/?p" << ctx.n.index << "'>composer</a>"
+				<< "</td>";
 		}
 
 		void write_page(Context const & ctx)
