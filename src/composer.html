@@ -16,7 +16,8 @@
 		<div style='display:inline-block; margin:35px'>
 			<canvas style='display:inline-block;width:600px;height:450px' id='renderCanvas'></canvas>
 			<br><br>
-			<input type="range" min=0 max=100 step=1 id="slider" style='width:100%' oninput='on_slide()' onmouseover='sliding=true' onmouseleave='sliding=false'>
+			<input type="range" min=0 max=100 step=1 id="slider" style='width:100%' oninput='on_slide()' onmouseover='sliding=true' onmouseleave='sliding=false'><br>
+			<input type="checkbox" id="mirror_checkbox" onchange='resetScene()'/> mirror
 		</div>
 		<div style='display:inline-block;width:600px; margin: 35px auto; text-align: left; vertical-align: top'>
 			Prepend:<div id='pre_choices' style='margin-left:15px'></div><br>

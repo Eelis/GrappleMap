@@ -375,9 +375,9 @@ function compose_reo(a, b)
 	
 }
 
-function follow(seqs)
+function follow(seqs, mirror)
 {
-	var reo = id_reo;
+	var reo;
 	var r = [];
 
 	var cores = v3(0,0,0);
@@ -397,7 +397,10 @@ function follow(seqs)
 					transitions[seqs[i-1]].reo_to),
 				reo);
 		else
+		{
 			reo = transitions[seqs[i]].reo_from;
+			if (mirror) reo.mirror = !reo.mirror;
+		}
 
 		for (var j = 0; j != newframes.length; ++j)
 		{
@@ -422,7 +425,9 @@ function resetScene()
 
 	if (scene) scene.dispose();
 
-	var keyframes = (seqs.length == 0 ? [nodes[start_node].position] : follow(seqs));
+	var do_mirror = document.getElementById("mirror_checkbox").checked;
+
+	var keyframes = (seqs.length == 0 ? [nodes[start_node].position] : follow(seqs, do_mirror));
 
 	scene = showpos(keyframes, engine);
 
