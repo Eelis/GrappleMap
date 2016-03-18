@@ -401,3 +401,101 @@ function showpos(a, engine)
 
 	return scene;
 }
+
+function mirror(p)
+{
+	for (var pl = 0; pl != 2; ++pl)
+	for (var j = 0; j != joints.length; ++j)
+		p[pl][j].x = -p[pl][j].x;
+
+	swapLimbs(p[0]);
+	swapLimbs(p[1]);
+}
+
+Array.prototype.swap = function (x,y) {
+  var b = this[x];
+  this[x] = this[y];
+  this[y] = b;
+  return this;
+}
+
+function swapLimbs(p)
+{
+	p.swap(LeftShoulder, RightShoulder);
+	p.swap(LeftElbow, RightElbow);
+	p.swap(LeftHand, RightHand);
+	p.swap(LeftFingers, RightFingers);
+	p.swap(LeftWrist, RightWrist);
+	p.swap(LeftAnkle, RightAnkle);
+	p.swap(LeftToe, RightToe);
+	p.swap(LeftHip, RightHip);
+	p.swap(LeftHeel, RightHeel);
+	p.swap(LeftKnee, RightKnee);
+}
+
+function apply_reo(r, p)
+{
+	var q = [[],[]];
+
+	for (var pl = 0; pl != 2; ++pl)
+	for (var j = 0; j != joints.length; ++j)
+		q[pl].push(yrot(r.angle, p[pl][j]).add(r.offset));
+
+	if (r.mirror)
+		mirror(q);
+
+	if (r.swap_players) q = [q[1], q[0]];
+
+	return q;
+}
+
+function yrot(a, v)
+{
+	return v3
+		( Math.cos(a) * v.x + Math.sin(a) * v.z
+		, v.y
+		, - Math.sin(a) * v.x + Math.cos(a) * v.z
+		);
+}
+
+function inverse_reo(x)
+{
+	var c =
+		{ offset: yrot(-x.angle, x.offset.negate())
+		, angle: -x.angle
+		, mirror: x.mirror
+		, swap_players: x.swap_players
+		};
+
+	if (x.mirror)
+	{
+		c.angle = -c.angle;
+		c.offset.x = -c.offset.x;
+	}
+
+	return c;
+}
+
+function compose_reo(a, b)
+{
+	var c =
+		{ mirror: a.mirror != b.mirror
+		, swap_players: a.swap_players != b.swap_players
+		};
+
+	if (a.mirror)
+	{
+		var boff = v3(-b.offset.x, b.offset.y, b.offset.z);
+
+		c.angle = a.angle - b.angle;
+		c.offset = boff.add(yrot(-b.angle, a.offset));
+	}
+	else
+	{
+		c.angle = a.angle + b.angle;
+		c.offset = b.offset.add(yrot(b.angle, a.offset));
+	}
+
+	return c;
+}
+

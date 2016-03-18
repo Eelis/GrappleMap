@@ -13,9 +13,10 @@
 		<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>
 		<h2>Drill Composer</h2>
 
-		<p>Navigate: <a href='../index.html'>index</a></p>
-		<p>View: <a href='#' onclick='on_mirror()'>⇄</a></p>
-
+		<p>
+			<button onclick='on_pause_button_clicked()' id='pause_button'>pause</button>
+			<button onclick='on_mirror_button_clicked()'>mirror</button>
+		</p>
 
 		<div style='display:inline-block; margin:35px'>
 			<canvas style='display:inline-block;width:600px;height:450px' id='renderCanvas'></canvas>
