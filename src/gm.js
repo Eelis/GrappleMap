@@ -135,7 +135,7 @@ function cylinderPaths(from_radius, to_radius, from, to, faces)
 	return [p0, p1];
 }
 
-var drag = 0.25;
+var drag = 0.20;
 
 var frame = 0;
 var k = 0;
