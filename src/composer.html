@@ -13,20 +13,21 @@
 		<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>
 		<h2>Drill Composer</h2>
 
-		<p>
-			<button onclick='on_pause_button_clicked()' id='pause_button'>pause</button>
-			<button onclick='on_mirror_button_clicked()'>mirror</button>
-			<select id='view_select' onchange='on_view_change()'> 
-				<option value="external">3rd person view</option>
-				<option value="0">view from red</option>
-				<option value="1">view from blue</option>
-			</select>
-		</p>
-
 		<div style='display:inline-block; margin:35px'>
+			<p>
+				<button onclick='on_pause_button_clicked()' id='pause_button'>pause</button>
+				<button onclick='on_mirror_button_clicked()'>mirror</button>
+				<select id='view_select' onchange='on_view_change()'> 
+					<option value="external">3rd person view</option>
+					<option value="0">view from red</option>
+					<option value="1">view from blue</option>
+				</select>
+			</p>
+			<p>
+				<input type="range" min=0 max=100 step=1 id="slider" style='width:100%' oninput='on_slide()' onmouseover='sliding=true' onmouseleave='sliding=false'>
+			</p>
 			<canvas style='display:inline-block;width:600px;height:450px' id='renderCanvas'></canvas>
-			<br><br>
-			<input type="range" min=0 max=100 step=1 id="slider" style='width:100%' oninput='on_slide()' onmouseover='sliding=true' onmouseleave='sliding=false'><br>
+<!--			<br><br>-->
 		</div>
 		<div style='display:inline-block;width:600px; margin: 35px auto; text-align: left; vertical-align: top'>
 			Prepend:<div id='pre_choices' style='margin-left:15px'></div><br>

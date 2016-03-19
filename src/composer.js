@@ -11,6 +11,7 @@ var frame_in_seq = 0;
 var mirror_view = false;
 var keyframes;
 var thepos;
+var canvas;
 var externalCamera;
 var firstPersonCamera;
 
@@ -46,7 +47,6 @@ function on_pause_button_clicked()
 
 function on_pop_front_button_clicked()
 {
-	engine.stopRenderLoop();
 	start_node = transitions[seqs[0]].to;
 
 	if (seqindex == 0)
@@ -61,13 +61,11 @@ function on_pop_front_button_clicked()
 	}
 
 	seqs.splice(0, 1);
-	resetScene();
+	resetFrames();
 }
 
 function on_pop_back_button_clicked()
 {
-	engine.stopRenderLoop();
-
 	if (seqs.length == 1)
 	{
 		seqs = [];
@@ -87,7 +85,7 @@ function on_pop_back_button_clicked()
 		seqs.splice(seqs.length - 1, 1);
 	}
 
-	resetScene();
+	resetFrames();
 }
 
 function refreshPreChoices()
@@ -104,6 +102,7 @@ function refreshPreChoices()
 		var from_node = transitions[choice].from;
 
 		var btn = document.createElement("button");
+		btn.style.margin = "3px";
 		btn.style.textAlign = "left";
 		btn.appendChild(document.createTextNode(nodes[from_node].description));
 		btn.appendChild(document.createElement("br"));
@@ -111,11 +110,10 @@ function refreshPreChoices()
 		btn.addEventListener("click", function(c){ return function(){
 				seqs = [c].concat(seqs);
 				start_node = transitions[c].from;
-				resetScene();
+				resetFrames();
 			}}(choice));
 
 		elem.appendChild(btn);
-		elem.appendChild(document.createElement("br"));
 	}
 }
 
@@ -141,6 +139,7 @@ function refreshPostChoices()
 		var to_node = transitions[choice].to;
 
 		var btn = document.createElement("button");
+		btn.style.margin = "3px";
 		btn.style.textAlign = "left";
 		btn.appendChild(document.createTextNode(transitions[choice].description));
 		btn.appendChild(document.createElement("br"));
@@ -148,11 +147,10 @@ function refreshPostChoices()
 
 		btn.addEventListener("click", function(c){ return function(){
 				seqs.push(c);
-				resetScene();
+				resetFrames();
 			}}(choice));
 
 		elem.appendChild(btn);
-		elem.appendChild(document.createElement("br"));
 	}
 }
 
@@ -298,18 +296,25 @@ function updateCamera()
 	firstPersonCamera.position = thepos[pl][Head];
 }
 
-function updateDrawnPos()
+function ideal_pos()
 {
-	var therealpos = interpolate_position(
+	if (keyframes.length == 1) return keyframes[0];
+
+	return interpolate_position(
 		keyframe(frame),
 		keyframe(frame + 1), k);
+}
+
+function updateDrawnPos()
+{
+	var therealpos = ideal_pos();
 
 	thepos = (thepos ? interpolate_position(thepos, therealpos, drag) : therealpos);
 }
 
 function tick()
 {
-	if (!sliding && !paused)
+	if (!sliding && !paused && seqs.length != 0)
 	{
 		k += engine.getDeltaTime() / speed;
 		if (k >= 1)
@@ -341,8 +346,6 @@ function tick()
 	}
 
 	updateDrawnPos();
-
-
 	updateCamera();
 }
 
@@ -396,12 +399,42 @@ function on_mirror_button_clicked()
 		mirror(keyframes[f]);
 }
 
-function resetScene()
+function makeScene()
 {
-	engine.stopRenderLoop();
+	scene = new BABYLON.Scene(engine);
+	scene.clearColor = new BABYLON.Color3(1,1,1);
 
-	if (scene) scene.dispose();
+	externalCamera = new BABYLON.ArcRotateCamera("ArcRotateCamera",
+		0, // rotation around Y axis
+		3.14/4, // rotation around X axis
+		2.5, // radius
+		new BABYLON.Vector3(0, 0, 0),
+		scene);
 
+	externalCamera.wheelPrecision = 30;
+	externalCamera.lowerBetaLimit = 0;
+	externalCamera.upperRadiusLimit = 4;
+	externalCamera.lowerRadiusLimit = 1;
+
+	firstPersonCamera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 1, -5), scene);
+	firstPersonCamera.minZ = 0.05;
+
+	externalCamera.attachControl(canvas);
+
+	var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), scene);
+
+	var draw = animated_position_from_array(keyframes[0], scene);
+
+	scene.registerBeforeRender(function(){
+			tick();
+			if (thepos) draw(thepos);
+		});
+
+	engine.runRenderLoop(function(){ scene.render(); });
+}
+
+function resetFrames()
+{
 	if (seqs.length == 0)
 	{
 		keyframes = [nodes[start_node].position];
@@ -409,23 +442,17 @@ function resetScene()
 	}
 	else keyframes = follow(seqs, mirror_view);
 
-	scene = showpos(keyframes[0], engine);
-
 	document.getElementById("slider").max = keyframes.length - 1;
 
 	frame = -1;
 	k = 0;
 	frame_in_seq = -1;
 
+	thepos = ideal_pos();
+
 	refreshDrill();
 	refreshPreChoices();
 	refreshPostChoices();
-
-	if (seqs.length != 0) scene.registerBeforeRender(tick);
-
-	on_view_change();
-
-	engine.runRenderLoop(function(){ scene.render(); });
 }
 
 window.addEventListener('DOMContentLoaded',
@@ -449,41 +476,12 @@ window.addEventListener('DOMContentLoaded',
 			}
 		}
 
-		var canvas = document.getElementById('renderCanvas');
+		resetFrames();
+
+		canvas = document.getElementById('renderCanvas');
 		engine = new BABYLON.Engine(canvas, true);
-		resetScene();
+
+		makeScene();
+		resetFrames();
+		on_view_change();
 	});
-
-function showpos(pos, engine)
-{
-	var canvas = document.getElementById('renderCanvas');
-
-	var scene = new BABYLON.Scene(engine);
-
-	scene.clearColor = new BABYLON.Color3(1,1,1);
-
-	externalCamera = new BABYLON.ArcRotateCamera("ArcRotateCamera",
-		0, // rotation around Y axis
-		3.14/4, // rotation around X axis
-		2.5, // radius
-		new BABYLON.Vector3(0, 0, 0),
-		scene);
-
-	externalCamera.wheelPrecision = 30;
-	externalCamera.lowerBetaLimit = 0;
-	externalCamera.upperRadiusLimit = 4;
-	externalCamera.lowerRadiusLimit = 1;
-
-	firstPersonCamera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 1, -5), scene);
-	firstPersonCamera.minZ = 0.05;
-
-	externalCamera.attachControl(canvas);
-
-	var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), scene);
-
-	var draw = animated_position_from_array(pos, scene);
-
-	scene.registerBeforeRender(function(){ if (thepos) draw(thepos); });
-
-	return scene;
-}
