@@ -53,6 +53,7 @@ function on_pop_front_button_clicked()
 	{
 		frame = 0;
 		frame_in_seq = 0;
+		k = 0;
 	}
 	else
 	{
@@ -61,7 +62,13 @@ function on_pop_front_button_clicked()
 	}
 
 	seqs.splice(0, 1);
+
 	resetFrames();
+		// todo: preserve orientation so that animation
+		//  can be left entirely undisturbed
+
+	refreshDrill();
+	refreshPreChoices();
 }
 
 function on_pop_back_button_clicked()
@@ -72,6 +79,12 @@ function on_pop_back_button_clicked()
 		seqindex = 0;
 		frame_in_seq = 0;
 		frame = 0;
+
+		resetFrames();
+		frame = -1;
+		k = 0;
+		frame_in_seq = -1;
+		thepos = ideal_pos();
 	}
 	else
 	{
@@ -80,12 +93,16 @@ function on_pop_back_button_clicked()
 			--seqindex;
 			frame_in_seq = 0;
 			frame = seq_index_to_frame_index(seqindex) + frame_in_seq;
+			k = 0;
 		}
 
 		seqs.splice(seqs.length - 1, 1);
+
+		resetFrames();
 	}
 
-	resetFrames();
+	refreshDrill();
+	refreshPostChoices();
 }
 
 function refreshPreChoices()
@@ -111,6 +128,12 @@ function refreshPreChoices()
 				seqs = [c].concat(seqs);
 				start_node = transitions[c].from;
 				resetFrames();
+				frame = -1;
+				k = 0;
+				frame_in_seq = -1;
+				thepos = ideal_pos();
+				refreshDrill();
+				refreshPreChoices();
 			}}(choice));
 
 		elem.appendChild(btn);
@@ -148,6 +171,8 @@ function refreshPostChoices()
 		btn.addEventListener("click", function(c){ return function(){
 				seqs.push(c);
 				resetFrames();
+				refreshDrill();
+				refreshPostChoices();
 			}}(choice));
 
 		elem.appendChild(btn);
@@ -327,7 +352,7 @@ function tick()
 			var last_frame_in_seq = transitions[seqs[seqindex]].frames.length - 1;
 			if (seqindex == seqs.length - 1) last_frame_in_seq += 6;
 
-			if (frame_in_seq == last_frame_in_seq)
+			if (frame_in_seq >= last_frame_in_seq)
 			{
 				++seqindex;
 				if (seqindex == seqs.length)
@@ -443,16 +468,6 @@ function resetFrames()
 	else keyframes = follow(seqs, mirror_view);
 
 	document.getElementById("slider").max = keyframes.length - 1;
-
-	frame = -1;
-	k = 0;
-	frame_in_seq = -1;
-
-	thepos = ideal_pos();
-
-	refreshDrill();
-	refreshPreChoices();
-	refreshPostChoices();
 }
 
 window.addEventListener('DOMContentLoaded',
@@ -477,11 +492,19 @@ window.addEventListener('DOMContentLoaded',
 		}
 
 		resetFrames();
+		frame = -1;
+		k = 0;
+		frame_in_seq = -1;
+		thepos = ideal_pos();
+
+		refreshDrill();
+		refreshPreChoices();
+		refreshPostChoices();
 
 		canvas = document.getElementById('renderCanvas');
 		engine = new BABYLON.Engine(canvas, true);
 
 		makeScene();
-		resetFrames();
+
 		on_view_change();
 	});
