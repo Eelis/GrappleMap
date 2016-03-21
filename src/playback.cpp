@@ -29,14 +29,9 @@ Frames smoothen(Frames f)
 	return f;
 }
 
-Frames frames(Graph const & g, Scene const & scene, unsigned const frames_per_pos)
+Frames frames(Graph const & g, Path const & path, unsigned const frames_per_pos)
 {
-	Frames r;
-	
-	ReorientedNode n =
-		g.to(scene.front()).node == g.from(scene[1]).node
-			? g.from(scene.front())
-			: g.to(scene.front());
+	if (path.empty()) return {};
 
 	auto d = [&](SeqNum seq)
 		{
@@ -47,17 +42,16 @@ Frames frames(Graph const & g, Scene const & scene, unsigned const frames_per_po
 			return desc;
 		};
 
-	auto i = scene.begin();
+	Frames r;
+	ReorientedNode n = from(g, path.front());
 
-	for (; i != scene.end(); ++i)
+	foreach (step : path)
 	{
-		SeqNum const seq = *i;
-
-		pair<vector<Position>, ReorientedNode> p = follow(g, n, seq, frames_per_pos);
+		pair<vector<Position>, ReorientedNode> p = follow(g, n, step.seq, frames_per_pos);
 
 		p.first.pop_back();
 
-		r.emplace_back(d(*i), p.first);
+		r.emplace_back(d(step.seq), p.first);
 
 		n = p.second;
 	}
@@ -65,17 +59,10 @@ Frames frames(Graph const & g, Scene const & scene, unsigned const frames_per_po
 	return r;
 }
 
-Frames frames(Graph const & g, Script const & script, unsigned const frames_per_pos)
+Frames frames(Graph const & g, vector<Path> const & script, unsigned const frames_per_pos)
 {
 	Frames full;
-
-	foreach (scene : script)
-	{
-		Frames r = frames(g, scene, frames_per_pos);
-
-		full.insert(full.end(), r.begin(), r.end());
-	}
-
+	foreach (path : script) append(full, frames(g, path, frames_per_pos));
 	return full;
 }
 
@@ -86,7 +73,7 @@ struct Config
 	unsigned frames_per_pos;
 	unsigned num_transitions;
 	string start;
-	optional<string /* seq desc */> demo;
+	optional<string /* desc */> demo;
 	optional<pair<unsigned, unsigned>> dimensions;
 };
 
@@ -135,12 +122,12 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 
 bool dfsScene(
 	Graph const & g,
-	vector<pair<vector<SeqNum>, vector<SeqNum>>> const & in_out,
-	NodeNum const n, size_t const size, Scene & scene)
+	vector<pair<vector<Step>, vector<Step>>> const & in_out,
+	NodeNum const n, size_t const size, Path & scene)
 {
 	if (size == 0) return true;
 
-	std::multimap<size_t, SeqNum> choices;
+	std::multimap<size_t, Step> choices;
 
 	foreach (s : in_out[n.index].second)
 	{
@@ -148,7 +135,7 @@ bool dfsScene(
 
 		size_t const c = std::count(scene.begin(), scene.end(), s);
 
-		if (c >= 2) continue;
+		if (c >= 1) continue;
 
 		if (scene.size() < 50 && c >= 1) continue;
 
@@ -159,11 +146,11 @@ bool dfsScene(
 
 	foreach (c : choices)
 	{
-		SeqNum const s = c.second;
+		Step const s = c.second;
 
 		scene.push_back(s);
 
-		if (dfsScene(g, in_out, g.to(s).node, size - 1, scene))
+		if (dfsScene(g, in_out, to(g, s).node, size - 1, scene))
 			return true;
 
 		scene.pop_back();
@@ -213,21 +200,21 @@ Scene randomScene(Graph const & g, SeqNum const start, size_t const size)
 }
 */
 
-Scene randomScene(Graph const & g, NodeNum const start, size_t const size)
+Path randomScene(Graph const & g, NodeNum const start, size_t const size)
 {
-	Scene s;
+	Path s;
 
 	if (!dfsScene(g, in_out(g), start, size, s))
 		throw runtime_error("could not find sequence");
 
 	set<SeqNum> ss;
-	foreach (x : s) ss.insert(x);
+	foreach (x : s) ss.insert(x.seq);
 	std::cout << ss.size() << " unique sequences\n";
 
 	return s;
 }
-/*
 
+/*
 Scene randomScene(Graph const & g, NodeNum const start, size_t const size)
 {
 	auto o = out(g, start);
@@ -238,14 +225,32 @@ Scene randomScene(Graph const & g, NodeNum const start, size_t const size)
 }
 */
 
-Frames demoFrames(Graph const & g, SeqNum const s, unsigned const frames_per_pos)
+vector<Path> paths_through(Graph const & g, Step s, unsigned in_size, unsigned out_size)
+{
+	vector<Path> v;
+
+	foreach (pre : in_paths(g, from(g, s).node, in_size))
+	foreach (post : out_paths(g, to(g, s).node, out_size))
+	{
+		Path path = pre;
+		path.push_back(s);
+		append(path, post);
+		v.push_back(path);
+	}
+
+	return v;
+}
+
+Frames demoFrames(Graph const & g, Step const s, unsigned const frames_per_pos)
 {
 	Frames f;
 
-	foreach (x : in(g, g.from(s).node))
-	foreach (y : out(g, g.to(s).node))
+	auto scenes = paths_through(g, s, 1, 1);
+
+	cout << "Playing " << scenes.size() << " scenes.\n";
+
+	foreach (scene : scenes)
 	{
-		auto scene = {x, s, y};
 		Frames z = frames(g, scene, frames_per_pos);
 
 		Position const last = z.back().second.back();
@@ -253,7 +258,7 @@ Frames demoFrames(Graph const & g, SeqNum const s, unsigned const frames_per_pos
 
 		Frames const x = smoothen(z);
 		f.push_back({"      ", vector<Position>(70, x.front().second.front())});
-		f.insert(f.end(), x.begin(), x.end());
+		append(f, x);
 	}
 
 	return f;
@@ -275,20 +280,15 @@ int main(int const argc, char const * const * const argv)
 
 		if (config->demo)
 		{
-			SeqNum seq;
-
-			if (all_digits(*config->demo))
-				seq = SeqNum{uint16_t(std::stoul(*config->demo))};
-			else if (auto o = seq_by_desc(graph, *config->demo))
-				seq = *o;
-			else throw runtime_error("no such transition");
-
-			fr = demoFrames(graph, seq, config->frames_per_pos);
+			if (auto step = step_by_desc(graph, *config->demo))
+				fr = demoFrames(graph, *step, config->frames_per_pos);
+			else
+				throw runtime_error("no such transition");
 		}
 		else if (!config->script.empty())
-			fr = frames(graph, readScript(graph, config->script), config->frames_per_pos);
+			fr = smoothen(frames(graph, readScene(graph, config->script), config->frames_per_pos));
 		else if (optional<NodeNum> start = node_by_desc(graph, config->start))
-			fr = smoothen(frames(graph, Scene{randomScene(graph, *start, config->num_transitions)}, config->frames_per_pos));
+			fr = smoothen(frames(graph, randomScene(graph, *start, config->num_transitions), config->frames_per_pos));
 //		else if (optional<SeqNum> start = seq_by_desc(graph, config->start))
 //			fr = frames(graph, Scene{randomScene(graph, *start, config->num_transitions)}, config->frames_per_pos);
 		else
@@ -305,7 +305,8 @@ int main(int const argc, char const * const * const argv)
 		Camera camera;
 		Style style;
 		style.background_color = white;
-		camera.zoom(0.6);
+		camera.zoom(0.3);
+		//camera.zoom(0.9);
 
 		string const separator = "      ";
 
@@ -354,7 +355,7 @@ int main(int const argc, char const * const * const argv)
 					},
 
 					nullptr, // no viables
-					graph, window, pos, camera,
+					graph, pos, camera,
 					none, // no highlighted joint
 					false, // not edit mode
 					0, bottom,
