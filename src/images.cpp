@@ -89,8 +89,6 @@ namespace
 
 		boost::gil::png_write_view(path,
 			boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf.data(), width*3)));
-
-		std::cout << "wrote " << path << '\n';
 	}
 }
 
