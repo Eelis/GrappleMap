@@ -7,7 +7,7 @@ var seq_bullets = [];
 var sliding = false;
 var paused = false;
 var seqindex = 0;
-var frame_in_seq = 0;
+var frame_in_seq = -5;
 var mirror_view = false;
 var keyframes;
 var thepos;
@@ -43,20 +43,6 @@ function on_pause_button_clicked()
 {
 	paused = !paused;
 	document.getElementById("pause_button").innerHTML = (paused ? "play" : "pause");
-}
-
-function step_to(s)
-{
-	return s.reverse
-		? transitions[s.transition].from
-		: transitions[s.transition].to;
-}
-
-function step_from(s)
-{
-	return s.reverse
-		? transitions[s.transition].to
-		: transitions[s.transition].from;
 }
 
 function on_pop_front_button_clicked()
@@ -540,11 +526,15 @@ window.addEventListener('DOMContentLoaded',
 			}
 
 		}
+		else
+		{
+			steps = random_path(8);
+			start_node = step_from(steps[0]).node;
+		}
 
 		resetFrames();
 		frame = -1;
 		k = 0;
-		frame_in_seq = -1;
 		thepos = ideal_pos();
 
 		refreshDrill();

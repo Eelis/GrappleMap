@@ -389,3 +389,61 @@ function compose_reo(a, b)
 	return c;
 }
 
+function step_to(s)
+{
+	return s.reverse
+		? transitions[s.transition].from
+		: transitions[s.transition].to;
+}
+
+function step_from(s)
+{
+	return s.reverse
+		? transitions[s.transition].to
+		: transitions[s.transition].from;
+}
+
+function randInt(n)
+{
+	return Math.floor(Math.random() * n);
+}
+
+function random_node()
+{
+	return randInt(nodes.length);
+}
+
+function random_path(length)
+{
+	var steps = [];
+	var node = random_node();
+
+	while (steps.length < length)
+	{
+		var choices = nodes[node].outgoing;
+
+		if (choices.length == 0)
+		{
+			steps = [];
+			node = random_node();
+			continue;
+		}
+
+		var step = choices[randInt(choices.length)];
+
+		if (steps.length == 0 || steps[steps.length - 1].transition != step.transition)
+		{
+			steps.push(step);
+			node = step_to(step).node;
+			continue;
+		}
+
+		if (choices.length == 1)
+		{
+			steps = [];
+			node = random_node();
+		}
+	}
+
+	return steps;
+}
