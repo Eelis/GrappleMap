@@ -1,6 +1,6 @@
 var engine;
 var scene;
-var seqs = [150];
+var steps = [{transition:217,reverse:false}];
 var start_node = null;
 var start_bullet = null;
 var seq_bullets = [];
@@ -19,7 +19,7 @@ function seq_index_to_frame_index(s)
 {
 	var r = 0;
 	for (var i = 0; i != s; ++i)
-		r += transitions[seqs[i]].frames.length - 1;
+		r += transitions[steps[i].transition].frames.length - 1;
 	return r;
 }
 
@@ -29,14 +29,14 @@ function frame_index_to_seq(f)
 
 	var r = 0;
 
-	for (var s = 0; s != seqs.length; ++s)
+	for (var s = 0; s != steps.length; ++s)
 	{
-		var l = transitions[seqs[s]].frames.length;
+		var l = transitions[steps[s].transition].frames.length;
 		if (f < l) return [s, f];
 		f -= l - 1;
 	}
 
-	return [seqs.length - 1, 0]; // todo: not 0
+	return [steps.length - 1, 0]; // todo: not 0
 }
 
 function on_pause_button_clicked()
@@ -45,9 +45,23 @@ function on_pause_button_clicked()
 	document.getElementById("pause_button").innerHTML = (paused ? "play" : "pause");
 }
 
+function step_to(s)
+{
+	return s.reverse
+		? transitions[s.transition].from
+		: transitions[s.transition].to;
+}
+
+function step_from(s)
+{
+	return s.reverse
+		? transitions[s.transition].to
+		: transitions[s.transition].from;
+}
+
 function on_pop_front_button_clicked()
 {
-	start_node = transitions[seqs[0]].to;
+	start_node = step_to(steps[0]).node;
 
 	if (seqindex == 0)
 	{
@@ -61,7 +75,7 @@ function on_pop_front_button_clicked()
 		frame = seq_index_to_frame_index(seqindex) + frame_in_seq;
 	}
 
-	seqs.splice(0, 1);
+	steps.splice(0, 1);
 
 	resetFrames();
 		// todo: preserve orientation so that animation
@@ -73,9 +87,9 @@ function on_pop_front_button_clicked()
 
 function on_pop_back_button_clicked()
 {
-	if (seqs.length == 1)
+	if (steps.length == 1)
 	{
-		seqs = [];
+		steps = [];
 		seqindex = 0;
 		frame_in_seq = 0;
 		frame = 0;
@@ -88,7 +102,7 @@ function on_pop_back_button_clicked()
 	}
 	else
 	{
-		if (seqindex == seqs.length - 1)
+		if (seqindex == steps.length - 1)
 		{
 			--seqindex;
 			frame_in_seq = 0;
@@ -96,7 +110,7 @@ function on_pop_back_button_clicked()
 			k = 0;
 		}
 
-		seqs.splice(seqs.length - 1, 1);
+		steps.splice(steps.length - 1, 1);
 
 		resetFrames();
 	}
@@ -115,18 +129,18 @@ function refreshPreChoices()
 
 	for (var i = 0; i != choices.length; ++i)
 	{
-		var choice = choices[i];
-		var from_node = transitions[choice].from;
+		var step = choices[i];
+		var from_node = step_from(step).node;
 
 		var btn = document.createElement("button");
 		btn.style.margin = "3px";
 		btn.style.textAlign = "left";
 		btn.appendChild(document.createTextNode(nodes[from_node].description));
 		btn.appendChild(document.createElement("br"));
-		btn.appendChild(document.createTextNode(indent + "↳ " + transitions[choice].description));
+		btn.appendChild(document.createTextNode(indent + "↳ " + transitions[step.transition].description));
 		btn.addEventListener("click", function(c){ return function(){
-				seqs = [c].concat(seqs);
-				start_node = transitions[c].from;
+				steps = [c].concat(steps);
+				start_node = step_from(c).node;
 				resetFrames();
 				frame = -1;
 				k = 0;
@@ -134,7 +148,7 @@ function refreshPreChoices()
 				thepos = ideal_pos();
 				refreshDrill();
 				refreshPreChoices();
-			}}(choice));
+			}}(step));
 
 		elem.appendChild(btn);
 	}
@@ -148,9 +162,9 @@ function refreshPostChoices()
 
 	elem.innerHTML = "";
 
-	var end_node = (seqs.length == 0)
+	var end_node = (steps.length == 0)
 		? start_node
-		: transitions[seqs[seqs.length - 1]].to;
+		: step_to(steps[steps.length - 1]).node;
 
 	var choices = nodes[end_node].outgoing;
 
@@ -158,22 +172,22 @@ function refreshPostChoices()
 
 	for (var i = 0; i != choices.length; ++i)
 	{
-		var choice = choices[i];
-		var to_node = transitions[choice].to;
+		var step = choices[i];
+		var to_node = step_to(step).node;
 
 		var btn = document.createElement("button");
 		btn.style.margin = "3px";
 		btn.style.textAlign = "left";
-		btn.appendChild(document.createTextNode(transitions[choice].description));
+		btn.appendChild(document.createTextNode(transitions[step.transition].description));
 		btn.appendChild(document.createElement("br"));
 		btn.appendChild(document.createTextNode(indent + "↳ " + nodes[to_node].description));
 
 		btn.addEventListener("click", function(c){ return function(){
-				seqs.push(c);
+				steps.push(c);
 				resetFrames();
 				refreshDrill();
 				refreshPostChoices();
-			}}(choice));
+			}}(step));
 
 		elem.appendChild(btn);
 	}
@@ -189,7 +203,7 @@ function node_link(node)
 
 function pick_bullet()
 {
-	for (var i = 0; i != seqs.length; ++i)
+	for (var i = 0; i != steps.length; ++i)
 		seq_bullets[i].style.visibility
 			= (i == seqindex ? 'visible' : 'hidden');
 }
@@ -201,6 +215,18 @@ function make_bullet()
 	b.style.display = 'inline';
 	b.style.visibility = 'hidden';
 	return b;
+}
+
+function encode_steps(a)
+{
+	var r = '';
+	for (var i = 0; i != a.length; ++i)
+	{
+		if (r != '') r += ',';
+		if (a[i].reverse) r += '-';
+		r += a[i].transition;
+	}
+	return r;
 }
 
 function refreshDrill()
@@ -216,31 +242,31 @@ function refreshDrill()
 	controls.appendChild(starttag);
 	controls.appendChild(node_link(start_node));
 
-	if (seqs.length != 0)
+	if (steps.length != 0)
 		controls.appendChild(document.createElement("hr"));
 
 	seq_bullets = [];
 
-	for (var i = 0; i != seqs.length; ++i)
+	for (var i = 0; i != steps.length; ++i)
 	{
 		var bullet = make_bullet();
 		seq_bullets.push(bullet);
 		controls.appendChild(bullet);
 
-		var seq = seqs[i];
+		var seq = steps[i].transition;
 		var seqLabel = document.createElement("a");
 		seqLabel.text = (i+1) + ". \u00a0" + transitions[seq].description + " \u00a0";
 
 		controls.appendChild(seqLabel);
 
-		if (i == 0 && seqs.length >= 2)
+		if (i == 0 && steps.length >= 2)
 		{
 			var btn = document.createElement("button");
 			btn.appendChild(document.createTextNode("x"));
 			btn.addEventListener("click", on_pop_front_button_clicked);
 			controls.appendChild(btn);
 		}
-		else if (i == seqs.length - 1/* && seqs.length >= 1*/)
+		else if (i == steps.length - 1/* && seqs.length >= 1*/)
 		{
 			var btn = document.createElement("button");
 			btn.appendChild(document.createTextNode("x"));
@@ -248,7 +274,7 @@ function refreshDrill()
 			controls.appendChild(btn);
 		}
 
-		var to_node = transitions[seq].to;
+		var to_node = step_to(steps[i]).node;
 
 		controls.appendChild(document.createElement("br"));
 		controls.appendChild(document.createTextNode("\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 ↳ \u00a0")); // todo
@@ -256,10 +282,10 @@ function refreshDrill()
 		controls.appendChild(document.createElement("br"));
 	}
 
-	if (seqs.length != 0)
+	if (steps.length != 0)
 	{
 		var sharelink = document.createElement("a");
-		sharelink.href="?" + seqs.join(',');
+		sharelink.href="?" + encode_steps(steps);
 		sharelink.text = "share";
 		controls.appendChild(document.createTextNode("("));
 		controls.appendChild(sharelink);
@@ -339,7 +365,7 @@ function updateDrawnPos()
 
 function tick()
 {
-	if (!sliding && !paused && seqs.length != 0)
+	if (!sliding && !paused && steps.length != 0)
 	{
 		k += engine.getDeltaTime() / speed;
 		if (k >= 1)
@@ -349,13 +375,13 @@ function tick()
 
 			++frame_in_seq;
 
-			var last_frame_in_seq = transitions[seqs[seqindex]].frames.length - 1;
-			if (seqindex == seqs.length - 1) last_frame_in_seq += 6;
+			var last_frame_in_seq = transitions[steps[seqindex].transition].frames.length - 1;
+			if (seqindex == steps.length - 1) last_frame_in_seq += 6;
 
 			if (frame_in_seq >= last_frame_in_seq)
 			{
 				++seqindex;
-				if (seqindex == seqs.length)
+				if (seqindex == steps.length)
 				{
 					seqindex = 0;
 					frame_in_seq = -5;
@@ -374,39 +400,50 @@ function tick()
 	updateCamera();
 }
 
-function follow(seqs, mirror)
+function follow(steps, mirror)
 {
 	var reo;
 	var r = [];
 
 	var cores = v3(0,0,0);
 
-	for (var i = 0; i != seqs.length; ++i)
+	for (var i = 0; i != steps.length; ++i)
 	{
-		var seq = seqs[i];
-		var trans = transitions[seq];
+		var step = steps[i];
+		var trans = transitions[step.transition];
 		var newframes = trans.frames;
 
 		if (r.length != 0) r.pop();
 
 		if (i != 0)
+		{
+			var prev_step = steps[i - 1];
 			reo = compose_reo(
 				compose_reo(
-					inverse_reo(transitions[seqs[i]].reo_from),
-					transitions[seqs[i-1]].reo_to),
+					inverse_reo(step_from(step).reo),
+					step_to(prev_step).reo),
 				reo);
+		}
 		else
 		{
-			reo = transitions[seqs[i]].reo_from;
+			reo = step_from(step).reo;
 			if (mirror) reo.mirror = !reo.mirror;
 		}
 
-		for (var j = 0; j != newframes.length; ++j)
-		{
-			var f = apply_reo(reo, newframes[j]);
-			r.push(f);
-			cores = cores.add(f[0][Core]).add(f[1][Core]);
-		}
+		if (!step.reverse)
+			for (var j = 0; j != newframes.length; ++j)
+			{
+				var f = apply_reo(reo, newframes[j]);
+				r.push(f);
+				cores = cores.add(f[0][Core]).add(f[1][Core]);
+			}
+		else
+			for (var j = newframes.length - 1; j >= 0; --j)
+			{
+				var f = apply_reo(reo, newframes[j]);
+				r.push(f);
+				cores = cores.add(f[0][Core]).add(f[1][Core]);
+			}
 	}
 
 	cores.y = 0;
@@ -416,7 +453,7 @@ function follow(seqs, mirror)
 		r[i] = apply_reo(centerer, r[i]);
 
 	return r;
-}
+} // todo: clean up
 
 function on_mirror_button_clicked()
 {
@@ -460,14 +497,26 @@ function makeScene()
 
 function resetFrames()
 {
-	if (seqs.length == 0)
+	if (steps.length == 0)
 	{
 		keyframes = [nodes[start_node].position];
 		if (mirror_view) mirror(keyframes[0]);
 	}
-	else keyframes = follow(seqs, mirror_view);
+	else keyframes = follow(steps, mirror_view);
 
 	document.getElementById("slider").max = keyframes.length - 1;
+}
+
+function decode_steps(s)
+{
+	var r = [];
+	var seqs = s.split(',');
+	for (var i = 0; i != seqs.length; ++i)
+		if (seqs[i][0] == '-')
+			r.push({transition: parseInt(seqs[i].substr(1)), reverse: true});
+		else
+			r.push({transition: parseInt(seqs[i]), reverse: false});
+	return r;
 }
 
 window.addEventListener('DOMContentLoaded',
@@ -482,13 +531,14 @@ window.addEventListener('DOMContentLoaded',
 			if (arg[0] == 'p')
 			{
 				start_node = arg.substr(1);
-				seqs = [];
+				steps = [];
 			}
 			else
 			{
-				seqs = arg.split(',');
-				start_node = transitions[seqs[0]].from;
+				steps = decode_steps(arg);
+				start_node = step_from(steps[0]).node;
 			}
+
 		}
 
 		resetFrames();

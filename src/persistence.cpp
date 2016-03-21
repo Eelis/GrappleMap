@@ -286,15 +286,28 @@ void tojs(Position const & p, std::ostream & js)
 	js << ']';
 }
 
+void tojs(Step const s, std::ostream & js)
+{
+	js << "{transition:" << s.seq.index << ",reverse:" << s.reverse << '}';
+}
+
+void tojs(ReorientedNode const & n, std::ostream & js)
+{
+	js << "{node:" << n.node.index;
+	js << ",reo:";
+	tojs(n.reorientation, js);
+	js << '}';
+}
+
 void tojs(Graph const & graph, std::ostream & js)
 {
 	js << "nodes=[";
 	foreach (n : nodenums(graph))
 	{
 		js << "{incoming:[";
-		foreach (s : in(graph, n)) js << s.index << ',';
+		foreach (s : in_steps(graph, n)) { tojs(s, js); js << ','; }
 		js << "],outgoing:[";
-		foreach (s : out(graph, n)) js << s.index << ',';
+		foreach (s : out_steps(graph, n)) { tojs(s, js); js << ','; }
 		js << "],position:";
 		tojs(graph[n].position, js);
 		js << ",description:'" << replace_all(desc(graph[n]), "'", "&#39;") << "'";
@@ -305,12 +318,10 @@ void tojs(Graph const & graph, std::ostream & js)
 	js << "transitions=[";
 	foreach (s : seqnums(graph))
 	{
-		js << "{from:" << graph.from(s).node.index;
-		js << ",to:" << graph.to(s).node.index;
-		js << ",reo_from:";
-		tojs(graph.from(s).reorientation, js);
-		js << ",reo_to:";
-		tojs(graph.to(s).reorientation, js);
+		js << "{from:";
+		tojs(graph.from(s), js);
+		js << ",to:";
+		tojs(graph.to(s), js);
 		js << ",frames:[";
 		foreach (pos : graph[s].positions)
 		{
