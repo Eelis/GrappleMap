@@ -413,18 +413,20 @@ function random_node()
 	return randInt(nodes.length);
 }
 
-function random_path(length)
+function random_path(min_frames)
 {
 	var steps = [];
 	var node = random_node();
+	var frames = 0;
 
-	while (steps.length < length)
+	while (frames < min_frames)
 	{
 		var choices = nodes[node].outgoing;
 
 		if (choices.length == 0)
 		{
 			steps = [];
+			frames = 0;
 			node = random_node();
 			continue;
 		}
@@ -434,6 +436,8 @@ function random_path(length)
 		if (steps.length == 0 || steps[steps.length - 1].transition != step.transition)
 		{
 			steps.push(step);
+			frames += transitions[step.transition].frames.length;
+
 			node = step_to(step).node;
 			continue;
 		}
@@ -441,6 +445,7 @@ function random_path(length)
 		if (choices.length == 1)
 		{
 			steps = [];
+			frames = 0;
 			node = random_node();
 		}
 	}

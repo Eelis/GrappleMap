@@ -528,7 +528,7 @@ window.addEventListener('DOMContentLoaded',
 		}
 		else
 		{
-			steps = random_path(8);
+			steps = random_path(32);
 			start_node = step_from(steps[0]).node;
 		}
 
