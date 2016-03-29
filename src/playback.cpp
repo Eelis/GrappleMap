@@ -137,9 +137,7 @@ bool dfsScene(
 
 		if (c >= 1) continue;
 
-		if (scene.size() < 50 && c >= 1) continue;
-
-//		if (c == 1 && g[s].positions.size() > 5) continue;
+		if (!scene.empty() && scene.back().seq == s.seq) continue;
 
 		choices.insert({c, s});
 	}
