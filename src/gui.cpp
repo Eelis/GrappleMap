@@ -218,7 +218,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					break;
 
 				case GLFW_KEY_PAGE_DOWN:
-					if (w.location.sequence.index != w.graph.num_sequences() - 1)
+					if (int32_t(w.location.sequence.index) != w.graph.num_sequences() - 1)
 					{
 						++w.location.sequence.index;
 						w.location.position = 0;
@@ -427,7 +427,7 @@ View const * main_view(std::vector<View> const & vv)
 	return nullptr;
 }
 
-void backward(Window & w)
+void backward(Window &)
 {
 	// TODO
 }
@@ -491,8 +491,16 @@ int main(int const argc, char const * const * const argv)
 			("start", po::value<string>(), "initial node (by number or first line of description)")
 			("db", po::value<string>()->default_value("GrappleMap.txt"), "database file");
 
+		po::positional_options_description posopts;
+		posopts.add("start", -1);
+
 		po::variables_map vm;
-		po::store(po::parse_command_line(argc, argv, desc), vm);
+		po::store(
+			po::command_line_parser(argc, argv)
+				.options(desc)
+				.positional(posopts)
+				.run(),
+			vm);
 		po::notify(vm);
 
 		if (vm.count("help")) { std::cout << desc << '\n'; return 0; }
