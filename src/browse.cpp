@@ -210,16 +210,26 @@ namespace
 			<< "</table></td></tr></table>"
 			<< "<h2>Transitions (" << g.num_sequences() << ")</h2>";
 
-		html << "<table style='border: solid 1px' class='sortable'><tr><th>From</th><th>Via</th><th>To</th><th>Frames</th></tr>";
+		html << "<table style='border: solid 1px' class='sortable'><tr><th>From</th><th>Via</th><th>To</th><th>Frames</th><th>Tags</th></tr>";
 
 		foreach(s : seqnums(g))
 		{
+			set<string> tags = tags_in_desc(g[s].description);
+
+			{
+				set<string> const from_tags = tags_in_desc(g[g.from(s).node].description);
+				foreach(t : tags_in_desc(g[g.to(s).node].description))
+					if (from_tags.find(t) != from_tags.end())
+						tags.insert(t);
+			}
+
 			html
 				<< "<tr>"
 				<< "<td><a href='p" << g.from(s).node.index << "n.html'>" << nlspace(desc(g[g.from(s).node])) << "</a></td>"
 				<< "<td><b>" << nlspace(g[s].description.front()) << "</b></td>"
 				<< "<td><a href='p" << g.to(s).node.index << "n.html'>" << nlspace(desc(g[g.to(s).node])) << "</a></td>"
 				<< "<td>" << g[s].positions.size() << "</td>"
+				<< "<td>" << tags.size() << "</td>"
 				<< "</tr>";
 		}
 
