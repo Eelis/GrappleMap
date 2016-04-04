@@ -123,7 +123,7 @@ function refreshPreChoices()
 		btn.style.textAlign = "left";
 		btn.appendChild(document.createTextNode(nodes[from_node].description));
 		btn.appendChild(document.createElement("br"));
-		btn.appendChild(document.createTextNode(indent + "↳ " + transitions[step.transition].description));
+		btn.appendChild(document.createTextNode(indent + "↳ " + transitions[step.transition].description[0]));
 		btn.addEventListener("click", function(c){ return function(){
 				steps = [c].concat(steps);
 				start_node = step_from(c).node;
@@ -164,7 +164,7 @@ function refreshPostChoices()
 		var btn = document.createElement("button");
 		btn.style.margin = "3px";
 		btn.style.textAlign = "left";
-		btn.appendChild(document.createTextNode(transitions[step.transition].description));
+		btn.appendChild(document.createTextNode(transitions[step.transition].description[0]));
 		btn.appendChild(document.createElement("br"));
 		btn.appendChild(document.createTextNode(indent + "↳ " + nodes[to_node].description));
 
@@ -240,10 +240,13 @@ function refreshDrill()
 		controls.appendChild(bullet);
 
 		var seq = steps[i].transition;
+		var desc = transitions[seq].description;
 		var seqLabel = document.createElement("a");
-		seqLabel.text = (i+1) + ". \u00a0" + transitions[seq].description + " \u00a0";
+		seqLabel.text = (i+1) + ". \u00a0" + desc[0] + " \u00a0";
 
 		controls.appendChild(seqLabel);
+
+		// buttons:
 
 		if (i == 0 && steps.length >= 2)
 		{
@@ -260,12 +263,26 @@ function refreshDrill()
 			controls.appendChild(btn);
 		}
 
-		var to_node = step_to(steps[i]).node;
+		// link to node:
 
 		controls.appendChild(document.createElement("br"));
 		controls.appendChild(document.createTextNode("\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 ↳ \u00a0")); // todo
-		controls.appendChild(node_link(to_node));
+		controls.appendChild(node_link(step_to(steps[i]).node));
 		controls.appendChild(document.createElement("br"));
+
+		// description:
+
+		var descdiv = document.createElement("div");
+		descdiv.style.marginLeft = "100px";
+		descdiv.style.marginTop = "0px";
+
+		for (var j = 1; j <= desc.length - 1; ++j)
+		{
+			if (j != 1) descdiv.appendChild(document.createElement("br"));
+			descdiv.appendChild(document.createTextNode(desc[j]));
+		}
+
+		controls.appendChild(descdiv);
 	}
 
 	if (steps.length != 0)

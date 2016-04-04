@@ -299,6 +299,18 @@ void tojs(ReorientedNode const & n, std::ostream & js)
 	js << '}';
 }
 
+void tojs(vector<string> const & v, std::ostream & js)
+{
+	js << '[';
+	bool first = true;
+	foreach(s : v)
+	{
+		if (first) first = false; else js << ',';
+		js << '\'' << replace_all(s, "'", "\\'") << '\'';
+	}
+	js << ']';
+}
+
 void tojs(Graph const & graph, std::ostream & js)
 {
 	js << "nodes=[";
@@ -328,7 +340,8 @@ void tojs(Graph const & graph, std::ostream & js)
 			tojs(pos, js);
 			js << ',';
 		}
-		js << "],description:'" << replace_all(graph[s].description.front(), "'", "\\'") << '\'';
+		js << "],description:";
+		tojs(graph[s].description, js);
 		js << "},\n";
 	}
 	js << "];\n\n";
