@@ -16,7 +16,8 @@ editor
 - sticky floor
 - direction signs ("to truck", "zombie")
 - editing selected joints as a group
-- editing joints while the reorientation is mirrored is broken
+
+playback:
 - make {pre,post}fix length for demo mode configurable
 
 browseable pages:
@@ -41,3 +42,5 @@ drill composer
 - clean up code
 - leave animation undisturbed when manipulating drill
 - integrated transition editor
+- don't fuck up position when window becomes invisible
+- first person camera jerky when sliding

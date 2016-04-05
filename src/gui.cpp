@@ -612,13 +612,15 @@ int main(int const argc, char const * const * const argv)
 				
 				V2 const off = *cursor - world2xy(w.camera, apply(w.reorientation, new_pos, *w.chosen_joint));
 
-				auto & joint = new_pos[apply(w.reorientation, *w.chosen_joint)];
+				auto const rj = apply(w.reorientation, *w.chosen_joint);
+
+				auto & joint = new_pos[rj];
 
 				joint.x += dragger.x * off.x;
 				joint.z += dragger.z * off.x;
 				joint.y = std::max(jointDefs[w.chosen_joint->joint].radius, joint.y + off.y);
 
-				spring(new_pos, w.chosen_joint);
+				spring(new_pos, rj);
 
 				w.graph.replace(w.location, new_pos, false);
 
