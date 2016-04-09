@@ -311,18 +311,32 @@ void tojs(vector<string> const & v, std::ostream & js)
 	js << ']';
 }
 
+void tojs(set<string> const & v, std::ostream & js)
+{
+	js << '[';
+	bool first = true;
+	foreach(s : v)
+	{
+		if (first) first = false; else js << ',';
+		js << '\'' << replace_all(s, "'", "\\'") << '\'';
+	}
+	js << ']';
+}
+
 void tojs(Graph const & graph, std::ostream & js)
 {
 	js << "nodes=[";
 	foreach (n : nodenums(graph))
 	{
-		js << "{incoming:[";
+		js << "{id:" << n.index << ",incoming:[";
 		foreach (s : in_steps(graph, n)) { tojs(s, js); js << ','; }
 		js << "],outgoing:[";
 		foreach (s : out_steps(graph, n)) { tojs(s, js); js << ','; }
 		js << "],position:";
 		tojs(graph[n].position, js);
 		js << ",description:'" << replace_all(desc(graph[n]), "'", "&#39;") << "'";
+		js << ",tags:";
+		tojs(tags_in_desc(graph[n].description), js);
 		js << "},\n";
 	}
 	js << "];\n\n";
@@ -342,7 +356,16 @@ void tojs(Graph const & graph, std::ostream & js)
 		}
 		js << "],description:";
 		tojs(graph[s].description, js);
+
+		js << ",tags:";
+		tojs(tags_in_desc(graph[s].description), js);
+		js << ",properties:";
+		tojs(properties_in_desc(graph[s].description), js);
 		js << "},\n";
 	}
 	js << "];\n\n";
+
+	js << "tags=";
+	tojs(tags(graph), js);
+	js << ";\n\n";
 }
