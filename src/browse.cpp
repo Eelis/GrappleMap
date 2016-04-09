@@ -756,6 +756,8 @@ void write_composer(Graph const & graph)
 	cp("hand.js", output_dir + "composer/hand.js");
 	cp("composer.html", output_dir + "composer/index.html");
 	cp("composer.js", output_dir + "composer/composer.js");
+	cp("graphviewer.html", output_dir + "composer/graphviewer.html");
+	cp("graphviewer.js", output_dir + "composer/graphviewer.js");
 
 	ofstream js(output_dir + "composer/transitions.js");
 	js << std::boolalpha;
