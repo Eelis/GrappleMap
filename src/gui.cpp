@@ -154,6 +154,8 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 {
 	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(glfwWindow));
 
+	double const translation = mods & GLFW_MOD_SHIFT ? 0.2 : 0.02;
+
 	if (action == GLFW_PRESS)
 	{
 		if (mods & GLFW_MOD_CONTROL)
@@ -296,10 +298,10 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					}
 					break;
 
-				case GLFW_KEY_KP_4: translate(w, V3{-0.02, 0, 0}); break;
-				case GLFW_KEY_KP_6: translate(w, V3{0.02, 0, 0}); break;
-				case GLFW_KEY_KP_8: translate(w, V3{0, 0, -0.02}); break;
-				case GLFW_KEY_KP_2: translate(w, V3{0, 0, 0.02}); break;
+				case GLFW_KEY_KP_4: translate(w, V3{-translation, 0, 0}); break;
+				case GLFW_KEY_KP_6: translate(w, V3{translation, 0, 0}); break;
+				case GLFW_KEY_KP_8: translate(w, V3{0, 0, -translation}); break;
+				case GLFW_KEY_KP_2: translate(w, V3{0, 0, translation}); break;
 
 				case GLFW_KEY_KP_9:
 				{
