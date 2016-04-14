@@ -291,7 +291,7 @@ function refreshDrill()
 	if (steps.length != 0)
 	{
 		var sharelink = document.createElement("a");
-		sharelink.href="?" + encode_steps(steps);
+		sharelink.href = "?" + encode_steps(steps);
 		sharelink.text = "share";
 		controls.appendChild(document.createTextNode("("));
 		controls.appendChild(sharelink);

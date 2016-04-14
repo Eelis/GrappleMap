@@ -99,6 +99,23 @@ function update_tag_list()
 
 	var excl_ref = refinements(false);
 	if (excl_ref) excl_ul.appendChild(excl_ref);
+
+	set_share_link();
+}
+
+function set_share_link()
+{
+	var url = "?";
+
+	for (var i = 0; i != selected_tags.length; ++i)
+	{
+		var st = selected_tags[i];
+		if (i != 0) url += ',';
+		if (!st[1]) url += '-';
+		url += st[0];
+	}
+
+	document.getElementById('share_link').href = url;
 }
 
 function refinements(b)
@@ -156,7 +173,7 @@ function update_position_pics()
 			elem.appendChild(link);
 		}
 
-	document.getElementById('matchheader').innerHTML = c + " matching positions:";
+	document.getElementById('pos_count_label').innerHTML = "&nbsp;" + c + "&nbsp;";
 }
 
 function update_graph()
@@ -368,9 +385,14 @@ window.addEventListener('DOMContentLoaded',
 		{
 			var arg = s.substr(qmark + 1);
 
-			arg.split(",").forEach(function(t){ add_tag(t, true); });
+			arg.split(",").forEach(function(a){
+					if (a[0] == "-")
+						add_tag(a.substr(1), false);
+					else
+						add_tag(a, true);
+				});
 		}
-
+/*
 		thepos = keyframe = nodes[0].position;
 
 		canvas = document.getElementById('renderCanvas');
@@ -378,7 +400,7 @@ window.addEventListener('DOMContentLoaded',
 
 		makeScene();
 
-		on_tag_selection_changed();
-
 		scene.activeCamera = externalCamera;
+*/
+		on_tag_selection_changed();
 	});

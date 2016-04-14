@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<title>GrappleMap Browser</title>
+		<meta charset="UTF-8">
+		<style>
+			.link {
+			  stroke: #999;
+//			  marker-end:url(#end-arrow);
+			}
+			a{text-decoration:none}
+		</style>
+		<script>
+			function v3(x,y,z){return [x,y,z];}
+		</script>
+		<script src='d3.v3.min.js'></script>
+		<script src='../babylon.js'></script>
+		<script src='../gm.js'></script>
+		<script src='../transitions.js'></script>
+	</head>
+	<body style='margin:50px;text-align:center'>
+		<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>
+		<h2>Position Search</h2>
+		<div style='border:1px solid black;display:inline-block;text-align:left;padding:15px'>
+			Showing <span style='border:solid 1px #bbb; padding: 5px; font-size: large;font-weight:bold' id='pos_count_label'></span> positions that have <em>all of</em> these tags:
+			<ul id='include_tags'></ul>
+			and <em>none of</em> these tags:
+			<ul id='exclude_tags'></ul>
+			(<a id='share_link' href=''>share</a>)
+		</div>
+
+		<br><br>
+		<div id='position_pics'></div>
+
+		<hr>
+		<h2>Neighbourhood</h2>
+		<div id="mynetwork" style='width:100%;height:960px'></div>
+<!--
+		<h2>Selected position</h2>
+		<canvas style='display:inline-block;width:600px;height:450px' id='renderCanvas'></canvas>
+-->
+
+		<script src='search.js'></script>
+	</body>
+</html>

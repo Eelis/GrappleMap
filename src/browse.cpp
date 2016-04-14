@@ -751,17 +751,17 @@ void write_composer(Graph const & graph)
 				boost::filesystem::copy_option::overwrite_if_exists);
 		};
 
-	// todo: mkdir output_dir+"composer"
+	// todo: mkdir output_dir+"composer"/"search"
 
-	cp("gm.js", output_dir + "composer/gm.js");
-	cp("babylon.js", output_dir + "composer/babylon.js");
-	cp("hand.js", output_dir + "composer/hand.js");
+	cp("gm.js", output_dir + "gm.js");
+	cp("babylon.js", output_dir + "babylon.js");
+	cp("hand.js", output_dir + "hand.js");
 	cp("composer.html", output_dir + "composer/index.html");
 	cp("composer.js", output_dir + "composer/composer.js");
-	cp("graphviewer.html", output_dir + "composer/graphviewer.html");
-	cp("graphviewer.js", output_dir + "composer/graphviewer.js");
+	cp("search.html", output_dir + "search/index.html");
+	cp("search.js", output_dir + "search/search.js");
 
-	ofstream js(output_dir + "composer/transitions.js");
+	ofstream js(output_dir + "transitions.js");
 	js << std::boolalpha;
 	tojs(graph, js);
 }
