@@ -14,6 +14,9 @@ var thepos;
 var canvas;
 var externalCamera;
 var firstPersonCamera;
+var frame = 0;
+var drag = 0.20;
+var k = 0;
 
 function seq_index_to_frame_index(s)
 {
@@ -306,25 +309,9 @@ function on_slide()
 	pick_bullet();
 }
 
-function interpolate(a, b, c)
-{
-	return a.scale(1 - c).add(b.scale(c));
-}
-
 function keyframe(i)
 {
 	return keyframes[bound_frame_index(i, keyframes.length)];
-}
-
-function interpolate_position(a, b, c)
-{
-	var p = [[],[]];
-
-	for (var pl = 0; pl != 2; ++pl)
-	for (var j = 0; j != joints.length; ++j)
-		p[pl].push(interpolate(a[pl][j], b[pl][j], c));
-
-	return p;
 }
 
 function on_view_change()

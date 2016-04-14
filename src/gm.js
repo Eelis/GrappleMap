@@ -135,11 +135,6 @@ function cylinderPaths(from_radius, to_radius, from, to, faces)
 	return [p0, p1];
 }
 
-var drag = 0.20;
-
-var frame = 0;
-var k = 0;
-
 function bound_frame_index(i, n)
 {
 	if (i < 0) return 0;
@@ -451,4 +446,20 @@ function random_path(min_frames)
 	}
 
 	return steps;
+}
+
+function interpolate(a, b, c)
+{
+	return a.scale(1 - c).add(b.scale(c));
+}
+
+function interpolate_position(a, b, c)
+{
+	var p = [[],[]];
+
+	for (var pl = 0; pl != 2; ++pl)
+	for (var j = 0; j != joints.length; ++j)
+		p[pl].push(interpolate(a[pl][j], b[pl][j], c));
+
+	return p;
 }
