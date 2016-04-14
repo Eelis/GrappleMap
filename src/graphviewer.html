@@ -2,11 +2,11 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>GrappleMap</title>
+		<title>GrappleMap Browser</title>
 		<style>
 			.link {
 			  stroke: #999;
-			  marker-end:url(#end-arrow);
+//			  marker-end:url(#end-arrow);
 			}
 		</style>
 		<script>
@@ -18,10 +18,24 @@
 		<script src='transitions.js'></script>
 	</head>
 	<body>
-		<div id='selected_tags'></div>
-		<div id='refinements'></div>
-		<canvas style='display:inline-block;width:600px;height:450px' id='renderCanvas'></canvas>
+		<h2>Tag filter</h2>
+		<p>Show positions that have <em>all of</em> these:</p>
+		<ul id='include_tags'></ul>
+		<p>and <em>none of</em> these:</p>
+		<ul id='exclude_tags'></ul>
+
+		<h2 id='matchheader'>Matching positions</h2>
+		<div id='position_pics'></div>
+
+		<h2>Neighbourhood</h2>
+
 		<div id="mynetwork" style='width:100%;height:960px'></div>
+
+
+		<h2>Selected position</h2>
+		<canvas style='display:inline-block;width:600px;height:450px' id='renderCanvas'></canvas>
+
+
 		<script src='graphviewer.js'></script>
 	</body>
 </html>

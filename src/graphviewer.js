@@ -1,4 +1,5 @@
 var selected_tags = [];
+var drag = 0.20;
 
 function trans_has_tag(trans, tag)
 {
@@ -15,7 +16,7 @@ function node_has_tag(node, tag)
 function node_is_selected(node)
 {
 	for (var i = 0; i != selected_tags.length; ++i)
-		if (!node_has_tag(node, selected_tags[i]))
+		if (node_has_tag(node, selected_tags[i][0]) != selected_tags[i][1])
 			return false;
 	return true;
 }
@@ -23,88 +24,142 @@ function node_is_selected(node)
 function trans_is_selected(trans)
 {
 	for (var i = 0; i != selected_tags.length; ++i)
-		if (!trans_has_tag(trans, selected_tags[i]))
+		if (trans_has_tag(trans, selected_tags[i][0]) != selected_tags[i][1])
 			return false;
 	return true;
 }
 
 function tag_refines(t)
 {
-	var inclusions = false;
-	var exclusions = false;
+	var inclusions = 0;
+	var exclusions = 0;
 
-	for (var i = 0; i != transitions.length; ++i)
-	{
-		if (trans_is_selected(transitions[i]))
+	nodes.forEach(function(n){
+		if (node_is_selected(n))
 		{
-			if (trans_has_tag(transitions[i], t))
-				inclusions = true;
-			else
-				exclusions = true;
+			if (node_has_tag(n, t)) ++inclusions;
+			else ++exclusions;
 		}
-	}
+	});
 
-	return inclusions && exclusions;
+	return [inclusions, exclusions];
 }
 
-function add_tag(t)
+function add_tag(t, b)
 {
-	selected_tags.push(t);
-	update_tag_controls();
-	generate_graph();
+	selected_tags.push([t, b]);
+	on_tag_selection_changed();
 }
 
 function remove_tag(t)
 {
 	selected_tags.splice(selected_tags.indexOf(t), 1);
-	update_tag_controls();
-	generate_graph();
+	on_tag_selection_changed();
+
 }
 
-function update_tag_controls()
+function on_tag_selection_changed()
 {
-	{
-		var elem = document.getElementById("selected_tags");
-
-		elem.innerHTML = "Tags:";
-
-		for (var i = 0; i != selected_tags.length; ++i)
-		{
-			elem.appendChild(document.createElement("br"));
-			elem.appendChild(document.createTextNode(" ▸ " + selected_tags[i] + " "));
-
-			var btn = document.createElement("button");
-			btn.style.margin = "3px";
-			btn.appendChild(document.createTextNode("-"));
-			btn.addEventListener("click", function(t){ return function(){
-					remove_tag(t);
-				}; }(selected_tags[i]) );
-
-			elem.appendChild(btn);
-		}
-	}
-
-	{
-		var elem = document.getElementById("refinements");
-
-		elem.innerHTML = "Refine:";
-
-		for (var i = 0; i != tags.length; ++i)
-			if (tag_refines(tags[i]))
-			{
-				var btn = document.createElement("button");
-				btn.style.margin = "5px";
-				btn.appendChild(document.createTextNode(tags[i]));
-				btn.addEventListener("click", function(t){ return function(){
-						add_tag(t);
-					}; }(tags[i]) );
-
-				elem.appendChild(btn);
-			}
-	}
+	update_tag_list();
+	update_position_pics();
+	update_graph();
 }
 
-function generate_graph()
+function update_tag_list()
+{
+	var incl_ul = document.getElementById('include_tags');
+	var excl_ul = document.getElementById('exclude_tags');
+
+	incl_ul.innerHTML = "";
+	excl_ul.innerHTML = "";
+
+	selected_tags.forEach(function(st)
+	{
+		var u = document.createTextNode(st[0] + " ");
+
+		var li = document.createElement("li");
+
+		li.appendChild(u);
+
+		var btn = document.createElement("button");
+		btn.style.margin = "3px";
+		btn.appendChild(document.createTextNode("×"));
+		btn.addEventListener("click", function(t){ return function(){
+				remove_tag(t);
+			}; }(st) );
+
+		li.appendChild(btn);
+
+		if (st[1]) incl_ul.appendChild(li);
+		else excl_ul.appendChild(li);
+	});
+
+	var incl_ref = refinements(true);
+	if (incl_ref) incl_ul.appendChild(incl_ref);
+
+	var excl_ref = refinements(false);
+	if (excl_ref) excl_ul.appendChild(excl_ref);
+}
+
+function refinements(b)
+{
+	var li = document.createElement("li");
+
+	var options = document.createElement("select");
+	options.onchange = function(b_){ return function(){ add_tag(options.value, b_); }; }(b);
+
+	options.add(simple_option(""));
+
+	tags.forEach(function(t)
+	{
+		var r = tag_refines(t);
+		if (r[0] != 0 && r[1] != 0)
+			options.add(simple_option(t + " (" + r[b ? 0 : 1] + ")", t));
+	});
+
+	if (options.length == 1) return null;
+
+	li.appendChild(options);
+	return li;
+}
+
+function simple_option(text, v)
+{
+	var opt = document.createElement("option");
+	opt.text = text;
+	if (v) opt.value = v;
+	return opt;
+}
+
+function update_position_pics()
+{
+	var elem = document.getElementById("position_pics");
+
+	elem.innerHTML = "";
+
+	var c = 0;
+
+	for (var n = 0; n != nodes.length; ++n)
+		if (node_is_selected(nodes[n]))
+		{
+			++c;
+
+			var link = document.createElement("a");
+
+			link.href = "../p" + n + "w.html";
+
+			var img = document.createElement("img");
+			img.src = "../p" + n + "w480x360-2.png";
+			img.setAttribute('title', nodes[n].description);
+			link.appendChild(img);
+
+			elem.appendChild(link);
+		}
+
+	document.getElementById('matchheader').innerHTML = c + " matching positions:";
+}
+
+function update_graph()
 {
 	d3.select("svg").remove();
 
@@ -139,7 +194,7 @@ function generate_graph()
 		G.nodes.push(nodes[nn[i]]);
 
 	var width = document.body.clientWidth,
-	height = document.body.clientHeight;
+	height = 960;
 
 	var svg = d3.select("#mynetwork").append("svg")
 		.attr("width", width)
@@ -147,14 +202,14 @@ function generate_graph()
 
 	svg.append('svg:defs').append('svg:marker')
 		.attr('id', 'end-arrow')
-		.attr('viewBox', '0 -5 10 10')
-		.attr('refX', 6)
-		.attr('markerWidth', 100)
-		.attr('markerHeight', 100)
+		.attr('viewBox', '0 -50 100 100')
+		.attr('refX', 100)
+		.attr('markerWidth', 120)
+		.attr('markerHeight', 120)
 		.attr('orient', 'auto')
+//		.style("fill", "red")
 		.append('svg:path')
-		.attr('d', 'M0,-1L2,0L0,1')
-		.attr('fill', '#000');
+		.attr('d', 'M0,-5L20,0L0,5');
 
 	var force = d3.layout.force()
 		.charge(-200)
@@ -165,18 +220,30 @@ function generate_graph()
 		.links(G.links)
 		.start();
 
-	var link = svg.selectAll(".link")
+	var linksel = svg.selectAll(".link")
 		.data(G.links)
-		.enter().append("line")
+		.enter();
+
+	var link = linksel
+		.append("line")
 		.attr("class", "link")
+		.attr("marker-end", "url(#end-arrow)") // hmm, why doesn't marker-pattern work..
 		.style("stroke", function(d){
 			if (d.transition.properties.indexOf("top") != -1) return "red";
 			if (d.transition.properties.indexOf("bottom") != -1) return "blue";
 			return "#999"; });
 
-	var node = svg.selectAll(".node")
+	var trans_label = linksel
+		.append("text")
+		.text(function(d){
+			return d.transition.description[0];
+			});
+
+	var nodesel = svg.selectAll(".node")
 		.data(G.nodes)
-		.enter()
+		.enter();
+
+	var node = nodesel
 		.append("circle")
 		.attr("class", "node")
 		.attr("r", function(node){
@@ -186,12 +253,12 @@ function generate_graph()
 				return 5;
 			})
 		.call(force.drag);
-
+	
 	var label = svg.selectAll(".tnode")
 		.data(G.nodes)
 		.enter()
 		.append("foreignObject")
-		.attr("width", 150);
+		.attr("width", 120);
 
 	var selected_node = null;
 
@@ -203,9 +270,9 @@ function generate_graph()
 		});
 
 	var bod = label.append("xhtml:div")
-		.style("text-align", "center")
-		.style("background", "white")
-		.style("border", "solid 1px black");
+		.style("text-align", "center");
+//		.style("background", "white")
+//		.style("border", "solid 1px black");
 	
 	bod.append("text")
 		.attr("text-anchor",'middle')
@@ -225,9 +292,13 @@ function generate_graph()
 			.attr("cy", function(d) { return d.y; })
 			.attr("r", function(node) { if (node.id == selected_node) return 20; else return 10; });
 
+		trans_label
+			.attr("x", function(d) { return (d.source.x + d.target.x) / 2; })
+			.attr("y", function(d) { return (d.source.y + d.target.y) / 2; });
+
 		label
-			.attr("x", function(d) { return d.x - 75; })
-			.attr("y", function(d) { return d.y; });
+			.attr("x", function(d) { return d.x - 60; })
+			.attr("y", function(d) { return d.y + 20; });
 	}
 
 	force.on("tick", tick_graph);
@@ -296,7 +367,8 @@ window.addEventListener('DOMContentLoaded',
 		if (qmark != -1)
 		{
 			var arg = s.substr(qmark + 1);
-			selected_tags = arg.split(",");
+
+			arg.split(",").forEach(function(t){ add_tag(t, true); });
 		}
 
 		thepos = keyframe = nodes[0].position;
@@ -306,8 +378,7 @@ window.addEventListener('DOMContentLoaded',
 
 		makeScene();
 
-		update_tag_controls();
-		generate_graph();
+		on_tag_selection_changed();
 
 		scene.activeCamera = externalCamera;
 	});
