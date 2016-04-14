@@ -124,11 +124,12 @@ string ImageMaker::png(
 	Position pos,
 	ImageView const view,
 	unsigned const width, unsigned const height,
-	BgColor const bg_color) const
+	BgColor const bg_color, string filename) const
 {
-	string const filename =
-		to_string(boost::hash_value(pos))
-		+ code(view)
+	if (filename.empty()) filename += to_string(boost::hash_value(pos));
+
+	filename
+		+= code(view)
 		+ to_string(width) + 'x' + to_string(height)
 		+ '-' + to_string(bg_color)
 		+ ".png";

@@ -60,7 +60,7 @@ public:
 
 	string png(
 		string output_dir, Position, ImageView,
-		unsigned width, unsigned height, BgColor) const;
+		unsigned width, unsigned height, BgColor, string filename_base = "") const;
 
 	string rotation_gif(
 		string output_dir, Position, ImageView,

@@ -439,7 +439,8 @@ namespace
 						<< "<a href='p" << n.index << code(v) << ".html'>"
 						<< nlspace(desc(g[n])) << "<br>"
 						<< "<img alt='' title='" << n.index << "' src='"
-						<< mkimg.png(output_dir, orient_canonically_with_mirror(g[n].position), v, 480, 360, ImageMaker::WhiteBg) << "'>"
+						<< mkimg.png(output_dir, orient_canonically_with_mirror(g[n].position), v, 480, 360, ImageMaker::WhiteBg,
+							'p' + to_string(n.index)) << "'>"
 						<< "</a></div>";
 				}
 
@@ -599,7 +600,8 @@ namespace
 				<< "<td style='text-align:center;vertical-align:top'><h3>Position:</h3>"
 				<< "<h1>" << nlbr(desc(ctx.graph[ctx.n])) << "</h1>"
 				<< "<br><br>"
-				<< img(to_string(ctx.n.index), ctx.mkimg.png(output_dir, pos_to_show, ctx.view, 480, 360, ctx.mkimg.WhiteBg), "")
+				<< img(to_string(ctx.n.index), ctx.mkimg.png(output_dir, pos_to_show, ctx.view, 480, 360, ctx.mkimg.WhiteBg,
+					'p' + to_string(ctx.n.index)), "")
 				<< "<br>";
 
 			write_view_controls(ctx.html, ctx.view, "p" + to_string(ctx.n.index));
@@ -611,7 +613,7 @@ namespace
 				ctx.html << "<br><br>Tags:";
 
 				foreach(tag : t)
-					ctx.html << " <a href='tag-" << tag << "-" << code(ctx.view) << ".html'>" << tag << "</a>";
+					ctx.html << "<br> <a href='tag-" << tag << "-" << code(ctx.view) << ".html'>" << tag << "</a>";
 			}
 
 			ctx.html
