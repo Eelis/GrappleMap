@@ -613,7 +613,7 @@ namespace
 				ctx.html << "<br><br>Tags:";
 
 				foreach(tag : t)
-					ctx.html << "<br> <a href='tag-" << tag << "-" << code(ctx.view) << ".html'>" << tag << "</a>";
+					ctx.html << "<br> <a href='search/?" << tag << "'>" << tag << "</a>"; // todo: should propagate view
 			}
 
 			ctx.html
