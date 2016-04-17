@@ -9,30 +9,41 @@ editor
 - in edit mode, make it possible to temporarily hide a player, to unobstruct the view to the other
 - make rotation commands rotate around center between players, not area center
 - experiment with different joint editing schemes, e.g. direct joint coordinate component manipulation
-- prevent joints moving through eachother (maybe, might be more annoying than useful)
-- joint rotation limits
 - vr headset support
-- diagnose ice skating
 - sticky floor
 - direction signs ("to truck", "zombie")
 - editing selected joints as a group
+- add diagnostics for transitions or transition sequences that:
+  * don't respect inertia
+  * ice skate
+  * rotate joints in unnatural ways
+  * move limbs through eachother
+- maybe visually indicate where a body's structural mechanics are weak, which directions it could be off-balanced, etc
 
 playback:
 - make {pre,post}fix length for demo mode configurable
+- experiment with alternative ways to smooth animation, e.g. bezier curves. this should especially
+  reduce the corner cutting of the current drag-based smoothing
 
-browseable pages:
+position pages:
 - find a better tool/library for generating gifs (need more speed and compression) (Magick++ seems worth a try even though it's also ImageMagick..)
 - maybe embed videos encoded with e.g. x264?
 - nice urls for position pages
 - submission indicators
 - investigate graphviz alternatives
-- take tagged transitions into account in neighbourhood graphs on tag pages
-- make randomly generated scripts use bidirectional transitions in both directions
 - figure out better colors
 - in the graphs, it would be good to be able to tell really long and really short transitions apart
+- make scene lighting more like in composer
 
-new tools:
-- diff, to visualize changes made to transitions
+search page:
+- add view controls
+- try to untangle graphs
+- make navigating back after clicking position work properly
+- 3-line node labels
+- multiline edge labels
+- show tagged transitions
+- also search by name/reference substring
+- clean up code
 
 drill composer
 - full screen
@@ -44,3 +55,6 @@ drill composer
 - integrated transition editor
 - don't fuck up position when window becomes invisible
 - first person camera jerky when sliding
+
+new tools:
+- diff, to visualize changes made to transitions
