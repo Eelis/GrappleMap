@@ -6,7 +6,10 @@
 		<style>
 			.link {
 			  stroke: #999;
-//			  marker-end:url(#end-arrow);
+			}
+			.node {
+			  stroke: black;
+			  fill: white;
 			}
 			a{text-decoration:none}
 		</style>
@@ -18,18 +21,22 @@
 		<script src='../gm.js'></script>
 		<script src='../transitions.js'></script>
 	</head>
-	<body style='margin:50px;text-align:center'>
+	<body style='margin:50px;line-height:150%;text-align:center'>
 		<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>
 		<h2>Position Search</h2>
 		<div style='border:1px solid black;display:inline-block;text-align:left;padding:15px'>
-			Showing <span style='border:solid 1px #bbb; padding: 5px; font-size: large;font-weight:bold' id='pos_count_label'></span> positions that have <em>all of</em> these tags:
+			Showing
+			<span style='border:solid 1px #bbb; padding: 5px; font-size: large;font-weight:bold; margin: 4px' id='pos_count_label'></span>
+			positions that have <em>all of</em> these tags:
 			<ul id='include_tags'></ul>
 			and <em>none of</em> these tags:
 			<ul id='exclude_tags'></ul>
 			(<a id='share_link' href=''>share</a>)
 		</div>
 
-		<br><br>
+		<p id='view_controls'></p>
+
+		<br>
 		<div id='position_pics'></div>
 
 		<hr>

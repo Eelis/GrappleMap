@@ -1,12 +1,6 @@
 var selected_tags = [];
 var drag = 0.20;
-
-function trans_has_tag(trans, tag)
-{
-	return (trans.tags.indexOf(tag) != -1
-		|| nodes[trans.to.node].tags.indexOf(tag) != -1
-		|| nodes[trans.from.node].tags.indexOf(tag) != -1);
-}
+var view = [0, false];
 
 function node_has_tag(node, tag)
 {
@@ -23,10 +17,7 @@ function node_is_selected(node)
 
 function trans_is_selected(trans)
 {
-	for (var i = 0; i != selected_tags.length; ++i)
-		if (trans_has_tag(trans, selected_tags[i][0]) != selected_tags[i][1])
-			return false;
-	return true;
+	return node_is_selected(nodes[trans.to.node]) || node_is_selected(nodes[trans.from.node]);
 }
 
 function tag_refines(t)
@@ -63,6 +54,55 @@ function on_tag_selection_changed()
 	update_tag_list();
 	update_position_pics();
 	update_graph();
+}
+
+function update_view_controls()
+{
+	var elem = document.getElementById("view_controls");
+
+	elem.innerHTML = "View: ";
+
+	{
+		var a = document.createElement("a");
+		a.href = "";
+		a.addEventListener("click", function(e){
+				view[0] += 3;
+				view[0] %= 4;
+				update_position_pics();
+				e.preventDefault();
+			});
+		a.appendChild(document.createTextNode("↻"));
+		elem.appendChild(a);
+	}
+
+	elem.appendChild(document.createTextNode(" "));
+
+	{
+		var a = document.createElement("a");
+		a.href = "";
+		a.addEventListener("click", function(e){
+				++view[0];
+				view[0] %= 4;
+				update_position_pics();
+				e.preventDefault();
+			});
+		a.appendChild(document.createTextNode("↺"));
+		elem.appendChild(a);
+	}
+
+	elem.appendChild(document.createTextNode(", "));
+
+	{
+		var a = document.createElement("a");
+		a.href = "";
+		a.addEventListener("click", function(e){
+				view[1] = !view[1];
+				update_position_pics();
+				e.preventDefault();
+			});
+		a.appendChild(document.createTextNode("⇄"));
+		elem.appendChild(a);
+	}
 }
 
 function update_tag_list()
@@ -163,10 +203,12 @@ function update_position_pics()
 
 			var link = document.createElement("a");
 
-			link.href = "../p" + n + "w.html";
+			var vc = ["nesw","NESW"][view[1] ? 1 : 0][view[0]];
+
+			link.href = "../p" + n + vc + ".html";
 
 			var img = document.createElement("img");
-			img.src = "../p" + n + "w480x360-2.png";
+			img.src = "../p" + n + vc + "480x360-2.png";
 			img.setAttribute('title', nodes[n].description);
 			link.appendChild(img);
 
@@ -183,32 +225,33 @@ function update_graph()
 	var nn = [];
 	var G = { nodes: [], links: [] };
 
+	function addnode(n)
+	{
+		var i = nn.indexOf(n);
+		if (i == -1)
+		{
+			nn.push(n);
+			i = nn.length - 1;
+		}
+		return i;
+	}
+
 	for (var i = 0; i != transitions.length; ++i)
 	{
 		var t = transitions[i];
 		if (trans_is_selected(t))
-		{
-			var from = t.from.node;
-			var to = t.to.node;
-			var a = nn.indexOf(from);
-			if (a == -1)
-			{
-				nn.push(from);
-				a = nn.length - 1;
-			}
-			var b = nn.indexOf(to);
-			if (b == -1)
-			{
-				nn.push(to);
-				b = nn.length - 1;
-			}
-
-			G.links.push({source: a, target: b, transition: t});
-		}
+			G.links.push(
+				{ source: addnode(t.from.node)
+				, target: addnode(t.to.node)
+				, transition: t
+				});
 	}
 
 	for (var i = 0; i != nn.length; ++i)
-		G.nodes.push(nodes[nn[i]]);
+	{
+		var n = nodes[nn[i]];
+		G.nodes.push({'node':n, 'desc_lines':n.description.split('\n')});
+	}
 
 	var width = document.body.clientWidth,
 	height = 960;
@@ -252,6 +295,7 @@ function update_graph()
 
 	var trans_label = linksel
 		.append("text")
+		.attr("text-anchor", "middle")
 		.text(function(d){
 			return d.transition.description[0];
 			});
@@ -263,39 +307,35 @@ function update_graph()
 	var node = nodesel
 		.append("circle")
 		.attr("class", "node")
-		.attr("r", function(node){
-			if (node_is_selected(node))
-				return 10;
-			else
-				return 5;
-			})
+		.attr("r", function(node){return node_is_selected(node.node) ? 50 : 5;})
 		.call(force.drag);
 	
-	var label = svg.selectAll(".tnode")
+	var labelsel = svg.selectAll(".node_label")
 		.data(G.nodes)
-		.enter()
-		.append("foreignObject")
-		.attr("width", 120);
+		.enter();
+
+	var label = labelsel
+		.append("text")
+		.attr("text-anchor", "middle")
+		.text(function(d){return d.desc_lines[0];})
+		.call(force.drag);
+
+	var label2 = labelsel
+		.append("text")
+		.attr("text-anchor", "middle")
+		.text(function(d){return d.desc_lines[1];})
+		.call(force.drag);
 
 	var selected_node = null;
-
+/*
 	label.on('mouseover', function(d)
 		{
 			selected_node = d.id;
 			keyframe = nodes[d.id].position;
 			tick_graph();
 		});
-
-	var bod = label.append("xhtml:div")
-		.style("text-align", "center");
-//		.style("background", "white")
-//		.style("border", "solid 1px black");
+*/
 	
-	bod.append("text")
-		.attr("text-anchor",'middle')
-		.text(function(d){return d.description;})
-		.call(force.drag);
-
 	function tick_graph()
 	{
 		link
@@ -306,15 +346,19 @@ function update_graph()
 
 		node
 			.attr("cx", function(d) { return d.x; })
-			.attr("cy", function(d) { return d.y; })
-			.attr("r", function(node) { if (node.id == selected_node) return 20; else return 10; });
+			.attr("cy", function(d) { return d.y; });
+//			.attr("r", function(node) { if (node.id == selected_node) return 25; else return 15; });
 
 		trans_label
 			.attr("x", function(d) { return (d.source.x + d.target.x) / 2; })
 			.attr("y", function(d) { return (d.source.y + d.target.y) / 2; });
 
 		label
-			.attr("x", function(d) { return d.x - 60; })
+			.attr("x", function(d) { return d.x; })
+			.attr("y", function(d) { return d.y - (d.desc_lines.length == 1 ? -5 : 0); });
+
+		label2
+			.attr("x", function(d) { return d.x; })
 			.attr("y", function(d) { return d.y + 20; });
 	}
 
@@ -402,5 +446,7 @@ window.addEventListener('DOMContentLoaded',
 
 		scene.activeCamera = externalCamera;
 */
+		update_view_controls();
+
 		on_tag_selection_changed();
 	});

@@ -613,13 +613,13 @@ namespace
 				ctx.html << "<br><br>Tags:";
 
 				foreach(tag : t)
-					ctx.html << "<br> <a href='search/?" << tag << "'>" << tag << "</a>"; // todo: should propagate view
+					ctx.html << "<br> <a href='search/index.html?" << tag << "'>" << tag << "</a>"; // todo: should propagate view
 			}
 
 			ctx.html
 				<< "<br><br>Navigate: "
 				<< "<a href='index.html'>index</a>"
-				<< ", <a href='composer/?p" << ctx.n.index << "'>composer</a>"
+				<< ", <a href='composer/index.html?p" << ctx.n.index << "'>composer</a>"
 				<< "</td>";
 		}
 
@@ -781,7 +781,7 @@ int main(int const argc, char const * const * const argv)
 
 		ImageMaker const mkimg(graph);
 
-		foreach (t : tags(graph)) write_tag_page(mkimg, graph, t);
+//		foreach (t : tags(graph)) write_tag_page(mkimg, graph, t);
 
 		foreach (n : nodenums(graph)) position_page::write_it(mkimg, graph, n);
 
