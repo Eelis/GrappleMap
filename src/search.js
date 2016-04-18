@@ -253,6 +253,8 @@ function update_graph()
 		G.nodes.push({'node':n, 'desc_lines':n.description.split('\n')});
 	}
 
+	if (G.nodes.length > 50) return;
+
 	var width = document.body.clientWidth,
 	height = 960;
 
