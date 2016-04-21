@@ -3,13 +3,7 @@
 SeqNum insert(Graph & g, Sequence const & sequence)
 {
 	SeqNum const num{g.num_sequences()};
-
 	g.set(none, sequence);
-
-	std::cerr <<
-		g.from(num).node << " ---seq" << num.index << "(" << sequence.positions.size() << ")---> " << g.to(num).node <<
-		": \"" << sequence.description.front() << "\"" << std::endl;
-
 	return num;
 }
 
