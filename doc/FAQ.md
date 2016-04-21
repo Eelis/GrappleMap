@@ -20,13 +20,13 @@ of whether they come from Brazilian Jiu-Jitsu, wrestling, Judo, Sambo, catch wre
 
 The map only shows techniques in their bare canonical form, and does not
 include any discussion or explanation. However, the map almost always
-include a citation for source instructional materials, which readers are strongly
+includes a citation for source instructional materials, which readers are strongly
 encouraged to consult for proper breakdowns, strategy, etc.
 
 
 ## How is the map organized?
 
-### 1. As a graph
+### 1) as a graph
 
 Techniques are modeled in a big [directed graph](https://en.wikipedia.org/wiki/Graph_%28discrete_mathematics%29),
 where each vertex is
@@ -42,18 +42,18 @@ graph. Also on those pages (and on the position search page), the "Neighbourhood
 show local slices of the graph.
 
 So one way of navigating through the map is simply by following
-the transitions from position to position, either by clicking the links on the
-position page, or by making a drill in the drill composer (a "drill" here is just
+the transitions from position to position, either by clicking through the
+position pages, or by making a drill in the drill composer (a "drill" here is just
 a path through the graph).
 
-### 2. By tags
+### 2) by tags
 
 In addition to being interconnected, positions and transitions are also named and tagged.
 Tags are used for categorization into domains (e.g. half\_guard, side\_control),
 but also for more detailed information about poses (e.g. bottom\_supine, top\_kneeling),
-and also for presence of any specific grips or controls (e.g. lockdown, top\_underhook).
+and also for presence of any specific grips or controls (e.g. lockdown, crossface).
 
-The position search page lets you query positions based on presence/absence of tags.
+The position search page lets you query positions based on presence and/or absence of tags.
 
 
 ## What is the purpose of the map?
@@ -73,7 +73,7 @@ The position search page lets you query positions based on presence/absence of t
 If I have to do it all by myself, probably yes. But I hope
 that once I make the transition editor run in web browsers,
 there might be some grappling nerds who want to help
-me build the most awesome (no-gi) grappling map ever. :)
+me build the most awesome (no-gi) grappling map ever.
 
 
 ## What are the software components you have so far?
