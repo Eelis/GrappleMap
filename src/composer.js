@@ -285,6 +285,12 @@ function refreshDrill()
 			descdiv.appendChild(document.createTextNode(desc[j]));
 		}
 
+		if (transitions[seq].line_nr)
+		{
+			descdiv.appendChild(document.createElement("br"));
+			descdiv.appendChild(document.createTextNode("(line " + transitions[seq].line_nr + ")"));
+		}
+
 		controls.appendChild(descdiv);
 	}
 

@@ -344,23 +344,27 @@ void tojs(Graph const & graph, std::ostream & js)
 	js << "transitions=[";
 	foreach (s : seqnums(graph))
 	{
+		Sequence const & seq = graph[s];
+
 		js << "{from:";
 		tojs(graph.from(s), js);
 		js << ",to:";
 		tojs(graph.to(s), js);
 		js << ",frames:[";
-		foreach (pos : graph[s].positions)
+		foreach (pos : seq.positions)
 		{
 			tojs(pos, js);
 			js << ',';
 		}
 		js << "],description:";
-		tojs(graph[s].description, js);
+		tojs(seq.description, js);
 
 		js << ",tags:";
-		tojs(tags_in_desc(graph[s].description), js);
+		tojs(tags_in_desc(seq.description), js);
 		js << ",properties:";
-		tojs(properties_in_desc(graph[s].description), js);
+		tojs(properties_in_desc(seq.description), js);
+		if (seq.line_nr)
+			js << ",line_nr:" << *seq.line_nr;
 		js << "},\n";
 	}
 	js << "];\n\n";
