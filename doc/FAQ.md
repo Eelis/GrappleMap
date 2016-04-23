@@ -30,9 +30,11 @@ encouraged to consult for proper breakdowns, strategy, etc.
 
 Techniques are modeled in a big [directed graph](https://en.wikipedia.org/wiki/Graph_%28discrete_mathematics%29),
 where each vertex is
-a position and each edge is a transition.
+a position and each edge is a transition. The positions are specific concrete poses
+of the two stick figures, not "positions" in the sense of "half guard" (which includes
+a wide range of poses).
 
-This structure means that for something like a sweep that can be intercepted,
+The graph structure means that for something like a sweep that can be intercepted,
 the point at which the sweep is either intercepted or not becomes a branch position,
 which has the sweep attempt as an incoming transition, and two outgoing transitions
 representing success and interception, respectively.
@@ -58,7 +60,7 @@ The position search page lets you query positions based on presence and/or absen
 
 ## What is the purpose of the map?
 
-- To give overviews of known transitions between known positions
+- To give examples of known transitions between known positions
 - To encourage source-agnostic technique exploration
 - To give concrete ideas for drills to practice
 - To serve as an index into the literature, giving suggestions for specifically relevant instructional materials
@@ -109,23 +111,28 @@ me build the most awesome (no-gi) grappling map ever.
 None; the GrappleMap code and data is released into the public domain.
 
 
-## How well are the techniques modeled?
+## How well can the map model grappling technique?
 
-There are some neatly polished transitions in the database here and there,
-but most of it is still only very rough approximations that will need a *lot* of
-fleshing out and polishing.
+The GrappleMap is based on manually edited transition animations,
+rather than on real motion capturing. In the transition editor,
+animations consist of keyframes, which are edited by
+dragging the stick figures' joints into their proper place.
 
-I'm not using motion capturing technology, so it's hard manual labour to make the
-movements look good in the transition editor (where you manipulate the bodies as
-rag dolls by dragging their joints).
+While this makes it easy to produce content fairly quickly,
+there are limitations:
 
-Also, almost all the movements are taken from instructional materials, which only show
-a few varieties per position. In actual fights, positions occur in infinite variety.
+- Rapid small-scale hand fighting and battling for grips is not modeled.
+  Usually the level of detail in the map is that a grip is either
+  acquired without great strain, or not at all, and that's it.
 
-Also, I do not map the rapid small-scale hand fighting and battling for grips
-and controls.
-Usually the level of detail in the map is that a grip or control is either
-acquired without great strain, or not at all, and that's it.
+- The timing of techniques is barely captured at al. This is
+  in part because keyframes currently all have the same duration.
+  I may reconsider this design choice in the future.
+
+But even supposing we could model or motion capture individual transitions
+perfectly, the finite graph structure itself is still the biggest simplification.
+Ultimately, real grappling is a continuous space where
+even individual positions and transitions occur in infinite variety.
 
 
 ## What about gi techniques?
