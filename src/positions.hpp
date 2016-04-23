@@ -141,8 +141,8 @@ inline auto & segments()
 		{ {{LeftToe, LeftHeel}, 0.23, 0.025, true}
 		, {{LeftToe, LeftAnkle}, 0.18, 0.025, true}
 		, {{LeftHeel, LeftAnkle}, 0.09, 0.025, true}
-		, {{LeftAnkle, LeftKnee}, 0.42, 0.055, true}
-		, {{LeftKnee, LeftHip}, 0.44, 0.085, true}
+		, {{LeftAnkle, LeftKnee}, 0.43, 0.055, true}
+		, {{LeftKnee, LeftHip}, 0.43, 0.085, true}
 		, {{LeftHip, Core}, 0.27, 0.1, true}
 		, {{Core, LeftShoulder}, 0.37, 0.075, true}
 		, {{LeftShoulder, LeftElbow}, 0.29, 0.06, true}
@@ -154,8 +154,8 @@ inline auto & segments()
 		, {{RightToe, RightHeel}, 0.23, 0.025, true}
 		, {{RightToe, RightAnkle}, 0.18, 0.025, true}
 		, {{RightHeel, RightAnkle}, 0.09, 0.025, true}
-		, {{RightAnkle, RightKnee}, 0.42, 0.055, true}
-		, {{RightKnee, RightHip}, 0.44, 0.085, true}
+		, {{RightAnkle, RightKnee}, 0.43, 0.055, true}
+		, {{RightKnee, RightHip}, 0.43, 0.085, true}
 		, {{RightHip, Core}, 0.27, 0.1, true}
 		, {{Core, RightShoulder}, 0.37, 0.075, true}
 		, {{RightShoulder, RightElbow}, 0.29, 0.06, true}
