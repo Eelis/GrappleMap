@@ -279,16 +279,15 @@ function refreshDrill()
 		descdiv.style.marginLeft = "100px";
 		descdiv.style.marginTop = "0px";
 
+		descdiv.appendChild(document.createTextNode("transition " + seq));
+		if (transitions[seq].line_nr)
+			descdiv.appendChild(document.createTextNode(" @ line " + transitions[seq].line_nr));
+		descdiv.appendChild(document.createElement("br"));
+
 		for (var j = 1; j <= desc.length - 1; ++j)
 		{
 			if (j != 1) descdiv.appendChild(document.createElement("br"));
 			descdiv.appendChild(document.createTextNode(desc[j]));
-		}
-
-		if (transitions[seq].line_nr)
-		{
-			descdiv.appendChild(document.createElement("br"));
-			descdiv.appendChild(document.createTextNode("(line " + transitions[seq].line_nr + ")"));
 		}
 
 		controls.appendChild(descdiv);
