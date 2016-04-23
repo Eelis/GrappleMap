@@ -185,7 +185,7 @@ namespace
 
 			html
 				<< "<tr>"
-				<< "<td><a href='tag-" << tag << "-w.html'>" << tag << "</a></td>"
+				<< "<td><a href='search/index.html?" << tag << "'>" << tag << "</a></td>"
 				<< "<td>" << s.size() << "</td>"
 				<< "<td>" << t.size() << "</td>"
 				<< "</tr>";
@@ -597,7 +597,9 @@ namespace
 			auto const pos_to_show = orient_canonically_with_mirror(ctx.graph[ctx.n].position);
 
 			ctx.html
-				<< "<td style='text-align:center;vertical-align:top'><h3>Position:</h3>"
+				<< "<td style='text-align:center;vertical-align:top'>"
+				<< "<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>"
+				<< "<h2>Position:</h2>"
 				<< "<h1>" << nlbr(desc(ctx.graph[ctx.n])) << "</h1>"
 				<< "<br><br>"
 				<< img(to_string(ctx.n.index), ctx.mkimg.png(output_dir, pos_to_show, ctx.view, 480, 360, ctx.mkimg.WhiteBg,
