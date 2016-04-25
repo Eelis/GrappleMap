@@ -14,7 +14,7 @@ namespace
 		if (c >= 'a' && c <= 'z') return c - 'a';
 		if (c >= 'A' && c <= 'Z') return (c - 'A') + 26;
 		if (c >= '0' && c <= '9') return (c - '0') + 52;
-		
+
 		throw std::runtime_error("not a base 62 digit: " + std::string(1, c));
 	}
 
@@ -23,91 +23,91 @@ namespace
 		auto desc = n.description;
 		return desc.empty() ? "?" : desc.front();
 	}
-}
 
-Position decodePosition(string s)
-{
-	if (s.size() != 2 * joint_count * 3 * 2)
-		throw std::runtime_error("position string has incorrect size");
-
-	auto g = [&s]
-		{
-			double d = double(fromBase62(s[0]) * 62 + fromBase62(s[1])) / 1000;
-			s.erase(0, 2);
-			return d;
-		};
-
-	Position p;
-
-	foreach (j : playerJoints)
-		p[j] = {g() - 2, g(), g() - 2};
-
-	return p;
-}
-
-istream & operator>>(istream & i, vector<Sequence> & v)
-{
-	string line;
-	vector<string> desc;
-	bool last_was_position = false;
-
-	unsigned line_nr = 0;
-
-	while(std::getline(i, line))
+	Position decodePosition(string s)
 	{
-		++line_nr;
-		bool const is_position = line.front() == ' ';
+		if (s.size() != 2 * joint_count * 3 * 2)
+			throw std::runtime_error("position string has incorrect size");
 
-		if (is_position)
-		{
-			if (!last_was_position)
+		auto g = [&s]
 			{
-				assert(!desc.empty());
-				v.push_back(Sequence{desc, {}, line_nr - desc.size()});
-				desc.clear();
-			}
+				double d = double(fromBase62(s[0]) * 62 + fromBase62(s[1])) / 1000;
+				s.erase(0, 2);
+				return d;
+			};
 
-			while (line.front() == ' ') line.erase(0, 1);
+		Position p;
 
-			if (v.empty()) error("malformed file");
+		foreach (j : playerJoints)
+			p[j] = {g() - 2, g(), g() - 2};
 
-			v.back().positions.push_back(decodePosition(line));
-		}
-		else desc.push_back(line);
-
-		last_was_position = is_position;
+		return p;
 	}
 
-	return i;
-}
-
-ostream & operator<<(ostream & o, Position const & p)
-{
-	o << "    ";
-
-	auto g = [&o](double const d)
-		{
-			int const i = int(std::round(d * 1000));
-			assert(i >= 0);
-			assert(i < 4000);
-			o << base62digits[i / 62] << base62digits[i % 62];
-		};
-
-	foreach (j : playerJoints)
+	istream & operator>>(istream & i, vector<Sequence> & v)
 	{
-		g(p[j].x + 2);
-		g(p[j].y);
-		g(p[j].z + 2);
+		string line;
+		vector<string> desc;
+		bool last_was_position = false;
+
+		unsigned line_nr = 0;
+
+		while(std::getline(i, line))
+		{
+			++line_nr;
+			bool const is_position = line.front() == ' ';
+
+			if (is_position)
+			{
+				if (!last_was_position)
+				{
+					assert(!desc.empty());
+					v.push_back(Sequence{desc, {}, line_nr - desc.size()});
+					desc.clear();
+				}
+
+				while (line.front() == ' ') line.erase(0, 1);
+
+				if (v.empty()) error("malformed file");
+
+				v.back().positions.push_back(decodePosition(line));
+			}
+			else desc.push_back(line);
+
+			last_was_position = is_position;
+		}
+
+		return i;
 	}
 
-	return o << '\n';
-}
+	ostream & operator<<(ostream & o, Position const & p)
+	{
+		o << "    ";
 
-ostream & operator<<(ostream & o, Sequence const & s)
-{
-	foreach (l : s.description) o << l << '\n';
-	foreach (p : s.positions) o << p;
-	return o;
+		auto g = [&o](double const d)
+			{
+				int const i = int(std::round(d * 1000));
+				assert(i >= 0);
+				assert(i < 4000);
+				o << base62digits[i / 62] << base62digits[i % 62];
+			};
+
+		foreach (j : playerJoints)
+		{
+			g(p[j].x + 2);
+			g(p[j].y);
+			g(p[j].z + 2);
+		}
+
+		return o << '\n';
+	}
+
+	ostream & operator<<(ostream & o, Sequence const & s)
+	{
+		foreach (l : s.description) o << l << '\n';
+		foreach (p : s.positions) o << p;
+		return o;
+	}
 }
 
 Graph loadGraph(string const filename)

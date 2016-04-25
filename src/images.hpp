@@ -3,21 +3,14 @@
 
 #include "graph.hpp"
 #include "headings.hpp"
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
 #include <GL/osmesa.h>
-
-#define USE_OSMESA 0
-	// TODO: Figure out how to make anti-aliasing work with osmesa.
 
 class ImageMaker
 {
 	Graph const & graph;
 
-	#if USE_OSMESA
-		OSMesaContext ctx = nullptr;
-	#else
-		GLFWwindow * window = nullptr;
-	#endif
+	OSMesaContext ctx = nullptr;
 
 	void png(
 		string output_dir,
@@ -60,7 +53,8 @@ public:
 
 	string png(
 		string output_dir, Position, ImageView,
-		unsigned width, unsigned height, BgColor, string filename_base = "") const;
+		unsigned width, unsigned height, BgColor,
+		string base_linkname = "") const;
 
 	string rotation_gif(
 		string output_dir, Position, ImageView,
@@ -70,7 +64,8 @@ public:
 		string output_dir,
 		vector<Position> const & frames,
 		ImageView,
-		unsigned width, unsigned height, BgColor) const;
+		unsigned width, unsigned height, BgColor,
+		string base_linkname) const;
 
 	string gifs(
 		string output_dir,

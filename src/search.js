@@ -7,6 +7,11 @@ function node_has_tag(node, tag)
 	return node.tags.indexOf(tag) != -1;
 }
 
+function trans_has_tag(trans, tag)
+{
+	return trans.tags.indexOf(tag) != -1;
+}
+
 function node_is_selected(node)
 {
 	for (var i = 0; i != selected_tags.length; ++i)
@@ -17,7 +22,10 @@ function node_is_selected(node)
 
 function trans_is_selected(trans)
 {
-	return node_is_selected(nodes[trans.to.node]) || node_is_selected(nodes[trans.from.node]);
+	for (var i = 0; i != selected_tags.length; ++i)
+		if (trans_has_tag(trans, selected_tags[i][0]) != selected_tags[i][1])
+			return false;
+	return true;
 }
 
 function tag_refines(t)
@@ -53,6 +61,7 @@ function on_tag_selection_changed()
 {
 	update_tag_list();
 	update_position_pics();
+	update_transition_pics();
 	update_graph();
 }
 
@@ -95,6 +104,7 @@ function update_view_controls()
 				e.preventDefault();
 				view = f(view);
 				update_position_pics();
+				update_transition_pics();
 			});
 		a.appendChild(document.createTextNode(label));
 		elem.appendChild(a);
@@ -194,6 +204,11 @@ function simple_option(text, v)
 	return opt;
 }
 
+function view_code(v)
+{
+	return ["nesw","NESW"][v[1] ? 1 : 0][v[0]];
+}
+
 function update_position_pics()
 {
 	var elem = document.getElementById("position_pics");
@@ -202,26 +217,69 @@ function update_position_pics()
 
 	var c = 0;
 
+	var limit = 50;
+
 	for (var n = 0; n != nodes.length; ++n)
 		if (node_is_selected(nodes[n]))
 		{
 			++c;
+			if (c <= limit)
+			{
+				var link = document.createElement("a");
 
-			var link = document.createElement("a");
+				var vc = view_code(view);
 
-			var vc = ["nesw","NESW"][view[1] ? 1 : 0][view[0]];
+				link.href = "../p" + n + vc + ".html";
 
-			link.href = "../p" + n + vc + ".html";
+				var img = document.createElement("img");
+				img.src = "../p" + n + vc + "480x360.png";
+				img.setAttribute('title', nodes[n].description);
+				link.appendChild(img);
 
-			var img = document.createElement("img");
-			img.src = "../p" + n + vc + "480x360-2.png";
-			img.setAttribute('title', nodes[n].description);
-			link.appendChild(img);
-
-			elem.appendChild(link);
+				elem.appendChild(link);
+			}
 		}
 
+	if (c > limit)
+	{
+		elem.appendChild(document.createTextNode(" ... and " + (c - limit) + " more."));
+	}
+
 	document.getElementById('pos_count_label').innerHTML = "&nbsp;" + c + "&nbsp;";
+}
+
+function update_transition_pics()
+{
+	var elem = document.getElementById("transition_pics");
+
+	elem.innerHTML = "";
+
+	var c = 0;
+	var limit = 50;
+
+	for (var n = 0; n != transitions.length; ++n)
+		if (trans_is_selected(transitions[n]))
+		{
+			++c;
+			if (c <= limit)
+			{
+				var link = document.createElement("a");
+				link.href = "../composer/index.html?" + n; // todo: preserve view
+
+				var img = document.createElement("img");
+				img.src = "../t" + n + "200x150" + view_code(view) + ".gif";
+				img.setAttribute('title', transitions[n].description);
+				link.appendChild(img);
+
+				elem.appendChild(link);
+			}
+		}
+
+	if (c > limit)
+	{
+		elem.appendChild(document.createTextNode(" ... and " + (c - limit) + " more."));
+	}
+//	document.getElementById('transition_count_label').innerHTML = "&nbsp;" + c + "&nbsp;";
 }
 
 function update_graph()

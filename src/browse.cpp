@@ -305,9 +305,10 @@ namespace
 		string const output_dir,
 		vector<Position> frames,
 		ImageView const v,
-		ImageMaker::BgColor const bg_color)
+		ImageMaker::BgColor const bg_color,
+		string const base_linkname = "")
 	{
-		return mkimg.gif(output_dir, smoothen(frames), v, 200, 150, bg_color);
+		return mkimg.gif(output_dir, smoothen(frames), v, 200, 150, bg_color, base_linkname);
 	}
 
 	string transition_gifs(
@@ -377,133 +378,36 @@ namespace
 		return distanceSquared(p[0][Core], p[1][Core]);
 	}
 
-	void write_tag_page(ImageMaker const & mkimg, Graph const & g, string const & tag)
+	void write_transition_gifs(ImageMaker const & mkimg, Graph const & g)
 	{
-		cout << '.' << std::flush;
+		foreach (sn : seqnums(g))
+		{
+			cout << '.' << std::flush;
 
-		vector<NodeNum> nodes;
-		foreach(n : tagged_nodes(g, tag))
-			nodes.push_back(n);
-
-		std::sort(nodes.begin(), nodes.end(),
-			[&](NodeNum a, NodeNum b)
+			foreach (v : views())
 			{
-				return range(g[a].position) < range(g[b].position);
-			});
+				auto const props = properties(g, sn);
 
-		struct Trans { SeqNum seq; bool top, bottom; };
+				bool top = props.count("top") != 0;
+				bool bottom = props.count("bottom") != 0;
 
-		vector<Trans> seqs;
-		foreach(sn : tagged_sequences(g, tag))
-		{
-			auto const props = properties(g, sn);
+				auto frames = frames_for_sequence(g, sn);
 
-			seqs.push_back(Trans{sn, props.count("top") != 0, props.count("bottom") != 0});
-		}
+				if (g.from(sn).reorientation.swap_players)
+					foreach (p : frames)  std::swap(p[0], p[1]);
 
-		{
-			auto i = std::partition(seqs.begin(), seqs.end(),
-				[](Trans const & t) { return t.top; });
-			std::partition(i, seqs.end(),
-				[](Trans const & t) { return !t.bottom; });
-		}
+				auto const reo = canonical_reorientation_with_mirror(frames.front());
 
-		map<NodeNum, bool> m;
-		foreach(n : nodes) m[n] = true;
-		foreach(n : nodes_around(g, std::set<NodeNum>(nodes.begin(), nodes.end()))) m[n] = false;
+				foreach (p : frames) p = reo(p);
 
-		string const base_filename = "tag-" + tag + '-';
-
-		foreach (v : views())
-		{
-			string const neighbourhood = make_svg(g, m, code(v));
-
-			ofstream html(output_dir + base_filename + code(v) + ".html");
-
-			html
-				<< html5head("tag: " + tag)
-				<< "<body style='text-align:center'>"
-				<< "<h1>Tag: " << tag << "</h1><br>"
-				<< "(<a href='index.html'>back to index</a>)<br><br>";
-
-			write_view_controls(html, v, base_filename);
-
-			if (!nodes.empty())
-			{
-				html << "<hr><h2>Positions</h2><p>Positions tagged '" << tag << "'</p>";
-
-				foreach(n : nodes)
-				{
-					html
-						<< "<div style='display:inline-block;text-align:center'>"
-						<< "<a href='p" << n.index << code(v) << ".html'>"
-						<< nlspace(desc(g[n])) << "<br>"
-						<< "<img alt='' title='" << n.index << "' src='"
-						<< mkimg.png(output_dir, orient_canonically_with_mirror(g[n].position), v, 480, 360, ImageMaker::WhiteBg,
-							'p' + to_string(n.index)) << "'>"
-						<< "</a></div>";
-				}
-
-				html << "<br>";
+				transition_gif(
+					mkimg, output_dir, frames, v,
+					bg_color(top, bottom),
+					't' + to_string(sn.index));
 			}
-
-			if (!seqs.empty())
-			{
-				html
-					<< "<hr><h2>Transitions</h2><p>Transitions that either go from one position tagged '"
-					<< tag << "' to another, or are themselves tagged '"
-					<< tag << "'</p><table style='margin:0px auto'>";
-
-				foreach(trans : seqs)
-					if (is_tagged(g, tag, trans.seq))
-					{
-						auto const
-							from = g.from(trans.seq).node,
-							to = g.to(trans.seq).node;
-
-						html
-							<< "<tr>"
-							<<   "<td style='text-align:right'><em>from</em> "
-							<<      "<a href='p" << from.index << "w.html'>" << nlspace(desc(g[from])) << "</a> <em>via</em>"
-							<<   "</td>"
-							<<   "<td";
-
-						if (trans.top) html << " style='background:#ffe0e0'";
-						else if (trans.bottom) html << " style='background:#e0e0ff'";
-
-						auto frames = frames_for_sequence(g, trans.seq);
-
-						if (g.from(trans.seq).reorientation.swap_players)
-							foreach (p : frames)  std::swap(p[0], p[1]);
-
-						auto const reo = canonical_reorientation_with_mirror(frames.front());
-
-						foreach (p : frames)  p = reo(p);
-
-						html
-							<< "><div style='display:inline-block'>" << desc(g, trans.seq)
-							<<     "<img alt=''"
-							<<     " src='" << transition_gif(mkimg, output_dir, frames, v, bg_color(trans.top, trans.bottom)) << "'"
-							<<     " title='" << transition_image_title(g, trans.seq) << "'>"
-							<<     "</div>"
-							<<   "</td>"
-							<<   "<td style='text-align:left'><em>to</em> "
-							<<     "<a href='p" << to.index << "w.html'>" << nlspace(desc(g[to])) << "</a>"
-							<<   "</td>"
-							<< "</tr>";
-					}
-
-				html << "</table>";
-			}
-
-			html
-				<< "<hr><h2>Neighbourhood</h2>"
-				<< "<p>Positions up to one transition away from position";
-
-			if (nodes.size() > 1) html << 's';
-
-			html << " tagged '" << tag << "' (clickable)</p>" << neighbourhood << "</body></html>";
 		}
+
+		std::endl(cout);
 	}
 
 	namespace position_page
@@ -783,7 +687,7 @@ int main(int const argc, char const * const * const argv)
 
 		ImageMaker const mkimg(graph);
 
-//		foreach (t : tags(graph)) write_tag_page(mkimg, graph, t);
+		write_transition_gifs(mkimg, graph);
 
 		foreach (n : nodenums(graph)) position_page::write_it(mkimg, graph, n);
 
