@@ -4,7 +4,10 @@
 #include "math.hpp"
 #include "util.hpp"
 #include "viables.hpp"
+
+#ifdef USE_FTGL
 #include <FTGL/ftgl.h>
+#endif
 
 struct Camera;
 struct Graph;
@@ -21,13 +24,18 @@ struct Style
 {
 	V3 grid_color {.5, .5, .5};
 	V3 background_color {0, 0, 0};
-	FTGLPixmapFont frameFont{"DejaVuSans.ttf"};
-	FTGLPixmapFont sequenceFont{"DejaVuSans.ttf"};
+
+	#ifdef USE_FTGL
+		FTGLPixmapFont frameFont{"DejaVuSans.ttf"};
+		FTGLPixmapFont sequenceFont{"DejaVuSans.ttf"};
+	#endif
 
 	Style();
 };
 
+#ifdef USE_FTGL
 void renderText(FTGLPixmapFont const &, V2 where, string const &, V3 color);
+#endif
 
 void renderWindow(vector<View> const &,
 	Viables const *, Graph const &, Position const &,

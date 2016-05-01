@@ -1,17 +1,14 @@
 #include "camera.hpp"
 #include "persistence.hpp"
-#include "math.hpp"
 #include "positions.hpp"
-#include "viables.hpp"
 #include "rendering.hpp"
 #include "graph_util.hpp"
+#include "images.hpp"
 #include "paths.hpp"
-#include <GLFW/glfw3.h>
-#include <GL/glu.h>
 #include <boost/program_options.hpp>
 #include <iostream>
-#include <vector>
-#include <fstream>
+#include <sstream>
+#include <iomanip>
 
 struct Config
 {
@@ -78,6 +75,8 @@ int main(int const argc, char const * const * const argv)
 
 		Graph const graph = loadGraph(config->db);
 
+		ImageMaker mkImg(graph);
+
 		Frames fr;
 
 		if (config->demo)
@@ -91,94 +90,45 @@ int main(int const argc, char const * const * const argv)
 			fr = smoothen(frames(graph, readScene(graph, config->script), config->frames_per_pos));
 		else if (optional<NodeNum> start = node_by_desc(graph, config->start))
 			fr = smoothen(frames(graph, randomScene(graph, *start, config->num_transitions), config->frames_per_pos));
-//		else if (optional<SeqNum> start = seq_by_desc(graph, config->start))
-//			fr = frames(graph, Scene{randomScene(graph, *start, config->num_transitions)}, config->frames_per_pos);
 		else
 			throw runtime_error("no such position/transition: " + config->start);
 
-		if (!glfwInit()) error("could not initialize GLFW");
-
-		GLFWwindow * const window = glfwCreateWindow(640, 480, "Jiu Jitsu Mapper", nullptr, nullptr);
-		if (!window) error("could not create window");
-
-		glfwMakeContextCurrent(window);
-		glfwSwapInterval(1);
+		unsigned frameindex = 0;
 
 		Camera camera;
 		Style style;
 		style.background_color = white;
-		style.grid_color = V3{.7, .7, .7};
 		camera.zoom(1.2);
-		//camera.zoom(0.9);
 
 		string const separator = "      ";
 
 		for (auto i = fr.begin(); i != fr.end(); ++i)
 		{
-			#ifdef USE_FTGL
-				double const textwidth = style.sequenceFont.Advance((i->first + separator).c_str(), -1);
-				V2 textpos{10,20};
-
-				string caption = i->first;
-				for (auto j = i+1; j != i + std::min(fr.end() - i, 6l); ++j)
-					caption += separator + j->first;
-			#endif
-
 			foreach (pos : i->second)
 			{
-				glfwPollEvents();
-				if (glfwWindowShouldClose(window)) return 0;
-
-				camera.rotateHorizontal(-0.02);
+				camera.rotateHorizontal(-0.012);
 				camera.setOffset(xz(between(pos[0][Core], pos[1][Core])));
 
-				if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) camera.rotateVertical(-0.05);
-				if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) camera.rotateVertical(0.05);
-				if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) camera.rotateHorizontal(-0.03);
-				if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) camera.rotateHorizontal(0.03);
-				if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) camera.zoom(-0.05);
-				if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) camera.zoom(0.05);
-
-				int bottom = 0;
-				int width, height;
-				glfwGetFramebufferSize(window, &width, &height);
+				int width = 640, height = 480;
 
 				if (config->dimensions)
 				{
 					width = config->dimensions->first;
-
-					bottom = height - config->dimensions->second;
 					height = config->dimensions->second;
 				}
 
-				renderWindow(
-					// views:
-					{ {0, 0, 1, 1, none, 50}
-//					{ {0, 0, 1, 1, optional<unsigned>(0), 90}
-			//		, {1-.3-.02, .02, .3, .3, optional<unsigned>(0), 90}
-			//		, {.02, .02, .3, .3, optional<unsigned>(1), 60}
-					},
+				std::ostringstream fn;
+				fn << "vidframes/frame" << std::setw(5) << std::setfill('0') << frameindex << ".png";
 
-					nullptr, // no viables
-					graph, pos, camera,
-					none, // no highlighted joint
-					false, // not edit mode
-					0, bottom,
-					width, height, {0} /* todo */, style);
+				mkImg.png(pos, camera, width, height, fn.str(), white, {0, 0, 1, 1, none, 50});
 
-				#ifdef USE_FTGL
-					renderText(style.sequenceFont, textpos, caption, black);
-					textpos.x -= textwidth / (i->second.size()-1);
-				#endif
+				++frameindex;
 
-				glfwSwapBuffers(window);
+				std::cout << frameindex << ' ' << std::flush;
 			}
-
 		}
 
-		sleep(2);
-
-		glfwTerminate();
+		std::endl(std::cout);
 	}
 	catch (std::exception const & e)
 	{

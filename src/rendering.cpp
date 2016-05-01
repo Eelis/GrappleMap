@@ -2,8 +2,9 @@
 #include "util.hpp"
 #include "graph.hpp"
 #include "camera.hpp"
-#include <GLFW/glfw3.h>
+#ifdef USE_FTGL
 #include <FTGL/ftgl.h>
+#endif
 
 namespace
 {
@@ -67,8 +68,7 @@ namespace
 
 	void render(Viables const * const viables, Position const & pos,
 		optional<PlayerJoint> const highlight_joint,
-		optional<PlayerNum> const first_person_player, bool const edit_mode,
-		Camera const & camera, Style const & style)
+		optional<PlayerNum> const first_person_player, bool const edit_mode)
 	{
 		// draw limbs:
 
@@ -149,31 +149,37 @@ namespace
 			glEnd();
 			glEnable(GL_DEPTH_TEST);
 
-			if (edit_mode && v.second.seqNum == current_sequence)
-				for (PosNum i = v.second.begin + 1; i != v.second.end; ++i)
-					renderText(style.frameFont, world2screen(camera, apply(r, seq[i], j)), to_string(i), white);
+			#ifdef USE_FTGL
+				if (edit_mode && v.second.seqNum == current_sequence)
+					for (PosNum i = v.second.begin + 1; i != v.second.end; ++i)
+						renderText(style.frameFont, world2screen(camera, apply(r, seq[i], j)), to_string(i), white);
+			#endif
 		}
 	}
 }
 
 Style::Style()
 {
-	if (frameFont.Error()) throw runtime_error("could not load font");
-	if (sequenceFont.Error()) throw runtime_error("could not load font");
+	#ifdef USE_FTGL
+		if (frameFont.Error()) throw runtime_error("could not load font");
+		if (sequenceFont.Error()) throw runtime_error("could not load font");
 
-	frameFont.FaceSize(16);
-	sequenceFont.FaceSize(64);
+		frameFont.FaceSize(16);
+		sequenceFont.FaceSize(64);
+	#endif
 }
 
-void renderText(FTGLPixmapFont const & font, V2 where, string const & text, V3 const color)
-{
-	glPixelTransferf(GL_RED_BIAS, color.x - 1);
-	glPixelTransferf(GL_GREEN_BIAS, color.y - 1);
-	glPixelTransferf(GL_BLUE_BIAS, color.z - 1);
+#ifdef USE_FTGL
+	void renderText(FTGLPixmapFont const & font, V2 where, string const & text, V3 const color)
+	{
+		glPixelTransferf(GL_RED_BIAS, color.x - 1);
+		glPixelTransferf(GL_GREEN_BIAS, color.y - 1);
+		glPixelTransferf(GL_BLUE_BIAS, color.z - 1);
 
-	const_cast<FTGLPixmapFont &>(font)
-		.Render(text.c_str(), -1, FTPoint(where.x, where.y, 0));
-}
+		const_cast<FTGLPixmapFont &>(font)
+			.Render(text.c_str(), -1, FTPoint(where.x, where.y, 0));
+	}
+#endif
 
 void renderWindow(
 	std::vector<View> const & views,
@@ -238,7 +244,7 @@ void renderWindow(
 		glEnable(GL_DEPTH_TEST);
 
 		grid(style.grid_color);
-		render(viables, position, highlight_joint, v.first_person, edit_mode, camera, style);
+		render(viables, position, highlight_joint, v.first_person, edit_mode);
 
 		if (viables && highlight_joint)
 		{

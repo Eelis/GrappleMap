@@ -3,7 +3,7 @@
 
 #include "graph.hpp"
 #include "headings.hpp"
-//#include <GLFW/glfw3.h>
+#include "rendering.hpp"
 #include <GL/osmesa.h>
 
 class ImageMaker
@@ -50,6 +50,12 @@ public:
 			default: abort();
 		}
 	}
+
+	void png(
+		Position,
+		Camera const &,
+		unsigned width, unsigned height,
+		string path, V3 bg_color, View) const;
 
 	string png(
 		string output_dir, Position, ImageView,

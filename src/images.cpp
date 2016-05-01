@@ -40,62 +40,60 @@ namespace
 				throw std::runtime_error("command failed: " + command);
 		}
 	}
+}
 
-	void make_png(
-		Graph const & graph,
-		OSMesaContext const mesa,
-		Position pos,
-		Camera const & camera,
-		unsigned width, unsigned height,
-		string const path, V3 const bg_color, View const view)
+void ImageMaker::png(
+	Position pos,
+	Camera const & camera,
+	unsigned width, unsigned height,
+	string const path, V3 const bg_color, View const view) const
+{
+	if (boost::filesystem::exists(path)) return;
+
+	vector<boost::gil::rgb8_pixel_t> buf(width*2 * height*2);
+
+	if (!OSMesaMakeCurrent(ctx, buf.data(), GL_UNSIGNED_BYTE, width*2, height*2))
+		error("OSMesaMakeCurrent");
+
+	Style style;
+	style.grid_color = bg_color * .8;
+	style.background_color = bg_color;
+
+	renderWindow(
+		{view},
+		nullptr, // no viables
+		graph, pos, camera,
+		none, // no highlighted joint
+		false, // not edit mode
+		0, 0, width*2, height*2,
+		{0},
+		style);
+
+	glFlush();
+	glFinish();
+
+	foreach (p : buf) std::swap(p[0], p[2]);
+
+	vector<boost::gil::rgb8_pixel_t> buf2(width * height);
+
+	auto xy = [&](unsigned x, unsigned y){ return buf[y*width*2+x]; };
+
+	for (unsigned x = 0; x != width; ++x)
+	for (unsigned y = 0; y != height; ++y)
 	{
-		if (boost::filesystem::exists(path)) return;
+		auto const & a = xy(x*2,  y*2  );
+		auto const & b = xy(x*2+1,y*2  );
+		auto const & c = xy(x*2,  y*2+1);
+		auto const & d = xy(x*2+1,y*2+1);
 
-		vector<boost::gil::rgb8_pixel_t> buf(width*2 * height*2);
-
-		if (!OSMesaMakeCurrent(mesa, buf.data(), GL_UNSIGNED_BYTE, width*2, height*2))
-			error("OSMesaMakeCurrent");
-
-		Style style;
-		style.grid_color = bg_color * .8;
-		style.background_color = bg_color;
-
-		renderWindow(
-			{view},
-			nullptr, // no viables
-			graph, pos, camera,
-			none, // no highlighted joint
-			false, // not edit mode
-			0, 0, width*2, height*2,
-			{0},
-			style);
-
-		glFlush();
-		glFinish();
-
-		foreach (p : buf) std::swap(p[0], p[2]);
-
-		vector<boost::gil::rgb8_pixel_t> buf2(width * height);
-
-		auto xy = [&](unsigned x, unsigned y){ return buf[y*width*2+x]; };
-
-		for (unsigned x = 0; x != width; ++x)
-		for (unsigned y = 0; y != height; ++y)
-		{
-			auto const & a = xy(x*2,  y*2  );
-			auto const & b = xy(x*2+1,y*2  );
-			auto const & c = xy(x*2,  y*2+1);
-			auto const & d = xy(x*2+1,y*2+1);
-
-			buf2[y*width+x][0] = (a[0] + b[0] + c[0] + d[0]) / 4;
-			buf2[y*width+x][1] = (a[1] + b[1] + c[1] + d[1]) / 4;
-			buf2[y*width+x][2] = (a[2] + b[2] + c[2] + d[2]) / 4;
-		}
-			// todo: clean up
-
-		boost::gil::png_write_view(path,
-			boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf2.data(), width*3)));
+		buf2[y*width+x][0] = (a[0] + b[0] + c[0] + d[0]) / 4;
+		buf2[y*width+x][1] = (a[1] + b[1] + c[1] + d[1]) / 4;
+		buf2[y*width+x][2] = (a[2] + b[2] + c[2] + d[2]) / 4;
 	}
+		// todo: clean up
+
+	boost::gil::png_write_view(path,
+		boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf2.data(), width*3)));
 }
 
 void ImageMaker::png(
@@ -115,7 +113,7 @@ void ImageMaker::png(
 		camera.rotateHorizontal(angle);
 		camera.rotateVertical((ymax - 0.6)/2);
 
-		make_png(graph, ctx, pos, camera, width, height,
+		png(pos, camera, width, height,
 			output_dir + filename, bg_color,
 			{0, 0, 1, 1, none, 45});
 	}
@@ -143,7 +141,7 @@ string ImageMaker::png(
 	{
 		Camera camera;
 
-		make_png(graph, ctx, pos, camera, width, height, output_dir + filename, color(bg_color),
+		png(pos, camera, width, height, output_dir + filename, color(bg_color),
 			{0, 0, 1, 1, *view.player, 80});
 	}
 	else abort();
