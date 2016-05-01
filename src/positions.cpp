@@ -62,9 +62,9 @@ char const * to_string(Joint const j)
 	}
 }
 
-inline std::array<PlayerJoint, joint_count * 2> make_playerJoints()
+inline array<PlayerJoint, joint_count * 2> make_playerJoints()
 {
-	std::array<PlayerJoint, joint_count * 2> r;
+	array<PlayerJoint, joint_count * 2> r;
 	unsigned i = 0;
 	for (unsigned player = 0; player != 2; ++player)
 		foreach (j : joints)
@@ -135,7 +135,7 @@ Position mirror(Position p) // formalized
 	return p;
 }
 
-extern std::array<PlayerJoint, joint_count * 2> const playerJoints = make_playerJoints();
+extern array<PlayerJoint, joint_count * 2> const playerJoints = make_playerJoints();
 
 extern PerPlayer<PlayerDef> const playerDefs = {{ {red}, {V3{0.15,0.15,1}} }};
 

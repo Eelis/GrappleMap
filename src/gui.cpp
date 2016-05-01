@@ -15,6 +15,8 @@
 #include <iterator>
 #include <stack>
 
+using namespace GrappleMap;
+
 struct NextPosition
 {
 	PositionInSequence pis;

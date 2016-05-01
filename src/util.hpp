@@ -14,6 +14,7 @@
 
 namespace GrappleMap
 {
+	using std::array;
 	using std::string;
 	using std::vector;
 	using std::set;
@@ -23,11 +24,14 @@ namespace GrappleMap
 	using std::ofstream;
 	using std::move;
 	using std::cout;
+	using std::cerr;
+	using std::endl;
 	using std::pair;
 	using std::to_string;
 	using std::make_pair;
 	using std::runtime_error;
 	using std::swap;
+	using std::exception;
 	using boost::optional;
 	using boost::none;
 
@@ -51,7 +55,7 @@ namespace GrappleMap
 
 	#define foreach(...) for(auto && __VA_ARGS__)
 
-	inline void error(string const & s) { throw std::runtime_error(s); }
+	inline void error(string const & s) { throw runtime_error(s); }
 
 	inline string replace_all(string s, string what, string with)
 	{

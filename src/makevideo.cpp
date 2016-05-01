@@ -44,7 +44,7 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 	po::store(po::parse_command_line(argc, argv, desc), vm);
 	po::notify(vm);
 
-	if (vm.count("help")) { std::cout << desc << '\n'; return none; }
+	if (vm.count("help")) { cout << desc << '\n'; return none; }
 
 	optional<pair<unsigned, unsigned>> dimensions;
 	if (vm.count("dimensions"))
@@ -126,15 +126,15 @@ int main(int const argc, char const * const * const argv)
 
 				++frameindex;
 
-				std::cout << frameindex << ' ' << std::flush;
+				cout << frameindex << ' ' << std::flush;
 			}
 		}
 
-		std::endl(std::cout);
+		endl(cout);
 	}
-	catch (std::exception const & e)
+	catch (exception const & e)
 	{
-		std::cerr << "error: " << e.what() << '\n';
+		cerr << "error: " << e.what() << '\n';
 		return 1;
 	}
 }

@@ -34,7 +34,7 @@ constexpr uint32_t joint_count = sizeof(joints) / sizeof(Joint);
 
 using PlayerNum = unsigned;
 
-inline std::array<PlayerNum, 2> playerNums() { return {0, 1}; }
+inline array<PlayerNum, 2> playerNums() { return {0, 1}; }
 
 inline char playerCode(PlayerNum const p){ return "tb"[p]; }
 
@@ -52,8 +52,8 @@ inline std::ostream & operator<<(std::ostream & o, PlayerJoint const pj)
 	return o << "player " << pj.player << "'s " << to_string(pj.joint);
 }
 
-template<typename T> using PerPlayer = std::array<T, 2>;
-template<typename T> using PerJoint = std::array<T, joint_count>;
+template<typename T> using PerPlayer = array<T, 2>;
+template<typename T> using PerJoint = array<T, joint_count>;
 
 struct JointDef { Joint joint; double radius; bool draggable; };
 
@@ -111,7 +111,7 @@ using PosNum = unsigned;
 
 inline PosNum end(Sequence const & seq) { return seq.positions.size(); }
 
-extern std::array<PlayerJoint, joint_count * 2> const playerJoints;
+extern array<PlayerJoint, joint_count * 2> const playerJoints;
 
 inline Position operator+(Position r, V3 const off)
 {
@@ -132,7 +132,7 @@ extern PerPlayer<PlayerDef> const playerDefs;
 
 struct Segment
 {
-	std::array<Joint, 2> ends;
+	array<Joint, 2> ends;
 	double length, midpointRadius; // in meters
 	bool visible;
 };
