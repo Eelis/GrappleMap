@@ -99,6 +99,7 @@ int main(int const argc, char const * const * const argv)
 
 		Camera camera;
 		Style style;
+		style.grid_size = 4;
 		style.background_color = white;
 		camera.zoom(1.2);
 

@@ -109,6 +109,7 @@ int main(int const argc, char const * const * const argv)
 		Camera camera;
 		Style style;
 		style.background_color = white;
+		style.grid_size = 4;
 		style.grid_color = V3{.7, .7, .7};
 		camera.zoom(1.2);
 		//camera.zoom(0.9);
