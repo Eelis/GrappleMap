@@ -132,7 +132,7 @@ int main(int const argc, char const * const * const argv)
 				glfwPollEvents();
 				if (glfwWindowShouldClose(window)) return 0;
 
-				camera.rotateHorizontal(-0.02);
+				camera.rotateHorizontal(-0.013);
 				camera.setOffset(xz(between(pos[0][Core], pos[1][Core])));
 
 				if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) camera.rotateVertical(-0.05);
