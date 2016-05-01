@@ -3,23 +3,26 @@
 
 #include "graph_util.hpp"
 
-using Frames = vector<pair<string, vector<Position>>>;
+namespace GrappleMap
+{
+	using Frames = vector<pair<string, vector<Position>>>;
 
-Frames smoothen(Frames);
+	Frames smoothen(Frames);
 
-Frames frames(Graph const & g, Path const & path, unsigned const frames_per_pos);
+	Frames frames(Graph const & g, Path const & path, unsigned const frames_per_pos);
 
-Frames frames(Graph const & g, vector<Path> const & script, unsigned const frames_per_pos);
+	Frames frames(Graph const & g, vector<Path> const & script, unsigned const frames_per_pos);
 
-bool dfsScene(
-	Graph const &,
-	vector<pair<vector<Step>, vector<Step>>> const & in_out,
-	ReorientedNode, size_t, Path &);
+	bool dfsScene(
+		Graph const &,
+		vector<pair<vector<Step>, vector<Step>>> const & in_out,
+		ReorientedNode, size_t, Path &);
 
-Path randomScene(Graph const &, NodeNum start, size_t);
+	Path randomScene(Graph const &, NodeNum start, size_t);
 
-vector<Path> paths_through(Graph const &, Step, unsigned in_size, unsigned out_size);
+	vector<Path> paths_through(Graph const &, Step, unsigned in_size, unsigned out_size);
 
-Frames demoFrames(Graph const &, Step, unsigned frames_per_pos);
+	Frames demoFrames(Graph const &, Step, unsigned frames_per_pos);
+}
 
 #endif

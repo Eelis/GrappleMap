@@ -13,6 +13,8 @@
 #include <vector>
 #include <fstream>
 
+using namespace GrappleMap;
+
 struct Config
 {
 	string db;

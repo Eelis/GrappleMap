@@ -2,6 +2,8 @@
 #include "graph_util.hpp"
 #include "camera.hpp"
 
+namespace GrappleMap {
+
 namespace
 {
 	Viable viableFront(
@@ -171,4 +173,6 @@ ViablesForJoint determineViables
 	if (r.total_dist < 0.3) return {0, {}, {}};
 
 	return r;
+}
+
 }

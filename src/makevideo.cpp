@@ -10,6 +10,8 @@
 #include <sstream>
 #include <iomanip>
 
+using namespace GrappleMap;
+
 struct Config
 {
 	string db;

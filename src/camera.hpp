@@ -1,7 +1,9 @@
-#ifndef JIUJITSUMAPPER_CAMERA_HPP
-#define JIUJITSUMAPPER_CAMERA_HPP
+#ifndef GRAPPLEMAP_CAMERA_HPP
+#define GRAPPLEMAP_CAMERA_HPP
 
 #include "math.hpp"
+
+namespace GrappleMap {
 
 class Camera
 {
@@ -29,7 +31,7 @@ public:
 	{
 		viewportSize.x = x;
 		viewportSize.y = y;
-		proj = perspective(fov, viewportSize.x / viewportSize.y, 0.01, 6);
+		proj = perspective(fov, viewportSize.x / viewportSize.y, 0.01, 15);
 		full_ = proj * mv;
 	}
 
@@ -77,6 +79,8 @@ inline V2 world2screen(Camera const & camera, V3 v)
 	auto t = world2xy(camera, v);
 	auto vps = camera.getViewportSize();
 	return {(t.x + 1) * 0.5 * vps.x, (t.y + 1) * 0.5 * vps.y};
+}
+
 }
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef JIUJITSUMAPPER_MATH_HPP
-#define JIUJITSUMAPPER_MATH_HPP
+#ifndef GRAPPLEMAP_MATH_HPP
+#define GRAPPLEMAP_MATH_HPP
 
 #include <cmath>
 #include <iostream>
@@ -7,6 +7,8 @@
 #include <array>
 #include <cassert>
 #include <GL/glu.h>
+
+namespace GrappleMap {
 
 struct V2 { GLdouble x, y; };
 struct V3 { GLdouble x, y, z; };
@@ -223,5 +225,7 @@ inline Reorientation compose(Reorientation const a, Reorientation const b) // fo
 }
 
 inline double angle(V2 const v) { return atan2(v.x, v.y); }
+
+}
 
 #endif

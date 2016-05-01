@@ -6,6 +6,8 @@
 #include <FTGL/ftgl.h>
 #endif
 
+namespace GrappleMap {
+
 namespace
 {
 	void glNormal(V3 const & v) { ::glNormal3d(v.x, v.y, v.z); }
@@ -272,4 +274,6 @@ void renderWindow(
 
 	renderText(style.sequenceFont, V2{10,20}, desc);
 */
+}
+
 }

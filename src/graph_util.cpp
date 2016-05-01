@@ -1,5 +1,7 @@
 #include "graph_util.hpp"
 
+namespace GrappleMap {
+
 SeqNum insert(Graph & g, Sequence const & sequence)
 {
 	SeqNum const num{g.num_sequences()};
@@ -31,7 +33,7 @@ optional<Step> step_by_desc(Graph const & g, string const & desc, optional<NodeN
 {
 	foreach(sn : seqnums(g))
 		if (replace_all(g[sn].description.front(), "\\n", " ") == desc
-			|| desc == "t" + to_string(sn.index))
+			|| desc == "t" + std::to_string(sn.index))
 		{
 			if (!from || g.from(sn).node == *from)
 				return Step{sn, false};
@@ -183,6 +185,23 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 	return {positions, m};
 }
 
+ReorientedNode follow(Graph const & g, ReorientedNode const & n, SeqNum const s)
+{
+	if (g.from(s).node == n.node)
+		return
+			{ g.to(s).node
+			, compose(g.to(s).reorientation,
+			  compose(inverse(g.from(s).reorientation),
+			  n.reorientation)) };
+	else if (g.to(s).node == n.node)
+		return { g.from(s).node
+			, compose(g.from(s).reorientation,
+			  compose(inverse(g.to(s).reorientation),
+			  n.reorientation)) };
+	else throw std::runtime_error(
+		"node " + std::to_string(n.node.index) + " is not connected to sequence " + std::to_string(s.index));
+}
+
 set<string> tags_in_desc(vector<string> const & desc)
 {
 	set<string> r;
@@ -315,4 +334,6 @@ vector<Path> out_paths(Graph const & g, NodeNum const node, unsigned size)
 		}
 
 	return r;
+}
+
 }

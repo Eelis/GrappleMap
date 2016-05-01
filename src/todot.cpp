@@ -6,6 +6,8 @@
 #include <boost/program_options.hpp>
 #include <boost/range/algorithm_ext/insert.hpp>
 
+using namespace GrappleMap;
+
 struct Config
 {
 	string db;

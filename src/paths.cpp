@@ -1,5 +1,7 @@
 #include "paths.hpp"
 
+namespace GrappleMap {
+
 using Frames = vector<pair<string, vector<Position>>>;
 
 Frames smoothen(Frames f)
@@ -196,4 +198,6 @@ Frames demoFrames(Graph const & g, Step const s, unsigned const frames_per_pos)
 	}
 
 	return f;
+}
+
 }

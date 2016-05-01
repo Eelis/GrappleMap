@@ -1,9 +1,11 @@
 #include "graph_util.hpp"
 
+namespace GrappleMap {
+
 Graph::Graph(vector<Node> const & nodes, vector<Sequence> const & sequences)
 {
 	foreach (n : nodes) insert(n);
-	foreach (s : sequences) ::insert(*this, s);
+	foreach (s : sequences) GrappleMap::insert(*this, s);
 	std::cerr << "Loaded " << nodes.size() << " nodes and " << edges.size() << " edges." << std::endl;
 }
 
@@ -107,4 +109,6 @@ optional<ReorientedNode> Graph::is_reoriented_node(Position const & p) const
 			return ReorientedNode{n, *r};
 
 	return none;
+}
+
 }

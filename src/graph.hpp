@@ -1,7 +1,9 @@
-#ifndef JIUJITSUMAPPER_GRAPH_HPP
-#define JIUJITSUMAPPER_GRAPH_HPP
+#ifndef GRAPPLEMAP_GRAPH_HPP
+#define GRAPPLEMAP_GRAPH_HPP
 
 #include "positions.hpp"
+
+namespace GrappleMap {
 
 struct NodeNum { uint16_t index; };
 
@@ -106,5 +108,7 @@ public:
 		// neither means noop
 		// both means replace
 };
+
+}
 
 #endif

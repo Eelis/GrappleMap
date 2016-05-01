@@ -6,6 +6,8 @@
 #include "rendering.hpp"
 #include <GL/osmesa.h>
 
+namespace GrappleMap {
+
 class ImageMaker
 {
 	Graph const & graph;
@@ -78,5 +80,7 @@ public:
 		vector<Position> const & frames,
 		unsigned width, unsigned height, BgColor) const;
 };
+
+}
 
 #endif

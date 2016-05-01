@@ -17,6 +17,8 @@
 #include <vector>
 #include <fstream>
 
+using namespace GrappleMap;
+
 inline std::size_t hash_value(V3 const v) // todo: put elsewhere
 {
 	size_t seed = 0;

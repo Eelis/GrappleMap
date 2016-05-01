@@ -2,6 +2,8 @@
 #include "util.hpp"
 #include "persistence.hpp"
 
+namespace GrappleMap {
+
 extern PerJoint<JointDef> const jointDefs =
 	{{ { LeftToe, 0.025, false}
 	, { RightToe, 0.025, false}
@@ -276,4 +278,6 @@ Position orient_canonically_without_mirror(Position const & p)
 Position orient_canonically_with_mirror(Position const & p)
 {
 	return canonical_reorientation_with_mirror(p)(p);
+}
+
 }

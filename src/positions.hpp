@@ -1,11 +1,13 @@
-#ifndef JIUJITSUMAPPER_POSITIONS_HPP
-#define JIUJITSUMAPPER_POSITIONS_HPP
+#ifndef GRAPPLEMAP_POSITIONS_HPP
+#define GRAPPLEMAP_POSITIONS_HPP
 
 #include "math.hpp"
 #include "util.hpp"
 #include <array>
 #include <cmath>
 #include <iostream>
+
+namespace GrappleMap {
 
 #define JOINTS \
 	LeftToe, RightToe, \
@@ -255,8 +257,8 @@ struct PositionReorientation
 	Position operator()(Position p) const
 	{
 		p = apply(reorientation, p);
-		if (mirror) p = ::mirror(p);
-		if (swap_players) ::swap_players(p);
+		if (mirror) p = GrappleMap::mirror(p);
+		if (swap_players) GrappleMap::swap_players(p);
 		return p;
 	}
 };
@@ -338,5 +340,7 @@ PositionReorientation canonical_reorientation_with_mirror(Position const &);
 
 Position orient_canonically_without_mirror(Position const &);
 Position orient_canonically_with_mirror(Position const &);
+
+}
 
 #endif

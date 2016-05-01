@@ -1,10 +1,12 @@
-#ifndef JIUJITSUMAPPER_GRAPH_UTIL_HPP
-#define JIUJITSUMAPPER_GRAPH_UTIL_HPP
+#ifndef GRAPPLEMAP_GRAPH_UTIL_HPP
+#define GRAPPLEMAP_GRAPH_UTIL_HPP
 
 #include "graph.hpp"
 #include <map>
 #include <boost/range/counting_range.hpp>
 #include <boost/range/adaptor/filtered.hpp>
+
+namespace GrappleMap {
 
 using NodeNumIter = boost::counting_iterator<NodeNum, boost::incrementable_traversal_tag, uint32_t>;
 using SeqNumIter = boost::counting_iterator<SeqNum, boost::incrementable_traversal_tag, uint32_t>;
@@ -124,7 +126,8 @@ optional<PositionInSequence> posinseq_by_desc(Graph const & g, string const & de
 optional<PositionInSequence> node_as_posinseq(Graph const &, NodeNum);
 	// may return either the beginning of a sequence or the end
 
-pair<vector<Position>, ReorientedNode> follow(Graph const &, ReorientedNode const &, SeqNum, unsigned const frames_per_pos);
+pair<vector<Position>, ReorientedNode> follow(Graph const &, ReorientedNode const &, SeqNum, unsigned frames_per_pos);
+ReorientedNode follow(Graph const &, ReorientedNode const &, SeqNum);
 
 bool connected(Graph const &, NodeNum, NodeNum);
 
@@ -244,4 +247,7 @@ inline vector<std::pair<
 
 	return v;
 }
+
+}
+
 #endif

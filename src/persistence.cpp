@@ -4,6 +4,8 @@
 #include <iterator>
 #include <cstring>
 
+namespace GrappleMap {
+
 namespace
 {
 	char const base62digits[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -372,4 +374,6 @@ void tojs(Graph const & graph, std::ostream & js)
 	js << "tags=";
 	tojs(tags(graph), js);
 	js << ";\n\n";
+}
+
 }

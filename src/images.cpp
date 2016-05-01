@@ -4,13 +4,16 @@
 #include <boost/program_options.hpp>
 #include <unistd.h>
 
-inline std::size_t hash_value(V3 const v) // todo: put elsewhere
+namespace GrappleMap
 {
-	size_t seed = 0;
-	boost::hash_combine(seed, v.x);
-	boost::hash_combine(seed, v.y);
-	boost::hash_combine(seed, v.z);
-	return seed;
+	inline std::size_t hash_value(V3 const v) // todo: put elsewhere
+	{
+		size_t seed = 0;
+		boost::hash_combine(seed, v.x);
+		boost::hash_combine(seed, v.y);
+		boost::hash_combine(seed, v.z);
+		return seed;
+	}
 }
 
 #include <boost/functional/hash.hpp>
@@ -19,6 +22,8 @@ inline std::size_t hash_value(V3 const v) // todo: put elsewhere
 #include <boost/gil/extension/io/png_io.hpp>
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
+
+namespace GrappleMap {
 
 namespace
 {
@@ -247,4 +252,6 @@ ImageMaker::ImageMaker(Graph const & g)
 ImageMaker::~ImageMaker()
 {
 	OSMesaDestroyContext(ctx);
+}
+
 }
