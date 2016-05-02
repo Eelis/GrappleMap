@@ -58,3 +58,6 @@ drill composer
 
 new tools:
 - diff, to visualize changes made to transitions
+
+misc:
+- mobile-friendly versions of things
