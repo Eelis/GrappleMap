@@ -209,77 +209,109 @@ function view_code(v)
 	return ["nesw","NESW"][v[1] ? 1 : 0][v[0]];
 }
 
-function update_position_pics()
+var pos_page_index = 0;
+
+function add_paged_elems(target, page_size, items, renderitem)
 {
-	var elem = document.getElementById("position_pics");
+	var page = 0;
 
-	elem.innerHTML = "";
+	function refresh()
+	{
+		target.innerHTML = "";
 
-	var c = 0;
-
-	var limit = 50;
-
-	for (var n = 0; n != nodes.length; ++n)
-		if (node_is_selected(nodes[n]))
+		if (items.length > page_size)
 		{
-			++c;
-			if (c <= limit)
+			target.appendChild(document.createTextNode("Page: "));
+
+			for (var i = 0; i*page_size < items.length; ++i)
 			{
-				var link = document.createElement("a");
+				target.appendChild(document.createTextNode(' '));
 
-				var vc = view_code(view);
-
-				link.href = "../p" + n + vc + ".html";
-
-				var img = document.createElement("img");
-				img.src = "../p" + n + vc + "480x360.png";
-				img.setAttribute('title', nodes[n].description);
-				link.appendChild(img);
-
-				elem.appendChild(link);
+				if (i == page)
+				{
+					var b = document.createElement("b");
+					b.appendChild(document.createTextNode(page + 1));
+					target.appendChild(b);
+				}
+				else
+				{
+					var a = document.createElement("a");
+					a.href = "";
+					a.addEventListener("click", function(i_){return function(e){
+							e.preventDefault();
+							page = i_;
+							refresh();
+						};}(i));
+					a.appendChild(document.createTextNode(i + 1));
+					target.appendChild(a);
+				}
 			}
+
+			target.appendChild(document.createElement("br"));
 		}
 
-	if (c > limit)
-	{
-		elem.appendChild(document.createTextNode(" ... and " + (c - limit) + " more."));
+		for (var i = page * page_size; i < items.length && i < (page + 1) * page_size; ++i)
+		{
+			renderitem(items[i], target);
+		}
 	}
 
-	document.getElementById('pos_count_label').innerHTML = "&nbsp;" + c + "&nbsp;";
+	refresh();
+}
+
+function update_position_pics()
+{
+	var page_size = 12;
+
+	var selected_nodes = [];
+	for (var n = 0; n != nodes.length; ++n)
+		if (node_is_selected(nodes[n]))
+			selected_nodes.push(n);
+
+	document.getElementById('pos_count_label').innerHTML = selected_nodes.length;
+
+	var elem = document.getElementById("position_pics");
+
+	add_paged_elems(elem, 9, selected_nodes, function(n, _)
+		{
+			var link = document.createElement("a");
+
+			var vc = view_code(view);
+
+			link.href = "../p" + n + vc + ".html";
+
+			var img = document.createElement("img");
+			img.src = "../p" + n + vc + "320x240.png";
+			img.setAttribute('title', nodes[n].description);
+			link.appendChild(img);
+
+			elem.appendChild(link);
+		});
 }
 
 function update_transition_pics()
 {
 	var elem = document.getElementById("transition_pics");
 
-	elem.innerHTML = "";
-
-	var c = 0;
-	var limit = 50;
-
+	var selected_edges = [];
 	for (var n = 0; n != transitions.length; ++n)
 		if (trans_is_selected(transitions[n]))
+			selected_edges.push(n);
+
+	document.getElementById('trans_count_label').innerHTML = selected_edges.length;
+
+	add_paged_elems(elem, 12, selected_edges, function(e, _)
 		{
-			++c;
-			if (c <= limit)
-			{
-				var link = document.createElement("a");
-				link.href = "../composer/index.html?" + n; // todo: preserve view
+			var link = document.createElement("a");
+			link.href = "../composer/index.html?" + n; // todo: preserve view
 
-				var img = document.createElement("img");
-				img.src = "../t" + n + "200x150" + view_code(view) + ".gif";
-				img.setAttribute('title', transitions[n].description);
-				link.appendChild(img);
+			var img = document.createElement("img");
+			img.src = "../t" + e + "200x150" + view_code(view) + ".gif";
+			img.setAttribute('title', transitions[e].description);
+			link.appendChild(img);
 
-				elem.appendChild(link);
-			}
-		}
-
-	if (c > limit)
-	{
-		elem.appendChild(document.createTextNode(" ... and " + (c - limit) + " more."));
-	}
-//	document.getElementById('transition_count_label').innerHTML = "&nbsp;" + c + "&nbsp;";
+			elem.appendChild(link);
+		});
 }
 
 function update_graph()

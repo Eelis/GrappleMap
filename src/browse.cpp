@@ -517,6 +517,11 @@ namespace
 					'p' + to_string(ctx.n.index)), "")
 				<< "<br>";
 
+			ctx.mkimg.png(
+				ctx.output_dir, pos_to_show,
+				ctx.view, 320, 240, ctx.mkimg.WhiteBg,
+				'p' + to_string(ctx.n.index));
+
 			write_view_controls(ctx.html, ctx.view, "p" + to_string(ctx.n.index));
 
 			auto const t = tags_in_desc(ctx.graph[ctx.n].description);
