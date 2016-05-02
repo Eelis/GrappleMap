@@ -336,7 +336,7 @@ void tojs(Graph const & graph, std::ostream & js)
 		foreach (s : out_steps(graph, n)) { tojs(s, js); js << ','; }
 		js << "],position:";
 		tojs(graph[n].position, js);
-		js << ",description:'" << replace_all(desc(graph[n]), "'", "&#39;") << "'";
+		js << ",description:'" << replace_all(desc(graph[n]), "'", "\\'") << "'";
 		js << ",tags:";
 		tojs(tags_in_desc(graph[n].description), js);
 		js << "},\n";
