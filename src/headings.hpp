@@ -38,11 +38,11 @@ namespace GrappleMap
 		foreach (h : headings())
 		foreach (b : {true, false})
 			vv.push_back(ImageView{b, h, {}});
-
+/*
 		foreach (p : playerNums())
 		foreach (b : {true, false})
 			vv.push_back(ImageView{b, {}, p});
-
+*/
 		return vv;
 	}
 
