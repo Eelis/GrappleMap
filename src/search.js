@@ -1,5 +1,5 @@
 var selected_tags = [];
-// var drag = 0.20;
+var drag = 0.20;
 var view = [0, false];
 
 function node_has_tag(node, tag)
@@ -22,9 +22,13 @@ function node_is_selected(node)
 
 function trans_is_selected(trans)
 {
+	if (node_is_selected(nodes[trans.to.node]) && node_is_selected(nodes[trans.from.node]))
+		return true;
+
 	for (var i = 0; i != selected_tags.length; ++i)
 		if (trans_has_tag(trans, selected_tags[i][0]) != selected_tags[i][1])
 			return false;
+
 	return true;
 }
 
@@ -335,7 +339,9 @@ function update_graph()
 	for (var i = 0; i != transitions.length; ++i)
 	{
 		var t = transitions[i];
-		if (trans_is_selected(t))
+		if (trans_is_selected(t)
+			|| node_is_selected(nodes[t.to.node])
+			|| node_is_selected(nodes[t.from.node]))
 			G.links.push(
 				{ source: addnode(t.from.node)
 				, target: addnode(t.to.node)
@@ -346,7 +352,11 @@ function update_graph()
 	for (var i = 0; i != nn.length; ++i)
 	{
 		var n = nodes[nn[i]];
-		G.nodes.push({'node':n, 'desc_lines':n.description.split('\n')});
+		G.nodes.push(
+			{ 'node': n
+			, 'desc_lines': n.description.split('\n')
+			, 'selected_by_tags': node_is_selected(n)
+			});
 	}
 
 	if (G.nodes.length > 50) return;
@@ -405,7 +415,6 @@ function update_graph()
 	var node = nodesel
 		.append("circle")
 		.attr("class", "node")
-		.attr("r", function(node){return node_is_selected(node.node) ? 50 : 5;})
 		.call(force.drag);
 	
 	var labelsel = svg.selectAll(".node_label")
@@ -425,15 +434,14 @@ function update_graph()
 		.call(force.drag);
 
 	var selected_node = null;
-/*
+
 	label.on('mouseover', function(d)
 		{
-			selected_node = d.id;
-			keyframe = nodes[d.id].position;
+			selected_node = d.node.id;
+			keyframe = nodes[selected_node].position;
 			tick_graph();
 		});
-*/
-	
+
 	function tick_graph()
 	{
 		link
@@ -444,8 +452,13 @@ function update_graph()
 
 		node
 			.attr("cx", function(d) { return d.x; })
-			.attr("cy", function(d) { return d.y; });
-//			.attr("r", function(node) { if (node.id == selected_node) return 25; else return 15; });
+			.attr("cy", function(d) { return d.y; })
+			.attr("r", function(d)
+				{
+					if (d.node.id == selected_node) return 75;
+					if (d.selected_by_tags) return 50;
+					return 5;
+				});
 
 		trans_label
 			.attr("x", function(d) { return (d.source.x + d.target.x) / 2; })
@@ -462,7 +475,8 @@ function update_graph()
 
 	force.on("tick", tick_graph);
 }
-/*
+
+
 function interpolate(a, b, c)
 {
 	return a.scale(1 - c).add(b.scale(c));
@@ -478,8 +492,8 @@ function interpolate_position(a, b, c)
 
 	return p;
 }
-*/
-/*
+
+
 function tick()
 {
 	thepos = (thepos ? interpolate_position(thepos, keyframe, drag) : keyframe);
@@ -518,7 +532,7 @@ function makeScene()
 
 	engine.runRenderLoop(function(){ scene.render(); });
 }
-*/
+
 window.addEventListener('DOMContentLoaded',
 	function()
 	{
@@ -535,7 +549,9 @@ window.addEventListener('DOMContentLoaded',
 						add_tag(a, true);
 				});
 		}
-/*
+
+
+
 		thepos = keyframe = nodes[0].position;
 
 		canvas = document.getElementById('renderCanvas');
@@ -544,7 +560,9 @@ window.addEventListener('DOMContentLoaded',
 		makeScene();
 
 		scene.activeCamera = externalCamera;
-*/
+
+
+
 		update_view_controls();
 
 		on_tag_selection_changed();
