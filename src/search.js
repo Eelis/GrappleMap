@@ -45,6 +45,14 @@ function tag_refines(t)
 		}
 	});
 
+	transitions.forEach(function(trans){
+		if (trans_is_selected(trans))
+		{
+			if (trans_has_tag(trans, t)) ++inclusions;
+			else ++exclusions;
+		}
+	});
+
 	return [inclusions, exclusions];
 }
 
