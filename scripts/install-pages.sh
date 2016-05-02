@@ -10,13 +10,19 @@ output=$outputbase/GrappleMap
 
 mkdir -p $output/{gifframes,composer,search}
 
-if [ ! -f $output/babylon.js ]; then
-	wget --no-verbose -O $output/babylon.js "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/dist/preview%20release/babylon.js"
-fi
+function download
+{
+	target=$output/$1
+	url=$2
 
-if [ ! -f $output/hand.js ]; then
-	wget --no-verbose -O $output/hand.js "https://raw.githubusercontent.com/deltakosh/handjs/master/bin/hand.min.js"
-fi
+	if [ ! -f $target ]; then
+		wget --no-verbose -O $target "${url}"
+	fi
+}
+
+download babylon.js https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/dist/preview%20release/babylon.js
+download hand.js https://raw.githubusercontent.com/deltakosh/handjs/master/bin/hand.min.js
+download sorttable.js http://www.kryogenix.org/code/browser/sorttable/sorttable.js
 
 cp src/gm.js $output/
 cp src/composer.html $output/composer/index.html
