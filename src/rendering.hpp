@@ -28,6 +28,7 @@ namespace GrappleMap
 		V3 grid_color {.5, .5, .5};
 		V3 background_color {0, 0, 0};
 		unsigned grid_size = 2;
+		unsigned grid_line_width = 2;
 
 		#ifdef USE_FTGL
 			FTGLPixmapFont frameFont{"DejaVuSans.ttf"};

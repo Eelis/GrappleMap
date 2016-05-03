@@ -98,9 +98,6 @@ int main(int const argc, char const * const * const argv)
 		unsigned frameindex = 0;
 
 		Camera camera;
-		Style style;
-		style.grid_size = 4;
-		style.background_color = white;
 		camera.zoom(1.2);
 
 		string const separator = "      ";
@@ -123,7 +120,12 @@ int main(int const argc, char const * const * const argv)
 				std::ostringstream fn;
 				fn << "vidframes/frame" << std::setw(5) << std::setfill('0') << frameindex << ".png";
 
-				mkImg.png(pos, camera, width, height, fn.str(), white, {0, 0, 1, 1, none, 50});
+				mkImg.png(pos, camera, width, height, fn.str(),
+					white, // background
+					{0, 0, 1, 1, none, 50}, // view
+					5, // grid size
+					4 // grid line width
+					);
 
 				++frameindex;
 

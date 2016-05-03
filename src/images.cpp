@@ -50,8 +50,10 @@ namespace
 void ImageMaker::png(
 	Position pos,
 	Camera const & camera,
-	unsigned width, unsigned height,
-	string const path, V3 const bg_color, View const view) const
+	unsigned const width, unsigned const height,
+	string const path, V3 const bg_color,
+	View const view,
+	unsigned const grid_size, unsigned const grid_line_width) const
 {
 	if (boost::filesystem::exists(path)) return;
 
@@ -61,6 +63,8 @@ void ImageMaker::png(
 		error("OSMesaMakeCurrent");
 
 	Style style;
+	style.grid_size = grid_size;
+	style.grid_line_width = grid_line_width;
 	style.grid_color = bg_color * .8;
 	style.background_color = bg_color;
 

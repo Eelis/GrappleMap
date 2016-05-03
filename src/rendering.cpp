@@ -51,19 +51,19 @@ namespace
 			up.x, up.y, up.z);
 	}
 
-	void grid(V3 const color, unsigned const size = 2)
+	void grid(V3 const color, unsigned const size = 2, unsigned const line_width = 2)
 	{
 		glNormal3d(0, 1, 0);
 		glColor3f(color.x, color.y, color.z);
-		glLineWidth(2);
+		glLineWidth(line_width);
 
 		glBegin(GL_LINES);
 			for (double i = size*-2.; i <= size*2.; ++i)
 			{
 				glVertex(V3{i/2, 0, size*-1.});
-				glVertex(V3{i/2, 0, size});
+				glVertex(V3{i/2, 0, size*1.});
 				glVertex(V3{size*-1., 0, i/2});
-				glVertex(V3{size, 0, i/2});
+				glVertex(V3{size*1., 0, i/2});
 			}
 		glEnd();
 	}
@@ -245,7 +245,7 @@ void renderWindow(
 		glEnable(GL_DEPTH);
 		glEnable(GL_DEPTH_TEST);
 
-		grid(style.grid_color, style.grid_size);
+		grid(style.grid_color, style.grid_size, style.grid_line_width);
 		render(viables, position, highlight_joint, v.first_person, edit_mode);
 
 		if (viables && highlight_joint)

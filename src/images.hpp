@@ -57,7 +57,8 @@ public:
 		Position,
 		Camera const &,
 		unsigned width, unsigned height,
-		string path, V3 bg_color, View) const;
+		string path, V3 bg_color,
+		View, unsigned grid_size = 2, unsigned grid_line_width = 2) const;
 
 	string png(
 		string output_dir, Position, ImageView,
