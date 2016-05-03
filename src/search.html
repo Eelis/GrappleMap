@@ -5,11 +5,12 @@
 		<meta charset="UTF-8">
 		<style>
 			.link {
-			  stroke: #999;
+			  stroke-width: 3px;
 			}
 			.node {
 			  stroke: black;
 			  fill: white;
+			  stroke-width: 3px;
 			}
 			a{text-decoration:none}
 		</style>
@@ -51,10 +52,10 @@
 
 		<hr>
 		<h2>Neighbourhood</h2>
-		<div id="mynetwork" style='width:100%;height:100%'></div>
-
-		<h2>Selected position</h2>
-		<canvas style='display:inline-block;width:600px;height:450px' id='renderCanvas'></canvas>
+		<div style='width:100%;text-align:right'>
+			<div id="mynetwork" style='position:absolute;width:100%;height:100%;background:rgba(255,255,255,0.6)'></div>
+			<canvas style='width:100%;height:100%' id='renderCanvas'></canvas>
+		</div>
 
 		<script src='search.js'></script>
 	</body>

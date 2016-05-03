@@ -343,6 +343,11 @@ function yrot(a, v)
 		);
 }
 
+function zero_reo()
+{
+	return { mirror: false, angle: 0, offset: v3(0,0,0), swap_players: false };
+}
+
 function inverse_reo(x)
 {
 	var c =

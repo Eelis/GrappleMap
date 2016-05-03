@@ -1,6 +1,11 @@
 var selected_tags = [];
 var drag = 0.20;
 var view = [0, false];
+var queued_frames = [];
+var last_keyframe = null;
+var selected_node = null;
+var reo = zero_reo();
+var kf = 0;
 
 function node_has_tag(node, tag)
 {
@@ -221,8 +226,6 @@ function view_code(v)
 	return ["nesw","NESW"][v[1] ? 1 : 0][v[0]];
 }
 
-var pos_page_index = 0;
-
 function add_paged_elems(target, page_size, items, renderitem)
 {
 	var page = 0;
@@ -347,6 +350,11 @@ function update_graph()
 	for (var i = 0; i != transitions.length; ++i)
 	{
 		var t = transitions[i];
+
+		var color = "black";
+		if (t.properties.indexOf("top") != -1) color = "red";
+		if (t.properties.indexOf("bottom") != -1) color = "blue";
+
 		if (trans_is_selected(t)
 			|| node_is_selected(nodes[t.to.node])
 			|| node_is_selected(nodes[t.from.node]))
@@ -354,6 +362,7 @@ function update_graph()
 				{ source: addnode(t.from.node)
 				, target: addnode(t.to.node)
 				, transition: t
+				, color: color
 				});
 	}
 
@@ -377,24 +386,48 @@ function update_graph()
 		.attr("height", height);
 
 	svg.append('svg:defs').append('svg:marker')
-		.attr('id', 'end-arrow')
+		.attr('id', 'red-arrow')
 		.attr('viewBox', '0 -50 100 100')
 		.attr('refX', 100)
-		.attr('markerWidth', 120)
-		.attr('markerHeight', 120)
+		.attr('markerWidth', 40)
+		.attr('markerHeight', 40)
 		.attr('orient', 'auto')
-//		.style("fill", "red")
+		.style("fill", "red")
 		.append('svg:path')
-		.attr('d', 'M0,-5L20,0L0,5');
+		.attr('d', 'M0,-10L20,0L0,10');
+
+	svg.append('svg:defs').append('svg:marker')
+		.attr('id', 'blue-arrow')
+		.attr('viewBox', '0 -50 100 100')
+		.attr('refX', 100)
+		.attr('markerWidth', 40)
+		.attr('markerHeight', 40)
+		.attr('orient', 'auto')
+		.style("fill", "blue")
+		.append('svg:path')
+		.attr('d', 'M0,-10L20,0L0,10');
+
+	svg.append('svg:defs').append('svg:marker')
+		.attr('id', 'black-arrow')
+		.attr('viewBox', '0 -50 100 100')
+		.attr('refX', 100)
+		.attr('markerWidth', 40)
+		.attr('markerHeight', 40)
+		.attr('orient', 'auto')
+		.style("fill", "black")
+		.append('svg:path')
+		.attr('d', 'M0,-10L20,0L0,10');
 
 	var force = d3.layout.force()
-		.charge(-200)
+		.charge(-300)
 		.gravity(0.01)
 		.linkDistance(200)
 		.size([width, height])
 		.nodes(G.nodes)
 		.links(G.links)
 		.start();
+
+	svg.on("mouseup", function(){ force.alpha(0.01); });
 
 	var linksel = svg.selectAll(".link")
 		.data(G.links)
@@ -403,18 +436,13 @@ function update_graph()
 	var link = linksel
 		.append("line")
 		.attr("class", "link")
-		.attr("marker-end", "url(#end-arrow)") // hmm, why doesn't marker-pattern work..
-		.style("stroke", function(d){
-			if (d.transition.properties.indexOf("top") != -1) return "red";
-			if (d.transition.properties.indexOf("bottom") != -1) return "blue";
-			return "#999"; });
+		.attr("marker-end", function(d){ return "url(#" + d.color + "-arrow)"; })
+		.style("stroke", function(d){ return d.color; });
 
 	var trans_label = linksel
 		.append("text")
 		.attr("text-anchor", "middle")
-		.text(function(d){
-			return d.transition.description[0];
-			});
+		.text(function(d){ return d.transition.description[0]; });
 
 	var nodesel = svg.selectAll(".node")
 		.data(G.nodes)
@@ -441,14 +469,74 @@ function update_graph()
 		.text(function(d){return d.desc_lines[1];})
 		.call(force.drag);
 
-	var selected_node = null;
+	function mouse_over_node(d)
+	{
+		var candidate = d.node.id;
 
-	label.on('mouseover', function(d)
+		if (candidate == selected_node) return;
+
+		var foundit = false;
+
+		if (selected_node == null)
 		{
-			selected_node = d.node.id;
-			keyframe = nodes[selected_node].position;
-			tick_graph();
-		});
+			selected_node = candidate;
+			tick_graph(); // todo: necessary?
+			return;
+		}
+
+		var n = nodes[selected_node];
+
+		n.outgoing.forEach(function(s)
+			{
+				var t = transitions[s.transition];
+				if (!foundit && !s.reverse && step_to(s).node == candidate)
+				{
+					foundit = true;
+
+					reo = compose_reo(inverse_reo(step_from(s).reo), reo);
+
+					for (var i = 1; i != t.frames.length; ++i)
+						queued_frames.push(apply_reo(reo, t.frames[i]));
+
+					reo = compose_reo(step_to(s).reo, reo);
+
+					selected_node = candidate;
+				}
+			});
+
+		n.incoming.forEach(function(s)
+			{
+				var t = transitions[s.transition];
+				if (!foundit && !s.reverse && step_from(s).node == candidate)
+				{
+					foundit = true;
+
+					reo = compose_reo(inverse_reo(step_to(s).reo), reo);
+
+					for (var i = t.frames.length - 1; i != 0; --i)
+						queued_frames.push(apply_reo(reo, t.frames[i - 1]));
+
+					reo = compose_reo(step_from(s).reo, reo);
+
+					selected_node = candidate;
+
+				}
+			});
+
+			// todo: clean up
+
+		if (!foundit)
+		{
+			selected_node = candidate;
+			thepos = nodes[selected_node].position;
+			reo = zero_reo();
+		}
+
+		tick_graph();
+	}
+
+	node.on('mouseover', mouse_over_node);
+	label.on('mouseover', mouse_over_node); // todo: rest of label as well
 
 	function tick_graph()
 	{
@@ -465,7 +553,7 @@ function update_graph()
 				{
 					if (d.node.id == selected_node) return 75;
 					if (d.selected_by_tags) return 50;
-					return 5;
+					return 15;
 				});
 
 		trans_label
@@ -484,27 +572,29 @@ function update_graph()
 	force.on("tick", tick_graph);
 }
 
-
-function interpolate(a, b, c)
-{
-	return a.scale(1 - c).add(b.scale(c));
-}
-
-function interpolate_position(a, b, c)
-{
-	var p = [[],[]];
-
-	for (var pl = 0; pl != 2; ++pl)
-	for (var j = 0; j != joints.length; ++j)
-		p[pl].push(interpolate(a[pl][j], b[pl][j], c));
-
-	return p;
-}
-
+var targetpos;
 
 function tick()
 {
-	thepos = (thepos ? interpolate_position(thepos, keyframe, drag) : keyframe);
+	if (queued_frames.length != 0)
+	{
+		kf += 0.1;
+
+		if (kf < 1)
+		{
+			targetpos = interpolate_position(last_keyframe, queued_frames[0], kf);
+		}
+		else
+		{
+			kf = 0;
+			targetpos = last_keyframe = queued_frames.shift();
+		}
+	}
+
+	if (targetpos)
+		thepos = (thepos ? interpolate_position(thepos, targetpos, drag) : targetpos);
+
+	// todo: base on real elapsed time like composer does
 }
 
 function makeScene()
@@ -560,7 +650,7 @@ window.addEventListener('DOMContentLoaded',
 
 
 
-		thepos = keyframe = nodes[0].position;
+		thepos = last_keyframe = keyframe = nodes[0].position;
 
 		canvas = document.getElementById('renderCanvas');
 		engine = new BABYLON.Engine(canvas, true);
