@@ -538,6 +538,7 @@ namespace
 				<< "<br><br>Navigate: "
 				<< "<a href='index.html'>index</a>"
 				<< ", <a href='composer/index.html?p" << ctx.n.index << "'>composer</a>"
+				<< ", <a href='diagram/index.html?" << ctx.n.index << "'>diagram</a>"
 				<< "</td>";
 		}
 

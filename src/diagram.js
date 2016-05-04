@@ -66,7 +66,7 @@ function make_graph()
 	update_graph();
 }
 
-function node_key_func(n) { return n.id; }
+function get_id(x) { return x.id; }
 
 function update_graph()
 {
@@ -100,7 +100,7 @@ function update_graph()
 			G.links.push(
 				{ source: nodes[t.from.node]
 				, target: nodes[t.to.node]
-				, transition: t
+				, id: i
 				, color: color
 				});
 		}
@@ -112,18 +112,17 @@ function update_graph()
 
 	svg.on("mouseup", function(){ force.alpha(0.01); });
 
-	var nodesel = svg.select("#nodes").selectAll(".node").data(G.nodes, node_key_func);
-	var labelsel = svg.select("#labels").selectAll(".node_label").data(G.nodes, node_key_func);
-
-	var label2sel = svg.select("#labels").selectAll(".node_label2").data(G.nodes, node_key_func)
-	var linksel = svg.select("#links").selectAll(".link").data(G.links);
-	var linklabelsel = svg.select("#labels").selectAll(".link_label").data(G.links);
+	var nodesel = svg.select("#nodes").selectAll(".node").data(G.nodes, get_id);
+	var labelsel = svg.select("#labels").selectAll(".node_label").data(G.nodes, get_id);
+	var label2sel = svg.select("#labels").selectAll(".node_label2").data(G.nodes, get_id)
+	var linksel = svg.select("#links").selectAll(".link").data(G.links, get_id);
+	var linklabelsel = svg.select("#labels").selectAll(".link_label").data(G.links, get_id);
 
 	linklabelsel.enter()
 		.append("text")
 		.attr("class", "link_label")
 		.attr("text-anchor", "middle")
-		.text(function(d){ return d.transition.description[0]; });
+		.text(function(d){ return transitions[d.id].description[0]; });
 
 	linksel.enter()
 		.append("line")
@@ -165,15 +164,15 @@ function update_graph()
 
 		var i = selected_nodes.indexOf(d.id);
 		if (i == -1)
-		{
 			selected_nodes.push(d.id);
-			update_graph();
-		}
 		else if (selected_nodes.length >= 2)
-		{
 			selected_nodes.splice(i, 1);
-			update_graph();
-		}
+		else
+			return;
+
+		update_graph();
+	
+		document.getElementById("sharelink").href = "index.html?" + selected_nodes.join(",");
 	}
 
 	function mouse_over_node(d)
