@@ -13,12 +13,13 @@ var force;
 
 function make_graph()
 {
+
 	var width = document.body.clientWidth,
-	height = 960;
+	height = document.body.clientHeight;
 
 	svg = d3.select("#mynetwork").append("svg")
-		.attr("width", width)
-		.attr("height", height);
+		.attr("width", '100%')
+		.attr("height", '100%');
 
 	svg.append('svg:defs').append('svg:marker')
 		.attr('id', 'red-arrow')
