@@ -287,6 +287,11 @@ function update_position_pics()
 
 	var elem = document.getElementById("position_pics");
 
+	{
+		var link = document.getElementById("diagramlink");
+		link.href = "../diagram/index.html?" + selected_nodes.join(",");
+	}
+
 	add_paged_elems(elem, 9, selected_nodes, function(n, _)
 		{
 			var link = document.createElement("a");
