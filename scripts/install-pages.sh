@@ -2,13 +2,13 @@
 
 set -ev
 
-(cd src && scons)
+(cd src && scons grapplemap-browse)
 
 outputbase=.
 
 output=$outputbase/GrappleMap
 
-mkdir -p $output/{gifframes,composer,search}
+mkdir -p $output/{gifframes,composer,search,diagram}
 
 function download
 {
@@ -29,5 +29,7 @@ cp src/composer.html $output/composer/index.html
 cp src/composer.js $output/composer/
 cp src/search.html $output/search/index.html
 cp src/search.js $output/search/
+cp src/diagram.html $output/diagram/index.html
+cp src/diagram.js $output/diagram/
 
 src/grapplemap-browse --output_dir=$outputbase

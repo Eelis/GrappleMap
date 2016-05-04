@@ -295,11 +295,25 @@ function refreshDrill()
 
 	if (steps.length != 0)
 	{
+		controls.appendChild(document.createTextNode("("));
 		var sharelink = document.createElement("a");
 		sharelink.href = "?" + encode_steps(steps);
 		sharelink.text = "share";
-		controls.appendChild(document.createTextNode("("));
 		controls.appendChild(sharelink);
+
+		controls.appendChild(document.createTextNode(", "));
+
+		var dianodes=[];
+		steps.forEach(function(s){
+				dianodes.push(transitions[s.transition].from.node);
+				dianodes.push(transitions[s.transition].to.node);
+			});
+
+		var dialink = document.createElement("a");
+		dialink.href = "../diagram/index.html?" + dianodes.join(",");
+		dialink.text = "diagram";
+		controls.appendChild(dialink);
+
 		controls.appendChild(document.createTextNode(")"));
 	}
 }
