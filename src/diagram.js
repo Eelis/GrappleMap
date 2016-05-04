@@ -5,6 +5,7 @@ var last_keyframe = null;
 var selected_node = null;
 var reo = zero_reo();
 var kf = 0;
+var show_neighbours = false;
 
 var selected_nodes = [];
 
@@ -67,6 +68,12 @@ function make_graph()
 	update_graph();
 }
 
+function on_show_neighbours()
+{
+	show_neighbours = !show_neighbours;
+	update_graph();
+}
+
 function get_id(x) { return x.id; }
 
 function update_graph()
@@ -92,8 +99,9 @@ function update_graph()
 		if (t.properties.indexOf("top") != -1) color = "red";
 		if (t.properties.indexOf("bottom") != -1) color = "blue";
 
-		if (selected_nodes.indexOf(t.to.node) != -1 ||
-			selected_nodes.indexOf(t.from.node) != -1)
+		if (show_neighbours
+			? (selected_nodes.indexOf(t.to.node) != -1 || selected_nodes.indexOf(t.from.node) != -1)
+			: (selected_nodes.indexOf(t.to.node) != -1 && selected_nodes.indexOf(t.from.node) != -1))
 		{
 			addnode(t.from.node);
 			addnode(t.to.node);
@@ -107,6 +115,8 @@ function update_graph()
 		}
 	}
 
+	document.getElementById("sharelink").href = "index.html?" + selected_nodes.join(",");
+
 	force.nodes(G.nodes);
 	force.links(G.links);
 	force.start();
@@ -118,12 +128,19 @@ function update_graph()
 	var label2sel = svg.select("#labels").selectAll(".node_label2").data(G.nodes, get_id)
 	var linksel = svg.select("#links").selectAll(".link").data(G.links, get_id);
 	var linklabelsel = svg.select("#labels").selectAll(".link_label").data(G.links, get_id);
+	var linklabel2sel = svg.select("#labels").selectAll(".link_label").data(G.links, get_id);
 
 	linklabelsel.enter()
 		.append("text")
 		.attr("class", "link_label")
 		.attr("text-anchor", "middle")
-		.text(function(d){ return transitions[d.id].description[0]; });
+		.text(function(d){ return transitions[d.id].description[0].split("\n")[0]; });
+
+	linklabel2sel.enter()
+		.append("text")
+		.attr("class", "link_label")
+		.attr("text-anchor", "middle")
+		.text(function(d){ return (transitions[d.id].description[0]+"\nnextline").split("\n")[1]; });
 
 	linksel.enter()
 		.append("line")
@@ -144,6 +161,7 @@ function update_graph()
 		.attr("class", "node_label")
 		.text(function(d){return d.description.split('\n')[0];})
 		.on('mouseover', mouse_over_node)
+		.on('click', node_clicked)
 		.call(force.drag);
 
 	label2sel.enter()
@@ -151,6 +169,7 @@ function update_graph()
 		.attr("text-anchor", "middle")
 		.attr("class", "node_label2")
 		.text(function(d){return d.description.split('\n')[1];})
+		.on('click', node_clicked)
 		.call(force.drag);
 
 	linksel.exit().remove();
@@ -158,6 +177,7 @@ function update_graph()
 	labelsel.exit().remove();
 	label2sel.exit().remove();
 	linklabelsel.exit().remove();
+	linklabel2sel.exit().remove();
 
 	function node_clicked(d)
 	{
@@ -172,8 +192,6 @@ function update_graph()
 			return;
 
 		update_graph();
-	
-		document.getElementById("sharelink").href = "index.html?" + selected_nodes.join(",");
 	}
 
 	function mouse_over_node(d)
@@ -250,6 +268,10 @@ function update_graph()
 		linklabelsel
 			.attr("x", function(d) { return (d.source.x + d.target.x) / 2; })
 			.attr("y", function(d) { return (d.source.y + d.target.y) / 2; });
+
+		linklabel2sel
+			.attr("x", function(d) { return (d.source.x + d.target.x) / 2; })
+			.attr("y", function(d) { return (d.source.y + d.target.y) / 2 + 15; });
 
 		labelsel
 			.attr("x", function(d) { return d.x; })
