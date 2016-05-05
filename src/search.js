@@ -320,7 +320,7 @@ function update_transition_pics()
 	add_paged_elems(elem, 12, selected_edges, function(e, _)
 		{
 			var link = document.createElement("a");
-			link.href = "../composer/index.html?" + n; // todo: preserve view
+			link.href = "../composer/index.html?" + e; // todo: preserve view
 
 			var img = document.createElement("img");
 			img.src = "../t" + e + "200x150" + view_code(view) + ".gif";

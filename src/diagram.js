@@ -26,34 +26,34 @@ function make_graph()
 		.attr('id', 'red-arrow')
 		.attr('viewBox', '0 -50 100 100')
 		.attr('refX', 100)
-		.attr('markerWidth', 40)
-		.attr('markerHeight', 40)
+		.attr('markerWidth', 25)
+		.attr('markerHeight', 25)
 		.attr('orient', 'auto')
 		.style("fill", "red")
 		.append('svg:path')
-		.attr('d', 'M0,-10L20,0L0,10');
+		.attr('d', 'M0,-10L37,0L0,10');
 
 	svg.append('svg:defs').append('svg:marker')
 		.attr('id', 'blue-arrow')
 		.attr('viewBox', '0 -50 100 100')
 		.attr('refX', 100)
-		.attr('markerWidth', 40)
-		.attr('markerHeight', 40)
+		.attr('markerWidth', 25)
+		.attr('markerHeight', 25)
 		.attr('orient', 'auto')
 		.style("fill", "blue")
 		.append('svg:path')
-		.attr('d', 'M0,-10L20,0L0,10');
+		.attr('d', 'M0,-10L37,0L0,10');
 
 	svg.append('svg:defs').append('svg:marker')
 		.attr('id', 'black-arrow')
 		.attr('viewBox', '0 -50 100 100')
 		.attr('refX', 100)
-		.attr('markerWidth', 40)
-		.attr('markerHeight', 40)
+		.attr('markerWidth', 25)
+		.attr('markerHeight', 25)
 		.attr('orient', 'auto')
 		.style("fill", "black")
 		.append('svg:path')
-		.attr('d', 'M0,-10L20,0L0,10');
+		.attr('d', 'M0,-10L37,0L0,10');
 
 	svg.append("g").attr("id", "links");
 	svg.append("g").attr("id", "nodes");
@@ -293,7 +293,7 @@ function tick()
 {
 	if (queued_frames.length != 0)
 	{
-		kf += Math.max(0.1, queued_frames.length / 60);
+		kf += Math.max(0.1, queued_frames.length / 80);
 
 		if (kf < 1)
 		{
@@ -310,6 +310,24 @@ function tick()
 		thepos = (thepos ? interpolate_position(thepos, targetpos, drag) : targetpos);
 
 	// todo: base on real elapsed time like composer does
+
+	updateCamera();
+}
+
+function updateCamera()
+{
+	var vv = document.getElementById("view_select").value;
+	if (vv == "external") return;
+	var pl = parseInt(vv);
+	var opp = 1 - pl;
+
+	firstPersonCamera.setTarget(
+		thepos[pl][LeftFingers]
+		.add(thepos[pl][RightFingers])
+		.add(thepos[opp][Head].scale(2))
+		.scale(0.25));
+	firstPersonCamera.fov = 1.6;
+	firstPersonCamera.position = thepos[pl][Head];
 }
 
 function makeScene()
@@ -374,3 +392,11 @@ window.addEventListener('DOMContentLoaded',
 
 		scene.activeCamera = externalCamera;
 	});
+
+
+function on_view_change()
+{
+	var vv = document.getElementById("view_select").value;
+
+	scene.activeCamera = (vv == "external" ? externalCamera : firstPersonCamera);
+}
