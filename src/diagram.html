@@ -25,16 +25,15 @@
 	<body style='margin:0;line-height:150%;text-align:center'>
 		<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>
 
-		<p>(<a id='sharelink' href=''>share diagram</a>)</p>
-
-		<p><input type='checkbox' onchange='on_edit()'> edit</p>
-
 		<p>
 			<select id='view_select' onchange='on_view_change()'> 
 				<option value="external">view: external</option>
 				<option value="0">view: red</option>
 				<option value="1">view: blue</option>
 			</select>
+
+			<input type='checkbox' id='edit_mode_checkbox' onchange='on_edit()'> edit
+			<span style='display:none' id='sharelinkspan'> (<a id='sharelink' href=''>share diagram</a>)</a>
 		</p>
 
 		<div style='width:100%;height:100%;text-align:right'>

@@ -76,6 +76,7 @@ function make_graph()
 function on_edit()
 {
 	show_neighbours = !show_neighbours;
+	document.getElementById('sharelinkspan').style.display = (document.getElementById('edit_mode_checkbox').checked ? 'inline' : 'none');
 	update_graph();
 }
 
@@ -124,15 +125,23 @@ function update_graph()
 
 	force.nodes(G.nodes);
 	force.links(G.links);
+
+	G.nodes.forEach(function(n)
+		{
+			if (n.hasOwnProperty("x"))
+				n.fixed = true;
+		});
+
 	force.start();
 
-	for (var i = 0; i != 100; ++i) force.tick();
+	for (var i = 0; i != 30; ++i) force.tick();
+
+	G.nodes.forEach(function(n){ n.fixed = false; });
 
 	svg.on("mouseup", function(){ force.alpha(0.01); });
 
 	var nodesel = svg.select("#nodes").selectAll(".node").data(G.nodes, get_id);
-	var labelsel = svg.select("#labels").selectAll(".node_label").data(G.nodes, get_id);
-	var label2sel = svg.select("#labels").selectAll(".node_label2").data(G.nodes, get_id)
+	var labelsel = svg.select("#labels").selectAll(".combined_node_label").data(G.nodes, get_id);
 	var linksel = svg.select("#links").selectAll(".link").data(G.links, get_id);
 	var linklabelsel = svg.select("#labels").selectAll(".link_label").data(G.links, get_id);
 	var linklabel2sel = svg.select("#labels").selectAll(".link_label2").data(G.links, get_id);
@@ -141,7 +150,9 @@ function update_graph()
 		.append("text")
 		.attr("class", "link_label")
 		.attr("text-anchor", "middle")
-		.text(function(d){ return transitions[d.id].desc_lines[0]; });
+		.text(function(d){
+			var l = transitions[d.id].desc_lines[0];
+			return (l != "..." ? l : ""); });
 
 	linklabel2sel.enter()
 		.append("text")
@@ -164,33 +175,42 @@ function update_graph()
 		.on('mouseover', mouse_over_node)
 		.call(force.drag);
 
-	labelsel.enter()
-		.append("text")
-		.attr("text-anchor", "middle")
-		.attr("class", "node_label")
-		.text(function(d){return d.desc_lines[0];})
-		.on('mouseover', mouse_over_node)
+	var label_groups = labelsel.enter()
+		.append("g")
+		.attr("class", "combined_node_label")
 		.on('click', node_clicked)
+		.on('mouseover', mouse_over_node)
 		.call(force.drag);
 
-	label2sel.enter()
+	label_groups
 		.append("text")
 		.attr("text-anchor", "middle")
-		.attr("class", "node_label2")
+		.text(function(d){return d.desc_lines[0];})
+		.attr("y", function(d){return [5,-5,-12][d.desc_lines.length-1];});
+
+	label_groups
+		.append("text")
+		.attr("text-anchor", "middle")
 		.text(function(d){return d.desc_lines.length > 1 ? d.desc_lines[1] : '';})
-		.on('click', node_clicked)
-		.call(force.drag);
+		.attr("y", function(d){return [0,17,7][d.desc_lines.length-1];});
+
+	label_groups
+		.append("text")
+		.attr("text-anchor", "middle")
+		.text(function(d){return d.desc_lines.length > 2 ? d.desc_lines[2] : '';})
+		.attr("y", 26);
 
 	linksel.exit().remove();
 	nodesel.exit().remove();
 	labelsel.exit().remove();
-	label2sel.exit().remove();
 	linklabelsel.exit().remove();
 	linklabel2sel.exit().remove();
 
 	function node_clicked(d)
 	{
 		if (d3.event.defaultPrevented) return; // ignore drag
+
+		if (!document.getElementById('edit_mode_checkbox').checked) return;
 
 		var i = selected_nodes.indexOf(d.id);
 		if (i == -1)
@@ -244,7 +264,6 @@ function update_graph()
 					reo = compose_reo(step_from(s).reo, reo);
 
 					selected_node = candidate;
-
 				}
 			});
 
@@ -280,14 +299,8 @@ function update_graph()
 			.attr("x", function(d) { return (d.source.x + d.target.x) / 2; })
 			.attr("y", function(d) { return (d.source.y + d.target.y) / 2 + 15; });
 
-		labelsel
-			.attr("x", function(d) { return d.x; })
-			.attr("y", function(d) { return d.y + (d.desc_lines.length == 1 ? 5 : -3); });
-		label2sel
-			.attr("x", function(d) { return d.x; })
-			.attr("y", function(d) { return d.y + 17; });
-
-		// todo: the above is all bad, should use nested svg elements for the nodes
+		svg.select("#labels").selectAll(".combined_node_label")
+			.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 	}
 
 	tick_graph();
