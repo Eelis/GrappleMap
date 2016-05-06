@@ -60,7 +60,12 @@ function make_graph()
 	svg.append("g").attr("id", "labels");
 
 	force = d3.layout.force()
-		.charge(-300)
+		.charge(function(d)
+			{
+				if (selected_nodes.indexOf(d.id) != -1)
+					return -1000;
+				return -300;
+			})
 		.gravity(0.01)
 		.linkDistance(200)
 		.size([width, height]);
@@ -68,7 +73,7 @@ function make_graph()
 	update_graph();
 }
 
-function on_show_neighbours()
+function on_edit()
 {
 	show_neighbours = !show_neighbours;
 	update_graph();
@@ -121,6 +126,8 @@ function update_graph()
 	force.links(G.links);
 	force.start();
 
+	for (var i = 0; i != 100; ++i) force.tick();
+
 	svg.on("mouseup", function(){ force.alpha(0.01); });
 
 	var nodesel = svg.select("#nodes").selectAll(".node").data(G.nodes, get_id);
@@ -128,19 +135,21 @@ function update_graph()
 	var label2sel = svg.select("#labels").selectAll(".node_label2").data(G.nodes, get_id)
 	var linksel = svg.select("#links").selectAll(".link").data(G.links, get_id);
 	var linklabelsel = svg.select("#labels").selectAll(".link_label").data(G.links, get_id);
-	var linklabel2sel = svg.select("#labels").selectAll(".link_label").data(G.links, get_id);
+	var linklabel2sel = svg.select("#labels").selectAll(".link_label2").data(G.links, get_id);
 
 	linklabelsel.enter()
 		.append("text")
 		.attr("class", "link_label")
 		.attr("text-anchor", "middle")
-		.text(function(d){ return transitions[d.id].description[0].split("\n")[0]; });
+		.text(function(d){ return transitions[d.id].desc_lines[0]; });
 
 	linklabel2sel.enter()
 		.append("text")
-		.attr("class", "link_label")
+		.attr("class", "link_label2")
 		.attr("text-anchor", "middle")
-		.text(function(d){ return (transitions[d.id].description[0]+"\nnextline").split("\n")[1]; });
+		.text(function(d){
+			var l = transitions[d.id].desc_lines;
+			return (l.length > 1 ? l[1] : ''); });
 
 	linksel.enter()
 		.append("line")
@@ -159,7 +168,7 @@ function update_graph()
 		.append("text")
 		.attr("text-anchor", "middle")
 		.attr("class", "node_label")
-		.text(function(d){return d.description.split('\n')[0];})
+		.text(function(d){return d.desc_lines[0];})
 		.on('mouseover', mouse_over_node)
 		.on('click', node_clicked)
 		.call(force.drag);
@@ -168,7 +177,7 @@ function update_graph()
 		.append("text")
 		.attr("text-anchor", "middle")
 		.attr("class", "node_label2")
-		.text(function(d){return d.description.split('\n')[1];})
+		.text(function(d){return d.desc_lines.length > 1 ? d.desc_lines[1] : '';})
 		.on('click', node_clicked)
 		.call(force.drag);
 
@@ -260,9 +269,7 @@ function update_graph()
 			})
 			.attr("r", function(d)
 				{
-					return selected_nodes.indexOf(d.id) == -1 && d.id != selected_node
-						? 5
-						: 50;
+					return selected_nodes.indexOf(d.id) == -1 ? 7 : 50;
 				});
 
 		linklabelsel
@@ -275,11 +282,12 @@ function update_graph()
 
 		labelsel
 			.attr("x", function(d) { return d.x; })
-			.attr("y", function(d) { return d.y - (/*d.desc_lines.length == 1 ? -5 :*/ 0); });
-				// todo: precompute
+			.attr("y", function(d) { return d.y + (d.desc_lines.length == 1 ? 5 : -3); });
 		label2sel
 			.attr("x", function(d) { return d.x; })
-			.attr("y", function(d) { return d.y + 20; });
+			.attr("y", function(d) { return d.y + 17; });
+
+		// todo: the above is all bad, should use nested svg elements for the nodes
 	}
 
 	tick_graph();
@@ -367,6 +375,16 @@ function makeScene()
 window.addEventListener('DOMContentLoaded',
 	function()
 	{
+		transitions.forEach(function(t)
+			{
+				t.desc_lines = t.description[0].split('\n');
+			});
+
+		nodes.forEach(function(n)
+			{
+				n.desc_lines = n.description.split('\n');
+			});
+
 		var s = window.location.href;
 		var qmark = s.lastIndexOf('?');
 		if (qmark != -1)
