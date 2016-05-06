@@ -295,13 +295,11 @@ function refreshDrill()
 
 	if (steps.length != 0)
 	{
-		controls.appendChild(document.createTextNode("("));
-		var sharelink = document.createElement("a");
-		sharelink.href = "?" + encode_steps(steps);
-		sharelink.text = "share";
-		controls.appendChild(sharelink);
+		history.pushState(null, "", "index.html?" + encode_steps(steps));
+			// todo: handle back nav
+			// todo: don't do this the first time if this is already the url
 
-		controls.appendChild(document.createTextNode(", "));
+		controls.appendChild(document.createTextNode("("));
 
 		var dianodes=[];
 		steps.forEach(function(s){

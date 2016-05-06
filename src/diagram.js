@@ -14,7 +14,6 @@ var force;
 
 function make_graph()
 {
-
 	var width = document.body.clientWidth,
 	height = document.body.clientHeight;
 
@@ -70,20 +69,23 @@ function make_graph()
 		.linkDistance(200)
 		.size([width, height]);
 
-	update_graph();
+	node_selection_changed();
 }
 
 function on_edit()
 {
 	show_neighbours = !show_neighbours;
-	document.getElementById('sharelinkspan').style.display = (document.getElementById('edit_mode_checkbox').checked ? 'inline' : 'none');
-	update_graph();
+	node_selection_changed();
 }
 
 function get_id(x) { return x.id; }
 
-function update_graph()
+function node_selection_changed()
 {
+	history.pushState(null, "", "index.html?" + selected_nodes.join(","));
+		// todo: handle back nav
+		// todo: don't do this the first time if this is already the url
+
 	var G = { nodes: [], links: [] };
 
 	var nn = [];
@@ -120,8 +122,6 @@ function update_graph()
 				});
 		}
 	}
-
-	document.getElementById("sharelink").href = "index.html?" + selected_nodes.join(",");
 
 	force.nodes(G.nodes);
 	force.links(G.links);
@@ -220,7 +220,7 @@ function update_graph()
 		else
 			return;
 
-		update_graph();
+		node_selection_changed();
 	}
 
 	function mouse_over_node(d)
