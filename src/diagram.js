@@ -5,7 +5,6 @@ var last_keyframe = null;
 var selected_node = null;
 var reo = zero_reo();
 var kf = 0;
-var show_neighbours = false;
 var targetpos;
 var selected_nodes = [];
 
@@ -74,7 +73,6 @@ function make_graph()
 
 function on_edit()
 {
-	show_neighbours = !show_neighbours;
 	node_selection_changed();
 }
 
@@ -88,9 +86,8 @@ function get_id(x) { return x.id; }
 
 function node_selection_changed()
 {
-	history.pushState(null, "", "index.html?" + selected_nodes.join(","));
-		// todo: handle back nav
-		// todo: don't do this the first time if this is already the url
+	history.replaceState(null, "", "index.html?" + selected_nodes.join(","));
+		// todo: use state
 
 	var G = { nodes: [], links: [] };
 
@@ -105,6 +102,13 @@ function node_selection_changed()
 		}
 	}
 
+	if (selected_nodes.length == 1)
+	{
+		addnode(selected_nodes[0]);
+
+		document.getElementById('edit_mode_checkbox').checked = true;
+	}
+
 	for (var i = 0; i != transitions.length; ++i)
 	{
 		var t = transitions[i];
@@ -113,7 +117,7 @@ function node_selection_changed()
 		if (t.properties.indexOf("top") != -1) color = "red";
 		if (t.properties.indexOf("bottom") != -1) color = "blue";
 
-		if (show_neighbours
+		if (document.getElementById('edit_mode_checkbox').checked
 			? (selected_nodes.indexOf(t.to.node) != -1 || selected_nodes.indexOf(t.from.node) != -1)
 			: (selected_nodes.indexOf(t.to.node) != -1 && selected_nodes.indexOf(t.from.node) != -1))
 		{
@@ -146,71 +150,72 @@ function node_selection_changed()
 
 	svg.on("mouseup", function(){ force.alpha(0.01); });
 
-	var nodesel = svg.select("#nodes").selectAll(".node").data(G.nodes, get_id);
-	var labelsel = svg.select("#labels").selectAll(".combined_node_label").data(G.nodes, get_id);
-	var linksel = svg.select("#links").selectAll(".link").data(G.links, get_id);
-	var linklabelsel = svg.select("#labels").selectAll(".link_label").data(G.links, get_id);
-	var linklabel2sel = svg.select("#labels").selectAll(".link_label2").data(G.links, get_id);
+	var node_shapes = svg.select("#nodes").selectAll(".node").data(G.nodes, get_id);
+	var node_labels = svg.select("#labels").selectAll(".node_label_group").data(G.nodes, get_id);
+	var link_shapes = svg.select("#links").selectAll(".link").data(G.links, get_id);
+	var link_labels = svg.select("#labels").selectAll(".link_label_group").data(G.links, get_id);
 
-	linklabelsel.enter()
-		.append("text")
-		.attr("class", "link_label")
-		.attr("text-anchor", "middle")
-		.text(function(d){
-			var l = transitions[d.id].desc_lines[0];
-			return (l != "..." ? l : ""); });
+	{
+		var s = link_labels.enter().append('g')
+			.attr("class", "link_label_group");
 
-	linklabel2sel.enter()
-		.append("text")
-		.attr("class", "link_label2")
-		.attr("text-anchor", "middle")
-		.text(function(d){
-			var l = transitions[d.id].desc_lines;
-			return (l.length > 1 ? l[1] : ''); });
+		s	.append("text")
+			.attr("class", "link_label")
+			.attr("y", function(d){
+				return transitions[d.id].desc_lines.length > 1 ? -5 : 0; })
+			.text(function(d){
+				var l = transitions[d.id].desc_lines[0];
+				return (l != "..." ? l : ""); });
 
-	linksel.enter()
+		s	.append("text")
+			.attr("class", "link_label")
+			.attr("y", 13)
+			.text(function(d){
+				var l = transitions[d.id].desc_lines;
+				return (l.length > 1 ? l[1] : ''); });
+	}
+
+	link_shapes.enter()
 		.append("line")
 		.attr("class", "link")
 		.attr("marker-end", function(d){ return "url(#" + d.color + "-arrow)"; })
+			// todo: can't we make a marker that inherits the line color?
 		.style("stroke", function(d){ return d.color; });
 
-	nodesel.enter().append("circle")
+	node_shapes.enter().append("circle")
 		.attr("class", "node")
 		.on('click', node_clicked)
 		.style("fill", "url(#radial-gradient)")
 		.on('mouseover', mouse_over_node)
 		.call(force.drag);
 
-	var label_groups = labelsel.enter()
-		.append("g")
-		.attr("class", "combined_node_label")
-		.on('click', node_clicked)
-		.on('mouseover', mouse_over_node)
-		.call(force.drag);
+	{
+		var s = node_labels.enter().append("g")
+			.attr("class", "node_label_group")
+			.on('click', node_clicked)
+			.on('mouseover', mouse_over_node)
+			.call(force.drag);
 
-	label_groups
-		.append("text")
-		.attr("text-anchor", "middle")
-		.text(function(d){return d.desc_lines[0];})
-		.attr("y", function(d){return [5,-5,-12][d.desc_lines.length-1];});
+		s	.append("text")
+			.attr("class", "node_label")
+			.text(function(d){return d.desc_lines[0];})
+			.attr("y", function(d){return [5,-5,-12][d.desc_lines.length-1];});
 
-	label_groups
-		.append("text")
-		.attr("text-anchor", "middle")
-		.text(function(d){return d.desc_lines.length > 1 ? d.desc_lines[1] : '';})
-		.attr("y", function(d){return [0,17,7][d.desc_lines.length-1];});
+		s	.append("text")
+			.attr("class", "node_label")
+			.text(function(d){return d.desc_lines.length > 1 ? d.desc_lines[1] : '';})
+			.attr("y", function(d){return [0,17,7][d.desc_lines.length-1];});
 
-	label_groups
-		.append("text")
-		.attr("text-anchor", "middle")
-		.text(function(d){return d.desc_lines.length > 2 ? d.desc_lines[2] : '';})
-		.attr("y", 26);
+		s	.append("text")
+			.attr("class", "node_label")
+			.text(function(d){return d.desc_lines.length > 2 ? d.desc_lines[2] : '';})
+			.attr("y", 26);
+	}
 
-	linksel.exit().remove();
-	nodesel.exit().remove();
-	labelsel.exit().remove();
-	linklabelsel.exit().remove();
-	linklabel2sel.exit().remove();
+	node_shapes.exit().remove();
+	node_labels.exit().remove();
+	link_shapes.exit().remove();
+	link_labels.exit().remove();
 
 	function node_clicked(d)
 	{
@@ -297,15 +302,14 @@ function node_selection_changed()
 					return selected_nodes.indexOf(d.id) == -1 ? 7 : 50;
 				});
 
-		linklabelsel
-			.attr("x", function(d) { return (d.source.x + d.target.x) / 2; })
-			.attr("y", function(d) { return (d.source.y + d.target.y) / 2; });
+		svg.select("#labels").selectAll(".link_label_group")
+			.attr("transform", function(d) {
+				return "translate(" +
+					((d.source.x + d.target.x) / 2) + "," +
+					((d.source.y + d.target.y) / 2) + ")";
+			});
 
-		linklabel2sel
-			.attr("x", function(d) { return (d.source.x + d.target.x) / 2; })
-			.attr("y", function(d) { return (d.source.y + d.target.y) / 2 + 15; });
-
-		svg.select("#labels").selectAll(".combined_node_label")
+		svg.select("#labels").selectAll(".node_label_group")
 			.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 	}
 
@@ -334,7 +338,7 @@ function tick()
 	if (targetpos)
 		thepos = (thepos ? interpolate_position(thepos, targetpos, drag) : targetpos);
 
-	// todo: base on real elapsed time like composer does
+	// todo: base on elapsed time like composer does
 
 	updateCamera();
 }

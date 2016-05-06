@@ -535,10 +535,9 @@ namespace
 			}
 
 			ctx.html
-				<< "<br><br>Navigate: "
-				<< "<a href='index.html'>index</a>"
-				<< ", <a href='composer/index.html?p" << ctx.n.index << "'>composer</a>"
-				<< ", <a href='diagram/index.html?" << ctx.n.index << "'>diagram</a>"
+				<< "<br><br>View position in:<br>"
+				<< "<a href='composer/index.html?p" << ctx.n.index << "'>composer</a>"
+				<< ", <a href='diagram/index.html?" << ctx.n.index << "'>explorer</a>"
 				<< "</td>";
 		}
 
@@ -559,7 +558,7 @@ namespace
 			ctx.html
 				<< "</tr></table>"
 				<< "<hr><h2>Neighbourhood</h2>"
-				<< "<p>Positions up to two transitions away (clickable)</p>"
+				<< "<p>Positions up to two transitions away</p>"
 				<< make_svg(ctx.graph, m, hc, ctx.output_dir) << "</body></html>";
 		}
 

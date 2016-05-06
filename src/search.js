@@ -80,7 +80,7 @@ function on_tag_selection_changed()
 	update_transition_pics();
 	update_graph();
 
-	history.pushState(null, "", "index.html" + query_string_for_selection());
+	history.replaceState(null, "", "index.html" + query_string_for_selection());
 		// todo: handle back nav
 }
 

@@ -295,7 +295,7 @@ function refreshDrill()
 
 	if (steps.length != 0)
 	{
-		history.pushState(null, "", "index.html?" + encode_steps(steps));
+		history.replaceState(null, "", "index.html?" + encode_steps(steps));
 			// todo: handle back nav
 			// todo: don't do this the first time if this is already the url
 
@@ -309,7 +309,7 @@ function refreshDrill()
 
 		var dialink = document.createElement("a");
 		dialink.href = "../diagram/index.html?" + dianodes.join(",");
-		dialink.text = "diagram";
+		dialink.text = "explorer";
 		controls.appendChild(dialink);
 
 		controls.appendChild(document.createTextNode(")"));

@@ -210,7 +210,7 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 
 		o	<< n.index << " [";
 
-		if (highlight) o << "style=filled fillcolor=lightgrey";
+		if (highlight) o << "style=filled fillcolor=lightgreen";
 
 		o	<< " label=<<TABLE BORDER=\"0\"><TR>"
 			<< "<TD HREF=\"p" << n.index <<  heading << ".html\">";
