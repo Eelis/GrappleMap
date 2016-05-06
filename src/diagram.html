@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang='en'>
 	<head>
-		<title>GrappleMap Browser</title>
+		<title>GrappleMap Explorer</title>
 		<meta charset="UTF-8">
 		<style>
 			.link {
@@ -13,6 +13,17 @@
 			  stroke-width: 3px;
 			}
 			a{text-decoration:none}
+			.header {
+				position:absolute;
+				top:0px;
+				left:0px;
+				border:1px solid black;
+				background:white;
+				margin:30px;
+				padding-left:30px;
+				padding-right:30px;
+				text-align: center;
+			}
 		</style>
 		<script>
 			function v3(x,y,z){return [x,y,z];}
@@ -22,23 +33,30 @@
 		<script src='../gm.js'></script>
 		<script src='../transitions.js'></script>
 	</head>
-	<body style='margin:0;line-height:150%;text-align:center'>
-		<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>
+	<body style='margin:0'>
 
-		<p>
-			<select id='view_select' onchange='on_view_change()'> 
-				<option value="external">view: external</option>
-				<option value="0">view: red</option>
-				<option value="1">view: blue</option>
-			</select>
+		<div id="mynetwork" style='position:absolute;width:100%;height:100%;background:rgba(255,255,255,0.55)'></div>
+		<canvas style='width:100%;height:100%' id='renderCanvas'></canvas>
 
-			<button onclick='on_mirror_button_clicked()'>mirror</button>
-			<input type='checkbox' id='edit_mode_checkbox' onchange='on_edit()'> edit
-		</p>
+		<div class='header'>
+			<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>
+			<h2>Explorer</h2>
+			<hr>
 
-		<div style='width:100%;height:100%;text-align:right'>
-			<div id="mynetwork" style='position:absolute;width:100%;height:100%;background:rgba(255,255,255,0.6)'></div>
-			<canvas style='width:100%;height:100%' id='renderCanvas'></canvas>
+			<p>
+				View: &nbsp;<select id='view_select' onchange='on_view_change()'> 
+					<option value="external">external</option>
+					<option value="0">red</option>
+					<option value="1">blue</option>
+				</select>
+				<button onclick='on_mirror_button_clicked()'>mirror</button>
+			</p>
+			<p>
+				<input type='checkbox' id='edit_mode_checkbox' onchange='on_edit()'> edit selection
+			</p>
+			<p>
+				(<a href='../search/index.html'>search</a>)
+			</p>
 		</div>
 
 		<script src='diagram.js'></script>

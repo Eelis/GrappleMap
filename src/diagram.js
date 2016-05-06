@@ -14,8 +14,8 @@ var force;
 
 function make_graph()
 {
-	var width = document.body.clientWidth,
-	height = document.body.clientHeight;
+	var width = document.body.clientWidth;
+	var height = document.body.clientHeight;
 
 	svg = d3.select("#mynetwork").append("svg")
 		.attr("width", '100%')
