@@ -275,9 +275,16 @@ function animated_position_from_array(frame, scene)
 	{
 		var line = BABYLON.Mesh.CreateLines("l", [v3(i/2, 0, -2), v3(i/2, 0, 2)], scene);
 		line.color = grey;
+		line.enableEdgesRendering();	
+		line.edgesWidth = 0.5;
+		line.edgesColor = new BABYLON.Color4(0.5, 0.5, 0.5, 1);
 
 		line = BABYLON.Mesh.CreateLines("l", [v3(-2, 0, i/2), v3(2, 0, i/2)], scene);
 		line.color = grey;
+		line.enableEdgesRendering();	
+		line.edgesWidth = 0.5;
+		line.edgesColor = new BABYLON.Color4(0.5, 0.5, 0.5, 1);
+
 	}
 
 	return function(p)
