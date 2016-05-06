@@ -6,7 +6,7 @@ var selected_node = null;
 var reo = zero_reo();
 var kf = 0;
 var show_neighbours = false;
-
+var targetpos;
 var selected_nodes = [];
 
 var svg;
@@ -76,6 +76,12 @@ function on_edit()
 {
 	show_neighbours = !show_neighbours;
 	node_selection_changed();
+}
+
+function on_mirror_button_clicked()
+{
+	mirror(targetpos);
+	reo.mirror = !reo.mirror;
 }
 
 function get_id(x) { return x.id; }
@@ -307,8 +313,6 @@ function node_selection_changed()
 
 	force.on("tick", tick_graph);
 }
-
-var targetpos;
 
 function tick()
 {
