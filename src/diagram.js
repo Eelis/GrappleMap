@@ -13,12 +13,7 @@ var force;
 
 function make_graph()
 {
-	var width = document.body.clientWidth;
-	var height = document.body.clientHeight;
-
-	svg = d3.select("#mynetwork").append("svg")
-		.attr("width", '100%')
-		.attr("height", '100%');
+	svg = d3.select("#mynetwork");
 
 	svg.append('svg:defs').append('svg:marker')
 		.attr('id', 'red-arrow')
@@ -66,7 +61,7 @@ function make_graph()
 			})
 		.gravity(0.01)
 		.linkDistance(200)
-		.size([width, height]);
+		.size([document.body.clientWidth, document.body.clientHeight]);
 
 	node_selection_changed();
 }
