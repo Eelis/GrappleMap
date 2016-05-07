@@ -84,6 +84,23 @@ function on_mirror_button_clicked()
 
 function get_id(x) { return x.id; }
 
+function mouse_over_transition(d)
+{
+	var elem = document.getElementById('info');
+	
+	elem.innerHTML = "transition " + d.id + " @ line " + transitions[d.id].line_nr;
+
+	transitions[d.id].description.forEach(function(line)
+		{
+			if (line.startsWith("ref:")) elem.innerHTML += "<br>" + line;
+		});
+}
+
+function clear_info()
+{
+	document.getElementById('info').innerHTML = "";
+}
+
 function node_selection_changed()
 {
 	history.replaceState(null, "", "index.html?" + selected_nodes.join(","));
@@ -157,7 +174,9 @@ function node_selection_changed()
 
 	{
 		var s = link_labels.enter().append('g')
-			.attr("class", "link_label_group");
+			.attr("class", "link_label_group")
+			.on('mouseover', mouse_over_transition)
+			.on('mouseout', clear_info);
 
 		s	.append("text")
 			.attr("class", "link_label")
@@ -185,8 +204,8 @@ function node_selection_changed()
 	node_shapes.enter().append("circle")
 		.attr("class", "node")
 		.on('click', node_clicked)
-		.style("fill", "url(#radial-gradient)")
 		.on('mouseover', mouse_over_node)
+		.on('mouseout', clear_info)
 		.call(force.drag);
 
 	{
@@ -194,6 +213,7 @@ function node_selection_changed()
 			.attr("class", "node_label_group")
 			.on('click', node_clicked)
 			.on('mouseover', mouse_over_node)
+			.on('mouseout', clear_info)
 			.call(force.drag);
 
 		s	.append("text")
@@ -280,6 +300,8 @@ function node_selection_changed()
 
 			// todo: clean up
 		tick_graph();
+
+		document.getElementById('info').innerHTML = "node " + d.id; // todo: line nr
 	}
 
 	function tick_graph()
