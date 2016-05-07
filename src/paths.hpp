@@ -9,9 +9,9 @@ namespace GrappleMap
 
 	Frames smoothen(Frames);
 
-	Frames frames(Graph const & g, Path const & path, unsigned const frames_per_pos);
+	Frames frames(Graph const &, Path const &, unsigned frames_per_pos);
 
-	Frames frames(Graph const & g, vector<Path> const & script, unsigned const frames_per_pos);
+	Frames frames(Graph const &, vector<Path> const & script, unsigned frames_per_pos);
 
 	bool dfsScene(
 		Graph const &,
