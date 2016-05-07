@@ -36,21 +36,27 @@ position pages:
 - make scene lighting more like in composer
 
 search page:
-- add view controls
-- try to untangle graphs
-- make navigating back after clicking position work properly
-- 3-line node labels
-- multiline edge labels
+- re-use diagram page code
 - show tagged transitions
 - also search by name/reference substring
-- clean up code
+
+explorer:
+- find a way to get mouse events through to babylon, or at least mention that arrow keys rotate camera
+- clickable position links?
+- make sure selected node doesn't get lost when neighbours are unselected or killed
+- make camera track players vertically and horizontally
+- when turning off edit mode, transition to selected node if necessary
+- only load biggest cluster when search page produces disconnected graph
+- computing force seems to take way too long
+- when aborting a transition, don't play it through, but immediately start rewinding the elapsed part
+- in edit mode, auto-kill distant nodes, so that you can keep exploring just by opening nodes
+- find solution for multiple transitions between pair of nodes
 
 drill composer
 - full screen
 - speed dial
 - fps and other metrics display
 - toggle information about transitions
-- clean up code
 - leave animation undisturbed when manipulating drill
 - integrated transition editor
 - don't fuck up position when window becomes invisible
@@ -61,3 +67,4 @@ new tools:
 
 misc:
 - mobile-friendly versions of things
+- clean up code
