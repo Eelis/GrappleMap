@@ -340,7 +340,7 @@ function tick()
 {
 	if (queued_frames.length != 0)
 	{
-		kf += Math.max(0.1, queued_frames.length / 80);
+		kf += Math.max(0.1, Math.pow(queued_frames.length, 1.5) / 500);
 
 		if (kf < 1)
 		{
