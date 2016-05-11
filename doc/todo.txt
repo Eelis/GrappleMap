@@ -52,16 +52,17 @@ explorer:
 - in edit mode, auto-kill distant nodes, so that you can keep exploring just by opening nodes
 - find solution for multiple transitions between pair of nodes
 - info display /without/ framerate hickups
+- make zooming with scrollwheel work
 
 drill composer
-- full screen
 - speed dial
 - fps and other metrics display
-- toggle information about transitions
 - leave animation undisturbed when manipulating drill
 - integrated transition editor
 - don't fuck up position when window becomes invisible
 - first person camera jerky when sliding
+- fix aspect ratio when toggling info
+- better layout for info checkbox and explorer link
 
 new tools:
 - diff, to visualize changes made to transitions

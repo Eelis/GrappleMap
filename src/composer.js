@@ -218,6 +218,11 @@ function encode_steps(a)
 	return r;
 }
 
+function on_canvas_resize()
+{
+	// todo
+}
+
 function refreshDrill()
 {
 	var controls = document.getElementById("controls"); // todo: rename
@@ -235,6 +240,8 @@ function refreshDrill()
 		controls.appendChild(document.createElement("hr"));
 
 	seq_bullets = [];
+
+	var info_mode = document.getElementById('info_mode_checkbox').checked;
 
 	for (var i = 0; i != steps.length; ++i)
 	{
@@ -275,45 +282,43 @@ function refreshDrill()
 
 		// description:
 
-		var descdiv = document.createElement("div");
-		descdiv.style.marginLeft = "100px";
-		descdiv.style.marginTop = "0px";
-
-		descdiv.appendChild(document.createTextNode("transition " + seq));
-		if (transitions[seq].line_nr)
-			descdiv.appendChild(document.createTextNode(" @ line " + transitions[seq].line_nr));
-		descdiv.appendChild(document.createElement("br"));
-
-		for (var j = 1; j <= desc.length - 1; ++j)
+		if (info_mode)
 		{
-			if (j != 1) descdiv.appendChild(document.createElement("br"));
-			descdiv.appendChild(document.createTextNode(desc[j]));
-		}
+			var descdiv = document.createElement("div");
+			descdiv.style.marginLeft = "100px";
+			descdiv.style.marginTop = "0px";
 
-		controls.appendChild(descdiv);
+			descdiv.appendChild(document.createTextNode("transition " + seq));
+			if (transitions[seq].line_nr)
+				descdiv.appendChild(document.createTextNode(" @ line " + transitions[seq].line_nr));
+			descdiv.appendChild(document.createElement("br"));
+
+			for (var j = 1; j <= desc.length - 1; ++j)
+			{
+				if (j != 1) descdiv.appendChild(document.createElement("br"));
+				descdiv.appendChild(document.createTextNode(desc[j]));
+			}
+
+			controls.appendChild(descdiv);
+		}
 	}
 
-	if (steps.length != 0)
+	if (steps.length != 0) // todo: also if length==0
 	{
 		history.replaceState(null, "", "index.html?" + encode_steps(steps));
 			// todo: handle back nav
 			// todo: don't do this the first time if this is already the url
-
-		controls.appendChild(document.createTextNode("("));
-
-		var dianodes=[];
-		steps.forEach(function(s){
-				dianodes.push(transitions[s.transition].from.node);
-				dianodes.push(transitions[s.transition].to.node);
-			});
-
-		var dialink = document.createElement("a");
-		dialink.href = "../diagram/index.html?" + dianodes.join(",");
-		dialink.text = "explorer";
-		controls.appendChild(dialink);
-
-		controls.appendChild(document.createTextNode(")"));
 	}
+
+	var dianodes=[];
+	steps.forEach(function(s){
+			dianodes.push(transitions[s.transition].from.node);
+			dianodes.push(transitions[s.transition].to.node);
+		});
+
+	if (steps.length == 0) dianodes.push(start_node);
+
+	document.getElementById("explorer_link").href = "../diagram/index.html?" + dianodes.join(",");
 }
 
 function on_slide()
@@ -336,6 +341,19 @@ function on_view_change()
 	var vv = document.getElementById("view_select").value;
 
 	scene.activeCamera = (vv == "external" ? externalCamera : firstPersonCamera);
+}
+
+function on_info_change()
+{
+	var info_mode = document.getElementById('info_mode_checkbox').checked;
+
+	var panel = document.getElementById('panel');
+
+	panel.style.width = (info_mode ? '50%' : '30%');
+
+	document.getElementById('renderCanvas').style.width = (info_mode ? '50%' : '70%');
+
+	refreshDrill();
 }
 
 function updateCamera()
@@ -564,6 +582,8 @@ window.addEventListener('DOMContentLoaded',
 
 		canvas = document.getElementById('renderCanvas');
 		engine = new BABYLON.Engine(canvas, true);
+
+		canvas.addEventListener("resize", on_canvas_resize); // todo: this doesn't work
 
 		makeScene();
 

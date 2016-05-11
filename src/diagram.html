@@ -20,13 +20,13 @@
 				font-weight: bold;
 			}
 			a{text-decoration:none}
-			.header {
+			.panel {
 				position:absolute;
 				top:0px;
 				left:0px;
-				border:1px solid black;
+				border-right:1px solid black;
+				border-bottom:1px solid black;
 				background:white;
-				margin:30px;
 				padding-left:30px;
 				padding-right:30px;
 				text-align: center;
@@ -60,13 +60,13 @@
 
 		<canvas style='width:100%;height:100%' id='renderCanvas'></canvas>
 
-		<div class='header'>
+		<div class='panel'>
 			<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>
 			<h2>Explorer</h2>
 			<hr>
 
 			<p>
-				View: &nbsp;<select id='view_select' onchange='on_view_change()'> 
+				View: &nbsp;<select id='view_select' onchange='on_view_change()'>
 					<option value="external">external</option>
 					<option value="0">red</option>
 					<option value="1">blue</option>
@@ -77,7 +77,7 @@
 				<input type='checkbox' id='edit_mode_checkbox' onchange='on_edit()'> edit node selection
 			</p>
 			<p>
-				(<a href='../search/index.html'>search</a>)
+				(<a href='../search/index.html'>search</a>, <a id='composer_link'>composer</a>)
 			</p>
 		</div>
 

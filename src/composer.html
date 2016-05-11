@@ -6,34 +6,60 @@
 		<script src='../babylon.js'></script>
 		<script src='../gm.js'></script>
 		<script src='../transitions.js'></script>
-		<style>a{text-decoration:none}</style>
+		<style>
+			html, body {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}
+			a{text-decoration:none}
+			.panel {
+				position:absolute;
+				top:0px;
+				padding:0px;
+				right:0px;
+			}
+		</style>
 	</head>
-	<body style='margin:50px;line-height:150%;text-align:center'>
-		<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>
-		<h2>Drill Composer</h2>
+	<body style='line-height:150%' width='100%'>
 
-		<div style='display:inline-block; margin:35px'>
+		<canvas style='position:fixed;width:70%;height:100%;margin:0px;border-right:1px solid black' id='renderCanvas'></canvas>
+
+		<div id='panel' class='panel' style='width:30%'>
+		<div style='padding:30px'>
+
+			<div style='text-align:center'>
+				<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>
+				<h2>Drill Composer</h2>
+			</div>
+
+			<hr>
+
 			<p>
-				<button onclick='on_pause_button_clicked()' id='pause_button'>pause</button>
-				<button onclick='on_mirror_button_clicked()'>mirror</button>
-				<select id='view_select' onchange='on_view_change()'> 
-					<option value="external">view: external</option>
-					<option value="0">view: red</option>
-					<option value="1">view: blue</option>
+				View: &nbsp;<select id='view_select' onchange='on_view_change()'>
+					<option value="external">external</option>
+					<option value="0">red</option>
+					<option value="1">blue</option>
 				</select>
+				<button onclick='on_mirror_button_clicked()'>mirror</button>
+				<button onclick='on_pause_button_clicked()' id='pause_button'>pause</button>
+				&ensp;
+				(<a id='explorer_link'>explorer</a>)
+				<input type='checkbox' id='info_mode_checkbox' onchange='on_info_change()'> info
 			</p>
-			<p>
-				<input type="range" min=0 max=100 step=1 id="slider" style='width:100%'
-					oninput='on_slide()' onmouseover='sliding=true' onmouseleave='sliding=false'>
-			</p>
-			<canvas style='display:inline-block;width:600px;height:450px' id='renderCanvas'></canvas>
-		</div>
-		<div style='display:inline-block;width:600px; margin: 35px auto; text-align: left; vertical-align: top'>
+			<input type="range" min=0 max=100 step=1 id="slider" style='width:100%'
+				oninput='on_slide()' onmouseover='sliding=true' onmouseleave='sliding=false'>
+			<br>
 			Prepend:<div id='pre_choices' style='margin-left:15px'></div><br>
-			<div id='controls' style='padding:15px;border:1px solid'></div><br>
+			<div id='controls' style='padding:15px'></div><br>
+
 			<div id='post_choices_label'>Append:</div>
 			<div id='post_choices' style='margin-left:15px'></div>
+
 		</div>
+		</div>
+
 
 		<script src='composer.js'></script>
 	</body>

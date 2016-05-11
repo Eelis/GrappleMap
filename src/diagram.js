@@ -97,6 +97,48 @@ function clear_info()
 //	document.getElementById('info').innerHTML = "";
 }
 
+function tick_graph()
+{
+	svg.select("#links").selectAll(".link")
+		.attr("x1", function(d) { return d.source.x; })
+		.attr("y1", function(d) { return d.source.y; })
+		.attr("x2", function(d) { return d.target.x; })
+		.attr("y2", function(d) { return d.target.y; });
+
+	svg.select("#nodes").selectAll(".node")
+		.attr("cx", function(d) { return d.x; })
+		.attr("cy", function(d) { return d.y; })
+		.style("fill", function(d) {
+				if (d.id == selected_node) return "lightgreen";
+				return "white";
+		})
+		.attr("r", function(d)
+			{
+				return selected_nodes.indexOf(d.id) == -1 ? 7 : 50;
+			});
+
+	svg.select("#labels").selectAll(".link_label_group")
+		.attr("transform", function(d) {
+			return "translate(" +
+				((d.source.x + d.target.x) / 2) + "," +
+				((d.source.y + d.target.y) / 2) + ")";
+		});
+
+	svg.select("#labels").selectAll(".node_label_group")
+		.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+}
+
+function selected_node_changed()
+{
+	document.getElementById('composer_link').href = "../composer/index.html?p" + selected_node;
+
+	console.log("hmm but...");
+
+	tick_graph();
+
+	//document.getElementById('info').innerHTML = "node " + d.id; // todo: line nr
+}
+
 function node_selection_changed()
 {
 	history.replaceState(null, "", "index.html?" + selected_nodes.join(","));
@@ -294,47 +336,16 @@ function node_selection_changed()
 				}
 			});
 
-			// todo: clean up
-		tick_graph();
-
-		//document.getElementById('info').innerHTML = "node " + d.id; // todo: line nr
-	}
-
-	function tick_graph()
-	{
-		svg.select("#links").selectAll(".link")
-			.attr("x1", function(d) { return d.source.x; })
-			.attr("y1", function(d) { return d.source.y; })
-			.attr("x2", function(d) { return d.target.x; })
-			.attr("y2", function(d) { return d.target.y; });
-
-		svg.select("#nodes").selectAll(".node")
-			.attr("cx", function(d) { return d.x; })
-			.attr("cy", function(d) { return d.y; })
-			.style("fill", function(d) {
-					if (d.id == selected_node) return "lightgreen";
-					return "white";
-			})
-			.attr("r", function(d)
-				{
-					return selected_nodes.indexOf(d.id) == -1 ? 7 : 50;
-				});
-
-		svg.select("#labels").selectAll(".link_label_group")
-			.attr("transform", function(d) {
-				return "translate(" +
-					((d.source.x + d.target.x) / 2) + "," +
-					((d.source.y + d.target.y) / 2) + ")";
-			});
-
-		svg.select("#labels").selectAll(".node_label_group")
-			.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+		selected_node_changed();
 	}
 
 	tick_graph();
 
 	force.on("tick", tick_graph);
 }
+
+
+
 
 function tick()
 {
@@ -446,6 +457,8 @@ window.addEventListener('DOMContentLoaded',
 		makeScene();
 
 		make_graph();
+
+		selected_node_changed();
 
 		scene.activeCamera = externalCamera;
 	});
