@@ -43,6 +43,8 @@ function selected_node_changed()
 {
 	document.getElementById('composer_link').href = "../composer/index.html?p" + selected_node;
 
+	document.getElementById('search_link').href = "../search/index.html?" + nodes[selected_node].tags.join(",");
+
 	tick_graph(svg);
 
 	//document.getElementById('info').innerHTML = "node " + d.id; // todo: line nr
@@ -66,12 +68,23 @@ function node_selection_changed()
 		}
 	}
 
+	selected_nodes.forEach(addnode);
+
 	if (selected_nodes.length == 1)
 	{
-		addnode(selected_nodes[0]);
-
 		document.getElementById('edit_mode_checkbox').checked = true;
 	}
+
+	transitions.forEach(function(t)
+		{
+			if (document.getElementById('edit_mode_checkbox').checked &&
+				(selected_nodes.indexOf(t.to.node) != -1 ||
+				 selected_nodes.indexOf(t.from.node) != -1))
+			{
+				addnode(t.from.node);
+				addnode(t.to.node);
+			}
+		});
 
 	for (var i = 0; i != transitions.length; ++i)
 	{
@@ -81,9 +94,7 @@ function node_selection_changed()
 		if (t.properties.indexOf("top") != -1) color = "red";
 		if (t.properties.indexOf("bottom") != -1) color = "blue";
 
-		if (document.getElementById('edit_mode_checkbox').checked
-			? (selected_nodes.indexOf(t.to.node) != -1 || selected_nodes.indexOf(t.from.node) != -1)
-			: (selected_nodes.indexOf(t.to.node) != -1 && selected_nodes.indexOf(t.from.node) != -1))
+		if (nn.indexOf(t.to.node) != -1 && nn.indexOf(t.from.node) != -1)
 		{
 			addnode(t.from.node);
 			addnode(t.to.node);
