@@ -6,16 +6,13 @@ db
 - cage/fence
 
 editor
-- in edit mode, make it possible to temporarily hide a player, to unobstruct the view to the other
+- in edit mode, auto-hide limbs that obstruct the edited joint
 - make rotation commands rotate around center between players, not area center
-- experiment with different joint editing schemes, e.g. direct joint coordinate component manipulation
 - vr headset support
-- sticky floor
-- direction signs ("to truck", "zombie")
 - editing selected joints as a group
 - add diagnostics for transitions or transition sequences that:
   * don't respect inertia
-  * ice skate
+  * ice skate or hover
   * rotate joints in unnatural ways
   * move limbs through eachother
 - maybe visually indicate where a body's structural mechanics are weak, which directions it could be off-balanced, etc
@@ -49,12 +46,13 @@ explorer:
 - make camera track players vertically and horizontally
 - when turning off edit mode, transition to selected node if necessary
 - only load biggest cluster when search page produces disconnected graph
-- computing force seems to take way too long
 - when aborting a transition, don't play it through, but immediately start rewinding the elapsed part
 - in edit mode, auto-kill distant nodes, so that you can keep exploring just by opening nodes
 - find solution for multiple transitions between pair of nodes
 - info display /without/ framerate hickups
 - make zooming with scrollwheel work
+- make search page link include tags of selected node
+- if nodes form a chain, make composer link load it as a drill
 
 drill composer
 - speed dial
@@ -71,4 +69,4 @@ new tools:
 
 misc:
 - mobile-friendly versions of things
-- clean up code
+- clean up code (a lot)
