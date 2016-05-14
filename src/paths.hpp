@@ -16,7 +16,7 @@ namespace GrappleMap
 	bool dfsScene(
 		Graph const &,
 		vector<pair<vector<Step>, vector<Step>>> const & in_out,
-		ReorientedNode, size_t, Path &);
+		ReorientedNode, size_t, Path &, vector<Step> & steps_taken);
 
 	Path randomScene(Graph const &, NodeNum start, size_t);
 

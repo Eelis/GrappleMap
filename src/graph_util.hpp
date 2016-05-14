@@ -83,6 +83,11 @@ inline bool operator==(Step const a, Step const b)
 	return a.seq == b.seq && a.reverse == b.reverse;
 }
 
+inline bool operator<(Step const a, Step const b)
+{
+	return std::tie(a.seq, a.reverse) < std::tie(b.seq, b.reverse);
+}
+
 inline ReorientedNode const & from(Graph const & g, Step const s)
 {
 	return s.reverse ? g.to(s.seq) : g.from(s.seq);

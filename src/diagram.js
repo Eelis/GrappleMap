@@ -6,7 +6,6 @@ var selected_node = null;
 var reo = zero_reo();
 var kf = 0;
 var targetpos;
-var selected_nodes = [];
 
 var svg;
 var force;
@@ -14,39 +13,7 @@ var force;
 function make_graph()
 {
 	svg = d3.select("#mynetwork");
-
-	svg.append('svg:defs').append('svg:marker')
-		.attr('id', 'red-arrow')
-		.attr('viewBox', '0 -50 100 100')
-		.attr('refX', 100)
-		.attr('markerWidth', 25)
-		.attr('markerHeight', 25)
-		.attr('orient', 'auto')
-		.style("fill", "red")
-		.append('svg:path')
-		.attr('d', 'M0,-10L37,0L0,10');
-
-	svg.append('svg:defs').append('svg:marker')
-		.attr('id', 'blue-arrow')
-		.attr('viewBox', '0 -50 100 100')
-		.attr('refX', 100)
-		.attr('markerWidth', 25)
-		.attr('markerHeight', 25)
-		.attr('orient', 'auto')
-		.style("fill", "blue")
-		.append('svg:path')
-		.attr('d', 'M0,-10L37,0L0,10');
-
-	svg.append('svg:defs').append('svg:marker')
-		.attr('id', 'black-arrow')
-		.attr('viewBox', '0 -50 100 100')
-		.attr('refX', 100)
-		.attr('markerWidth', 25)
-		.attr('markerHeight', 25)
-		.attr('orient', 'auto')
-		.style("fill", "black")
-		.append('svg:path')
-		.attr('d', 'M0,-10L37,0L0,10');
+	add_markers(svg);
 
 	svg.append("g").attr("id", "links");
 	svg.append("g").attr("id", "nodes");
@@ -62,8 +29,6 @@ function make_graph()
 		.gravity(0.01)
 		.linkDistance(200)
 		.size([document.body.clientWidth, document.body.clientHeight]);
-
-	node_selection_changed();
 }
 
 function on_edit()
@@ -76,8 +41,6 @@ function on_mirror_button_clicked()
 	mirror(targetpos);
 	reo.mirror = !reo.mirror;
 }
-
-function get_id(x) { return x.id; }
 
 function mouse_over_transition(d)
 {
@@ -97,44 +60,11 @@ function clear_info()
 //	document.getElementById('info').innerHTML = "";
 }
 
-function tick_graph()
-{
-	svg.select("#links").selectAll(".link")
-		.attr("x1", function(d) { return d.source.x; })
-		.attr("y1", function(d) { return d.source.y; })
-		.attr("x2", function(d) { return d.target.x; })
-		.attr("y2", function(d) { return d.target.y; });
-
-	svg.select("#nodes").selectAll(".node")
-		.attr("cx", function(d) { return d.x; })
-		.attr("cy", function(d) { return d.y; })
-		.style("fill", function(d) {
-				if (d.id == selected_node) return "lightgreen";
-				return "white";
-		})
-		.attr("r", function(d)
-			{
-				return selected_nodes.indexOf(d.id) == -1 ? 7 : 50;
-			});
-
-	svg.select("#labels").selectAll(".link_label_group")
-		.attr("transform", function(d) {
-			return "translate(" +
-				((d.source.x + d.target.x) / 2) + "," +
-				((d.source.y + d.target.y) / 2) + ")";
-		});
-
-	svg.select("#labels").selectAll(".node_label_group")
-		.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-}
-
 function selected_node_changed()
 {
 	document.getElementById('composer_link').href = "../composer/index.html?p" + selected_node;
 
-	console.log("hmm but...");
-
-	tick_graph();
+	tick_graph(svg);
 
 	//document.getElementById('info').innerHTML = "node " + d.id; // todo: line nr
 }
@@ -205,171 +135,34 @@ function node_selection_changed()
 
 	svg.on("mouseup", function(){ force.alpha(0.01); });
 
-	var node_shapes = svg.select("#nodes").selectAll(".node").data(G.nodes, get_id);
-	var node_labels = svg.select("#labels").selectAll(".node_label_group").data(G.nodes, get_id);
-	var link_shapes = svg.select("#links").selectAll(".link").data(G.links, get_id);
-	var link_labels = svg.select("#labels").selectAll(".link_label_group").data(G.links, get_id);
+	make_svg_graph_elems(svg, G, force);
 
-	{
-		var s = link_labels.enter().append('g')
-			.attr("class", "link_label_group");
-//			.on('mouseover', mouse_over_transition)
-//			.on('mouseout', clear_info);
+	tick_graph(svg);
 
-		s	.append("text")
-			.attr("class", "link_label")
-			.attr("y", function(d){
-				return transitions[d.id].desc_lines.length > 1 ? -5 : 0; })
-			.text(function(d){
-				var l = transitions[d.id].desc_lines[0];
-				return (l != "..." ? l : ""); });
-
-		s	.append("text")
-			.attr("class", "link_label")
-			.attr("y", 13)
-			.text(function(d){
-				var l = transitions[d.id].desc_lines;
-				return (l.length > 1 ? l[1] : ''); });
-	}
-
-	link_shapes.enter()
-		.append("line")
-		.attr("class", "link")
-		.attr("marker-end", function(d){ return "url(#" + d.color + "-arrow)"; })
-			// todo: can't we make a marker that inherits the line color?
-		.style("stroke", function(d){ return d.color; });
-
-	node_shapes.enter().append("circle")
-		.attr("class", "node")
-		.on('click', node_clicked)
-		.on('mouseover', mouse_over_node)
-//		.on('mouseout', clear_info)
-		.call(force.drag);
-
-	{
-		var s = node_labels.enter().append("g")
-			.attr("class", "node_label_group")
-			.on('click', node_clicked)
-			.on('mouseover', mouse_over_node)
-//			.on('mouseout', clear_info)
-			.call(force.drag);
-
-		s	.append("text")
-			.attr("class", "node_label")
-			.text(function(d){return d.desc_lines[0];})
-			.attr("y", function(d){return [5,-5,-12][d.desc_lines.length-1];});
-
-		s	.append("text")
-			.attr("class", "node_label")
-			.text(function(d){return d.desc_lines.length > 1 ? d.desc_lines[1] : '';})
-			.attr("y", function(d){return [0,17,7][d.desc_lines.length-1];});
-
-		s	.append("text")
-			.attr("class", "node_label")
-			.text(function(d){return d.desc_lines.length > 2 ? d.desc_lines[2] : '';})
-			.attr("y", 26);
-	}
-
-	node_shapes.exit().remove();
-	node_labels.exit().remove();
-	link_shapes.exit().remove();
-	link_labels.exit().remove();
-
-	function node_clicked(d)
-	{
-		if (d3.event.defaultPrevented) return; // ignore drag
-
-		if (!document.getElementById('edit_mode_checkbox').checked) return;
-
-		var i = selected_nodes.indexOf(d.id);
-		if (i == -1)
-			selected_nodes.push(d.id);
-		else if (selected_nodes.length >= 2)
-			selected_nodes.splice(i, 1);
-		else
-			return;
-
-		node_selection_changed();
-	}
-
-	function mouse_over_node(d)
-	{
-		var candidate = d.id;
-
-		var foundit = false;
-
-		var n = nodes[selected_node];
-
-		n.outgoing.forEach(function(s)
-			{
-				var t = transitions[s.transition];
-				if (!foundit && !s.reverse && step_to(s).node == candidate)
-				{
-					foundit = true;
-
-					reo = compose_reo(inverse_reo(step_from(s).reo), reo);
-
-					for (var i = 1; i != t.frames.length; ++i)
-						queued_frames.push(apply_reo(reo, t.frames[i]));
-
-					reo = compose_reo(step_to(s).reo, reo);
-
-					selected_node = candidate;
-				}
-			});
-
-		n.incoming.forEach(function(s)
-			{
-				var t = transitions[s.transition];
-				if (!foundit && !s.reverse && step_from(s).node == candidate)
-				{
-					foundit = true;
-
-					reo = compose_reo(inverse_reo(step_to(s).reo), reo);
-
-					for (var i = t.frames.length - 1; i != 0; --i)
-						queued_frames.push(apply_reo(reo, t.frames[i - 1]));
-
-					reo = compose_reo(step_from(s).reo, reo);
-
-					selected_node = candidate;
-				}
-			});
-
-		selected_node_changed();
-	}
-
-	tick_graph();
-
-	force.on("tick", tick_graph);
+	force.on("tick", function(){ tick_graph(svg); });
 }
 
-
-
-
-function tick()
+function node_clicked(d)
 {
-	if (queued_frames.length != 0)
-	{
-		kf += Math.max(0.1, Math.pow(queued_frames.length, 1.5) / 500);
+	if (d3.event.defaultPrevented) return; // ignore drag
 
-		if (kf < 1)
-		{
-			targetpos = interpolate_position(last_keyframe, queued_frames[0], kf);
-		}
-		else
-		{
-			kf = 0;
-			targetpos = last_keyframe = queued_frames.shift();
-		}
-	}
+	if (!document.getElementById('edit_mode_checkbox').checked) return;
 
-	if (targetpos)
-		thepos = (thepos ? interpolate_position(thepos, targetpos, drag) : targetpos);
+	var i = selected_nodes.indexOf(d.id);
+	if (i == -1)
+		selected_nodes.push(d.id);
+	else if (selected_nodes.length >= 2)
+		selected_nodes.splice(i, 1);
+	else
+		return;
 
-	// todo: base on elapsed time like composer does
+	node_selection_changed();
+}
 
-	updateCamera();
+function mouse_over_node(d)
+{
+	if (d.id != selected_node && try_move(d.id))
+		selected_node_changed();
 }
 
 function updateCamera()
@@ -458,6 +251,7 @@ window.addEventListener('DOMContentLoaded',
 
 		make_graph();
 
+		node_selection_changed();
 		selected_node_changed();
 
 		scene.activeCamera = externalCamera;

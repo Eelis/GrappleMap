@@ -475,3 +475,28 @@ function interpolate_position(a, b, c)
 
 	return p;
 }
+
+function opposite_heading(h) { return h < 2 ? h + 2 : h - 2; }
+
+function heading_rotate_left(h) { return (h + 3) % 4; }
+function heading_rotate_right(h) { return (h + 1) % 4; }
+
+function view_rotate_left(v)
+{
+	return [heading_rotate_left(v[0]), v[1]];
+}
+
+function view_rotate_right(v)
+{
+	return [heading_rotate_right(v[0]), v[1]];
+}
+
+function view_mirror_x(v)
+{
+	return [(v[0] % 2) == 0 ? v[0] : opposite_heading(v[0]), !v[1]];
+}
+
+function view_mirror_y(v)
+{
+	return view_rotate_right(view_mirror_x(view_rotate_left(v)));
+}

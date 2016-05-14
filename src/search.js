@@ -4,8 +4,10 @@ var view = [0, false];
 var queued_frames = [];
 var last_keyframe = null;
 var selected_node = null;
+var selected_nodes = [];
 var reo = zero_reo();
 var kf = 0;
+var svg;
 
 function node_has_tag(node, tag)
 {
@@ -75,6 +77,11 @@ function remove_tag(t)
 
 function on_tag_selection_changed()
 {
+	selected_nodes = [];
+	for (var n = 0; n != nodes.length; ++n)
+		if (node_is_selected(nodes[n]))
+			selected_nodes.push(n);
+
 	update_tag_list();
 	update_position_pics();
 	update_transition_pics();
@@ -82,31 +89,6 @@ function on_tag_selection_changed()
 
 	history.replaceState(null, "", "index.html" + query_string_for_selection());
 		// todo: handle back nav
-}
-
-function opposite_heading(h) { return h < 2 ? h + 2 : h - 2; }
-
-function heading_rotate_left(h) { return (h + 3) % 4; }
-function heading_rotate_right(h) { return (h + 1) % 4; }
-
-function view_rotate_left(v)
-{
-	return [heading_rotate_left(v[0]), v[1]];
-}
-
-function view_rotate_right(v)
-{
-	return [heading_rotate_right(v[0]), v[1]];
-}
-
-function view_mirror_x(v)
-{
-	return [(v[0] % 2) == 0 ? v[0] : opposite_heading(v[0]), !v[1]];
-}
-
-function view_mirror_y(v)
-{
-	return view_rotate_right(view_mirror_x(view_rotate_left(v)));
 }
 
 function update_view_controls()
@@ -280,11 +262,6 @@ function update_position_pics()
 {
 	var page_size = 12;
 
-	var selected_nodes = [];
-	for (var n = 0; n != nodes.length; ++n)
-		if (node_is_selected(nodes[n]))
-			selected_nodes.push(n);
-
 	document.getElementById('pos_count_label').innerHTML = selected_nodes.length;
 
 	var elem = document.getElementById("position_pics");
@@ -365,62 +342,28 @@ function update_graph()
 			G.links.push(
 				{ source: addnode(t.from.node)
 				, target: addnode(t.to.node)
-				, transition: t
+				, id: i
 				, color: color
 				});
 	}
 
 	for (var i = 0; i != nn.length; ++i)
-	{
-		var n = nodes[nn[i]];
-		G.nodes.push(
-			{ 'node': n
-			, 'desc_lines': n.description.split('\n')
-			, 'selected_by_tags': node_is_selected(n)
-			});
-	}
+		G.nodes.push(nodes[nn[i]]);
 
 	if (G.nodes.length > 50) return;
 
 	var width = document.body.clientWidth,
-	height = 960;
+	height = document.body.clientHeight;
 
-	var svg = d3.select("#mynetwork").append("svg")
+	svg = d3.select("#mynetwork").append("svg")
 		.attr("width", width)
 		.attr("height", height);
 
-	svg.append('svg:defs').append('svg:marker')
-		.attr('id', 'red-arrow')
-		.attr('viewBox', '0 -50 100 100')
-		.attr('refX', 100)
-		.attr('markerWidth', 40)
-		.attr('markerHeight', 40)
-		.attr('orient', 'auto')
-		.style("fill", "red")
-		.append('svg:path')
-		.attr('d', 'M0,-10L20,0L0,10');
+	add_markers(svg);
 
-	svg.append('svg:defs').append('svg:marker')
-		.attr('id', 'blue-arrow')
-		.attr('viewBox', '0 -50 100 100')
-		.attr('refX', 100)
-		.attr('markerWidth', 40)
-		.attr('markerHeight', 40)
-		.attr('orient', 'auto')
-		.style("fill", "blue")
-		.append('svg:path')
-		.attr('d', 'M0,-10L20,0L0,10');
-
-	svg.append('svg:defs').append('svg:marker')
-		.attr('id', 'black-arrow')
-		.attr('viewBox', '0 -50 100 100')
-		.attr('refX', 100)
-		.attr('markerWidth', 40)
-		.attr('markerHeight', 40)
-		.attr('orient', 'auto')
-		.style("fill", "black")
-		.append('svg:path')
-		.attr('d', 'M0,-10L20,0L0,10');
+	svg.append("g").attr("id", "links");
+	svg.append("g").attr("id", "nodes");
+	svg.append("g").attr("id", "labels");
 
 	var force = d3.layout.force()
 		.charge(-300)
@@ -433,175 +376,18 @@ function update_graph()
 
 	svg.on("mouseup", function(){ force.alpha(0.01); });
 
-	var linksel = svg.selectAll(".link")
-		.data(G.links)
-		.enter();
+	make_svg_graph_elems(svg, G, force);
 
-	var link = linksel
-		.append("line")
-		.attr("class", "link")
-		.attr("marker-end", function(d){ return "url(#" + d.color + "-arrow)"; })
-		.style("stroke", function(d){ return d.color; });
-
-	var trans_label = linksel
-		.append("text")
-		.attr("text-anchor", "middle")
-		.text(function(d){ return d.transition.description[0]; });
-
-	var nodesel = svg.selectAll(".node")
-		.data(G.nodes)
-		.enter();
-
-	var node = nodesel
-		.append("circle")
-		.attr("class", "node")
-		.call(force.drag);
-	
-	var labelsel = svg.selectAll(".node_label")
-		.data(G.nodes)
-		.enter();
-
-	var label = labelsel
-		.append("text")
-		.attr("text-anchor", "middle")
-		.text(function(d){return d.desc_lines[0];})
-		.call(force.drag);
-
-	var label2 = labelsel
-		.append("text")
-		.attr("text-anchor", "middle")
-		.text(function(d){return d.desc_lines[1];})
-		.call(force.drag);
-
-	function mouse_over_node(d)
-	{
-		var candidate = d.node.id;
-
-		if (candidate == selected_node) return;
-
-		var foundit = false;
-
-		if (selected_node == null)
-		{
-			selected_node = candidate;
-			tick_graph(); // todo: necessary?
-			return;
-		}
-
-		var n = nodes[selected_node];
-
-		n.outgoing.forEach(function(s)
-			{
-				var t = transitions[s.transition];
-				if (!foundit && !s.reverse && step_to(s).node == candidate)
-				{
-					foundit = true;
-
-					reo = compose_reo(inverse_reo(step_from(s).reo), reo);
-
-					for (var i = 1; i != t.frames.length; ++i)
-						queued_frames.push(apply_reo(reo, t.frames[i]));
-
-					reo = compose_reo(step_to(s).reo, reo);
-
-					selected_node = candidate;
-				}
-			});
-
-		n.incoming.forEach(function(s)
-			{
-				var t = transitions[s.transition];
-				if (!foundit && !s.reverse && step_from(s).node == candidate)
-				{
-					foundit = true;
-
-					reo = compose_reo(inverse_reo(step_to(s).reo), reo);
-
-					for (var i = t.frames.length - 1; i != 0; --i)
-						queued_frames.push(apply_reo(reo, t.frames[i - 1]));
-
-					reo = compose_reo(step_from(s).reo, reo);
-
-					selected_node = candidate;
-
-				}
-			});
-
-			// todo: clean up
-
-		if (!foundit)
-		{
-			selected_node = candidate;
-			thepos = nodes[selected_node].position;
-			reo = zero_reo();
-		}
-
-		tick_graph();
-	}
-
-	node.on('mouseover', mouse_over_node);
-	label.on('mouseover', mouse_over_node); // todo: rest of label as well
-
-	function tick_graph()
-	{
-		link
-			.attr("x1", function(d) { return d.source.x; })
-			.attr("y1", function(d) { return d.source.y; })
-			.attr("x2", function(d) { return d.target.x; })
-			.attr("y2", function(d) { return d.target.y; });
-
-		node
-			.attr("cx", function(d) { return d.x; })
-			.attr("cy", function(d) { return d.y; })
-			.attr("r", function(d)
-				{
-					if (d.node.id == selected_node) return 75;
-					if (d.selected_by_tags) return 50;
-					return 15;
-				});
-
-		trans_label
-			.attr("x", function(d) { return (d.source.x + d.target.x) / 2; })
-			.attr("y", function(d) { return (d.source.y + d.target.y) / 2; });
-
-		label
-			.attr("x", function(d) { return d.x; })
-			.attr("y", function(d) { return d.y - (d.desc_lines.length == 1 ? -5 : 0); });
-
-		label2
-			.attr("x", function(d) { return d.x; })
-			.attr("y", function(d) { return d.y + 20; });
-	}
-
-	force.on("tick", tick_graph);
+	force.on("tick", function(){ tick_graph(svg); });
 }
 
 var targetpos;
 
-function tick()
+function updateCamera()
 {
-	if (queued_frames.length != 0)
-	{
-		kf += 0.1;
-
-		if (kf < 1)
-		{
-			targetpos = interpolate_position(last_keyframe, queued_frames[0], kf);
-		}
-		else
-		{
-			kf = 0;
-			targetpos = last_keyframe = queued_frames.shift();
-		}
-	}
-
-	if (targetpos)
-		thepos = (thepos ? interpolate_position(thepos, targetpos, drag) : targetpos);
-
-	// todo: base on real elapsed time like composer does
 }
 
-function makeScene()
+function makeScene(initialPos)
 {
 	scene = new BABYLON.Scene(engine);
 	scene.clearColor = new BABYLON.Color3(1,1,1);
@@ -625,7 +411,7 @@ function makeScene()
 
 	var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), scene);
 
-	var draw = animated_position_from_array(keyframe, scene);
+	var draw = animated_position_from_array(initialPos, scene);
 
 	scene.registerBeforeRender(function(){
 			tick();
@@ -635,9 +421,40 @@ function makeScene()
 	engine.runRenderLoop(function(){ scene.render(); });
 }
 
+// makescene and updategraph should be shared
+
+function node_clicked()
+{
+}
+
+function mouse_over_node(d)
+{
+	if (d.id == selected_node) return;
+
+	if (!try_move(d.id))
+	{
+		selected_node = d.id;
+		targetpos = thepos = last_keyframe = nodes[selected_node].position;
+		queued_frames = [];
+		reo = zero_reo();
+	}
+
+	tick_graph(svg);
+}
+
 window.addEventListener('DOMContentLoaded',
 	function()
 	{
+		transitions.forEach(function(t)
+			{
+				t.desc_lines = t.description[0].split('\n');
+			});
+
+		nodes.forEach(function(n)
+			{
+				n.desc_lines = n.description.split('\n');
+			});
+
 		var s = window.location.href;
 		var qmark = s.lastIndexOf('?');
 		if (qmark != -1)
@@ -652,20 +469,19 @@ window.addEventListener('DOMContentLoaded',
 				});
 		}
 
-
-
-		thepos = last_keyframe = keyframe = nodes[0].position;
+		thepos = last_keyframe = nodes[0].position;
 
 		canvas = document.getElementById('renderCanvas');
 		engine = new BABYLON.Engine(canvas, true);
 
-		makeScene();
+		makeScene(thepos);
 
 		scene.activeCamera = externalCamera;
-
-
 
 		update_view_controls();
 
 		on_tag_selection_changed();
+		selected_node = selected_nodes[0];
+
+		tick_graph(svg);
 	});

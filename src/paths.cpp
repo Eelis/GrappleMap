@@ -59,9 +59,12 @@ Frames frames(Graph const & g, vector<Path> const & script, unsigned const frame
 bool dfsScene(
 	Graph const & g,
 	vector<pair<vector<Step>, vector<Step>>> const & in_out,
-	ReorientedNode const n, size_t const size, Path & scene)
+	ReorientedNode const n, size_t const size, Path & scene, vector<Step> & steps_taken)
 {
 	if (size == 0) return true;
+
+	if (double(steps_taken.size()) / scene.size() < 0.89)
+		return false;
 
 	std::multimap<std::pair<size_t /* occurrences */, double>, Step> choices;
 
@@ -70,8 +73,6 @@ bool dfsScene(
 		if (std::find(scene.end() - std::min(scene.size(), 15ul), scene.end(), s) != scene.end()) continue;
 
 		size_t const c = std::count(scene.begin(), scene.end(), s);
-
-		if (c >= 1) continue;
 
 		if (!scene.empty() && scene.back().seq == s.seq) continue;
 
@@ -84,12 +85,18 @@ bool dfsScene(
 	{
 		Step const s = c.second;
 
+		bool const taken_before =
+			std::find(steps_taken.begin(), steps_taken.end(), s) != steps_taken.end();
+
+		if (!taken_before) steps_taken.push_back(s);
 		scene.push_back(s);
 
-		if (dfsScene(g, in_out, follow(g, n, s.seq), size - 1, scene))
+		if (dfsScene(g, in_out, follow(g, n, s.seq), size - 1, scene, steps_taken))
 			return true;
 
+		if (!taken_before) steps_taken.pop_back();
 		scene.pop_back();
+
 	}
 
 	return false;
@@ -139,13 +146,30 @@ Scene randomScene(Graph const & g, SeqNum const start, size_t const size)
 Path randomScene(Graph const & g, NodeNum const start, size_t const size)
 {
 	Path s;
+	vector<Step> steps_taken;
 
-	if (!dfsScene(g, in_out(g), {start, {}}, size, s))
+	if (!dfsScene(g, in_out(g), {start, {}}, size, s, steps_taken))
 		throw runtime_error("could not find sequence");
 
-	set<SeqNum> ss;
-	foreach (x : s) ss.insert(x.seq);
+	int worst_count = 0;
+	SeqNum worst_seq;
+	map<SeqNum, int> ss;
+	foreach (x : s)
+	{
+		auto const c = ++ss[x.seq];
+		if (c > worst_count)
+		{
+			worst_count = c;
+			worst_seq = x.seq;
+		}
+	}
 	std::cout << ss.size() << " unique sequences\n";
+
+	if (!ss.empty())
+	{
+		auto & p = *ss.rbegin();
+		std::cout << "worst: " << worst_seq.index << " occurs " << worst_count << " times\n";
+	}
 
 	return s;
 }

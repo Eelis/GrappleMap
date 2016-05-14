@@ -19,6 +19,7 @@ editor
   * rotate joints in unnatural ways
   * move limbs through eachother
 - maybe visually indicate where a body's structural mechanics are weak, which directions it could be off-balanced, etc
+- make "last trans" the default for gui
 
 playback:
 - make {pre,post}fix length for demo mode configurable
@@ -39,6 +40,7 @@ search page:
 - re-use diagram page code
 - show tagged transitions
 - also search by name/reference substring
+- only warp if node is unreachable
 
 explorer:
 - find a way to get mouse events through to babylon, or at least mention that arrow keys rotate camera

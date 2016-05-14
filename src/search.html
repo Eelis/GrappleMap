@@ -10,7 +10,13 @@
 			.node {
 			  stroke: black;
 			  fill: white;
-			  stroke-width: 3px;
+			}
+			.node_label {
+				text-anchor: middle;
+			}
+			.link_label {
+				text-anchor: middle;
+				font-weight: bold;
 			}
 			a{text-decoration:none}
 		</style>
@@ -20,6 +26,7 @@
 		<script src='../d3.v3.min.js'></script>
 		<script src='../babylon.js'></script>
 		<script src='../gm.js'></script>
+		<script src='../graphdisplay.js'></script>
 		<script src='../transitions.js'></script>
 	</head>
 	<body style='margin:50px;line-height:150%;text-align:center'>
@@ -55,7 +62,7 @@
 		<p>(<a id='diagramlink' href=''>view in explorer</a>)</p>
 
 		<div style='width:100%;text-align:right'>
-			<div id="mynetwork" style='position:absolute;width:100%;height:100%;background:rgba(255,255,255,0.6)'></div>
+			<div id="mynetwork" style='position:absolute;width:100%;height:100%;background:rgba(255,255,255,0.55)'></div>
 			<canvas style='width:100%;height:100%' id='renderCanvas'></canvas>
 		</div>
 

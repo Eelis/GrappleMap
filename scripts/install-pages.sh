@@ -25,11 +25,13 @@ download hand.js https://raw.githubusercontent.com/deltakosh/handjs/master/bin/h
 download sorttable.js http://www.kryogenix.org/code/browser/sorttable/sorttable.js
 
 cp src/gm.js $output/
+cp src/graphdisplay.js $output/
 cp src/composer.html $output/composer/index.html
 cp src/composer.js $output/composer/
 cp src/search.html $output/search/index.html
 cp src/search.js $output/search/
 cp src/diagram.html $output/diagram/index.html
 cp src/diagram.js $output/diagram/
+cp src/example-drills.html $output/
 
 src/grapplemap-browse --output_dir=$outputbase
