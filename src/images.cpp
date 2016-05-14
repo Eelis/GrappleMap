@@ -52,7 +52,7 @@ void ImageMaker::png(
 	Camera const & camera,
 	unsigned const width, unsigned const height,
 	string const path, V3 const bg_color,
-	View const view,
+	vector<View> const & view,
 	unsigned const grid_size, unsigned const grid_line_width) const
 {
 	if (boost::filesystem::exists(path)) return;
@@ -69,7 +69,7 @@ void ImageMaker::png(
 	style.background_color = bg_color;
 
 	renderWindow(
-		{view},
+		view,
 		nullptr, // no viables
 		graph, pos, camera,
 		none, // no highlighted joint

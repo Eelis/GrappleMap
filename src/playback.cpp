@@ -155,13 +155,8 @@ int main(int const argc, char const * const * const argv)
 				}
 
 				renderWindow(
-					// views:
-					{ {0, 0, 1, 1, none, 50}
-//					{ {0, 0, 1, 1, optional<unsigned>(0), 90}
-			//		, {1-.3-.02, .02, .3, .3, optional<unsigned>(0), 90}
-			//		, {.02, .02, .3, .3, optional<unsigned>(1), 60}
-					},
-
+					{{0, 0, 1, 1, none, 50}},
+//					third_person_windows_in_corner(.3,.3,.02),
 					nullptr, // no viables
 					graph, pos, camera,
 					none, // no highlighted joint

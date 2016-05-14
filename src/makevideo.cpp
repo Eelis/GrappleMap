@@ -122,7 +122,8 @@ int main(int const argc, char const * const * const argv)
 
 				mkImg.png(pos, camera, width, height, fn.str(),
 					white, // background
-					{0, 0, 1, 1, none, 50}, // view
+//					{{0, 0, 1, 1, none, 50}}, // view
+					third_person_windows_in_corner(.3,.3,.02),
 					7, // grid size
 					4 // grid line width
 					);
