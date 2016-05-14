@@ -8,6 +8,7 @@ var selected_nodes = [];
 var reo = zero_reo();
 var kf = 0;
 var svg;
+var force;
 
 function node_has_tag(node, tag)
 {
@@ -310,10 +311,9 @@ function update_transition_pics()
 		});
 }
 
+
 function update_graph()
 {
-	d3.select("svg").remove();
-
 	var nn = [];
 	var G = { nodes: [], links: [] };
 
@@ -352,33 +352,11 @@ function update_graph()
 
 	if (G.nodes.length > 50) return;
 
-	var width = document.body.clientWidth,
-	height = document.body.clientHeight;
-
-	svg = d3.select("#mynetwork").append("svg")
-		.attr("width", width)
-		.attr("height", height);
-
-	add_markers(svg);
-
-	svg.append("g").attr("id", "links");
-	svg.append("g").attr("id", "nodes");
-	svg.append("g").attr("id", "labels");
-
-	var force = d3.layout.force()
-		.charge(-300)
-		.gravity(0.01)
-		.linkDistance(200)
-		.size([width, height])
-		.nodes(G.nodes)
-		.links(G.links)
-		.start();
-
-	svg.on("mouseup", function(){ force.alpha(0.01); });
+	force.nodes(G.nodes);
+	force.links(G.links);
+	force.start();
 
 	make_svg_graph_elems(svg, G, force);
-
-	force.on("tick", function(){ tick_graph(svg); });
 }
 
 var targetpos;
@@ -463,9 +441,9 @@ window.addEventListener('DOMContentLoaded',
 
 			arg.split(",").forEach(function(a){
 					if (a[0] == "-")
-						add_tag(a.substr(1), false);
+						selected_tags.push([a.substr(1), false]);
 					else
-						add_tag(a, true);
+						selected_tags.push([a, true]);
 				});
 		}
 
@@ -475,6 +453,8 @@ window.addEventListener('DOMContentLoaded',
 		engine = new BABYLON.Engine(canvas, true);
 
 		makeScene(thepos);
+
+		make_graph();
 
 		scene.activeCamera = externalCamera;
 

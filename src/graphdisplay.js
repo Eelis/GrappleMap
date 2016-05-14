@@ -218,3 +218,25 @@ function tick()
 
 	updateCamera();
 }
+
+function make_graph()
+{
+	svg = d3.select("#mynetwork");
+	add_markers(svg);
+
+	force = d3.layout.force()
+		.charge(function(d)
+			{
+				if (selected_nodes.indexOf(d.id) != -1)
+					return -1000;
+				return -300;
+				// todo: if this is not cached, cache it
+			})
+		.gravity(0.01)
+		.linkDistance(200)
+		.size([document.body.clientWidth, document.body.clientHeight]);
+
+	svg.on("mouseup", function(){ force.alpha(0.01); });
+
+	force.on("tick", function(){ tick_graph(svg); });
+}

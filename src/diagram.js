@@ -10,27 +10,6 @@ var targetpos;
 var svg;
 var force;
 
-function make_graph()
-{
-	svg = d3.select("#mynetwork");
-	add_markers(svg);
-
-	svg.append("g").attr("id", "links");
-	svg.append("g").attr("id", "nodes");
-	svg.append("g").attr("id", "labels");
-
-	force = d3.layout.force()
-		.charge(function(d)
-			{
-				if (selected_nodes.indexOf(d.id) != -1)
-					return -1000;
-				return -300;
-			})
-		.gravity(0.01)
-		.linkDistance(200)
-		.size([document.body.clientWidth, document.body.clientHeight]);
-}
-
 function on_edit()
 {
 	node_selection_changed();
@@ -133,13 +112,10 @@ function node_selection_changed()
 
 	G.nodes.forEach(function(n){ n.fixed = false; });
 
-	svg.on("mouseup", function(){ force.alpha(0.01); });
-
 	make_svg_graph_elems(svg, G, force);
 
 	tick_graph(svg);
 
-	force.on("tick", function(){ tick_graph(svg); });
 }
 
 function node_clicked(d)
