@@ -214,6 +214,16 @@ function tick()
 	if (targetpos)
 		thepos = (thepos ? interpolate_position(thepos, targetpos, drag) : targetpos);
 
+	var center = thepos[0][Core].add(thepos[1][Core]).scale(0.5);
+	center.y = Math.max(0, center.y - 0.5);
+
+	var tgt = externalCamera.target;
+	var vspeed = (center.y > tgt.y ? 0.05 : 0.005);
+
+	tgt.x = center.x * 0.005 + tgt.x * 0.995;
+	tgt.z = center.z * 0.005 + tgt.z * 0.995;
+	tgt.y = center.y * vspeed + tgt.y * (1 - vspeed);
+
 	// todo: base on elapsed time like composer does
 
 	updateCamera();
