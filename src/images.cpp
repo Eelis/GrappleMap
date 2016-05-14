@@ -124,7 +124,7 @@ void ImageMaker::png(
 
 		png(pos, camera, width, height,
 			output_dir + filename, bg_color,
-			{0, 0, 1, 1, none, 45});
+			{{0, 0, 1, 1, none, 45}});
 	}
 }
 
@@ -151,7 +151,7 @@ string ImageMaker::png(
 		Camera camera;
 
 		png(pos, camera, width, height, output_dir + filename, color(bg_color),
-			{0, 0, 1, 1, *view.player, 80});
+			{{0, 0, 1, 1, *view.player, 80}});
 	}
 	else abort();
 
