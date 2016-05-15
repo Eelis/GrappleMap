@@ -1,6 +1,5 @@
 var drag = 0.20;
 var view = [0, false];
-var queued_frames = [];
 var last_keyframe = null;
 var selected_node = null;
 var reo = zero_reo();

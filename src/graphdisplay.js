@@ -1,4 +1,4 @@
-
+var queued_frames = [];
 var selected_nodes = [];
 
 function add_markers(svg)
@@ -155,6 +155,17 @@ function try_move(candidate)
 
 	var n = nodes[selected_node];
 
+	function queue_frame(f, frameid)
+	{
+		if (queued_frames.length >= 2 && queued_frames[queued_frames.length - 2][1] == frameid)
+		{
+			queued_frames.pop();
+			queued_frames.pop();
+		}
+
+		queued_frames.push([f, frameid]);
+	}
+
 	n.outgoing.forEach(function(s)
 		{
 			var t = transitions[s.transition];
@@ -165,7 +176,7 @@ function try_move(candidate)
 				reo = compose_reo(inverse_reo(step_from(s).reo), reo);
 
 				for (var i = 1; i != t.frames.length; ++i)
-					queued_frames.push(apply_reo(reo, t.frames[i]));
+					queue_frame(apply_reo(reo, t.frames[i]), s.transition * 100 + i);
 
 				reo = compose_reo(step_to(s).reo, reo);
 
@@ -183,7 +194,7 @@ function try_move(candidate)
 				reo = compose_reo(inverse_reo(step_to(s).reo), reo);
 
 				for (var i = t.frames.length - 1; i != 0; --i)
-					queued_frames.push(apply_reo(reo, t.frames[i - 1]));
+					queue_frame(apply_reo(reo, t.frames[i - 1]), s.transition * 100 + (i - 1));
 
 				reo = compose_reo(step_from(s).reo, reo);
 
@@ -202,12 +213,12 @@ function tick()
 
 		if (kf < 1)
 		{
-			targetpos = interpolate_position(last_keyframe, queued_frames[0], kf);
+			targetpos = interpolate_position(last_keyframe, queued_frames[0][0], kf);
 		}
 		else
 		{
 			kf = 0;
-			targetpos = last_keyframe = queued_frames.shift();
+			targetpos = last_keyframe = queued_frames.shift()[0];
 		}
 	}
 

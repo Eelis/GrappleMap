@@ -43,7 +43,6 @@ explorer:
 - make sure selected node doesn't get lost when neighbours are unselected or killed
 - when turning off edit mode, transition to selected node if necessary
 - only load biggest cluster when search page produces disconnected graph
-- when aborting a transition, don't play it through, but immediately start rewinding the elapsed part
 - in edit mode, auto-kill distant nodes, so that you can keep exploring just by opening nodes
 - find solution for multiple transitions between pair of nodes
 - info display /without/ framerate hickups
