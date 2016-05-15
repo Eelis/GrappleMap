@@ -168,40 +168,6 @@ function updateCamera()
 	firstPersonCamera.position = thepos[pl][Head];
 }
 
-function makeScene()
-{
-	scene = new BABYLON.Scene(engine);
-	scene.clearColor = new BABYLON.Color3(1,1,1);
-
-	externalCamera = new BABYLON.ArcRotateCamera("ArcRotateCamera",
-		0, // rotation around Y axis
-		3.14/4, // rotation around X axis
-		2.5, // radius
-		new BABYLON.Vector3(0, 0, 0),
-		scene);
-
-	externalCamera.wheelPrecision = 30;
-	externalCamera.lowerBetaLimit = 0;
-	externalCamera.upperRadiusLimit = 4;
-	externalCamera.lowerRadiusLimit = 1;
-
-	firstPersonCamera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 1, -5), scene);
-	firstPersonCamera.minZ = 0.05;
-
-	externalCamera.attachControl(canvas);
-
-	var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), scene);
-
-	var draw = animated_position_from_array(keyframe, scene);
-
-	scene.registerBeforeRender(function(){
-			tick();
-			if (thepos) draw(thepos);
-		});
-
-	engine.runRenderLoop(function(){ scene.render(); });
-}
-
 window.addEventListener('DOMContentLoaded',
 	function()
 	{
@@ -234,7 +200,7 @@ window.addEventListener('DOMContentLoaded',
 		canvas = document.getElementById('renderCanvas');
 		engine = new BABYLON.Engine(canvas, true);
 
-		makeScene();
+		makeScene(keyframe);
 
 		make_graph();
 
