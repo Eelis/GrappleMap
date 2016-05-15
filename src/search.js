@@ -20,6 +20,13 @@ function trans_has_tag(trans, tag)
 	return trans.tags.indexOf(tag) != -1;
 }
 
+function trans_kinda_has_tag(trans, tag)
+{
+	return (trans_has_tag(trans, tag) ||
+		(node_has_tag(nodes[trans.from.node], tag)
+		&& node_has_tag(nodes[trans.to.node], tag)));
+}
+
 function node_is_selected(node)
 {
 	for (var i = 0; i != selected_tags.length; ++i)
@@ -30,38 +37,37 @@ function node_is_selected(node)
 
 function trans_is_selected(trans)
 {
-	if (node_is_selected(nodes[trans.to.node]) && node_is_selected(nodes[trans.from.node]))
-		return true;
-
 	for (var i = 0; i != selected_tags.length; ++i)
-		if (trans_has_tag(trans, selected_tags[i][0]) != selected_tags[i][1])
+		if (trans_kinda_has_tag(trans, selected_tags[i][0]) != selected_tags[i][1])
 			return false;
 
 	return true;
 }
 
-function tag_refines(t)
+function tag_refines(tag)
 {
-	var inclusions = 0;
-	var exclusions = 0;
+	var r = {
+		nodes_in: 0,
+		nodes_out: 0,
+		trans_in: 0,
+		trans_out: 0 };
 
 	nodes.forEach(function(n){
 		if (node_is_selected(n))
-		{
-			if (node_has_tag(n, t)) ++inclusions;
-			else ++exclusions;
-		}
+			if (node_has_tag(n, tag)) ++r.nodes_in; else ++r.nodes_out;
 	});
 
 	transitions.forEach(function(trans){
 		if (trans_is_selected(trans))
 		{
-			if (trans_has_tag(trans, t)) ++inclusions;
-			else ++exclusions;
+			if (trans_kinda_has_tag(trans, tag))
+				++r.trans_in;
+			else
+				++r.trans_out;
 		}
 	});
 
-	return [inclusions, exclusions];
+	return r;
 }
 
 function add_tag(t, b)
@@ -123,6 +129,13 @@ function update_view_controls()
 	control("⇅", view_mirror_y);
 }
 
+function sorted_selected_tags()
+{
+	var r = [[], []];
+	selected_tags.forEach(function(x) { r[x[1] ? 1 : 0].push(x[0]); });
+	return r;
+}
+
 function update_tag_list()
 {
 	var incl_ul = document.getElementById('include_tags');
@@ -158,7 +171,10 @@ function update_tag_list()
 	var excl_ref = refinements(false);
 	if (excl_ref) excl_ul.appendChild(excl_ref);
 
-	document.getElementById('nonelabel').style.display = (excl_ref ? 'inline' : 'none');
+	document.getElementById('nonelabel').style.display =
+		(excl_ref || (sorted_selected_tags()[0].length != 0)
+			? 'inline'
+			: 'none');
 }
 
 function query_string_for_selection()
@@ -185,11 +201,16 @@ function refinements(b)
 
 	options.add(simple_option(""));
 
+	var sst = sorted_selected_tags();
+
 	tags.forEach(function(t)
 	{
 		var r = tag_refines(t);
-		if (r[0] != 0 && r[1] != 0)
-			options.add(simple_option(t + " (" + r[b ? 0 : 1] + ")", t));
+		if (sst[b ? 1 : 0].indexOf(t) == -1
+			&& ((r.nodes_in != 0 && r.nodes_out != 0) || (r.trans_in != 0 && r.trans_out != 0)))
+			options.add(simple_option(t
+				+ " (" + (b ? r.nodes_in : r.nodes_out)
+				+ "p, " + (b ? r.trans_in : r.trans_out) + "t)", t));
 	});
 
 	if (options.length == 1) return null;

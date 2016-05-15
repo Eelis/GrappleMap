@@ -34,7 +34,6 @@ position pages:
 - make scene lighting more like in composer
 
 search page:
-- show tagged transitions
 - also search by name/reference substring
 - only warp if node is unreachable
 

@@ -348,10 +348,9 @@ void tojs(Graph const & graph, std::ostream & js)
 	{
 		Sequence const & seq = graph[s];
 
-		js << "{from:";
-		tojs(graph.from(s), js);
-		js << ",to:";
-		tojs(graph.to(s), js);
+		js << "{id:" << s.index;
+		js << ",from:"; tojs(graph.from(s), js);
+		js << ",to:"; tojs(graph.to(s), js);
 		js << ",frames:[";
 		foreach (pos : seq.positions)
 		{
@@ -360,7 +359,6 @@ void tojs(Graph const & graph, std::ostream & js)
 		}
 		js << "],description:";
 		tojs(seq.description, js);
-
 		js << ",tags:";
 		tojs(tags_in_desc(seq.description), js);
 		js << ",properties:";
