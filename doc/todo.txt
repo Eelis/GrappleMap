@@ -56,7 +56,6 @@ drill composer
 - fps and other metrics display
 - leave animation undisturbed when manipulating drill
 - integrated transition editor
-- don't fuck up position when window becomes invisible
 - first person camera jerky when sliding
 - better layout for info checkbox and explorer link
 

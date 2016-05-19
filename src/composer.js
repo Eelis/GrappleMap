@@ -389,7 +389,7 @@ function tick()
 {
 	if (!sliding && !paused && steps.length != 0)
 	{
-		k += engine.getDeltaTime() / speed;
+		k += Math.min(engine.getDeltaTime() / speed, 2);
 		if (k >= 1)
 		{
 			k -= 1;
