@@ -58,7 +58,6 @@ drill composer
 - integrated transition editor
 - don't fuck up position when window becomes invisible
 - first person camera jerky when sliding
-- fix aspect ratio when toggling info
 - better layout for info checkbox and explorer link
 
 new tools:

@@ -354,6 +354,8 @@ function on_info_change()
 	document.getElementById('renderCanvas').style.width = (info_mode ? '50%' : '70%');
 
 	refreshDrill();
+
+	engine.resize();
 }
 
 function updateCamera()
