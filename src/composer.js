@@ -218,11 +218,6 @@ function encode_steps(a)
 	return r;
 }
 
-function on_canvas_resize()
-{
-	// todo
-}
-
 function refreshDrill()
 {
 	var controls = document.getElementById("controls"); // todo: rename
@@ -560,9 +555,9 @@ window.addEventListener('DOMContentLoaded',
 		canvas = document.getElementById('renderCanvas');
 		engine = new BABYLON.Engine(canvas, true);
 
-		canvas.addEventListener("resize", on_canvas_resize); // todo: this doesn't work
-
 		makeScene(thepos);
 
 		on_view_change();
+		
+		window.addEventListener('resize', function() { engine.resize(); });
 	});

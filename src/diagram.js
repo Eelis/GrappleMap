@@ -208,6 +208,8 @@ window.addEventListener('DOMContentLoaded',
 		selected_node_changed();
 
 		scene.activeCamera = externalCamera;
+
+		window.addEventListener('resize', function() { engine.resize(); });
 	});
 
 
