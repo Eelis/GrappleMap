@@ -361,7 +361,6 @@ function updateCamera()
 	var vv = document.getElementById("view_select").value;
 	if (vv == "external") return;
 	var pl = parseInt(vv);
-	var opp = 1 - pl;
 
 	firstPersonCamera.upVector = thepos[pl][Head].subtract(thepos[pl][Neck]);
 
@@ -491,8 +490,17 @@ function resetFrames()
 {
 	if (steps.length == 0)
 	{
-		keyframes = [nodes[start_node].position];
-		if (mirror_view) mirror(keyframes[0]);
+		var p = nodes[start_node].position;
+
+		var r = {
+				mirror: mirror_view,
+				swap_players: false,
+				angle: 0,
+				offset: p[0][Core].add(p[1][Core]).scale(-0.5)
+			};
+		r.offset.y = 0;
+
+		keyframes = [apply_reo(r, p)];
 	}
 	else keyframes = follow(steps, mirror_view);
 
