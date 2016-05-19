@@ -269,7 +269,7 @@ function makeScene(initialPos)
 
 	externalCamera = new BABYLON.ArcRotateCamera("ArcRotateCamera",
 		0, // rotation around Y axis
-		3.14/4, // rotation around X axis
+		Math.PI/4, // rotation around X axis
 		2.5, // radius
 		new BABYLON.Vector3(0, 0, 0), // target
 		scene);
@@ -281,6 +281,7 @@ function makeScene(initialPos)
 
 	firstPersonCamera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 1, -5), scene);
 	firstPersonCamera.minZ = 0.05;
+	firstPersonCamera.fov = 1.6;
 
 	externalCamera.attachControl(canvas);
 

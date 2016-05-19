@@ -363,11 +363,12 @@ function updateCamera()
 	var pl = parseInt(vv);
 	var opp = 1 - pl;
 
+	firstPersonCamera.upVector = thepos[pl][Head].subtract(thepos[pl][Neck]);
+
 	firstPersonCamera.setTarget(
 		thepos[pl][LeftFingers]
 		.add(thepos[pl][RightFingers])
-		.add(thepos[opp][Head].scale(2))
-		.scale(0.25));
+		.scale(0.5));
 
 	firstPersonCamera.position = thepos[pl][Head];
 }
@@ -486,40 +487,6 @@ function on_mirror_button_clicked()
 		mirror(keyframes[f]);
 }
 
-function makeScene()
-{
-	scene = new BABYLON.Scene(engine);
-	scene.clearColor = new BABYLON.Color3(1,1,1);
-
-	externalCamera = new BABYLON.ArcRotateCamera("ArcRotateCamera",
-		0, // rotation around Y axis
-		3.14/4, // rotation around X axis
-		2.5, // radius
-		new BABYLON.Vector3(0, 0, 0),
-		scene);
-
-	externalCamera.wheelPrecision = 30;
-	externalCamera.lowerBetaLimit = 0;
-	externalCamera.upperRadiusLimit = 4;
-	externalCamera.lowerRadiusLimit = 1;
-
-	firstPersonCamera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 1, -5), scene);
-	firstPersonCamera.minZ = 0.05;
-
-	externalCamera.attachControl(canvas);
-
-	var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), scene);
-
-	var draw = animated_position_from_array(keyframes[0], scene);
-
-	scene.registerBeforeRender(function(){
-			tick();
-			if (thepos) draw(thepos);
-		});
-
-	engine.runRenderLoop(function(){ scene.render(); });
-}
-
 function resetFrames()
 {
 	if (steps.length == 0)
@@ -585,7 +552,7 @@ window.addEventListener('DOMContentLoaded',
 
 		canvas.addEventListener("resize", on_canvas_resize); // todo: this doesn't work
 
-		makeScene();
+		makeScene(thepos);
 
 		on_view_change();
 	});

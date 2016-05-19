@@ -158,12 +158,13 @@ function updateCamera()
 	var pl = parseInt(vv);
 	var opp = 1 - pl;
 
+	firstPersonCamera.upVector = thepos[pl][Head].subtract(thepos[pl][Neck]);
+
 	firstPersonCamera.setTarget(
 		thepos[pl][LeftFingers]
 		.add(thepos[pl][RightFingers])
-		.add(thepos[opp][Head].scale(2))
-		.scale(0.25));
-	firstPersonCamera.fov = 1.6;
+		.scale(0.5));
+
 	firstPersonCamera.position = thepos[pl][Head];
 }
 
