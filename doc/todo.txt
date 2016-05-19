@@ -49,6 +49,7 @@ explorer:
 - make zooming with scrollwheel work
 - if nodes form a chain, make composer link load it as a drill
 - show bidirectional transitions with bidirectional arrows
+- see if using babylon's canvas2d for the graph helps
 
 drill composer
 - speed dial
