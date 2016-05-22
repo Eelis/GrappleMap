@@ -298,12 +298,10 @@ function refreshDrill()
 		}
 	}
 
-	if (steps.length != 0) // todo: also if length==0
-	{
-		history.replaceState(null, "", "index.html?" + encode_steps(steps));
-			// todo: handle back nav
-			// todo: don't do this the first time if this is already the url
-	}
+	history.replaceState(null, "", "index.html?" +
+		(steps.length != 0
+			? encode_steps(steps)
+			: "p" + start_node));
 
 	var dianodes=[];
 	steps.forEach(function(s){
