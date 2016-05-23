@@ -518,7 +518,7 @@ int main(int const argc, char const * const * const argv)
 
 		if (!glfwInit()) return -1;
 
-		GLFWwindow * const window = glfwCreateWindow(640, 480, "Jiu Jitsu Mapper", nullptr, nullptr);
+		GLFWwindow * const window = glfwCreateWindow(640, 480, "GrappleMap", nullptr, nullptr);
 
 		if (!window) { glfwTerminate(); return -1; }
 

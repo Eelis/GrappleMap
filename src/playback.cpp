@@ -100,7 +100,7 @@ int main(int const argc, char const * const * const argv)
 
 		if (!glfwInit()) error("could not initialize GLFW");
 
-		GLFWwindow * const window = glfwCreateWindow(640, 480, "Jiu Jitsu Mapper", nullptr, nullptr);
+		GLFWwindow * const window = glfwCreateWindow(640, 480, "GrappleMap", nullptr, nullptr);
 		if (!window) error("could not create window");
 
 		glfwMakeContextCurrent(window);
