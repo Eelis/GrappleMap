@@ -4,6 +4,7 @@ var view = [0, false];
 var last_keyframe = null;
 var selected_node = null;
 var selected_nodes = [];
+var substrs = [];
 var reo = zero_reo();
 var kf = 0;
 var svg;
@@ -31,7 +32,23 @@ function node_is_selected(node)
 	for (var i = 0; i != selected_tags.length; ++i)
 		if (node_has_tag(node, selected_tags[i][0]) != selected_tags[i][1])
 			return false;
+
+	for (var i = 0; i != substrs.length; ++i)
+		if (node.description.indexOf(substrs[i]) == -1 &&
+			!any_has_substr(node.tags, substrs[i]))
+			return false;
+
 	return true;
+}
+
+// todo: encode substrs in query string
+
+function any_has_substr(a, s)
+{
+	for (var i = 0; i != a.length; ++i)
+		if (a[i].toLowerCase().indexOf(s) != -1)
+			return true;
+	return false;
 }
 
 function trans_is_selected(trans)
@@ -39,6 +56,14 @@ function trans_is_selected(trans)
 	for (var i = 0; i != selected_tags.length; ++i)
 		if (trans_kinda_has_tag(trans, selected_tags[i][0]) != selected_tags[i][1])
 			return false;
+
+
+	for (var i = 0; i != substrs.length; ++i)
+		if (!any_has_substr(trans.description, substrs[i]) &&
+			!any_has_substr(trans.tags, substrs[i]))
+			return false;
+
+	// todo: also implied tags?
 
 	return true;
 }
@@ -72,16 +97,16 @@ function tag_refines(tag)
 function add_tag(t, b)
 {
 	selected_tags.push([t, b]);
-	on_tag_selection_changed();
+	on_query_changed();
 }
 
 function remove_tag(t)
 {
 	selected_tags.splice(selected_tags.indexOf(t), 1);
-	on_tag_selection_changed();
+	on_query_changed();
 }
 
-function on_tag_selection_changed()
+function on_query_changed()
 {
 	selected_nodes = [];
 	for (var n = 0; n != nodes.length; ++n)
@@ -404,6 +429,16 @@ function mouse_over_node(d)
 	tick_graph(svg);
 }
 
+function on_substrs()
+{
+	substrs = document.getElementById('substrs_box').value.split(' ');
+
+	for (var i = 0; i != substrs.length; ++i)
+		substrs[i] = substrs[i].toLowerCase();
+
+	on_query_changed();
+}
+
 window.addEventListener('DOMContentLoaded',
 	function()
 	{
@@ -444,7 +479,7 @@ window.addEventListener('DOMContentLoaded',
 
 		update_view_controls();
 
-		on_tag_selection_changed();
+		on_query_changed();
 		selected_node = selected_nodes[0];
 
 		window.addEventListener('resize', function() { engine.resize(); });

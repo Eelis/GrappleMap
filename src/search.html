@@ -33,15 +33,16 @@
 		<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>
 		<h2>Search</h2>
 		<div style='border:1px solid black;display:inline-block;text-align:left;padding:15px'>
-			Showing positions and transitions that have <em>all of</em> these tags:
+			Show positions and transitions that have <em>all of</em> these tags:
 			<ul id='include_tags'></ul>
 			<span id='nonelabel'>and <em>none of</em> these tags:</span>
 			<ul id='exclude_tags'></ul>
+			<span id='nonelabel'>and these substrings:</span>&nbsp;
+			<input id='substrs_box' type='text' oninput='on_substrs();'></input>
 		</div>
 
-		<p id='view_controls'></p>
-
-		<hr>
+		<br><br><hr>
+		<span style='border:1px solid black;display:inline-block;padding:5px' id='view_controls'></span>
 
 		<table style='width:100%'>
 			<tr>
