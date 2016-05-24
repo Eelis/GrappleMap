@@ -447,5 +447,7 @@ window.addEventListener('DOMContentLoaded',
 		on_tag_selection_changed();
 		selected_node = selected_nodes[0];
 
+		window.addEventListener('resize', function() { engine.resize(); });
+
 		tick_graph(svg);
 	});
