@@ -29,7 +29,7 @@
 		<script src='../graphdisplay.js'></script>
 		<script src='../transitions.js'></script>
 	</head>
-	<body style='margin:50px;line-height:150%;text-align:center'>
+	<body style='margin:0px;text-align:center'>
 		<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>
 		<h2>Search</h2>
 		<div style='border:1px solid black;display:inline-block;text-align:left;padding:15px'>
@@ -58,16 +58,15 @@
 
 		<hr>
 		<h2>Neighbourhood</h2>
-
 		<p>(<a id='diagramlink' href=''>view in explorer</a>)</p>
 
-		<div style='width:100%;text-align:right'>
-			<svg id="mynetwork" style='position:absolute;width:100%;height:100%;background:rgba(255,255,255,0.55)'>
+		<div style='position:absolute;width:100%;height:100%'>
+			<canvas style='width:100%;height:100%;position:absolute;left:0px;top:0px' id='renderCanvas'></canvas>
+			<svg id="mynetwork" style='position:absolute;width:100%;height:100%;background:rgba(255,255,255,0.55);left:0px;top:0px'>
 				<g id="links"></g>
 				<g id="nodes"></g>
 				<g id="labels"></g>
 			</svg>
-			<canvas style='width:100%;height:100%' id='renderCanvas'></canvas>
 		</div>
 
 		<script src='search.js'></script>
