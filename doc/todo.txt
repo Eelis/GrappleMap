@@ -36,6 +36,8 @@ position pages:
 search page:
 - also search by name/reference substring
 - only warp if node is unreachable
+- add view controls for neighbourhood
+- extended info mode
 
 explorer:
 - find a way to get mouse events through to babylon, or at least mention that arrow keys rotate camera
@@ -48,7 +50,8 @@ explorer:
 - info display /without/ framerate hickups
 - make zooming with scrollwheel work
 - if nodes form a chain, make composer link load it as a drill
-- show bidirectional transitions with bidirectional arrows
+- show bidirectional transitions with bidirectional arrows, and make arrows to small nodes point properly to edge
+- when the cursor is over a transition, indicate the point on the line closest to the cursor, and guide the animation towards the exact interpolated position, so that moving the mouse smoothly animates smoothly
 - see if using babylon's canvas2d for the graph helps
 
 drill composer
@@ -66,3 +69,6 @@ misc:
 - mobile-friendly versions of things
 - clean up code (a lot)
 - get webserver to compress transitions (saves 70%)
+- for each transition, generate a file containing its frames, so that the web pages can request only what they need instead of loading everything
+- generate lightweight db summary file that only contains position data for nodes, for use by e.g. search page
+
