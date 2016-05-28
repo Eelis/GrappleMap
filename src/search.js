@@ -203,6 +203,8 @@ function update_tag_list()
 
 function query_string_for_selection()
 {
+	if (selected_tags.length == 0) return "";
+
 	var s = "?";
 
 	for (var i = 0; i != selected_tags.length; ++i)
