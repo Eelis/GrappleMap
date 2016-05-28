@@ -124,6 +124,7 @@ struct Window
 	Viables viable;
 	PositionReorientation reorientation{};
 	optional<NextPosition> next_pos;
+	double last_cursor_x = 0, last_cursor_y = 0;
 	std::stack<std::pair<Graph, PositionInSequence>> undo;
 	Style style;
 
@@ -483,6 +484,23 @@ void forward(Window & w)
 	}
 }
 
+void cursor_pos_callback(GLFWwindow * const window, double const xpos, double const ypos)
+{
+	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(window));
+
+	if (w.last_cursor_x != 0 && w.last_cursor_y != 0 &&
+		glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_3) == GLFW_PRESS)
+	{
+		double const speed = 0.002;
+
+		w.camera.rotateVertical((ypos - w.last_cursor_y) * -speed);
+		w.camera.rotateHorizontal((xpos - w.last_cursor_x) * speed);
+	}
+
+	w.last_cursor_x = xpos;
+	w.last_cursor_y = ypos;
+}
+
 int main(int const argc, char const * const * const argv)
 {
 	namespace po = boost::program_options;
@@ -527,7 +545,8 @@ int main(int const argc, char const * const * const argv)
 		glfwSetKeyCallback(window, key_callback);
 		glfwSetMouseButtonCallback(window, mouse_button_callback);
 		glfwSetScrollCallback(window, scroll_callback);
-		
+		glfwSetCursorPosCallback(window, cursor_pos_callback);
+
 		glfwMakeContextCurrent(window);
 		glfwSwapInterval(1);
 
