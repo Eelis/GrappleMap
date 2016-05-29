@@ -16,7 +16,6 @@ editor
   * rotate joints in unnatural ways
   * move limbs through eachother
 - maybe visually indicate where a body's structural mechanics are weak, which directions it could be off-balanced, etc
-- make "last trans" the default for gui
 
 playback:
 - make {pre,post}fix length for demo mode configurable

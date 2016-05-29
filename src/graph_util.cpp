@@ -61,6 +61,8 @@ optional<NodeNum> node_by_desc(Graph const & g, string const & desc)
 
 optional<PositionInSequence> posinseq_by_desc(Graph const & g, string const & s)
 {
+	if (s == "last-trans") return first_pos_in({g.num_sequences() - 1u});
+
 	if (auto step = step_by_desc(g, s)) return first_pos_in(step->seq);
 
 	if (auto n = node_by_desc(g, s)) return node_as_posinseq(g, *n);
