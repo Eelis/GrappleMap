@@ -48,7 +48,7 @@ explorer:
 - find solution for multiple transitions between pair of nodes
 - make zooming with scrollwheel work
 - if nodes form a chain, make composer link load it as a drill
-- show bidirectional transitions with bidirectional arrows, and make arrows to small nodes point properly to edge
+- show bidirectional transitions with bidirectional arrows
 - when the cursor is over a transition, indicate the point on the line closest to the cursor, and guide the animation towards the exact interpolated position, so that moving the mouse smoothly animates smoothly
 - see if using babylon's canvas2d for the graph helps
 

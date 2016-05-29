@@ -35,6 +35,39 @@ function add_markers(svg)
 		.style("fill", "black")
 		.append('svg:path')
 		.attr('d', 'M0,-10L37,0L0,10');
+
+	svg.append('svg:defs').append('svg:marker')
+		.attr('id', 'red-arrow-nonsel')
+		.attr('viewBox', '-50 -50 50 100')
+		.attr('markerWidth', 25)
+		.attr('markerHeight', 25)
+		.attr('orient', 'auto')
+		.style("fill", "red")
+		.append('svg:path')
+		.attr('d', 'M-46,-10L-9,0L-46,10');
+
+	svg.append('svg:defs').append('svg:marker')
+		.attr('id', 'blue-arrow-nonsel')
+		.attr('viewBox', '-50 -50 50 100')
+		.attr('markerWidth', 25)
+		.attr('markerHeight', 25)
+		.attr('orient', 'auto')
+		.style("fill", "blue")
+		.append('svg:path')
+		.attr('d', 'M-46,-10L-9,0L-46,10');
+
+	svg.append('svg:defs').append('svg:marker')
+		.attr('id', 'black-arrow-nonsel')
+		.attr('viewBox', '-50 -50 50 100')
+		.attr('markerWidth', 25)
+		.attr('markerHeight', 25)
+		.attr('orient', 'auto')
+		.style("fill", "black")
+		.append('svg:path')
+		.attr('d', 'M-46,-10L-9,0L-46,10');
+	
+	// todo: this is horrible and gross, clean up
+	// todo: can't we make markers that inherit the line color?
 }
 
 function get_id(x) { return x.id; }
@@ -112,9 +145,12 @@ function make_svg_graph_elems(svg, G, force)
 	link_shapes.enter()
 		.append("line")
 		.attr("class", "link")
-		.attr("marker-end", function(d){ return "url(#" + d.color + "-arrow)"; })
-			// todo: can't we make a marker that inherits the line color?
 		.style("stroke", function(d){ return d.color; });
+
+	link_shapes.attr("marker-end", function(d){
+			var sel = (selected_nodes.indexOf(d.target.id) != -1);
+			return "url(#" + d.color + "-arrow" + (sel ? "" : "-nonsel") + ")";
+		});
 
 	link_infos.enter()
 		.append("div")
