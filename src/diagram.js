@@ -194,6 +194,11 @@ window.addEventListener('DOMContentLoaded',
 
 			selected_node = selected_nodes[0];
 		}
+		else
+		{
+			selected_node = randInt(nodes.length);
+			selected_nodes = [selected_node];
+		}
 
 		thepos = last_keyframe = keyframe = nodes[selected_node].position;
 
