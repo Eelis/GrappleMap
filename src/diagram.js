@@ -20,24 +20,6 @@ function on_mirror_button_clicked()
 	reo.mirror = !reo.mirror;
 }
 
-function mouse_over_transition(d)
-{
-/*
-	var elem = document.getElementById('info');
-	
-	elem.innerHTML = "transition " + d.id + " @ line " + transitions[d.id].line_nr;
-
-	transitions[d.id].description.forEach(function(line)
-		{
-			if (line.startsWith("ref:")) elem.innerHTML += "<br>" + line;
-		});*/
-}
-
-function clear_info()
-{
-//	document.getElementById('info').innerHTML = "";
-}
-
 function selected_node_changed()
 {
 	document.getElementById('composer_link').href = "../composer/index.html?p" + selected_node;

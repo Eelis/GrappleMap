@@ -66,18 +66,32 @@ function tick_graph(svg)
 		.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 }
 
+function mouse_over_transition(d)
+{
+	d3.select("#infos").selectAll(".link_info").style("display", function(dd)
+		{
+			return (dd == d ? "inline" : "none");
+		});
+}
+
+function mouse_not_over_transition(d)
+{
+	d3.select("#infos").selectAll(".link_info").style("display", "none");
+}
+
 function make_svg_graph_elems(svg, G, force)
 {
 	var node_shapes = svg.select("#nodes").selectAll(".node").data(G.nodes, get_id);
 	var node_labels = svg.select("#labels").selectAll(".node_label_group").data(G.nodes, get_id);
 	var link_shapes = svg.select("#links").selectAll(".link").data(G.links, get_id);
 	var link_labels = svg.select("#labels").selectAll(".link_label_group").data(G.links, get_id);
+	var link_infos = d3.select("#infos").selectAll(".link_info").data(G.links, get_id);
 
 	{
 		var s = link_labels.enter().append('g')
-			.attr("class", "link_label_group");
-//			.on('mouseover', mouse_over_transition)
-//			.on('mouseout', clear_info);
+			.attr("class", "link_label_group")
+			.on('mouseover', mouse_over_transition)
+			.on('mouseout', mouse_not_over_transition);
 
 		s	.append("text")
 			.attr("class", "link_label")
@@ -102,11 +116,20 @@ function make_svg_graph_elems(svg, G, force)
 			// todo: can't we make a marker that inherits the line color?
 		.style("stroke", function(d){ return d.color; });
 
+	link_infos.enter()
+		.append("div")
+		.attr("class", "link_info")
+		.style("display", "none")
+		.html(function(d){
+				var trans = transitions[d.id];
+				return trans.description.join("<br>") +
+					"<br>transition " + d.id + " @ line " + trans.line_nr;
+			});
+
 	node_shapes.enter().append("circle")
 		.attr("class", "node")
 		.on('click', node_clicked)
 		.on('mouseover', mouse_over_node)
-//		.on('mouseout', clear_info)
 		.call(force.drag);
 
 	node_shapes.attr("r", function(d)
@@ -124,7 +147,6 @@ function make_svg_graph_elems(svg, G, force)
 			.attr("class", "node_label_group")
 			.on('click', node_clicked)
 			.on('mouseover', mouse_over_node)
-//			.on('mouseout', clear_info)
 			.call(force.drag);
 
 		s	.append("text")
