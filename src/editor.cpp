@@ -501,16 +501,52 @@ void cursor_pos_callback(GLFWwindow * const window, double const xpos, double co
 	w.last_cursor_y = ypos;
 }
 
+string const controls =
+	"Keys:\n"
+	"  arrow keys - rotate camera\n"
+	"  home/end   - zoom in/out\n"
+	"  v          - switch between edit and explore mode\n"
+	"  s          - write database to file\n"
+	"  h          - set position of highlighted joint to\n"
+	"                what it was in the previous position\n"
+	"  j          - set position of highlighted joint to\n"
+	"                interpolated midpoint\n"
+	"  k          - set position of highlighted joint to\n"
+	"                what it was in the next position\n"
+	"  u          - make current position the interpolated midpoint\n"
+	"                between the previous and next position\n"
+	"  x          - swap players\n"
+	"  m          - mirror position\n"
+	"  i          - mirror view\n"
+	"  n          - create new transition with start and end point identical to current frame\n"
+	"  b          - split current transition into two at current frame, where the latter becomes a new node\n"
+	"  numpad 7/9  - rotate position\n"
+	"  numpad arrows - move position\n"
+	"  ctrl-c     - copy position to clipboard\n"
+	"  ctrl-v     - paste position from clipboard, overwriting current position\n"
+	"  ctrl-z     - undo\n"
+	"  page up    - go to previous transition\n"
+	"  page down  - go to next transition\n"
+	"  ctrl-del   - delete current transition\n"
+	"  ins        - duplicate current frame\n"
+	"  del        - delete current frame\n"
+	"\n"
+	"Mouse controls:\n"
+	"  scroll wheel              - scroll through frames in sequence\n"
+	"  right click + drag joint  - move joint along path\n"
+	"  middle click + move       - rotate camera\n"
+	"  left click + drag joint   - move joint (only in edit mode)\n";
+
 int main(int const argc, char const * const * const argv)
 {
 	namespace po = boost::program_options;
 
 	try
 	{
-		po::options_description desc("options");
+		po::options_description desc("Options");
 		desc.add_options()
 			("help,h", "show this help")
-			("start", po::value<string>()->default_value("last-trans"), "initial node (by number or first line of description)")
+			("start", po::value<string>()->default_value("last-trans"), "\"t#\" or \"n#\"")
 			("db", po::value<string>()->default_value("GrappleMap.txt"), "database file");
 
 		po::positional_options_description posopts;
@@ -525,7 +561,7 @@ int main(int const argc, char const * const * const argv)
 			vm);
 		po::notify(vm);
 
-		if (vm.count("help")) { std::cout << desc << '\n'; return 0; }
+		if (vm.count("help")) { std::cout << desc << '\n' << controls; return 0; }
 
 		Window w(vm["db"].as<std::string>());
 
