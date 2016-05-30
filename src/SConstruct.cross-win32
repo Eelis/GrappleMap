@@ -8,12 +8,10 @@ env = Environment(
 common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp'])
 rendering = env.Object('rendering.cpp')
 
-env.Program(
-	'grapplemap-editor.exe',
-	['editor.cpp', rendering, common],
-	LIBS=['boost_program_options-mt-s', 'glfw3', 'opengl32', 'glu32', 'gdi32'])
+libs=['boost_program_options-mt-s', 'glfw3', 'opengl32', 'glu32', 'gdi32']
 
-env.Program(
-	'grapplemap-playback.exe',
-	['playback.cpp', 'paths.cpp', rendering, common],
-	LIBS=['boost_program_options-mt-s', 'glfw3', 'opengl32', 'glu32', 'gdi32'])
+env.Program('grapplemap-editor.exe',
+	['editor.cpp', rendering, common], LIBS=libs)
+
+env.Program('grapplemap-playback.exe',
+	['playback.cpp', 'paths.cpp', rendering, common], LIBS=libs)
