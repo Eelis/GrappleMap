@@ -632,15 +632,15 @@ int main(int const argc, char const * const * const argv)
 
 				V4 dragger = yrot(-w.camera.getHorizontalRotation() - w.reorientation.reorientation.angle) * V4{{1,0,0},0};
 				if (w.reorientation.mirror) dragger.x = -dragger.x;
-				
+
 				V2 const off = *cursor - world2xy(w.camera, apply(w.reorientation, new_pos, *w.chosen_joint));
 
 				auto const rj = apply(w.reorientation, *w.chosen_joint);
 
 				auto & joint = new_pos[rj];
 
-				joint.x += dragger.x * off.x;
-				joint.z += dragger.z * off.x;
+				joint.x = std::max(-2., std::min(2., joint.x + dragger.x * off.x));
+				joint.z = std::max(-2., std::min(2., joint.z + dragger.z * off.x));
 				joint.y = std::max(jointDefs[w.chosen_joint->joint].radius, joint.y + off.y);
 
 				spring(new_pos, rj);
