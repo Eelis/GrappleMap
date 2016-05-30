@@ -298,10 +298,16 @@ function refreshDrill()
 		}
 	}
 
-	history.replaceState(null, "", "index.html?" +
-		(steps.length != 0
-			? encode_steps(steps)
-			: "p" + start_node));
+	try
+	{
+		history.replaceState(null, "", "index.html?" +
+			(steps.length != 0
+				? encode_steps(steps)
+				: "p" + start_node));
+	}
+	catch (e) {}
+		// When browsing locally, the replaceState above
+		// throws a security exception with Chrome.
 
 	var dianodes=[];
 	steps.forEach(function(s){

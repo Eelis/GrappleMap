@@ -33,8 +33,12 @@ function selected_node_changed()
 
 function node_selection_changed()
 {
-	history.replaceState(null, "", "index.html?" + selected_nodes.join(","));
-		// todo: use state
+	try
+	{
+		history.replaceState(null, "", "index.html?" + selected_nodes.join(","));
+			// todo: use state
+	}
+	catch (e) {}
 
 	var G = { nodes: [], links: [] };
 

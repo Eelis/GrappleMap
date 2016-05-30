@@ -10,6 +10,9 @@ src/grapplemap-playback
 src/grapplemap-playback.exe
 src/grapplemap-todot
 src/grapplemap-browse
+src/grapplemap-browse.exe
+src/grapplemap-dbtojs
+src/grapplemap-dbtojs.exe
 src/grapplemap-mkvid
 src/browse
 GrappleMap

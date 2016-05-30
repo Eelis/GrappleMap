@@ -2,7 +2,8 @@ import os
 
 env = Environment(
 	ENV=os.environ,
-	CCFLAGS='-Wall -Wextra -pedantic -static -static-libgcc -static-libstdc++ -std=c++1y -DNDEBUG -O3 -DNO_IMAGES',
+	CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3 -DNO_IMAGES',
+	LINKFLAGS='-static -static-libgcc -static-libstdc++',
 	CXX='i686-w64-mingw32-g++')
 
 common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp'])
@@ -16,6 +17,8 @@ env.Program('grapplemap-editor.exe',
 env.Program('grapplemap-playback.exe',
 	['playback.cpp', 'paths.cpp', rendering, common], LIBS=libs)
 
-env.Program('grapplemap-browse',
+env.Program('grapplemap-browse.exe',
 	['browse.cpp', 'images.cpp', rendering, common],
 	LIBS = libs + ['boost_filesystem-mt-s', 'boost_system-mt-s'])
+
+env.Program('grapplemap-dbtojs.exe', ['dbtojs.cpp', common])
