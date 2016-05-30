@@ -509,7 +509,7 @@ int main(int const argc, char const * const * const argv)
 	{
 		po::options_description desc("options");
 		desc.add_options()
-			("help", "show this help")
+			("help,h", "show this help")
 			("start", po::value<string>()->default_value("last-trans"), "initial node (by number or first line of description)")
 			("db", po::value<string>()->default_value("GrappleMap.txt"), "database file");
 

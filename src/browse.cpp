@@ -64,7 +64,7 @@ namespace
 
 		po::options_description desc("options");
 		desc.add_options()
-			("help",
+			("help,h",
 				"show this help")
 			("output_dir",
 				po::value<string>()->default_value("."),
