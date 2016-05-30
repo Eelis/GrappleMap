@@ -16,6 +16,7 @@ editor
   * rotate joints in unnatural ways
   * move limbs through eachother
 - maybe visually indicate where a body's structural mechanics are weak, which directions it could be off-balanced, etc
+- list controls in --help output
 
 playback:
 - make {pre,post}fix length for demo mode configurable
@@ -69,4 +70,12 @@ misc:
 - get webserver to compress transitions (saves 70%)
 - for each transition, generate a file containing its frames, so that the web pages can request only what they need instead of loading everything
 - generate lightweight db summary file that only contains position data for nodes, for use by e.g. search page
+- make sure no invalid data is written to db
+- css/html validation of everything
+- re-use css across pages
 
+binary packages:
+- maybe make a dockerfile for the crosscompile env
+- unrecognized options turn into hard crashes on win32, so it looks like exception handling isn't working
+- generate apple stuff
+- get ftgl to work (or something else for text)
