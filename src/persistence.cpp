@@ -115,7 +115,7 @@ namespace
 Graph loadGraph(string const filename)
 {
 	std::vector<Sequence> edges;
-	std::ifstream ff(filename);
+	std::ifstream ff(filename, std::ios::binary);
 
 	if (!ff) error(filename + ": " + std::strerror(errno));
 
@@ -140,7 +140,7 @@ Graph loadGraph(string const filename)
 
 void save(Graph const & g, string const filename)
 {
-	std::ofstream f(filename);
+	std::ofstream f(filename, std::ios::binary);
 
 	foreach(n : nodenums(g))
 		if (!g[n].description.empty())
@@ -154,7 +154,7 @@ void save(Graph const & g, string const filename)
 
 Path readScene(Graph const & graph, string const filename)
 {
-	std::ifstream f(filename);
+	std::ifstream f(filename, std::ios::binary);
 	if (!f) error(filename + ": " + std::strerror(errno));
 
 	optional<NodeNum> prev_node;
