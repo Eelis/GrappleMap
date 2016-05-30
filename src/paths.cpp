@@ -21,7 +21,7 @@ Frames smoothen(Frames f)
 
 Frames frames(Graph const & g, Path const & path, unsigned const frames_per_pos)
 {
-	if (path.empty()) return {};
+	if (path.empty()) return Frames();
 
 	auto d = [&](SeqNum seq)
 		{
@@ -70,7 +70,7 @@ bool dfsScene(
 
 	foreach (s : in_out[n.node.index].second)
 	{
-		if (std::find(scene.end() - std::min(scene.size(), 15ul), scene.end(), s) != scene.end()) continue;
+		if (std::find(scene.end() - std::min(scene.size(), Path::size_type(15ul)), scene.end(), s) != scene.end()) continue;
 
 		size_t const c = std::count(scene.begin(), scene.end(), s);
 

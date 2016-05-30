@@ -1,0 +1,19 @@
+import os
+
+env = Environment(
+	ENV=os.environ,
+	CCFLAGS='-Wall -Wextra -pedantic -static -static-libgcc -static-libstdc++ -std=c++1y -DNDEBUG -O3',
+	CXX='i686-w64-mingw32-g++')
+
+common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp'])
+rendering = env.Object('rendering.cpp')
+
+env.Program(
+	'grapplemap-editor.exe',
+	['editor.cpp', rendering, common],
+	LIBS=['boost_program_options-mt-s', 'glfw3', 'opengl32', 'glu32', 'gdi32'])
+
+env.Program(
+	'grapplemap-playback.exe',
+	['playback.cpp', 'paths.cpp', rendering, common],
+	LIBS=['boost_program_options-mt-s', 'glfw3', 'opengl32', 'glu32', 'gdi32'])

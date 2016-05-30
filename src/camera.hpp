@@ -52,8 +52,8 @@ public:
 	void rotateVertical(double radians)
 	{
 		orientation.y += radians;
-		orientation.y = std::max(-M_PI/2, orientation.y);
-		orientation.y = std::min(M_PI/2, orientation.y);
+		orientation.y = std::max(-pi()/2, orientation.y);
+		orientation.y = std::min(pi()/2, orientation.y);
 		computeMv();
 	}
 

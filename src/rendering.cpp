@@ -20,7 +20,7 @@ namespace
 		V3 a = normalize(cross(to - from, V3{1,1,1} - from));
 		V3 b = normalize(cross(to - from, a));
 
-		double s = 2 * M_PI / faces;
+		double s = 2 * pi() / faces;
 
 		glBegin(GL_TRIANGLES);
 
@@ -197,6 +197,7 @@ void renderWindow(
 	Style const & style)
 {
 	glEnable(GL_SCISSOR_TEST);
+	glEnable(GL_POINT_SMOOTH);
 
 	foreach (v : views)
 	{

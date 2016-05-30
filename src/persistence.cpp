@@ -64,7 +64,7 @@ namespace
 				if (!last_was_position)
 				{
 					assert(!desc.empty());
-					v.push_back(Sequence{desc, {}, line_nr - desc.size()});
+					v.push_back(Sequence{desc, vector<Position>{}, line_nr - desc.size()});
 					desc.clear();
 				}
 

@@ -6,6 +6,7 @@
 #include "rendering.hpp"
 #include "graph_util.hpp"
 #include "paths.hpp"
+#include <unistd.h>
 #include <GLFW/glfw3.h>
 #include <GL/glu.h>
 #include <boost/program_options.hpp>

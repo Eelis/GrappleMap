@@ -8,7 +8,7 @@ gllibs = ['GL', 'GLU', 'glfw', 'ftgl']
 cmdlibs = ['boost_program_options']
 guilibs = gllibs + cmdlibs
 
-env.Program('grapplemap-gui', ['gui.cpp', rendering, common], LIBS=guilibs)
+env.Program('grapplemap-editor', ['editor.cpp', rendering, common], LIBS=guilibs)
 env.Program('grapplemap-playback', ['playback.cpp', rendering, common], LIBS=guilibs)
 env.Program('grapplemap-todot', ['todot.cpp', common], LIBS=cmdlibs)
 env.Program('grapplemap-browse', ['browse.cpp', images, rendering, common],

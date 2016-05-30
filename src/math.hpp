@@ -10,6 +10,8 @@
 
 namespace GrappleMap {
 
+constexpr double pi() { return 3.141593; }
+
 struct V2 { GLdouble x, y; };
 struct V3 { GLdouble x, y, z; };
 
@@ -76,7 +78,7 @@ inline V3 xyz(V4 v){ return {v.x, v.y, v.z}; }
 
 inline M perspective(double fovy, double aspect, double zNear, double zFar)
 {
-	auto f = 1/tan(fovy*M_PI/360);
+	auto f = 1/tan(fovy*pi()/360);
 
 	return
 		{ f/aspect, 0, 0, 0

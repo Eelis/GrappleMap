@@ -308,7 +308,7 @@ set<NodeNum> nodes_around(Graph const & g, set<NodeNum> const & nodes, unsigned 
 
 vector<Path> in_paths(Graph const & g, NodeNum const node, unsigned size)
 {
-	if (size == 0) return {{}};
+	if (size == 0) return {Path()};
 
 	vector<Path> r;
 
@@ -324,7 +324,7 @@ vector<Path> in_paths(Graph const & g, NodeNum const node, unsigned size)
 
 vector<Path> out_paths(Graph const & g, NodeNum const node, unsigned size)
 {
-	if (size == 0) return {{}};
+	if (size == 0) return {Path()};
 
 	vector<Path> r;
 

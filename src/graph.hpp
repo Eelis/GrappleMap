@@ -57,7 +57,7 @@ private:
 		if (auto m = is_reoriented_node(p))
 			return *m;
 
-		nodes.push_back({p, {}});
+		nodes.push_back(Node{p, vector<string>()});
 		return ReorientedNode{NodeNum{uint16_t(nodes.size() - 1)}, PositionReorientation{}};
 	}
 

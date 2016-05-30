@@ -158,7 +158,10 @@ ViablesForJoint determineViables
 	( Graph const & graph, PositionInSequence const from, PlayerJoint const j
 	, bool const edit_mode, Camera const & camera, PositionReorientation const reo)
 {
-	ViablesForJoint r{0, {}, {}};
+	ViablesForJoint r
+		{ 0
+		, std::map<SeqNum, Viable>{}
+		, std::vector<LineSegment>{} };
 
 	if (!edit_mode && !jointDefs[j.joint].draggable) return r;
 
@@ -170,7 +173,11 @@ ViablesForJoint determineViables
 	extend_forward(0, graph, v, j, camera, r);
 	extend_backward(0, graph, v, j, camera, r);
 
-	if (r.total_dist < 0.3) return {0, {}, {}};
+	if (r.total_dist < 0.3) return
+		ViablesForJoint
+			{ 0
+			, std::map<SeqNum, Viable>{}
+			, std::vector<LineSegment>{} };
 
 	return r;
 }

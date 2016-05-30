@@ -4,8 +4,10 @@
 *.glob
 .sconsign.dblite
 proofs/deps
-src/grapplemap-gui
+src/grapplemap-editor
+src/grapplemap-editor.exe
 src/grapplemap-playback
+src/grapplemap-playback.exe
 src/grapplemap-todot
 src/grapplemap-browse
 src/grapplemap-mkvid
