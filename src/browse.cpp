@@ -31,8 +31,10 @@ inline std::size_t hash_value(V3 const v) // todo: put elsewhere
 #include <boost/functional/hash.hpp>
 #define int_p_NULL (int*)NULL // https://github.com/ignf/gilviewer/issues/8
 
+#ifndef NO_IMAGES
 #include <boost/gil/extension/io/png_io.hpp>
 #include <boost/gil/gil_all.hpp>
+#endif
 #include <boost/filesystem.hpp>
 
 namespace

@@ -4,15 +4,18 @@
 #include "graph.hpp"
 #include "headings.hpp"
 #include "rendering.hpp"
+#ifndef NO_IMAGES
 #include <GL/osmesa.h>
+#endif
 
 namespace GrappleMap {
 
 class ImageMaker
 {
 	Graph const & graph;
-
+	#ifndef NO_IMAGES
 	OSMesaContext ctx = nullptr;
+	#endif
 
 	void png(
 		string output_dir,

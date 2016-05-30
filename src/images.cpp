@@ -19,8 +19,11 @@ namespace GrappleMap
 #include <boost/functional/hash.hpp>
 #define int_p_NULL (int*)NULL // https://github.com/ignf/gilviewer/issues/8
 
+#ifndef NO_IMAGES
 #include <boost/gil/extension/io/png_io.hpp>
 #include <boost/gil/gil_all.hpp>
+#endif
+
 #include <boost/filesystem.hpp>
 
 namespace GrappleMap {
@@ -55,6 +58,7 @@ void ImageMaker::png(
 	vector<View> const & view,
 	unsigned const grid_size, unsigned const grid_line_width) const
 {
+#ifndef NO_IMAGES
 	if (boost::filesystem::exists(path)) return;
 
 	vector<boost::gil::rgb8_pixel_t> buf(width*2 * height*2);
@@ -103,6 +107,7 @@ void ImageMaker::png(
 
 	boost::gil::png_write_view(path,
 		boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf2.data(), width*3)));
+#endif
 }
 
 void ImageMaker::png(
@@ -141,7 +146,7 @@ string ImageMaker::png(
 		to_string(boost::hash_value(pos))
 		+ attrs
 		+ '-' + to_string(bg_color) + ".png";
-
+#ifndef NO_IMAGES
 	if (view.mirror) pos = mirror(pos);
 
 	if (view.heading)
@@ -163,7 +168,7 @@ string ImageMaker::png(
 		symlink(filename.c_str(), linkname.c_str());
 			// todo: check errors
 	}
-
+#endif
 	return filename;
 }
 
@@ -183,7 +188,7 @@ string ImageMaker::rotation_gif(
 			for (auto i = 0; i < 360; i += 5)
 			{
 				string const frame_filename = base_filename + "-" + to_string(i) + "-" + to_string(bg_color) + ".png";
-				png(gif_frames_dir, p, i/180.*M_PI, frame_filename, width, height, color(bg_color));
+				png(gif_frames_dir, p, i/180.*pi(), frame_filename, width, height, color(bg_color));
 				frames.push_back(frame_filename);
 			}
 
@@ -205,7 +210,7 @@ string ImageMaker::gif(
 	string filename
 		= to_string(boost::hash_value(frames))
 		+ attrs + '-' + to_string(bg_color) + ".gif";
-
+#ifndef NO_IMAGES
 	make_gif(output_dir, filename, 3, [&](string const gif_frames_dir)
 		{
 			vector<string> v;
@@ -221,7 +226,7 @@ string ImageMaker::gif(
 		symlink(filename.c_str(), linkname.c_str());
 			// todo: check errors
 	}
-
+#endif
 	return filename;
 }
 
@@ -248,14 +253,20 @@ string ImageMaker::gifs(
 
 ImageMaker::ImageMaker(Graph const & g)
 	: graph(g)
+#ifndef NO_IMAGES
 	, ctx(OSMesaCreateContextExt(OSMESA_RGB, 16, 0, 0, nullptr))
 {
 	if (!ctx) error("OSMeseCreateContextExt failed");
 }
+#else
+{}
+#endif
 
 ImageMaker::~ImageMaker()
 {
+	#ifndef NO_IMAGES
 	OSMesaDestroyContext(ctx);
+	#endif
 }
 
 }

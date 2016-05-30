@@ -64,7 +64,7 @@ namespace GrappleMap
 
 	inline double angle(Heading const h)
 	{
-		return M_PI * 0.5 * unsigned(h);
+		return pi() * 0.5 * unsigned(h);
 	}
 }
 
