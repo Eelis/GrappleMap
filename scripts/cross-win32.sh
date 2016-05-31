@@ -7,15 +7,15 @@ strip src/*.exe
 packageName=`git show --no-patch "--format=GrappleMap_%cd_%h_win32" --date=short HEAD`
 
 rm -rf win32package
-mkdir -p win32package/$packageName/{composer,diagram}
+mkdir -p win32package/$packageName/{composer,explorer}
 cd win32package
 
 cp ../src/grapplemap-{editor,playback,dbtojs}.exe ../GrappleMap.txt $packageName/
 cp ../src/{gm,graphdisplay}.js $packageName/
 cp ../src/composer.html $packageName/composer/index.html
 cp ../src/composer.js $packageName/composer/
-cp ../src/diagram.html $packageName/diagram/index.html
-cp ../src/diagram.js $packageName/diagram/
+cp ../src/explorer.html $packageName/explorer/index.html
+cp ../src/explorer.js $packageName/explorer/
 cp ../doc/windows-package-readme.txt $packageName/README.TXT
 
 function download
@@ -31,4 +31,4 @@ function download
 download babylon.js https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/dist/preview%20release/babylon.js
 download hand.js https://raw.githubusercontent.com/deltakosh/handjs/master/bin/hand.min.js
 
-zip $packageName $packageName/* $packageName/{composer,diagram}/*
+zip $packageName $packageName/* $packageName/{composer,explorer}/*

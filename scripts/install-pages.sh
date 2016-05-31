@@ -8,7 +8,7 @@ outputbase=.
 
 output=$outputbase/GrappleMap
 
-mkdir -p $output/{gifframes,composer,search,diagram}
+mkdir -p $output/{gifframes,composer,search,explorer}
 
 function download
 {
@@ -30,8 +30,8 @@ cp src/composer.html $output/composer/index.html
 cp src/composer.js $output/composer/
 cp src/search.html $output/index.html
 cp src/search.js $output/
-cp src/diagram.html $output/diagram/index.html
-cp src/diagram.js $output/diagram/
+cp src/explorer.html $output/explorer/index.html
+cp src/explorer.js $output/explorer/
 cp src/example-drills.html $output/
 
 src/grapplemap-browse --output_dir=$outputbase

@@ -539,7 +539,7 @@ namespace
 			ctx.html
 				<< "<br><br>View position in:<br>"
 				<< "<a href='composer/index.html?p" << ctx.n.index << "'>composer</a>"
-				<< ", <a href='diagram/index.html?" << ctx.n.index << "'>explorer</a>"
+				<< ", <a href='explorer/index.html?" << ctx.n.index << "'>explorer</a>"
 				<< "</td>";
 		}
 

@@ -2,7 +2,7 @@ Run "grapplemap-editor -h" in a command prompt for usage instructions.
 
 grapplemap-editor operates on GrappleMap.txt, which is the database in (Unix) text format.
 
-grapplemap-dbtojs converts GrappleMap.txt to transitions.js, which is used by composer/diagram.
+grapplemap-dbtojs converts GrappleMap.txt to transitions.js, which is used by the composer and explorer.
 
 So the basic workflow at the moment is:
 	1. do some editing with grapplemap-editor, or by hand in GrappleMap.txt (using

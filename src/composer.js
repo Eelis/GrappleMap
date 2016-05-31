@@ -317,7 +317,7 @@ function refreshDrill()
 
 	if (steps.length == 0) dianodes.push(start_node);
 
-	document.getElementById("explorer_link").href = "../diagram/index.html?" + dianodes.join(",");
+	document.getElementById("explorer_link").href = "../explorer/index.html?" + dianodes.join(",");
 }
 
 function on_slide()
