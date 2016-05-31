@@ -28,8 +28,8 @@ cp src/gm.js $output/
 cp src/graphdisplay.js $output/
 cp src/composer.html $output/composer/index.html
 cp src/composer.js $output/composer/
-cp src/search.html $output/search/index.html
-cp src/search.js $output/search/
+cp src/search.html $output/index.html
+cp src/search.js $output/
 cp src/diagram.html $output/diagram/index.html
 cp src/diagram.js $output/diagram/
 cp src/example-drills.html $output/

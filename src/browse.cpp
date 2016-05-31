@@ -167,9 +167,9 @@ namespace
 		html << "</ul></body></html>";
 	}
 
-	void write_index(Graph const & g, string const output_dir)
+	void write_lists(Graph const & g, string const output_dir)
 	{
-		ofstream html(output_dir + "index.html");
+		ofstream html(output_dir + "lists.html");
 
 		html
 			<< html5head("GrappleMap: Index")
@@ -193,7 +193,7 @@ namespace
 
 			html
 				<< "<tr>"
-				<< "<td><a href='search/index.html?" << tag << "'>" << tag << "</a></td>"
+				<< "<td><a href='index.html?" << tag << "'>" << tag << "</a></td>"
 				<< "<td>" << s.size() << "</td>"
 				<< "<td>" << t.size() << "</td>"
 				<< "</tr>";
@@ -533,7 +533,7 @@ namespace
 				ctx.html << "<br><br>Tags:";
 
 				foreach(tag : t)
-					ctx.html << "<br> <a href='search/index.html?" << tag << "'>" << tag << "</a>"; // todo: should propagate view
+					ctx.html << "<br> <a href='index.html?" << tag << "'>" << tag << "</a>"; // todo: should propagate view
 			}
 
 			ctx.html
@@ -679,7 +679,7 @@ int main(int const argc, char const * const * const argv)
 			tojs(graph, js);
 		}
 
-		write_index(graph, output_dir);
+		write_lists(graph, output_dir);
 		write_todo(graph, output_dir);
 
 		ImageMaker const mkimg(graph);

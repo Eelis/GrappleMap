@@ -24,7 +24,7 @@ function selected_node_changed()
 {
 	document.getElementById('composer_link').href = "../composer/index.html?p" + selected_node;
 
-	document.getElementById('search_link').href = "../search/index.html?" + nodes[selected_node].tags.join(",");
+	document.getElementById('search_link').href = "../index.html?" + nodes[selected_node].tags.join(",");
 
 	tick_graph(svg);
 
