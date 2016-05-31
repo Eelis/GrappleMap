@@ -57,7 +57,7 @@ But I hope that once word gets around about the GrappleMap,
 other grappling nerds will want to chip in and help me make it
 the most awesome (no-gi) grappling map ever. :)
 
-See also [Can I help?](#can-i-help).
+See also [Can I help map techniques?](#can-i-help-map-techniques).
 
 
 ## What tools do you have?
@@ -159,13 +159,36 @@ Back in university, I trained with their MMA club for a year or so, but it was s
 casual, and a long time ago. I basically have no martial arts credentials whatsoever.
 
 
-## Can I help?
+## Can I help map techniques?
 
-Absolutely! There is *way* too much grappling technique for me to do this by myself.
+Absolutely! There is *way* too much grappling technique for me to do this by myself,
+so nothing would please me more than to see the GrappleMap become a collaborative effort.
 
-The transition editor is minimalistic but gets the job done, is easy to compile on Linux,
-and a Windows package can be found [here](http://eel.is/GrappleMap/windows-packages/).
+The transition editor is minimalistic but gets the job done, is easy to build on Linux,
+and a cross-compiled Windows package can be found [here](http://eel.is/GrappleMap/windows-packages/).
+It is certainly my intention to make the tools usable by non-techies, though collaboration
+through Github does involve version control, and editing the database text
+file does require a decent text editor...
 
-Nothing would please me more than to see the GrappleMap become a collaborative effort.
+Note that unless you work on one of the areas where GrappleMap coverage is still
+very sparse (such as takedowns or leg locks), adding content will not merely be a matter
+of *adding* transitions, but will also very likely involve reworking or tweaking
+existing transitions and positions, to reflect a more refined understanding of the
+different angles, dynamics, and controls around the area in question. But that is to be expected:
+every part of the map is fair game for refinement at all times.
 
-I hang out in #grapplemap on Freenode IRC. Drop by!
+One thing that needs to be stressed is the need for citations of instructional source material,
+and the pedigree of the instructors. The GrappleMap is only useful to people if they can be confident
+that
+
+  1. it contains only proven, battle-tested bread and butter techniques
+     that the very best practitioners rely on in top competition; and
+  2. the instructional materials cited provide the best exposition, by instructors
+     who have been successful with the technique at the highest level.
+
+Anyway, I hang out in #grapplemap on Freenode IRC. Do [drop by](https://webchat.freenode.net/)! I'll gladly help people get going.
+
+
+## Can I help improve the software/website?
+
+Absolutely! For ideas for things you could work on, see the [todo list](todo.txt).
