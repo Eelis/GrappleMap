@@ -36,7 +36,6 @@ position pages:
 
 search page:
 - only warp if node is unreachable
-- add view controls for neighbourhood
 - extended info mode
 - left/right keys should work in substring text box
 

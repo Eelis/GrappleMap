@@ -64,7 +64,16 @@
 
 		<hr>
 		<h2>Neighbourhood</h2>
-		<p>(<a id='explorerlink' href=''>view in explorer</a>)</p>
+
+		<p>
+			View: &nbsp;<select id='view_select' onchange='on_view_change()'>
+				<option value="external">external</option>
+				<option value="0">red</option>
+				<option value="1">blue</option>
+			</select>
+			<button onclick='on_mirror_button_clicked()'>mirror</button>
+			&nbsp;(<a id='explorerlink'>explorer</a>)</p>
+		</p>
 
 		<div style='position:absolute;width:100%;height:100%'>
 			<canvas style='width:100%;height:100%;position:absolute;left:0px;top:0px' id='renderCanvas'></canvas>

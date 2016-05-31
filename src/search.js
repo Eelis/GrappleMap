@@ -410,6 +410,19 @@ var targetpos;
 
 function updateCamera()
 {
+	var vv = document.getElementById("view_select").value;
+	if (vv == "external") return;
+	var pl = parseInt(vv);
+	var opp = 1 - pl;
+
+	firstPersonCamera.upVector = thepos[pl][Head].subtract(thepos[pl][Neck]);
+
+	firstPersonCamera.setTarget(
+		thepos[pl][LeftFingers]
+		.add(thepos[pl][RightFingers])
+		.scale(0.5));
+
+	firstPersonCamera.position = thepos[pl][Head];
 }
 
 function node_clicked()
@@ -488,3 +501,17 @@ window.addEventListener('DOMContentLoaded',
 
 		tick_graph(svg);
 	});
+
+function on_view_change()
+{
+	var vv = document.getElementById("view_select").value;
+
+	scene.activeCamera = (vv == "external" ? externalCamera : firstPersonCamera);
+}
+
+function on_mirror_button_clicked()
+{
+	mirror(targetpos);
+	reo.mirror = !reo.mirror;
+}
+
