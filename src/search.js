@@ -314,7 +314,7 @@ function update_position_pics()
 
 	var elem = document.getElementById("position_pics");
 
-	document.getElementById("explorerlink").href = "../explorer/index.html?" + selected_nodes.join(",");
+	document.getElementById("explorerlink").href = "explorer/index.html?" + selected_nodes.join(",");
 
 	add_paged_elems(elem, 9, selected_nodes, function(n, _)
 		{
@@ -322,10 +322,10 @@ function update_position_pics()
 
 			var vc = view_code(view);
 
-			link.href = "../p" + n + vc + ".html";
+			link.href = "p" + n + vc + ".html";
 
 			var img = document.createElement("img");
-			img.src = "../p" + n + vc + "320x240.png";
+			img.src = "p" + n + vc + "320x240.png";
 			img.setAttribute('title', nodes[n].description);
 			link.appendChild(img);
 
@@ -347,10 +347,10 @@ function update_transition_pics()
 	add_paged_elems(elem, 12, selected_edges, function(e, _)
 		{
 			var link = document.createElement("a");
-			link.href = "../composer/index.html?" + e; // todo: preserve view
+			link.href = "composer/index.html?" + e; // todo: preserve view
 
 			var img = document.createElement("img");
-			img.src = "../t" + e + "200x150" + view_code(view) + ".gif";
+			img.src = "t" + e + "200x150" + view_code(view) + ".gif";
 			img.setAttribute('title', transitions[e].description);
 			link.appendChild(img);
 
