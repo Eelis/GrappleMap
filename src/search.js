@@ -472,6 +472,8 @@ window.addEventListener('DOMContentLoaded',
 		nodes.forEach(function(n)
 			{
 				n.desc_lines = n.description.split('\n');
+				n.x = Math.random() * 1000;
+				n.y = Math.random() * 1000;
 			});
 
 		var s = window.location.href;

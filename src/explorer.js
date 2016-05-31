@@ -27,8 +27,6 @@ function selected_node_changed()
 	document.getElementById('search_link').href = "../index.html?" + nodes[selected_node].tags.join(",");
 
 	tick_graph(svg);
-
-	//document.getElementById('info').innerHTML = "node " + d.id; // todo: line nr
 }
 
 function node_selection_changed()
@@ -165,6 +163,8 @@ window.addEventListener('DOMContentLoaded',
 		nodes.forEach(function(n)
 			{
 				n.desc_lines = n.description.split('\n');
+				n.x = Math.random() * 1000;
+				n.y = Math.random() * 1000;
 			});
 
 		var s = window.location.href;
