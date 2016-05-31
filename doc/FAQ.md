@@ -1,18 +1,16 @@
 # FAQ
 
-## What is this?
+## What is the GrappleMap?
 
-The GrappleMap is:
+1. A database of interconnected grappling positions and transitions,
+   animated with stick figures.
 
-1. a database of interconnected grappling positions and transitions,
-   animated with stick figures
-
-2. a set of tools to build and explore this database
+2. A set of tools to build and explore this database.
 
 
-## Which grappling techniques are included in the map?
+## Which grappling techniques are included?
 
-The intent is to model as many proven MMA-applicable grappling techniques as possible,
+The intent is to map as many proven MMA-applicable grappling techniques as possible,
 regardless of whether they come from wrestling, Brazilian Jiu-Jitsu, Judo,
 Sambo, etc etc.
 
@@ -128,6 +126,7 @@ specific body types.
 
 It's on the [todo list](todo.txt).
 
+
 ## How about some nicer graphics?
 
 Maybe later. (Patches welcome!)
@@ -135,7 +134,7 @@ Maybe later. (Patches welcome!)
 
 ## How come the animations run so poorly?
 
-Try using Chrome. It's the only browser I've managed to get good WebGL performance out of...
+Try using Chrome. It's the only browser that I've ever gotten good WebGL performance out of. :/
 
 
 ## What is the database format?
