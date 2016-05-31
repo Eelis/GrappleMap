@@ -113,6 +113,8 @@ function on_query_changed()
 		if (node_is_selected(nodes[n]))
 			selected_nodes.push(n);
 
+	set_selected_node(selected_nodes[0]);
+
 	update_tag_list();
 	update_position_pics();
 	update_transition_pics();
@@ -429,15 +431,20 @@ function node_clicked()
 {
 }
 
+function set_selected_node(n)
+{
+	selected_node = n;
+	targetpos = thepos = last_keyframe = nodes[selected_node].position;
+	queued_frames = [];
+}
+
 function mouse_over_node(d)
 {
 	if (d.id == selected_node) return;
 
 	if (!try_move(d.id))
 	{
-		selected_node = d.id;
-		targetpos = thepos = last_keyframe = nodes[selected_node].position;
-		queued_frames = [];
+		set_selected_node(d.id);
 		reo = zero_reo();
 	}
 
@@ -495,7 +502,6 @@ window.addEventListener('DOMContentLoaded',
 		update_view_controls();
 
 		on_query_changed();
-		selected_node = selected_nodes[0];
 
 		window.addEventListener('resize', function() { engine.resize(); });
 
