@@ -161,7 +161,7 @@ namespace
 		html << "</ul><h2>Untagged positions</h2><ul>";
 
 		foreach(n : nodenums(g))
-			if (tags_in_desc(g[n].description).empty())
+			if (tags(g[n]).empty())
 				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g[n])) << "</a></li>";
 
 		html << "</ul></body></html>";
@@ -211,7 +211,7 @@ namespace
 				<< "<td><a href='p" << n.index << "n.html'>" << nlspace(desc(g[n])) << "</a></td>"
 				<< "<td>" << in(g, n).size() << "</td>"
 				<< "<td>" << out(g, n).size() << "</td>"
-				<< "<td>" << tags_in_desc(g[n].description).size() << "</td>"
+				<< "<td>" << tags(g[n]).size() << "</td>"
 				<< "</tr>";
 
 		html
@@ -222,13 +222,13 @@ namespace
 
 		foreach(s : seqnums(g))
 		{
-			set<string> tags = tags_in_desc(g[s].description);
+			set<string> tt = tags(g[s]);
 
 			{
-				set<string> const from_tags = tags_in_desc(g[g.from(s).node].description);
-				foreach(t : tags_in_desc(g[g.to(s).node].description))
+				set<string> const from_tags = tags(g[g.from(s).node]);
+				foreach(t : tags(g[g.to(s).node]))
 					if (from_tags.find(t) != from_tags.end())
-						tags.insert(t);
+						tt.insert(t);
 			}
 
 			html
@@ -237,7 +237,7 @@ namespace
 				<< "<td><b>" << nlspace(g[s].description.front()) << "</b></td>"
 				<< "<td><a href='p" << g.to(s).node.index << "n.html'>" << nlspace(desc(g[g.to(s).node])) << "</a></td>"
 				<< "<td>" << g[s].positions.size() << "</td>"
-				<< "<td>" << tags.size() << "</td>"
+				<< "<td>" << tt.size() << "</td>"
 				<< "</tr>";
 		}
 
@@ -452,6 +452,7 @@ namespace
 			vector<Trans> incoming, outgoing;
 			ImageView view;
 			string const output_dir;
+			TagQuery query;
 		};
 
 		string transition_card(Context const & ctx, Trans const & trans)
@@ -537,13 +538,18 @@ namespace
 
 			write_view_controls(ctx.html, ctx.view, "p" + to_string(ctx.n.index));
 
+			vector<string> v;
+			foreach(e : ctx.query)
+			{
+				v.push_back(e.first);
+				if (!e.second) v.back() = '-' + v.back();
+			}
+
 			ctx.html
 				<< "<br><br>Go to:"
 				<< " <a href='composer/index.html?p" << ctx.n.index << "'>composer</a>"
 				<< ", <a href='explorer/index.html?" << ctx.n.index << "'>explorer</a>"
-				<< ", <a href='index.html?"
-				<< join(tags_in_desc(ctx.graph[ctx.n].description), ",")
-				<< "'>search</a></td>";
+				<< ", <a href='index.html?" << join(v, ",") << "'>search</a></td>";
 		}
 
 		void write_page(Context const & ctx)
@@ -658,7 +664,7 @@ namespace
 				char const vc = code(v);
 
 				ofstream html(output_dir + pname + vc + ".html");
-				Context ctx{mkimg, html, graph, n, incoming, outgoing, v, output_dir};
+				Context ctx{mkimg, html, graph, n, incoming, outgoing, v, output_dir, query_for(graph, n)};
 				write_page(ctx);
 			}
 		}

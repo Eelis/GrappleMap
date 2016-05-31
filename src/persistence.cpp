@@ -338,7 +338,7 @@ void tojs(Graph const & graph, std::ostream & js)
 		tojs(graph[n].position, js);
 		js << ",description:'" << replace_all(desc(graph[n]), "'", "\\'") << "'";
 		js << ",tags:";
-		tojs(tags_in_desc(graph[n].description), js);
+		tojs(tags(graph[n]), js);
 		js << "},\n";
 	}
 	js << "];\n\n";
@@ -360,7 +360,7 @@ void tojs(Graph const & graph, std::ostream & js)
 		js << "],description:";
 		tojs(seq.description, js);
 		js << ",tags:";
-		tojs(tags_in_desc(seq.description), js);
+		tojs(tags(seq), js);
 		js << ",properties:";
 		tojs(properties_in_desc(seq.description), js);
 		if (seq.line_nr)

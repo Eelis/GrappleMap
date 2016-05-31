@@ -147,6 +147,16 @@ set<string> tags(Graph const &);
 set<string> tags_in_desc(vector<string> const &);
 set<string> properties_in_desc(vector<string> const &);
 
+inline set<string> tags(Graph::Node const & n)
+{
+	return tags_in_desc(n.description);
+}
+
+inline set<string> tags(Sequence const & s)
+{
+	return tags_in_desc(s.description);
+}
+
 inline set<string> properties(Graph const & g, SeqNum const s)
 {
 	return properties_in_desc(g[s].description);
@@ -169,12 +179,12 @@ inline bool is_bottom_move(Sequence const & s)
 
 inline bool is_tagged(Graph const & g, string const & tag, NodeNum const n)
 {
-	return tags_in_desc(g[n].description).count(tag) != 0;
+	return tags(g[n]).count(tag) != 0;
 }
 
 inline bool is_tagged(Graph const & g, string const & tag, SeqNum const sn)
 {
-	return tags_in_desc(g[sn].description).count(tag) != 0
+	return tags(g[sn]).count(tag) != 0
 		|| (is_tagged(g, tag, g.from(sn).node)
 		&& is_tagged(g, tag, g.to(sn).node));
 }
@@ -190,6 +200,23 @@ inline auto tagged_sequences(Graph const & g, string const & tag)
 	return seqnums(g) | boost::adaptors::filtered(
 		[&](SeqNum n){ return is_tagged(g, tag, n); });
 }
+
+using TagQuery = set<pair<string /* tag */, bool /* include/exclude */>>;
+
+inline auto match(Graph const & g, TagQuery const & q)
+{
+	return nodenums(g) | boost::adaptors::filtered(
+		[&](NodeNum n){
+			foreach (e : q)
+			{
+				if (is_tagged(g, e.first, n) != e.second)
+					return false;
+			}
+			return true;
+			});
+}
+
+TagQuery query_for(Graph const &, NodeNum);
 
 set<NodeNum> nodes_around(Graph const &, set<NodeNum> const &, unsigned depth = 1);
 
