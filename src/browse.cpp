@@ -374,9 +374,12 @@ namespace
 				<< link(base + code(ImageView{view.mirror, rotate_left(*view.heading), {}}) + ".html", "↻") << ' '
 				<< link(base + code(ImageView{view.mirror, rotate_right(*view.heading), {}}) + ".html", "↺") << ", "
 				<< link(base + code(xmirror(view)) + ".html", "⇄") << ' '
-				<< link(base + code(zmirror(view)) + ".html", "⇅") << ", "
+				<< link(base + code(zmirror(view)) + ".html", "⇅");
+			/*
+				<< ", "
 				<< link(base + code(ImageView{view.mirror, {}, 0u}) + ".html", "<span style='color:red'>☻</span>")
 				<< link(base + code(ImageView{view.mirror, {}, 1u}) + ".html", "<span style='color:blue'>☻</span>");
+			*/
 		}
 		else if (view.player)
 		{
