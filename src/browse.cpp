@@ -277,14 +277,26 @@ namespace
 
 	string transition_image_title(Graph const & g, SeqNum const sn)
 	{
-		string r = "transition " + to_string( sn.index);
-						
+		string r;
+
+		foreach (l : g[sn].description)
+			r += replace_all(replace_all(l, "'", "&#39;"), "\\n", " ") + '\n';
+
+		r += "(t" + to_string(sn.index);
 		if (auto ln = g[sn].line_nr) r += " @ line " + to_string(*ln);
-		auto d = g[sn].description;
-		d.erase(d.begin());
-		foreach (l : d) r += '\n' + replace_all(l, "'", "&#39;");
+		r += ')';
 
 		return r;
+	}
+
+	string position_image_title(Graph const & g, NodeNum const n)
+	{
+		string r;
+
+		foreach (l : g[n].description)
+			r += replace_all(replace_all(l, "'", "&#39;"), "\\n", " ") + '\n';
+
+		return r + "(p" + to_string(n.index) + ")"; // todo: line nr
 	}
 
 	ImageMaker::BgColor bg_color(bool const top, bool const bottom)
@@ -445,9 +457,11 @@ namespace
 		string transition_card(Context const & ctx, Trans const & trans)
 		{
 			return "<em>via</em> "
-				+ div("display:inline-block",
-					desc(ctx.graph, trans.step.seq) +
-					img(transition_image_title(ctx.graph, trans.step.seq), trans.base_filename + code(ctx.view) + ".gif", ""))
+				+ link(
+					"composer/index.html?" + to_string(trans.step.seq.index),
+					img(
+						transition_image_title(ctx.graph, trans.step.seq),
+						trans.base_filename + code(ctx.view) + ".gif", ""))
 				+ " <em>to</em>";
 		}
 
@@ -466,8 +480,7 @@ namespace
 					<< "<em>from</em> "
 					<< div("display:inline-block",
 						link("p" + to_string(trans.other_node.index) + code(v) + ".html",
-							nlbr(desc(ctx.graph[trans.other_node])) + "<br>"
-							+ img(to_string(trans.other_node.index),
+							img(position_image_title(ctx.graph, trans.other_node),
 								ctx.mkimg.rotation_gif(
 									ctx.output_dir, translateNormal(trans.frames.front()),
 									ctx.view, 200, 150, bg_color(trans)),
@@ -493,8 +506,7 @@ namespace
 					<< transition_card(ctx, trans)
 					<< " <div style='display:inline-block'>"
 					<< "<a href='p" << trans.other_node.index << code(v) << ".html'>"
-					<< nlbr(desc(ctx.graph[trans.other_node])) << "<br>"
-					<< img(to_string(trans.other_node.index),
+					<< img(position_image_title(ctx.graph, trans.other_node),
 						ctx.mkimg.rotation_gif(
 							ctx.output_dir, translateNormal(trans.frames.back()),
 							ctx.view, 200, 150, bg_color(trans)),
@@ -512,10 +524,9 @@ namespace
 			ctx.html
 				<< "<td style='text-align:center;vertical-align:top'>"
 				<< "<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>"
-				<< "<h2>Position:</h2>"
 				<< "<h1>" << nlbr(desc(ctx.graph[ctx.n])) << "</h1>"
 				<< "<br><br>"
-				<< img(to_string(ctx.n.index), ctx.mkimg.png(ctx.output_dir, pos_to_show, ctx.view, 480, 360, ctx.mkimg.WhiteBg,
+				<< img(position_image_title(ctx.graph, ctx.n), ctx.mkimg.png(ctx.output_dir, pos_to_show, ctx.view, 480, 360, ctx.mkimg.WhiteBg,
 					'p' + to_string(ctx.n.index)), "")
 				<< "<br>";
 
@@ -526,21 +537,13 @@ namespace
 
 			write_view_controls(ctx.html, ctx.view, "p" + to_string(ctx.n.index));
 
-			auto const t = tags_in_desc(ctx.graph[ctx.n].description);
-
-			if (!t.empty())
-			{
-				ctx.html << "<br><br>Tags:";
-
-				foreach(tag : t)
-					ctx.html << "<br> <a href='index.html?" << tag << "'>" << tag << "</a>"; // todo: should propagate view
-			}
-
 			ctx.html
-				<< "<br><br>View position in:<br>"
-				<< "<a href='composer/index.html?p" << ctx.n.index << "'>composer</a>"
+				<< "<br><br>Go to:"
+				<< " <a href='composer/index.html?p" << ctx.n.index << "'>composer</a>"
 				<< ", <a href='explorer/index.html?" << ctx.n.index << "'>explorer</a>"
-				<< "</td>";
+				<< ", <a href='index.html?"
+				<< join(tags_in_desc(ctx.graph[ctx.n].description), ",")
+				<< "'>search</a></td>";
 		}
 
 		void write_page(Context const & ctx)

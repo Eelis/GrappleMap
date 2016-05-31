@@ -80,6 +80,19 @@ namespace GrappleMap
 	{
 		v.insert(v.end(), w.begin(), w.end());
 	}
+
+	template<typename R>
+	string join(R const & rng, string const & sep)
+	{
+		bool first = true;
+		string r;
+		foreach(x : rng)
+		{
+			if (first) first = false; else r += sep;
+			r += x;
+		}
+		return r;
+	}
 }
 
 #endif
