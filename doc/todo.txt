@@ -17,7 +17,6 @@ editor
   * rotate joints in unnatural ways
   * move limbs through eachother
 - maybe visually indicate where a body's structural mechanics are weak, which directions it could be off-balanced, etc
-- list controls in --help output
 
 playback:
 - make {pre,post}fix length for demo mode configurable
@@ -28,11 +27,11 @@ position pages:
 - find a better tool/library for generating gifs (need more speed and compression) (Magick++ seems worth a try even though it's also ImageMagick..)
 - maybe embed videos encoded with e.g. x264?
 - nice urls for position pages
-- submission indicators
 - investigate graphviz alternatives
-- figure out better colors
+- experiment with other/more colors
 - in the graphs, it would be good to be able to tell really long and really short transitions apart
 - make scene lighting more like in composer
+- make transition labels in graphviz graphs into composer links
 
 search page:
 - only warp if node is unreachable
@@ -57,12 +56,12 @@ drill composer
 - speed dial
 - fps and other metrics display
 - leave animation undisturbed when manipulating drill
-- integrated transition editor
 - first person camera jerky when sliding
 - better layout for info checkbox and explorer link
 
 new tools:
 - diff, to visualize changes made to transitions
+- transition editor in browser
 
 misc:
 - mobile-friendly versions of things
