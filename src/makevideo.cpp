@@ -138,9 +138,9 @@ int main(int const argc, char const * const * const argv)
 					);
 
 				++frameindex;
-
-				cout << frameindex << ' ' << std::flush;
 			}
+
+			cout << (i - fr.begin()) << ' ' << std::flush;
 		}
 
 		endl(cout);
