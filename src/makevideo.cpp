@@ -116,7 +116,7 @@ int main(int const argc, char const * const * const argv)
 			foreach (pos : i->second)
 			{
 				camera.rotateHorizontal(-0.012);
-				camera.setOffset(xz(between(pos[0][Core], pos[1][Core])));
+				camera.setOffset(cameraOffsetFor(pos));
 
 				int width = 640, height = 480;
 

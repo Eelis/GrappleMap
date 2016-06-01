@@ -43,6 +43,12 @@ public:
 		computeMv();
 	}
 
+	void setOffset(V3 o)
+	{
+		offset = offset * 0.99 + o * 0.01;
+		computeMv();
+	}
+
 	void rotateHorizontal(double radians)
 	{
 		orientation.x += radians;

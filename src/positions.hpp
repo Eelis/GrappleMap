@@ -341,6 +341,13 @@ PositionReorientation canonical_reorientation_with_mirror(Position const &);
 Position orient_canonically_without_mirror(Position const &);
 Position orient_canonically_with_mirror(Position const &);
 
+inline V3 cameraOffsetFor(Position const & p)
+{
+	V3 r = between(p[0][Core], p[1][Core]);
+	r.y = std::max(0., r.y - .5);
+	return r;
+}
+
 }
 
 #endif

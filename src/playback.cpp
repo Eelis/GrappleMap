@@ -113,7 +113,7 @@ int main(int const argc, char const * const * const argv)
 		style.grid_size = 4;
 		style.grid_color = V3{.7, .7, .7};
 		camera.zoom(1.2);
-		//camera.zoom(0.9);
+		camera.hardSetOffset(cameraOffsetFor(fr.front().second.front()));
 
 		string const separator = "      ";
 
@@ -134,7 +134,7 @@ int main(int const argc, char const * const * const argv)
 				if (glfwWindowShouldClose(window)) return 0;
 
 				camera.rotateHorizontal(-0.013);
-				camera.setOffset(xz(between(pos[0][Core], pos[1][Core])));
+				camera.setOffset(cameraOffsetFor(pos));
 
 				if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) camera.rotateVertical(-0.05);
 				if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) camera.rotateVertical(0.05);
