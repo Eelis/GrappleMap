@@ -97,9 +97,6 @@ int main(int const argc, char const * const * const argv)
 
 		unsigned frameindex = 0;
 
-		Camera camera;
-		camera.zoom(1.2);
-
 		string const separator = "      ";
 
 		{
@@ -110,6 +107,10 @@ int main(int const argc, char const * const * const argv)
 			v.insert(v.begin(), config->frames_per_pos * 15, firstpos);
 			w.insert(w.end(), config->frames_per_pos * 15, lastpos);
 		}
+
+		Camera camera;
+		camera.zoom(1.2);
+		camera.hardSetOffset(cameraOffsetFor(fr.front().second.front()));
 
 		for (auto i = fr.begin(); i != fr.end(); ++i)
 		{
