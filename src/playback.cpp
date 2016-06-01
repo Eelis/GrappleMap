@@ -165,10 +165,12 @@ int main(int const argc, char const * const * const argv)
 					0, bottom,
 					width, height, {0} /* todo */, style);
 
+				/*
 				#ifdef USE_FTGL
 					renderText(style.sequenceFont, textpos, caption, black);
 					textpos.x -= textwidth / (i->second.size()-1);
 				#endif
+				*/
 
 				glfwSwapBuffers(window);
 			}
