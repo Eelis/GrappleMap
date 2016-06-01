@@ -178,14 +178,20 @@ existing transitions and positions, to reflect a more refined understanding of t
 different angles, dynamics, and controls around the area in question. But that is to be expected:
 every part of the map is fair game for refinement at all times.
 
-One thing that needs to be stressed is the need for citations of instructional source material,
-and the pedigree of the instructors. The GrappleMap is only useful to people if they can be confident
+One thing that needs to be stressed is the need for citations of instructional source materials,
+and the pedigree of the instructors. 
+
+The GrappleMap is only useful to people if they can be confident
 that
 
   1. it contains only proven, battle-tested bread and butter techniques
      that the very best practitioners rely on in top competition; and
   2. the instructional materials cited provide the best exposition, by instructors
      who have been successful with the technique at the highest level.
+
+You can still use the GrappleMap *software* to map any moves you like, including
+experimental ones you're just playing with at the gym, in a database of your own.
+And you're free to base that custom database off of "the" GrappleMap.
 
 Anyway, I hang out in #grapplemap on Freenode IRC. Do [drop by](https://webchat.freenode.net/)! I'll gladly help people get going.
 
