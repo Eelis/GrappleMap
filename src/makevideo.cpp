@@ -102,6 +102,15 @@ int main(int const argc, char const * const * const argv)
 
 		string const separator = "      ";
 
+		{
+			auto & v = fr.front().second;
+			auto & w = fr.back().second;
+			auto const firstpos = v.front();
+			auto const lastpos = w.back();
+			v.insert(v.begin(), config->frames_per_pos * 15, firstpos);
+			w.insert(w.end(), config->frames_per_pos * 15, lastpos);
+		}
+
 		for (auto i = fr.begin(); i != fr.end(); ++i)
 		{
 			foreach (pos : i->second)
