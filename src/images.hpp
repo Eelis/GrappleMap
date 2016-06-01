@@ -63,6 +63,13 @@ public:
 		string path, V3 bg_color,
 		vector<View> const &, unsigned grid_size = 2, unsigned grid_line_width = 2) const;
 
+	void png(
+		pair<Position, Camera> const * pos_beg,
+		pair<Position, Camera> const * pos_end,
+		unsigned width, unsigned height,
+		string path, V3 bg_color,
+		vector<View> const &, unsigned grid_size = 2, unsigned grid_line_width = 2) const;
+
 	string png(
 		string output_dir, Position, ImageView,
 		unsigned width, unsigned height, BgColor,

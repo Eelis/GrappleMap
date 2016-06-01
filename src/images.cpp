@@ -111,6 +111,74 @@ void ImageMaker::png(
 }
 
 void ImageMaker::png(
+	pair<Position, Camera> const * pos_b,
+	pair<Position, Camera> const * pos_e,
+	unsigned const width, unsigned const height,
+	string const path, V3 const bg_color,
+	vector<View> const & view,
+	unsigned const grid_size, unsigned const grid_line_width) const
+{
+#ifndef NO_IMAGES
+	if (boost::filesystem::exists(path)) return;
+
+	vector<boost::gil::rgb8_pixel_t> buf(width*2 * height*2);
+
+	if (!OSMesaMakeCurrent(ctx, buf.data(), GL_UNSIGNED_BYTE, width*2, height*2))
+		error("OSMesaMakeCurrent");
+
+	Style style;
+	style.grid_size = grid_size;
+	style.grid_line_width = grid_line_width;
+	style.grid_color = bg_color * .8;
+	style.background_color = bg_color;
+
+	glClearAccum(0.0, 0.0, 0.0, 0.0);
+	glClear(GL_ACCUM_BUFFER_BIT);
+
+	for (pair<Position, Camera> const * p = pos_b; p != pos_e; ++p)
+	{
+		renderWindow(
+			view,
+			nullptr, // no viables
+			graph, p->first, p->second,
+			none, // no highlighted joint
+			false, // not edit mode
+			0, 0, width*2, height*2,
+			{0},
+			style);
+
+		glFinish();
+		glAccum(GL_ACCUM, 1. / (pos_e - pos_b));
+	}
+
+	glAccum(GL_RETURN, 1.0);
+
+	foreach (p : buf) std::swap(p[0], p[2]);
+
+	vector<boost::gil::rgb8_pixel_t> buf2(width * height);
+
+	auto xy = [&](unsigned x, unsigned y){ return buf[y*width*2+x]; };
+
+	for (unsigned x = 0; x != width; ++x)
+	for (unsigned y = 0; y != height; ++y)
+	{
+		auto const & a = xy(x*2,  y*2  );
+		auto const & b = xy(x*2+1,y*2  );
+		auto const & c = xy(x*2,  y*2+1);
+		auto const & d = xy(x*2+1,y*2+1);
+
+		buf2[y*width+x][0] = (a[0] + b[0] + c[0] + d[0]) / 4;
+		buf2[y*width+x][1] = (a[1] + b[1] + c[1] + d[1]) / 4;
+		buf2[y*width+x][2] = (a[2] + b[2] + c[2] + d[2]) / 4;
+	}
+		// todo: clean up
+
+	boost::gil::png_write_view(path,
+		boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf2.data(), width*3)));
+#endif
+}
+
+void ImageMaker::png(
 	string const output_dir,
 	Position const pos,
 	double const angle,
@@ -254,7 +322,7 @@ string ImageMaker::gifs(
 ImageMaker::ImageMaker(Graph const & g)
 	: graph(g)
 #ifndef NO_IMAGES
-	, ctx(OSMesaCreateContextExt(OSMESA_RGB, 16, 0, 0, nullptr))
+	, ctx(OSMesaCreateContextExt(OSMESA_RGB, 16, 0, 16, nullptr))
 {
 	if (!ctx) error("OSMeseCreateContextExt failed");
 }
