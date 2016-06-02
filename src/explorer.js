@@ -20,15 +20,6 @@ function on_mirror_button_clicked()
 	reo.mirror = !reo.mirror;
 }
 
-function selected_node_changed()
-{
-	document.getElementById('composer_link').href = "../composer/index.html?p" + selected_node;
-
-	document.getElementById('search_link').href = "../index.html?" + nodes[selected_node].tags.join(",");
-
-	tick_graph(svg);
-}
-
 function node_selection_changed()
 {
 	try
@@ -129,10 +120,22 @@ function node_clicked(d)
 	node_selection_changed();
 }
 
+function goto_search()
+{
+	window.location.href = "../index.html?" + nodes[selected_node].tags.join(",");
+		// todo: reimplement GrappleMap::query_for...
+}
+
+function goto_composer()
+{
+	window.location.href = "../composer/index.html?p" + selected_node;
+		// todo: if currently editing a linear path, load that
+}
+
 function mouse_over_node(d)
 {
 	if (d.id != selected_node && try_move(d.id))
-		selected_node_changed();
+		tick_graph(svg);
 }
 
 function updateCamera()
@@ -196,7 +199,7 @@ window.addEventListener('DOMContentLoaded',
 		make_graph();
 
 		node_selection_changed();
-		selected_node_changed();
+		tick_graph(svg);
 
 		scene.activeCamera = externalCamera;
 
