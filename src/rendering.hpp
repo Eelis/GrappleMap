@@ -31,8 +31,7 @@ namespace GrappleMap
 		unsigned grid_line_width = 2;
 
 		#ifdef USE_FTGL
-			FTGLPixmapFont frameFont{"DejaVuSans.ttf"};
-			FTGLPixmapFont sequenceFont{"DejaVuSans.ttf"};
+			FTGLPixmapFont font{"DejaVuSans.ttf"};
 		#endif
 
 		Style();

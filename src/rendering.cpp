@@ -152,9 +152,9 @@ namespace
 			glEnable(GL_DEPTH_TEST);
 
 			#ifdef USE_FTGL
-				if (edit_mode && v.second.seqNum == current_sequence)
+				if (edit_mode && !style.font.Error() && v.second.seqNum == current_sequence)
 					for (PosNum i = v.second.begin + 1; i != v.second.end; ++i)
-						renderText(style.frameFont, world2screen(camera, apply(r, seq[i], j)), to_string(i), white);
+						renderText(style.font, world2screen(camera, apply(r, seq[i], j)), to_string(i), white);
 			#endif
 		}
 	}
@@ -163,11 +163,8 @@ namespace
 Style::Style()
 {
 	#ifdef USE_FTGL
-		if (frameFont.Error()) throw runtime_error("could not load font");
-		if (sequenceFont.Error()) throw runtime_error("could not load font");
-
-		frameFont.FaceSize(16);
-		sequenceFont.FaceSize(64);
+		if (!font.Error())
+			font.FaceSize(16);
 	#endif
 }
 
@@ -266,15 +263,6 @@ void renderWindow(
 			glEnd();
 		}
 	}
-
-/*
-	string desc = graph[current_sequence].description.front();
-
-	if (desc == "...") desc = "to " + graph[graph.to(current_sequence).node].description.front();
-	desc = replace_all(desc, "\\n", " ");
-
-	renderText(style.sequenceFont, V2{10,20}, desc);
-*/
 }
 
 }
