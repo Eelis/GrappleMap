@@ -1,6 +1,7 @@
 #define BOOST_NO_CXX11_SCOPED_ENUMS
 	// see https://www.robertnitsch.de/notes/cpp/cpp11_boost_filesystem_undefined_reference_copy_file
 
+#include "png.h"
 #include "util.hpp"
 #include "headings.hpp"
 #include "camera.hpp"
@@ -29,12 +30,13 @@ inline std::size_t hash_value(V3 const v) // todo: put elsewhere
 }
 
 #include <boost/functional/hash.hpp>
-#define int_p_NULL (int*)NULL // https://github.com/ignf/gilviewer/issues/8
 
-#ifndef NO_IMAGES
+#ifndef int_p_NULL // ffs
+	#define int_p_NULL (int*)NULL // https://github.com/ignf/gilviewer/issues/8
+#endif
+
 #include <boost/gil/extension/io/png_io.hpp>
 #include <boost/gil/gil_all.hpp>
-#endif
 #include <boost/filesystem.hpp>
 
 namespace
