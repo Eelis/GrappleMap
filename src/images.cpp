@@ -230,8 +230,8 @@ string ImageMaker::png(
 		string const linkname = output_dir + base_linkname + attrs + ".png";
 
 		unlink(linkname.c_str());
-		symlink(filename.c_str(), linkname.c_str());
-			// todo: check errors
+		if (symlink(filename.c_str(), linkname.c_str()))
+			perror("symlink");
 	}
 
 	return filename;
@@ -288,8 +288,8 @@ string ImageMaker::gif(
 		string const linkname = output_dir + base_linkname + attrs + ".gif";
 
 		unlink(linkname.c_str());
-		symlink(filename.c_str(), linkname.c_str());
-			// todo: check errors
+		if (symlink(filename.c_str(), linkname.c_str()))
+			perror("symlink");
 	}
 
 	return filename;
