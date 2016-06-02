@@ -1,12 +1,13 @@
-env = Environment(CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3')
+import os
+
+env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3 -DUSE_FTGL')
 # env = Environment(CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -g')
 
 common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp'])
 rendering = env.Object('rendering.cpp')
 images = env.Object('images.cpp')
-gllibs = ['GL', 'GLU', 'glfw', 'ftgl']
 cmdlibs = ['boost_program_options']
-guilibs = gllibs + cmdlibs
+guilibs = ['GL', 'GLU', 'glfw', 'ftgl'] + cmdlibs
 
 env.Program('grapplemap-editor', ['editor.cpp', rendering, common], LIBS=guilibs)
 env.Program('grapplemap-playback', ['playback.cpp', rendering, common], LIBS=guilibs)
@@ -15,4 +16,4 @@ env.Program('grapplemap-dbtojs', ['dbtojs.cpp', common], LIBS=cmdlibs)
 env.Program('grapplemap-mkpospages', ['mkpospages.cpp', images, rendering, common],
 	LIBS = ['OSMesa', 'GLU', 'ftgl', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system'])
 env.Program('grapplemap-mkvid', ['makevideo.cpp', images, rendering, common],
-	LIBS = ['OSMesa', 'GLU', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system'])
+	LIBS = ['OSMesa', 'GLU', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system', 'ftgl'])
