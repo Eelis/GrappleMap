@@ -507,3 +507,39 @@ function view_mirror_y(v)
 {
 	return view_rotate_right(view_mirror_x(view_rotate_left(v)));
 }
+
+function neighbours(n)
+{
+	var r = [];
+
+	n.outgoing.forEach(function(s) { r.push(step_to(s).node); });
+	n.incoming.forEach(function(s) { r.push(step_from(s).node); });
+
+	return r;
+}
+
+function grow(start, pred)
+{
+	var yes = [];
+	var no = [];
+	var queue = [start];
+
+	if (pred(start)) yes.push(start);
+
+	while (queue.length != 0)
+	{
+		var item = queue.pop();
+
+		neighbours(nodes[item]).forEach(
+			function(n)
+			{
+				if (yes.indexOf(n) == -1 && no.indexOf(n) == -1)
+				{
+					if (pred(n)) { yes.push(n); queue.push(n); }
+					else no.push(n);
+				}
+			});
+	}
+
+	return yes;
+}

@@ -312,11 +312,7 @@ function add_paged_elems(target, page_size)
 
 function update_position_pics()
 {
-	var page_size = 12;
-
 	document.getElementById('pos_count_label').innerHTML = selected_nodes.length;
-
-	document.getElementById("explorerlink").href = "explorer/index.html?" + selected_nodes.join(",");
 
 	paged_positions(selected_nodes, function(n, target)
 		{
@@ -427,6 +423,17 @@ function updateCamera()
 
 function node_clicked()
 {
+}
+
+function goto_explorer()
+{
+	var connected_env = grow(selected_node,
+		function(n)
+		{
+			return selected_nodes.indexOf(n) != -1;
+		});
+
+	window.location.href = "explorer/index.html?" + connected_env.join(",");
 }
 
 function set_selected_node(n)
