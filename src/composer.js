@@ -452,7 +452,8 @@ function follow(steps, mirror)
 		}
 		else
 		{
-			reo = step_from(step).reo;
+			reo = copy_reo(step_from(step).reo);
+
 			if (mirror) reo.mirror = !reo.mirror;
 		}
 
@@ -483,6 +484,7 @@ function follow(steps, mirror)
 
 function on_mirror_button_clicked()
 {
+	mirror_view = !mirror_view;
 	for (var f = 0; f != keyframes.length; ++f)
 		mirror(keyframes[f]);
 }

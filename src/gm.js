@@ -403,6 +403,14 @@ function compose_reo(a, b)
 	return c;
 }
 
+function copy_reo(r)
+{
+	return { offset: r.offset // todo: copy
+	       , angle: r.angle
+	       , mirror: r.mirror
+	       , swap_players: r.swap_players };
+}
+
 function step_to(s)
 {
 	return s.reverse
