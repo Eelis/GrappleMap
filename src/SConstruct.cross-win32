@@ -17,8 +17,4 @@ env.Program('grapplemap-editor.exe',
 env.Program('grapplemap-playback.exe',
 	['playback.cpp', 'paths.cpp', rendering, common], LIBS=libs)
 
-env.Program('grapplemap-browse.exe',
-	['browse.cpp', 'images.cpp', rendering, common],
-	LIBS = libs + ['boost_filesystem-mt-s', 'boost_system-mt-s'])
-
-env.Program('grapplemap-dbtojs.exe', ['dbtojs.cpp', common])
+env.Program('grapplemap-dbtojs.exe', ['dbtojs.cpp', common], LIBS=['boost_program_options'])

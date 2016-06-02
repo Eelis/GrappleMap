@@ -64,7 +64,7 @@ namespace
 	{
 		namespace po = boost::program_options;
 
-		po::options_description desc("options");
+		po::options_description desc("Options");
 		desc.add_options()
 			("help,h",
 				"show this help")
@@ -79,7 +79,15 @@ namespace
 		po::store(po::parse_command_line(argc, argv, desc), vm);
 		po::notify(vm);
 
-		if (vm.count("help")) { std::cout << desc << '\n'; return none; }
+		if (vm.count("help"))
+		{
+			cout << desc <<
+				"\nWarning: The first run will take many hours.\n\n"
+				"In subsequent runs, pictures are only (re)created "
+				"for new or changed transitions.\n";
+
+			return none;
+		}
 
 		return Config
 			{ vm["db"].as<string>()
@@ -685,12 +693,6 @@ int main(int const argc, char const * const * const argv)
 
 		Graph const graph = loadGraph(config->db);
 
-		{
-			ofstream js(output_dir + "transitions.js");
-			js << std::boolalpha;
-			tojs(graph, js);
-		}
-
 		write_lists(graph, output_dir);
 		write_todo(graph, output_dir);
 
@@ -700,7 +702,7 @@ int main(int const argc, char const * const * const argv)
 
 		foreach (n : nodenums(graph)) position_page::write_it(mkimg, graph, n, output_dir);
 
-		std::endl(cout);
+		cout << '\n';
 	}
 	catch (exception const & e)
 	{

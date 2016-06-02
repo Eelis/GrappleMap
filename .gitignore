@@ -4,15 +4,6 @@
 *.glob
 .sconsign.dblite
 proofs/deps
-src/grapplemap-editor
-src/grapplemap-editor.exe
-src/grapplemap-playback
-src/grapplemap-playback.exe
-src/grapplemap-todot
-src/grapplemap-browse
-src/grapplemap-browse.exe
-src/grapplemap-dbtojs
-src/grapplemap-dbtojs.exe
-src/grapplemap-mkvid
+src/grapplemap-*
 src/browse
 GrappleMap

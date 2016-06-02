@@ -1,17 +1,18 @@
 #!/bin/bash
 
-set -ev
-
-(cd src && scons grapplemap-browse)
+set -e
 
 outputbase=.
-
 output=$outputbase/GrappleMap
+
+echo "Creating $output/."
 
 mkdir -p $output/{gifframes,composer,search,explorer}
 
 function download
 {
+	echo "Downloading $1"
+
 	target=$output/$1
 	url=$2
 
@@ -34,4 +35,7 @@ cp src/explorer.html $output/explorer/index.html
 cp src/explorer.js $output/explorer/
 cp src/example-drills.html $output/
 
-src/grapplemap-browse --output_dir=$outputbase
+echo "Converting database to javascript."
+src/grapplemap-dbtojs --output_dir=$output
+
+echo -e "\nFor the pictures/gifs, run:\n\n  src/grapplemap-mkpics --output_dir=${outpubase}.\n"
