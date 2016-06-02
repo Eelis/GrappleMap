@@ -369,7 +369,7 @@ function update_transition_pics()
 }
 
 
-function update_graph()
+function prepare_graph(frugal)
 {
 	var nn = [];
 	var G = { nodes: [], links: [] };
@@ -393,9 +393,11 @@ function update_graph()
 		if (t.properties.indexOf("top") != -1) color = "red";
 		if (t.properties.indexOf("bottom") != -1) color = "blue";
 
+		function frugal_op(x, y) { return frugal ? (x && y) : (x || y); }
+
 		if (trans_is_selected(t)
-			|| node_is_selected(nodes[t.to.node])
-			|| node_is_selected(nodes[t.from.node]))
+			|| frugal_op(node_is_selected(nodes[t.to.node]),
+			             node_is_selected(nodes[t.from.node])))
 			G.links.push(
 				{ source: addnode(t.from.node)
 				, target: addnode(t.to.node)
@@ -407,7 +409,18 @@ function update_graph()
 	for (var i = 0; i != nn.length; ++i)
 		G.nodes.push(nodes[nn[i]]);
 
-	if (G.nodes.length > 50) return;
+	return G;
+}
+
+function update_graph()
+{
+	var G = prepare_graph(false);
+
+	if (G.nodes.length > 30)
+		G = prepare_graph(true);
+
+	if (G.nodes.length > 30)
+		return;
 
 	force.nodes(G.nodes);
 	force.links(G.links);
