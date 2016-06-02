@@ -38,4 +38,5 @@ cp src/example-drills.html $output/
 echo "Converting database to javascript."
 src/grapplemap-dbtojs --output_dir=$output
 
-echo -e "\nFor the pictures/gifs, run:\n\n  src/grapplemap-mkpics --output_dir=${outpubase}.\n"
+echo -e "\nFor the position pages with pictures/gifs, run:\n"
+echo -e "  src/grapplemap-mkpospages --output_dir=${outpubase}.\n"
