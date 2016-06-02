@@ -9,6 +9,8 @@ var reo = zero_reo();
 var kf = 0;
 var svg;
 var force;
+var paged_positions;
+var paged_transitions;
 
 function node_has_tag(node, tag)
 {
@@ -260,11 +262,11 @@ function view_code(v)
 	return ["nesw","NESW"][v[1] ? 1 : 0][v[0]];
 }
 
-function add_paged_elems(target, page_size, items, renderitem)
+function add_paged_elems(target, page_size)
 {
 	var page = 0;
 
-	function refresh()
+	function refresh(items, renderitem)
 	{
 		target.innerHTML = "";
 
@@ -289,7 +291,7 @@ function add_paged_elems(target, page_size, items, renderitem)
 					a.addEventListener("click", function(i_){return function(e){
 							e.preventDefault();
 							page = i_;
-							refresh();
+							refresh(items, renderitem);
 						};}(i));
 					a.appendChild(document.createTextNode(i + 1));
 					target.appendChild(a);
@@ -305,7 +307,7 @@ function add_paged_elems(target, page_size, items, renderitem)
 		}
 	}
 
-	refresh();
+	return refresh;
 }
 
 function update_position_pics()
@@ -314,11 +316,9 @@ function update_position_pics()
 
 	document.getElementById('pos_count_label').innerHTML = selected_nodes.length;
 
-	var elem = document.getElementById("position_pics");
-
 	document.getElementById("explorerlink").href = "explorer/index.html?" + selected_nodes.join(",");
 
-	add_paged_elems(elem, 9, selected_nodes, function(n, _)
+	paged_positions(selected_nodes, function(n, target)
 		{
 			var link = document.createElement("a");
 
@@ -331,14 +331,12 @@ function update_position_pics()
 			img.setAttribute('title', nodes[n].description);
 			link.appendChild(img);
 
-			elem.appendChild(link);
+			target.appendChild(link);
 		});
 }
 
 function update_transition_pics()
 {
-	var elem = document.getElementById("transition_pics");
-
 	var selected_edges = [];
 	for (var n = 0; n != transitions.length; ++n)
 		if (trans_is_selected(transitions[n]))
@@ -346,7 +344,7 @@ function update_transition_pics()
 
 	document.getElementById('trans_count_label').innerHTML = selected_edges.length;
 
-	add_paged_elems(elem, 12, selected_edges, function(e, _)
+	paged_transitions(selected_edges, function(e, target)
 		{
 			var link = document.createElement("a");
 			link.href = "composer/index.html?" + e; // todo: preserve view
@@ -356,7 +354,7 @@ function update_transition_pics()
 			img.setAttribute('title', transitions[e].description);
 			link.appendChild(img);
 
-			elem.appendChild(link);
+			target.appendChild(link);
 		});
 }
 
@@ -491,6 +489,9 @@ window.addEventListener('DOMContentLoaded',
 		}
 
 		thepos = last_keyframe = nodes[0].position;
+
+		paged_positions = add_paged_elems(document.getElementById('position_pics'), 9);
+		paged_transitions = add_paged_elems(document.getElementById('transition_pics'), 12);
 
 		canvas = document.getElementById('renderCanvas');
 		engine = new BABYLON.Engine(canvas, true);
