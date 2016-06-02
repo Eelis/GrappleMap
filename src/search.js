@@ -312,7 +312,6 @@ function add_paged_elems(target, page_size)
 
 function position_image_title(n)
 {
-	console.log(n.description);
 	return n.description.replace('\n', ' ');
 }
 
@@ -419,8 +418,12 @@ function update_graph()
 	if (G.nodes.length > 30)
 		G = prepare_graph(true);
 
-	if (G.nodes.length > 30)
-		return;
+	var toobig = (G.nodes.length > 30);
+
+	document.getElementById('neighbourhood').style.display = (toobig ? 'none' : 'inline');
+	document.getElementById('toobiglabel').style.display = (toobig ? 'inline' : 'none');
+
+	if (toobig) return;
 
 	force.nodes(G.nodes);
 	force.links(G.links);
