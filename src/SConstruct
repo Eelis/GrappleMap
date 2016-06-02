@@ -9,11 +9,13 @@ images = env.Object('images.cpp')
 cmdlibs = ['boost_program_options']
 guilibs = ['GL', 'GLU', 'glfw', 'ftgl'] + cmdlibs
 
-env.Program('grapplemap-editor', ['editor.cpp', rendering, common], LIBS=guilibs)
-env.Program('grapplemap-playback', ['playback.cpp', rendering, common], LIBS=guilibs)
-env.Program('grapplemap-todot', ['todot.cpp', common], LIBS=cmdlibs)
-env.Program('grapplemap-dbtojs', ['dbtojs.cpp', common], LIBS=cmdlibs)
-env.Program('grapplemap-mkpospages', ['mkpospages.cpp', images, rendering, common],
-	LIBS = ['OSMesa', 'GLU', 'ftgl', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system'])
-env.Program('grapplemap-mkvid', ['makevideo.cpp', images, rendering, common],
-	LIBS = ['OSMesa', 'GLU', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system', 'ftgl'])
+editor     = env.Program('grapplemap-editor', ['editor.cpp', rendering, common], LIBS=guilibs)
+playback   = env.Program('grapplemap-playback', ['playback.cpp', rendering, common], LIBS=guilibs)
+todot      = env.Program('grapplemap-todot', ['todot.cpp', common], LIBS=cmdlibs)
+dbtojs     = env.Program('grapplemap-dbtojs', ['dbtojs.cpp', common], LIBS=cmdlibs)
+mkpospages = env.Program('grapplemap-mkpospages', ['mkpospages.cpp', images, rendering, common],
+				LIBS = ['OSMesa', 'GLU', 'ftgl', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system'])
+mkvid      =env.Program('grapplemap-mkvid', ['makevideo.cpp', images, rendering, common],
+				LIBS = ['OSMesa', 'GLU', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system', 'ftgl'])
+
+env.Alias('noX', [dbtojs, mkpospages, mkvid]);

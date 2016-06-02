@@ -2,6 +2,8 @@
 
 set -e
 
+(cd src && scons -Q noX)
+
 outputbase=.
 output=$outputbase/GrappleMap
 
