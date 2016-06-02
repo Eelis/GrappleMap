@@ -20,6 +20,12 @@ function on_mirror_button_clicked()
 	reo.mirror = !reo.mirror;
 }
 
+function auto_enable_edit_mode()
+{
+	if (selected_nodes.length <= 5)
+		document.getElementById('edit_mode_checkbox').checked = true;
+}
+
 function node_selection_changed()
 {
 	try
@@ -43,11 +49,6 @@ function node_selection_changed()
 	}
 
 	selected_nodes.forEach(addnode);
-
-	if (selected_nodes.length == 1)
-	{
-		document.getElementById('edit_mode_checkbox').checked = true;
-	}
 
 	transitions.forEach(function(t)
 		{
@@ -117,6 +118,7 @@ function node_clicked(d)
 	else
 		return;
 
+	auto_enable_edit_mode();
 	node_selection_changed();
 }
 
@@ -198,7 +200,9 @@ window.addEventListener('DOMContentLoaded',
 
 		make_graph();
 
+		auto_enable_edit_mode();
 		node_selection_changed();
+
 		tick_graph(svg);
 
 		scene.activeCamera = externalCamera;
