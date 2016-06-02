@@ -501,6 +501,17 @@ void cursor_pos_callback(GLFWwindow * const window, double const xpos, double co
 	w.last_cursor_y = ypos;
 }
 
+string const usage =
+	"Usage: grapplemap-editor [OPTIONS] [START]\n";
+
+string const start_desc =
+	"START can be:\n"
+	"  - \"p#\" for position #\n"
+	"  - \"t#\" for transition #\n"
+	"  - the first line of a position or transition's description,\n"
+	"    with newlines replaced with spaces\n"
+	"  - \"last-trans\" for the last transition in the database\n";
+
 string const controls =
 	"Keys:\n"
 	"  arrow keys - rotate camera\n"
@@ -543,10 +554,10 @@ int main(int const argc, char const * const * const argv)
 
 	try
 	{
-		po::options_description desc("Options");
-		desc.add_options()
+		po::options_description optdesc("Options");
+		optdesc.add_options()
 			("help,h", "show this help")
-			("start", po::value<string>()->default_value("last-trans"), "\"t#\" or \"n#\"")
+			("start", po::value<string>()->default_value("last-trans"), "see START below")
 			("db", po::value<string>()->default_value("GrappleMap.txt"), "database file");
 
 		po::positional_options_description posopts;
@@ -555,13 +566,17 @@ int main(int const argc, char const * const * const argv)
 		po::variables_map vm;
 		po::store(
 			po::command_line_parser(argc, argv)
-				.options(desc)
+				.options(optdesc)
 				.positional(posopts)
 				.run(),
 			vm);
 		po::notify(vm);
 
-		if (vm.count("help")) { std::cout << desc << '\n' << controls; return 0; }
+		if (vm.count("help"))
+		{
+			std::cout << usage << '\n' << optdesc << '\n' << start_desc << '\n' << controls;
+			return 0;
+		}
 
 		Window w(vm["db"].as<std::string>());
 
