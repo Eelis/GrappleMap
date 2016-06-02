@@ -310,6 +310,20 @@ function add_paged_elems(target, page_size)
 	return refresh;
 }
 
+function position_image_title(n)
+{
+	console.log(n.description);
+	return n.description.replace('\n', ' ');
+}
+
+function transition_image_title(t)
+{
+	var s = '';
+	t.description.forEach(function(l) { s += l.replace('\n', ' ') + "\n"; });
+
+	return s + "(t" + t.id + " @ line " + t.line_nr + ")";
+}
+
 function update_position_pics()
 {
 	document.getElementById('pos_count_label').innerHTML = selected_nodes.length;
@@ -324,7 +338,7 @@ function update_position_pics()
 
 			var img = document.createElement("img");
 			img.src = "p" + n + vc + "320x240.png";
-			img.setAttribute('title', nodes[n].description);
+			img.setAttribute('title', position_image_title(nodes[n]));
 			link.appendChild(img);
 
 			target.appendChild(link);
@@ -347,7 +361,7 @@ function update_transition_pics()
 
 			var img = document.createElement("img");
 			img.src = "t" + e + "200x150" + view_code(view) + ".gif";
-			img.setAttribute('title', transitions[e].description);
+			img.setAttribute('title', transition_image_title(transitions[e]));
 			link.appendChild(img);
 
 			target.appendChild(link);
