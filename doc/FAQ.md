@@ -179,9 +179,7 @@ different angles, dynamics, and controls around the area in question. But that i
 every part of the map is fair game for refinement at all times.
 
 One thing that needs to be stressed is the need for citations of instructional source materials,
-and the pedigree of the instructors. 
-
-The GrappleMap is only useful to people if they can be confident
+and the pedigree of the instructors. The GrappleMap is only useful to people if they can be confident
 that
 
   1. it contains only proven, battle-tested bread and butter techniques
