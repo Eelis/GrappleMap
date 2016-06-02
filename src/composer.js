@@ -185,7 +185,7 @@ function refreshPostChoices()
 function node_link(node)
 {
 	var link = document.createElement("a");
-	link.href = "../p" + node + "n.html";
+	link.href = "../p" + node + "e.html";
 	link.text = nodes[node].description;
 	return link;
 }

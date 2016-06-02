@@ -1,6 +1,6 @@
 var selected_tags = [];
 var drag = 0.20;
-var view = [0, false];
+var view = [1, false];
 var last_keyframe = null;
 var selected_node = null;
 var selected_nodes = [];
