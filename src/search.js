@@ -115,7 +115,8 @@ function on_query_changed()
 		if (node_is_selected(nodes[n]))
 			selected_nodes.push(n);
 
-	set_selected_node(selected_nodes[0]);
+	if (selected_nodes.length != 0)
+		set_selected_node(selected_nodes[0]);
 
 	update_tag_list();
 	update_position_pics();
@@ -413,17 +414,32 @@ function prepare_graph(frugal)
 
 function update_graph()
 {
+	var nb = document.getElementById('neighbourhood');
+	var nn = document.getElementById('no_neighbourhood');
+
+	if (selected_nodes.length == 0)
+	{
+		nb.style.display = 'none';
+		nn.style.display = 'inline';
+		nn.innerHTML = "No positions to display.<br><br>";
+		return
+	}
+
 	var G = prepare_graph(false);
 
 	if (G.nodes.length > 30)
 		G = prepare_graph(true);
 
-	var toobig = (G.nodes.length > 30);
+	var toobig = G.nodes.length == 0 || (G.nodes.length > 30);
 
-	document.getElementById('neighbourhood').style.display = (toobig ? 'none' : 'inline');
-	document.getElementById('toobiglabel').style.display = (toobig ? 'inline' : 'none');
+	nb.style.display = (toobig ? 'none' : 'inline');
+	nn.style.display = (toobig ? 'inline' : 'none');
 
-	if (toobig) return;
+	if (toobig)
+	{
+		nn.innerHTML = "Too many positions to display. (&gt; 30)<br><br>";
+		return;
+	}
 
 	force.nodes(G.nodes);
 	force.links(G.links);

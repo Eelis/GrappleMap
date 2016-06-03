@@ -28,7 +28,7 @@ download hand.js https://raw.githubusercontent.com/deltakosh/handjs/master/bin/h
 download sorttable.js http://www.kryogenix.org/code/browser/sorttable/sorttable.js
 
 cp src/gm.js $output/
-cp src/graphdisplay.js $output/
+cp src/graphdisplay.{js,css} $output/
 cp src/composer.html $output/composer/index.html
 cp src/composer.js $output/composer/
 cp src/search.html $output/index.html
