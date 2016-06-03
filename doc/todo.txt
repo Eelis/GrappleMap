@@ -33,6 +33,7 @@ position pages:
 - in the graphs, it would be good to be able to tell really long and really short transitions apart
 - make scene lighting more like in composer
 - make transition labels in graphviz graphs into composer links
+- generate pics/diagrams in subdir
 
 search page:
 - only warp if node is unreachable
@@ -69,7 +70,6 @@ misc:
 - get webserver to compress transitions (saves 70%)
 - for each transition, generate a file containing its frames, so that the web pages can request only what they need instead of loading everything
 - generate lightweight db summary file that only contains position data for nodes, for use by e.g. search page
-- re-use css across pages
 
 binary packages:
 - maybe make a dockerfile for the crosscompile env
