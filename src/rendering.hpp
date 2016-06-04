@@ -48,12 +48,12 @@ namespace GrappleMap
 		SeqNum current_sequence,
 		Style const &);
 
-	inline vector<View> third_person_windows_in_corner(double w, double h, double border)
+	inline vector<View> third_person_windows_in_corner(double w, double h, double hborder, double vborder)
 	{
 		return
 			{ {0, 0, 1, 1, none, 50}
-			, {1-w-border, border, w, h, optional<unsigned>(0), 80}
-			, {border, border, w, h, optional<unsigned>(1), 80}
+			, {1-w-hborder, vborder, w, h, optional<unsigned>(0), 80}
+			, {hborder, vborder, w, h, optional<unsigned>(1), 80}
 			};
 	}
 }
