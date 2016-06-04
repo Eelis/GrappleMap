@@ -18,6 +18,7 @@ editor
   * move limbs through eachother
 - maybe visually indicate where a body's structural mechanics are weak, which directions it could be off-balanced, etc
 - more useful console output
+- editing joints close to the camera doesn't work properly
 
 playback:
 - make {pre,post}fix length for demo mode configurable
@@ -39,6 +40,7 @@ search page:
 - only warp if node is unreachable
 - extended info mode
 - left/right keys should work in substring text box
+- removing tag sometimes doesn't update query properly when there's substrings
 
 explorer:
 - find a way to get mouse events through to babylon, or at least mention that arrow keys rotate camera
