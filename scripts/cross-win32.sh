@@ -11,7 +11,7 @@ mkdir -p win32package/$packageName/{composer,explorer}
 cd win32package
 
 cp ../src/grapplemap-{editor,playback,dbtojs}.exe ../GrappleMap.txt $packageName/
-cp ../src/{gm,graphdisplay}.js $packageName/
+cp ../src/{gm,graphdisplay}.js src/graphdisplay.css $packageName/
 cp ../src/composer.html $packageName/composer/index.html
 cp ../src/composer.js $packageName/composer/
 cp ../src/explorer.html $packageName/explorer/index.html
