@@ -55,7 +55,7 @@ explorer:
 - when the cursor is over a transition, indicate the point on the line closest to the cursor, and guide the animation towards the exact interpolated position, so that moving the mouse smoothly animates smoothly
 - see if using babylon's canvas2d for the graph helps
 
-drill composer
+composer:
 - speed dial
 - fps and other metrics display
 - leave animation undisturbed when manipulating drill

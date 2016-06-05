@@ -308,16 +308,6 @@ function refreshDrill()
 	catch (e) {}
 		// When browsing locally, the replaceState above
 		// throws a security exception with Chrome.
-
-	var dianodes=[];
-	steps.forEach(function(s){
-			dianodes.push(transitions[s.transition].from.node);
-			dianodes.push(transitions[s.transition].to.node);
-		});
-
-	if (steps.length == 0) dianodes.push(start_node);
-
-	document.getElementById("explorer_link").href = "../explorer/index.html?" + dianodes.join(",");
 }
 
 function on_slide()
@@ -422,6 +412,7 @@ function tick()
 		}
 	}
 
+
 	updateDrawnPos();
 	updateCamera();
 }
@@ -520,6 +511,37 @@ function decode_steps(s)
 		else
 			r.push({transition: parseInt(seqs[i]), reverse: false});
 	return r;
+}
+
+function goto_explorer()
+{
+	var dianodes=[];
+	steps.forEach(function(s){
+			dianodes.push(transitions[s.transition].from.node);
+			dianodes.push(transitions[s.transition].to.node);
+		});
+
+	if (steps.length == 0) dianodes.push(start_node);
+
+	window.location.href = "../explorer/index.html?" + dianodes.join(",");
+}
+
+function random_drill()
+{
+	steps = random_path(32);
+	start_node = step_from(steps[0]).node;
+
+	resetFrames();
+	frame = -1;
+	seqindex = 0;
+	frame_in_seq = -5;
+	k = 0;
+	thepos = ideal_pos();
+
+	refreshDrill();
+	refreshPreChoices();
+	refreshPostChoices();
+	pick_bullet();
 }
 
 window.addEventListener('DOMContentLoaded',
