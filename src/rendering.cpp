@@ -143,19 +143,33 @@ namespace
 			for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i], j));
 			glEnd();
 
-			glPointSize(25);
+			glPointSize(20);
 			glBegin(GL_POINTS);
 			for (PosNum i = v.second.begin; i != v.second.end; ++i)
 				if (i == 0 || i == seq.size() - 1)
 					glVertex(apply(r, seq[i], j));
 			glEnd();
-			glEnable(GL_DEPTH_TEST);
 
-			#ifdef USE_FTGL
-				if (edit_mode && !style.font.Error() && v.second.seqNum == current_sequence)
-					for (PosNum i = v.second.begin + 1; i != v.second.end; ++i)
-						renderText(style.font, world2screen(camera, apply(r, seq[i], j)), to_string(i), white);
-			#endif
+			if (edit_mode)
+			{
+				#ifdef USE_FTGL
+					if (!style.font.Error() && v.second.seqNum == current_sequence)
+						for (PosNum i = v.second.begin + 1; i != v.second.end; ++i)
+							renderText(
+								style.font,
+								world2screen(camera, apply(r, seq[i], j)),
+								to_string(i), white);
+				#else
+					glPointSize(10);
+					glBegin(GL_POINTS);
+					for (PosNum i = v.second.begin; i != v.second.end; ++i)
+						if (i != 0 && i != seq.size() - 1)
+							glVertex(apply(r, seq[i], j));
+					glEnd();
+				#endif
+			}
+
+			glEnable(GL_DEPTH_TEST);
 		}
 	}
 }
