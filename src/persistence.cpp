@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iterator>
 #include <cstring>
+#include <boost/algorithm/string/trim.hpp>
 
 namespace GrappleMap {
 
@@ -54,7 +55,7 @@ namespace
 
 		unsigned line_nr = 0;
 
-		while(std::getline(i, line))
+		while (std::getline(i, line))
 		{
 			++line_nr;
 			bool const is_position = line.front() == ' ';
@@ -68,7 +69,17 @@ namespace
 					desc.clear();
 				}
 
-				while (line.front() == ' ') line.erase(0, 1);
+				boost::algorithm::trim(line);
+
+				for (int j = 0; j != 3; ++j)
+				{
+					++line_nr;
+					string more;
+					if (!std::getline(i, more))
+						error("could not read position at line " + to_string(line_nr));
+					boost::algorithm::trim(more);
+					line += more;
+				}
 
 				if (v.empty()) error("malformed file");
 
@@ -84,14 +95,15 @@ namespace
 
 	ostream & operator<<(ostream & o, Position const & p)
 	{
-		o << "    ";
+		string s;
 
-		auto g = [&o](double const d)
+		auto g = [&o, &s](double const d)
 			{
 				int const i = int(std::round(d * 1000));
 				assert(i >= 0);
 				assert(i < 4000);
-				o << base62digits[i / 62] << base62digits[i % 62];
+				s += base62digits[i / 62];
+				s += base62digits[i % 62];
 			};
 
 		foreach (j : playerJoints)
@@ -101,7 +113,12 @@ namespace
 			g(p[j].z + 2);
 		}
 
-		return o << '\n';
+		auto const n = s.size() / 4;
+
+		for (int i = 0; i != 4; ++i)
+			o << "    " << s.substr(i * n, n) << '\n';
+
+		return o;
 	}
 
 	ostream & operator<<(ostream & o, Sequence const & s)
