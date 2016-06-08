@@ -112,12 +112,29 @@ function mouse_not_over_transition(d)
 	d3.select("#infos").selectAll(".link_info").style("display", "none");
 }
 
+function mouse_over_position(d)
+{
+	d3.select("#infos").selectAll(".node_info").style("display", function(dd)
+		{
+			console.log(dd + " == " + d + " ?");
+			return (dd == d ? "inline" : "none");
+		});
+
+	mouse_over_node(d);
+}
+
+function mouse_not_over_position(d)
+{
+	d3.select("#infos").selectAll(".node_info").style("display", "none");
+}
+
 function make_svg_graph_elems(svg, G, force)
 {
 	var node_shapes = svg.select("#nodes").selectAll(".node").data(G.nodes, get_id);
-	var node_labels = svg.select("#labels").selectAll(".node_label_group").data(G.nodes, get_id);
 	var link_shapes = svg.select("#links").selectAll(".link").data(G.links, get_id);
+	var node_labels = svg.select("#labels").selectAll(".node_label_group").data(G.nodes, get_id);
 	var link_labels = svg.select("#labels").selectAll(".link_label_group").data(G.links, get_id);
+	var node_infos = d3.select("#infos").selectAll(".node_info").data(G.nodes, get_id);
 	var link_infos = d3.select("#infos").selectAll(".link_info").data(G.links, get_id);
 
 	{
@@ -145,12 +162,25 @@ function make_svg_graph_elems(svg, G, force)
 	link_shapes.enter()
 		.append("line")
 		.attr("class", "link")
-		.style("stroke", function(d){ return d.color; });
+		.style("stroke", function(d){ return d.color; })
+		.on('mouseover', mouse_over_transition)
+		.on('mouseout', mouse_not_over_transition);
 
 	link_shapes.attr("marker-end", function(d){
 			var sel = (selected_nodes.indexOf(d.target.id) != -1);
 			return "url(#" + d.color + "-arrow" + (sel ? "" : "-nonsel") + ")";
 		});
+
+	node_infos.enter()
+		.append("div")
+		.attr("class", "node_info")
+		.style("display", "none")
+		.html(function(d){
+				var n = nodes[d.id];
+				return n.description + "<br>" +
+					"tags: " + n.tags.join(", ") + "<br>" +
+					"(p" + d.id + ")"; // todo: line #
+			});
 
 	link_infos.enter()
 		.append("div")
@@ -159,13 +189,14 @@ function make_svg_graph_elems(svg, G, force)
 		.html(function(d){
 				var trans = transitions[d.id];
 				return trans.description.join("<br>") +
-					"<br>transition " + d.id + " @ line " + trans.line_nr;
+					"<br>(t" + d.id + " @ line " + trans.line_nr + ")";
 			});
 
 	node_shapes.enter().append("circle")
 		.attr("class", "node")
 		.on('click', node_clicked)
-		.on('mouseover', mouse_over_node)
+		.on('mouseover', mouse_over_position)
+		.on('mouseout', mouse_not_over_position)
 		.call(force.drag);
 
 	node_shapes.attr("r", function(d)
@@ -182,7 +213,8 @@ function make_svg_graph_elems(svg, G, force)
 		var s = node_labels.enter().append("g")
 			.attr("class", "node_label_group")
 			.on('click', node_clicked)
-			.on('mouseover', mouse_over_node)
+			.on('mouseover', mouse_over_position)
+			.on('mouseout', mouse_not_over_position)
 			.call(force.drag);
 
 		s	.append("text")
