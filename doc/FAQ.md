@@ -170,7 +170,8 @@ and a cross-compiled Windows package can be found [here](http://eel.is/GrappleMa
 It is certainly my intention to make the tools usable by non-techies, though collaboration
 through Github does involve version control, and editing the database text
 file does require a decent text editor... Eventually I'll probably make the editor either
-a Qt application, or make it run in the browser, or both.
+a Qt application, or make it run in the browser, or both. In any case, documentation
+for editing is [here](https://github.com/Eelis/GrappleMap/blob/master/doc/editing.md).
 
 Note that unless you work on one of the areas where GrappleMap coverage is still
 very sparse (such as takedowns or leg locks), adding content will not merely be a matter

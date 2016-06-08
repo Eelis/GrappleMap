@@ -1,3 +1,0 @@
-There are many positions where it is not meaningful to speak of the "top" or "bottom" player,
-and where the classification is arbitrary. But even for transitions along such positions,
-the top/bottom marking should be used to indicate initiative.

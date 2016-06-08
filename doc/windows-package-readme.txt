@@ -11,3 +11,5 @@ So the basic workflow at the moment is:
 	3. look around with the composer or explorer to see if the changes look good.
 
 (Generation of position pages with images and animated gifs doesn't work on Windows yet.)
+
+Also see  https://github.com/Eelis/GrappleMap/blob/master/doc/editing.md
