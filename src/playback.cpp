@@ -157,7 +157,7 @@ int main(int const argc, char const * const * const argv)
 
 				renderWindow(
 					{{0, 0, 1, 1, none, 50}},
-//					third_person_windows_in_corner(.3,.3,.02),
+//					third_person_windows_in_corner(.3,.3,.01,.01 * (double(width)/height)),
 					nullptr, // no viables
 					graph, pos, camera,
 					none, // no highlighted joint
