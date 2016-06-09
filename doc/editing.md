@@ -1,14 +1,21 @@
-# Editing existing transitions
+# GrappleMap Editor
 
-First, determine the number of the transition you want to edit. Then, run:
+## 1. Viewing transitions
 
-	grapplemap-editor t#
+Run "grapplemap-editor t#", where # is the transition number.
 
-In the editor, press 'v' to go into edit mode.
-
-Now use the mouse scrollwheel to cycle through the transition's frames, or
+Use the mouse scroll wheel to cycle through the transition's frames, or
 drag joints with the right mouse button along the path they take through
 the transition.
+
+Note that you can drag joints through connecting positions into
+neighbouring transitions. This is very useful when you are making
+edits that affect more than one transition (see below).
+
+
+## 2. Editing transitions
+
+In the editor, press 'v' to go into edit mode.
 
 Drag joints with the left mouse button to change their position.
 
@@ -17,7 +24,28 @@ Press 's' to save.
 Run "grapplemap-editor -h" for a complete list of controls.
 
 
-# Adding transitions between existing positions
+## 3. Modifying connecting positions
+
+A "connecting position" is one where transitions connect,
+so connecting positions are the start and end positions
+of transitions.
+
+If in the editor you modify a connecting position, then
+there are two options:
+
+- If it was only a rotation/translation/mirroring modification, no worries.
+
+- Otherwise (if it was a joint manipulation), all other transitions
+  that had that position as their start or end position will be
+  automatically updated as well.
+
+So when editing connecting positions, you must be extra careful
+to ensure that the movement is correct in all affected transitions.
+
+
+## 4. Adding transitions 
+
+### 4.1 Between two existing connecting positions
 
 For both positions, find their code block in GrappleMap.txt. For example, if you want to start from the position named "combat base vs butterfly", you'd find this block:
 
@@ -49,44 +77,21 @@ by dragging joints with the right mouse button, then unless you got lucky, you'l
 see that the relative orientation of the start and end position is arbitrary, so
 you'll have to fix it up by rotating/translating/mirroring (see -h for keys).
 
-After that, you can start inserting and editing intermediate frames.
+You can now start inserting and editing intermediate frames.
+
+### 4.2 New positions
+
+If you want to start or end a transition from a position that is not an existing
+connecting position, but rather an intermediate position of a transition, then you will need to
+split that transition at the position first, by pressing 'b' (for 'branch').
+When you do, you'll see that the transition has been split at the current position.
+
+You can now follow the procedure from the previous section.
 
 
-# Modifying start/end nodes
+## 5. Properties
 
-If in the editor you modify a starting or ending position of a transition, then
-there are two options:
-
-- If it was only a rotation/translation/mirroring modification, no worries.
-
-- Otherwise (if it was a joint manipulation), all other transitions
-  that had that position as their start or end position will be
-  automatically updated as well.
-
-In other words, the start/end positions of transitions are shared
-with other transitions connected to the same position, and so when
-editing these connecting positions, you must be extra careful
-to ensure that the movement is correct in all affected transitions.
-
-This sounds hard, but to make it easy, if you drag joints
-in *view* mode (to get there, press 'v' again), you can drag them *through*
-the connecting points to seemlessly enter into the neighbouring
-transitions. This makes it easy to "grab a joint" and drag it along
-the path it takes through multiple connected transitions, to see
-where edits need to be made, and to immediately make them.
-
-So in an editing session, it is normal to not just edit one transition,
-but to go back and forth between edit mode and view mode, to edit a
-group of multiple connected transititions, changing both the branching
-(start/end) positions as well as the intermediate frames.
-
-
-# Adding positions
-
-TODO
-
-
-# Top vs bottom
+### "top" / "bottom"
 
 There are many positions where it is not meaningful to speak of the "top" or "bottom" player,
 and where the classification is arbitrary. But even for transitions along such positions,
@@ -95,6 +100,10 @@ the top/bottom properties should be used to indicate which player's initiative i
 For positions where there *is* a clear top and bottom player, but where the
 wrong player is currently on top, you can swap the players by swapping the
 first two lines with the last two lines of the code block. There is no need to modify
-transitions that start/end at the position; when loading the file, the software
-understands that two positions that differ only in that the players are swapped,
+transitions that start/end at the position; when loading the file, the GrappleMap
+tools understand that two positions that differ only in that the players are swapped,
 are the same position.
+
+### "bidirectional"
+
+As the name suggests.

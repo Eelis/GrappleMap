@@ -73,6 +73,7 @@ It's a very minimalistic but highly specialized character animation editor
 where you edit transitions simply by dragging the joints into place for each
 respective keyframe. It is written in C++ and uses GLFW.
 
+A mini manual is [here](https://github.com/Eelis/GrappleMap/blob/master/doc/editing.md).
 
 ## What license is the code and data under?
 
@@ -171,7 +172,7 @@ It is certainly my intention to make the tools usable by non-techies, though col
 through Github does involve version control, and editing the database text
 file does require a decent text editor... Eventually I'll probably make the editor either
 a Qt application, or make it run in the browser, or both. In any case, documentation
-for editing is [here](https://github.com/Eelis/GrappleMap/blob/master/doc/editing.md).
+for the editor is [here](https://github.com/Eelis/GrappleMap/blob/master/doc/editing.md).
 
 Note that unless you work on one of the areas where GrappleMap coverage is still
 very sparse (such as takedowns or leg locks), adding content will not merely be a matter
