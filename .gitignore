@@ -5,7 +5,7 @@
 .sconsign.dblite
 proofs/deps
 src/grapplemap-*
-src/browse
+src/tags
 GrappleMap
 vidframes
 DejaVuSans.ttf
