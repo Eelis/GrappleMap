@@ -172,6 +172,26 @@ namespace
 			glEnable(GL_DEPTH_TEST);
 		}
 	}
+
+	void setupLights()
+	{
+		glEnable(GL_LIGHT0);
+		glEnable(GL_LIGHT1);
+		glEnable(GL_LIGHTING);
+
+		GLfloat light_diffuse[] = {0.45, 0.45, 0.45, 1.0};
+		GLfloat light_ambient[] = {0.07, 0.07, 0.07, 0.0};
+		GLfloat light_position0[] = {1.0, 2.0, 1.0, 0.0};
+		GLfloat light_position1[] = {-1.0, 2.0, -1.0, 0.0};
+
+		glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+		glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
+
+		glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
+		glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+		glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+	}
 }
 
 Style::Style()
@@ -227,8 +247,8 @@ void renderWindow(
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glEnable(GL_LIGHT0);
-		glEnable(GL_LIGHTING);
+		setupLights();
+
 		glEnable(GL_COLOR_MATERIAL);
 
 		glMatrixMode(GL_PROJECTION);
@@ -245,14 +265,6 @@ void renderWindow(
 		}
 		else
 			glLoadMatrixd(camera.model_view().data());
-
-		GLfloat light_diffuse[] = {0.5, 0.5, 0.5, 1.0};
-		GLfloat light_ambient[] = {0.3, 0.3, 0.3, 0.0};
-		GLfloat light_position[] = {1.0, 2.0, 1.0, 0.0};
-
-		glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
 		glEnable(GL_DEPTH);
 		glEnable(GL_DEPTH_TEST);
