@@ -40,7 +40,7 @@ there are two options:
   automatically updated as well.
 
 So when editing connecting positions, you must be extra careful
-to ensure that the movement is correct in all affected transitions.
+to ensure that the movement is correct in all connected transitions.
 
 
 ## 4. Adding transitions 
@@ -95,7 +95,7 @@ You can now follow the procedure from the previous section.
 
 There are many positions where it is not meaningful to speak of the "top" or "bottom" player,
 and where the classification is arbitrary. But even for transitions along such positions,
-the top/bottom properties should be used to indicate which player's initiative it is.
+the top/bottom properties should be used to indicate which player takes the initiative.
 
 For positions where there *is* a clear top and bottom player, but where the
 wrong player is currently on top, you can swap the players by swapping the
