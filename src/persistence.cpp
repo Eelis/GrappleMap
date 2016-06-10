@@ -30,7 +30,7 @@ namespace
 	Position decodePosition(string s)
 	{
 		if (s.size() != 2 * joint_count * 3 * 2)
-			throw std::runtime_error("position string has incorrect size");
+			error("position string has incorrect size " + to_string(s.size()));
 
 		auto g = [&s]
 			{
@@ -55,42 +55,49 @@ namespace
 
 		unsigned line_nr = 0;
 
-		while (std::getline(i, line))
+		try
 		{
-			++line_nr;
-			bool const is_position = line.front() == ' ';
-
-			if (is_position)
+			while (std::getline(i, line))
 			{
-				if (!last_was_position)
+				++line_nr;
+				bool const is_position = line.front() == ' ';
+
+				if (is_position)
 				{
-					assert(!desc.empty());
-					v.push_back(Sequence{desc, vector<Position>{}, line_nr - desc.size()});
-					desc.clear();
+					if (!last_was_position)
+					{
+						assert(!desc.empty());
+						v.push_back(Sequence{desc, vector<Position>{}, line_nr - desc.size()});
+						desc.clear();
+					}
+
+					boost::algorithm::trim(line);
+
+					for (int j = 0; j != 3; ++j)
+					{
+						++line_nr;
+						string more;
+						if (!std::getline(i, more))
+							error("could not read position at line " + to_string(line_nr));
+						boost::algorithm::trim(more);
+						line += more;
+					}
+
+					if (v.empty()) error("malformed file");
+
+					v.back().positions.push_back(decodePosition(line));
 				}
+				else desc.push_back(line);
 
-				boost::algorithm::trim(line);
-
-				for (int j = 0; j != 3; ++j)
-				{
-					++line_nr;
-					string more;
-					if (!std::getline(i, more))
-						error("could not read position at line " + to_string(line_nr));
-					boost::algorithm::trim(more);
-					line += more;
-				}
-
-				if (v.empty()) error("malformed file");
-
-				v.back().positions.push_back(decodePosition(line));
+				last_was_position = is_position;
 			}
-			else desc.push_back(line);
 
-			last_was_position = is_position;
+			return i;
 		}
-
-		return i;
+		catch (exception const & e)
+		{
+			error("at line " + to_string(line_nr) + ": " + e.what());
+		}
 	}
 
 	ostream & operator<<(ostream & o, Position const & p)
