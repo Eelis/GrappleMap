@@ -4,7 +4,6 @@ set -ev
 
 function find_used
 {
-	cat *.html | grep -o -P "(?<=src=')[a-zA-Z0-9-]*?.(gif|png)(?=')"
 	find . -type l | xargs readlink
 }
 

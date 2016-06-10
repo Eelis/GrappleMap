@@ -239,7 +239,8 @@ string ImageMaker::png(
 
 string ImageMaker::rotation_gif(
 	string const output_dir, Position p, ImageView const view,
-	unsigned const width, unsigned const height, BgColor const bg_color) const
+	unsigned const width, unsigned const height, BgColor const bg_color,
+	string const base_linkname) const
 {
 	if (view.mirror) p = mirror(p);
 
@@ -260,7 +261,16 @@ string ImageMaker::rotation_gif(
 			return frames;
 		});
 
-	return gif_filename;
+	string const linkname =
+		base_linkname +
+		to_string(width) + 'x' + to_string(height) +
+		'c' + to_string(bg_color) + ".gif";
+
+	unlink((output_dir + linkname).c_str());
+	if (symlink(gif_filename.c_str(), (output_dir + linkname).c_str()))
+		perror("symlink");
+
+	return linkname;
 }
 
 string ImageMaker::gif(
@@ -279,41 +289,59 @@ string ImageMaker::gif(
 	make_gif(output_dir, filename, 3, [&](string const gif_frames_dir)
 		{
 			vector<string> v;
-			foreach (pos : frames) v.push_back(png(gif_frames_dir, pos, view, width, height, bg_color));
+			foreach (pos : frames)
+				v.push_back(
+					png(gif_frames_dir, pos, view, width, height, bg_color,
+						"" /* no symlink */));
 			return v;
 		});
 
-	if (!base_linkname.empty())
+	if (base_linkname.empty())
+		error("gifs must have name for symlink");
+
+	string const linkname = output_dir + base_linkname + attrs + ".gif";
+
+	unlink(linkname.c_str());
+	if (symlink(filename.c_str(), linkname.c_str()))
+		perror("symlink");
+
+	return linkname;
+}
+
+string ImageMaker::gifs(
+	string const output_dir,
+	vector<Position> const & frames,
+	unsigned const width, unsigned const height,
+	BgColor const bg_color, string const base_linkname) const
+{
+	string const
+		attrs = to_string(width) + 'x' + to_string(height) + '-' + to_string(bg_color),
+		base_filename = to_string(boost::hash_value(frames)) + attrs,
+		ext_linkbase = base_linkname + attrs;
+
+	foreach (view : views())
 	{
-		string const linkname = output_dir + base_linkname + attrs + ".gif";
+		string const
+			suffix = code(view) + string(".gif"),
+			filename = base_filename + suffix,
+			linkname = output_dir + ext_linkbase + suffix;
+
+		make_gif(output_dir, filename, 3, [&](string const gif_frames_dir)
+			{
+				vector<string> v;
+				foreach (pos : frames)
+					v.push_back(
+						png(gif_frames_dir, pos, view, width, height, bg_color,
+							"" /* no symlink */));
+				return v;
+			});
 
 		unlink(linkname.c_str());
 		if (symlink(filename.c_str(), linkname.c_str()))
 			perror("symlink");
 	}
 
-	return filename;
-}
-
-string ImageMaker::gifs(
-	string const output_dir,
-	vector<Position> const & frames,
-	unsigned const width, unsigned const height, BgColor bg_color) const
-{
-	string const base_filename
-		= to_string(boost::hash_value(frames))
-		+ to_string(width) + 'x' + to_string(height)
-		+ '-' + to_string(bg_color);
-
-	foreach (view : views())
-		make_gif(output_dir, base_filename + code(view) + ".gif", 3, [&](string const gif_frames_dir)
-			{
-				vector<string> v;
-				foreach (pos : frames) v.push_back(png(gif_frames_dir, pos, view, width, height, bg_color));
-				return v;
-			});
-
-	return base_filename;
+	return ext_linkbase;
 }
 
 ImageMaker::ImageMaker(Graph const & g)

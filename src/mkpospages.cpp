@@ -330,24 +330,25 @@ namespace
 		return v;
 	}
 
-	string transition_gif(
+	void transition_gif(
 		ImageMaker const & mkimg,
 		string const output_dir,
 		vector<Position> frames,
 		ImageView const v,
 		ImageMaker::BgColor const bg_color,
-		string const base_linkname = "")
+		string const base_linkname)
 	{
-		return mkimg.gif(output_dir, smoothen(frames), v, 200, 150, bg_color, base_linkname);
+		mkimg.gif(output_dir, smoothen(frames), v, 200, 150, bg_color, base_linkname);
 	}
 
 	string transition_gifs(
 		ImageMaker const & mkimg,
 		string const output_dir,
 		vector<Position> frames,
-		ImageMaker::BgColor const bg_color)
+		ImageMaker::BgColor const bg_color,
+		string const base_linkname)
 	{
-		return mkimg.gifs(output_dir, smoothen(frames), 200, 150, bg_color);
+		return mkimg.gifs(output_dir, smoothen(frames), 200, 150, bg_color, base_linkname);
 	}
 
 	ImageView xmirror(ImageView const v)
@@ -497,7 +498,9 @@ namespace
 							img(position_image_title(ctx.graph, trans.other_node),
 								ctx.mkimg.rotation_gif(
 									ctx.output_dir, translateNormal(trans.frames.front()),
-									ctx.view, 200, 150, bg_color(trans)),
+									ctx.view, 200, 150, bg_color(trans),
+									"rot" + to_string(ctx.n.index)
+									+ "in" + to_string(trans.step.seq.index)),
 								"")))
 					<< ' ' << transition_card(ctx, trans) << "</td></tr>";
 			}
@@ -523,7 +526,9 @@ namespace
 					<< img(position_image_title(ctx.graph, trans.other_node),
 						ctx.mkimg.rotation_gif(
 							ctx.output_dir, translateNormal(trans.frames.back()),
-							ctx.view, 200, 150, bg_color(trans)),
+							ctx.view, 200, 150, bg_color(trans),
+							"rot" + to_string(ctx.n.index)
+							+ "out" + to_string(trans.step.seq.index)),
 						"")
 					<< "</a></div></td></tr>";
 			}
@@ -634,7 +639,9 @@ namespace
 			{
 				auto const p = trans.frames.front();
 				trans.frames.insert(trans.frames.begin(), longest_in - trans.frames.size(), p);
-				trans.base_filename = transition_gifs(mkimg, output_dir, trans.frames, bg_color(trans));
+				trans.base_filename = transition_gifs(
+					mkimg, output_dir, trans.frames, bg_color(trans),
+					to_string(n.index) + "in" + to_string(trans.step.seq.index));
 			}
 
 			foreach (step : out_steps(graph, n))
@@ -657,7 +664,9 @@ namespace
 			{
 				auto const p = trans.frames.back();
 				trans.frames.insert(trans.frames.end(), longest_out - trans.frames.size(), p);
-				trans.base_filename = transition_gifs(mkimg, output_dir, trans.frames, bg_color(trans));
+				trans.base_filename = transition_gifs(
+					mkimg, output_dir, trans.frames, bg_color(trans),
+					to_string(n.index) + "out" + to_string(trans.step.seq.index));
 			}
 
 			auto order_transitions = [](vector<Trans> & v)

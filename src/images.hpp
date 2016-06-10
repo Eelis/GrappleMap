@@ -69,11 +69,12 @@ public:
 	string png(
 		string output_dir, Position, ImageView,
 		unsigned width, unsigned height, BgColor,
-		string base_linkname = "") const;
+		string base_linkname) const;
 
 	string rotation_gif(
 		string output_dir, Position, ImageView,
-		unsigned width, unsigned height, BgColor) const;
+		unsigned width, unsigned height, BgColor,
+		string base_linkname) const;
 
 	string gif(
 		string output_dir,
@@ -85,7 +86,8 @@ public:
 	string gifs(
 		string output_dir,
 		vector<Position> const & frames,
-		unsigned width, unsigned height, BgColor) const;
+		unsigned width, unsigned height, BgColor,
+		string base_linkname) const;
 };
 
 }
