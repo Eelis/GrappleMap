@@ -684,15 +684,22 @@ int main(int const argc, char const * const * const argv)
 				V4 dragger = yrot(-w.camera.getHorizontalRotation() - w.reorientation.reorientation.angle) * V4{{1,0,0},0};
 				if (w.reorientation.mirror) dragger.x = -dragger.x;
 
-				V2 const off = *cursor - world2xy(w.camera, apply(w.reorientation, new_pos, *w.chosen_joint));
+				V3 const v = apply(w.reorientation, new_pos, *w.chosen_joint);
+				V2 const joint_xy = world2xy(w.camera, v);
+
+				double const
+					offx = (cursor->x - joint_xy.x)
+						/ (world2xy(w.camera, v + xyz(dragger)).x - joint_xy.x),
+					offy = (cursor->y - joint_xy.y)
+						* 0.01 / (world2xy(w.camera, v + V3{0,0.01,0}).y - joint_xy.y);
 
 				auto const rj = apply(w.reorientation, *w.chosen_joint);
 
 				auto & joint = new_pos[rj];
 
-				joint.x = std::max(-2., std::min(2., joint.x + dragger.x * off.x));
-				joint.z = std::max(-2., std::min(2., joint.z + dragger.z * off.x));
-				joint.y = std::max(jointDefs[w.chosen_joint->joint].radius, joint.y + off.y);
+				joint.x = std::max(-2., std::min(2., joint.x + dragger.x * offx));
+				joint.z = std::max(-2., std::min(2., joint.z + dragger.z * offx));
+				joint.y = std::max(jointDefs[w.chosen_joint->joint].radius, joint.y + offy);
 
 				spring(new_pos, rj);
 

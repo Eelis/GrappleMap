@@ -18,7 +18,6 @@ editor
   * move limbs through eachother
 - maybe visually indicate where a body's structural mechanics are weak, which directions it could be off-balanced, etc
 - more useful console output
-- editing joints close to the camera doesn't work properly
 
 playback:
 - make {pre,post}fix length for demo mode configurable
