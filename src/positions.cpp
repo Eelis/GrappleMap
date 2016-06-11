@@ -129,7 +129,7 @@ PositionReorientation compose(PositionReorientation const a, PositionReorientati
 
 Position mirror(Position p) // formalized
 {
-	foreach (j : playerJoints) p[j].x = -p[j].x;
+	foreach (j : playerJoints) p[j] = mirror(p[j]);
 	swapLimbs(p[0]);
 	swapLimbs(p[1]);
 	return p;

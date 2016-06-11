@@ -114,8 +114,12 @@ inline bool operator<(V3 a, V3 b) { return std::make_tuple(a.x, a.y, a.z) < std:
 inline bool operator==(V2 a, V2 b) { return a.x == b.x && a.y == b.y; }
 inline bool operator==(V3 a, V3 b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
 
-inline std::ostream & operator<<(std::ostream & o, V2 v){ return o << '{' << v.x << ',' << v.y << '}'; }
-inline std::ostream & operator<<(std::ostream & o, V3 v){ return o << '{' << v.x << ',' << v.y << ',' << v.z << '}'; }
+inline std::ostream & operator<<(std::ostream & o, V2 v)
+{ return o << '{' << v.x << ',' << v.y << '}'; }
+inline std::ostream & operator<<(std::ostream & o, V3 v)
+{ return o << '{' << v.x << ',' << v.y << ',' << v.z << '}'; }
+inline std::ostream & operator<<(std::ostream & o, V4 v)
+{ return o << '{' << v.x << ',' << v.y << ',' << v.z << ',' << v.w << '}'; }
 
 inline V2 operator/(V2 v, double s) { return {v.x / s, v.y / s}; }
 inline V3 operator/(V3 v, double s) { return {v.x / s, v.y / s, v.z / s}; }

@@ -182,7 +182,9 @@ inline auto & segments()
 
 using Player = PerJoint<V3>;
 
+inline V3 mirror(V3 v) { return V3{-v.x, v.y, v.z}; }
 Position mirror(Position);
+
 Player spring(Player const &, optional<Joint> fixed_joint = none);
 void spring(Position &, optional<PlayerJoint> = none);
 
@@ -260,6 +262,13 @@ struct PositionReorientation
 		if (mirror) p = GrappleMap::mirror(p);
 		if (swap_players) GrappleMap::swap_players(p);
 		return p;
+	}
+
+	V3 operator()(V3 v) const
+	{
+		v = apply(reorientation, v);
+		if (mirror) v = GrappleMap::mirror(v);
+		return v;
 	}
 };
 

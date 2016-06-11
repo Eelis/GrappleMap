@@ -501,6 +501,12 @@ void cursor_pos_callback(GLFWwindow * const window, double const xpos, double co
 	w.last_cursor_y = ypos;
 }
 
+template <typename T>
+T maybe_mirror(bool b, T x)
+{
+	return b ? -x : x;
+}
+
 string const usage =
 	"Usage: grapplemap-editor [OPTIONS] [START]\n";
 
@@ -681,21 +687,25 @@ int main(int const argc, char const * const * const argv)
 			{
 				Position new_pos = w.graph[w.location];
 
-				V4 dragger = yrot(-w.camera.getHorizontalRotation() - w.reorientation.reorientation.angle) * V4{{1,0,0},0};
-				if (w.reorientation.mirror) dragger.x = -dragger.x;
-
+				V3 dragger = [&]{
+						PositionReorientation r;
+						r.reorientation.angle = -w.camera.getHorizontalRotation();
+						return compose(w.reorientation, r)(V3{1,0,0});
+					}();
 				V3 const v = apply(w.reorientation, new_pos, *w.chosen_joint);
 				V2 const joint_xy = world2xy(w.camera, v);
 
 				double const
 					offx = (cursor->x - joint_xy.x)
-						/ (world2xy(w.camera, v + xyz(dragger)).x - joint_xy.x),
+						/ (world2xy(w.camera, v + dragger).x - joint_xy.x),
 					offy = (cursor->y - joint_xy.y)
 						* 0.01 / (world2xy(w.camera, v + V3{0,0.01,0}).y - joint_xy.y);
 
 				auto const rj = apply(w.reorientation, *w.chosen_joint);
 
 				auto & joint = new_pos[rj];
+
+				if (w.reorientation.mirror) dragger.x = -dragger.x;
 
 				joint.x = std::max(-2., std::min(2., joint.x + dragger.x * offx));
 				joint.z = std::max(-2., std::min(2., joint.z + dragger.z * offx));
