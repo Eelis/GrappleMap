@@ -32,7 +32,6 @@ position pages:
 - investigate graphviz alternatives
 - experiment with other/more colors
 - in the graphs, it would be good to be able to tell really long and really short transitions apart
-- make scene lighting more like in composer
 - make transition labels in graphviz graphs into composer links
 - generate pics/diagrams in subdir
 

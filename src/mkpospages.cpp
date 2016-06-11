@@ -536,26 +536,24 @@ namespace
 			ctx.html << "</table></td>";
 		}
 
-		void write_center(Context const & ctx)
+		void write_tag_list(Context const & ctx)
 		{
-			auto const pos_to_show = orient_canonically_with_mirror(ctx.graph[ctx.n].position);
+			ctx.html << "<br><br><table><tr><td>Tags:</td><td>";
 
-			ctx.html
-				<< "<td style='text-align:center;vertical-align:top'>"
-				<< "<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>"
-				<< "<h1>" << nlbr(desc(ctx.graph[ctx.n])) << "</h1>"
-				<< "<br><br>"
-				<< img(position_image_title(ctx.graph, ctx.n), ctx.mkimg.png(ctx.output_dir, pos_to_show, ctx.view, 480, 360, ctx.mkimg.WhiteBg,
-					'p' + to_string(ctx.n.index)), "")
-				<< "<br>";
+			bool first = true;
 
-			ctx.mkimg.png(
-				ctx.output_dir, pos_to_show,
-				ctx.view, 320, 240, ctx.mkimg.WhiteBg,
-				'p' + to_string(ctx.n.index));
+			foreach (tag : tags(ctx.graph[ctx.n]))
+			{
+				if (first) first = false; else ctx.html << ", ";
 
-			write_view_controls(ctx.html, ctx.view, "p" + to_string(ctx.n.index));
+				ctx.html << "<a href='index.html?" << tag << "'>" << tag << "</a>";
+			}
 
+			ctx.html << "</td></tr></table>";
+		}
+
+		void write_nav_links(Context const & ctx)
+		{
 			vector<string> v;
 			foreach(e : ctx.query)
 			{
@@ -567,7 +565,36 @@ namespace
 				<< "<br><br>Go to:"
 				<< " <a href='composer/index.html?p" << ctx.n.index << "'>composer</a>"
 				<< ", <a href='explorer/index.html?" << ctx.n.index << "'>explorer</a>"
-				<< ", <a href='index.html?" << join(v, ",") << "'>search</a></td>";
+				<< ", <a href='index.html?" << join(v, ",") << "'>search</a>";
+		}
+
+		void write_heading(Context const & ctx)
+		{
+			auto const pos_to_show = orient_canonically_with_mirror(ctx.graph[ctx.n].position);
+
+			ctx.html
+				<< "<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>"
+				<< "<h1>" << nlbr(desc(ctx.graph[ctx.n])) << "</h1>"
+				<< "<br><br>"
+				<< img(position_image_title(ctx.graph, ctx.n), ctx.mkimg.png(ctx.output_dir, pos_to_show, ctx.view, 480, 360, ctx.mkimg.WhiteBg,
+					'p' + to_string(ctx.n.index)), "")
+				<< "<br>";
+
+			ctx.mkimg.png(
+				ctx.output_dir, pos_to_show,
+				ctx.view, 320, 240, ctx.mkimg.WhiteBg,
+				'p' + to_string(ctx.n.index));
+		}
+
+		void write_center(Context const & ctx)
+		{
+			ctx.html << "<td style='text-align:center;vertical-align:top'>";
+
+			write_heading(ctx);
+			write_view_controls(ctx.html, ctx.view, "p" + to_string(ctx.n.index));
+			write_tag_list(ctx);
+
+			ctx.html << "</td>";
 		}
 
 		void write_page(Context const & ctx)
