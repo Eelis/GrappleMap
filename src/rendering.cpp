@@ -247,7 +247,6 @@ void renderWindow(
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		setupLights();
 
 		glEnable(GL_COLOR_MATERIAL);
 
@@ -265,6 +264,8 @@ void renderWindow(
 		}
 		else
 			glLoadMatrixd(camera.model_view().data());
+
+		setupLights();
 
 		glEnable(GL_DEPTH);
 		glEnable(GL_DEPTH_TEST);
