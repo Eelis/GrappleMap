@@ -354,6 +354,10 @@ void tojs(Graph const & graph, std::ostream & js)
 	js << "nodes=[";
 	foreach (n : nodenums(graph))
 	{
+		set<string> disc;
+		foreach (p : query_for(graph, n))
+			if (!p.second) disc.insert(p.first);
+
 		js << "{id:" << n.index << ",incoming:[";
 		foreach (s : in_steps(graph, n)) { tojs(s, js); js << ','; }
 		js << "],outgoing:[";
@@ -363,6 +367,8 @@ void tojs(Graph const & graph, std::ostream & js)
 		js << ",description:'" << replace_all(desc(graph[n]), "'", "\\'") << "'";
 		js << ",tags:";
 		tojs(tags(graph[n]), js);
+		js << ",discriminators:";
+		tojs(disc, js);
 		js << "},\n";
 	}
 	js << "];\n\n";
