@@ -230,7 +230,7 @@ TagQuery query_for(Graph const & g, NodeNum const n)
 	foreach (t : tags(g[n]))
 		q.insert(make_pair(t, true));
 
-	for (;;)
+	while (q.size() < 10)
 	{
 		map<string, int> c;
 
