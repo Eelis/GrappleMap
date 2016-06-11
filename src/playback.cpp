@@ -70,42 +70,31 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 		};
 }
 
-int main(int const argc, char const * const * const argv)
+
+void do_playback(
+	Config const & config,
+	Graph const & graph,
+	GLFWwindow * const window)
 {
-	try
+	for (;;)
 	{
-		std::srand(std::time(nullptr));
-
-		optional<Config> const config = config_from_args(argc, argv);
-		if (!config) return 0;
-
-		Graph const graph = loadGraph(config->db);
-
 		Frames fr;
 
-		if (config->demo)
+		if (config.demo)
 		{
-			if (auto step = step_by_desc(graph, *config->demo))
-				fr = demoFrames(graph, *step, config->frames_per_pos);
+			if (auto step = step_by_desc(graph, *config.demo))
+				fr = demoFrames(graph, *step, config.frames_per_pos);
 			else
-				throw runtime_error("no such transition: " + *config->demo);
+				throw runtime_error("no such transition: " + *config.demo);
 		}
-		else if (!config->script.empty())
-			fr = smoothen(frames(graph, readScene(graph, config->script), config->frames_per_pos));
-		else if (optional<NodeNum> start = node_by_desc(graph, config->start))
-			fr = smoothen(frames(graph, randomScene(graph, *start, config->num_transitions), config->frames_per_pos));
-//		else if (optional<SeqNum> start = seq_by_desc(graph, config->start))
-//			fr = frames(graph, Scene{randomScene(graph, *start, config->num_transitions)}, config->frames_per_pos);
+		else if (!config.script.empty())
+			fr = smoothen(frames(graph, readScene(graph, config.script), config.frames_per_pos));
+		else if (optional<NodeNum> start = node_by_desc(graph, config.start))
+			fr = smoothen(frames(graph, randomScene(graph, *start, config.num_transitions), config.frames_per_pos));
+	//		else if (optional<SeqNum> start = seq_by_desc(graph, config->start))
+	//			fr = frames(graph, Scene{randomScene(graph, *start, config->num_transitions)}, config->frames_per_pos);
 		else
-			throw runtime_error("no such position/transition: " + config->start);
-
-		if (!glfwInit()) error("could not initialize GLFW");
-
-		GLFWwindow * const window = glfwCreateWindow(640, 480, "GrappleMap", nullptr, nullptr);
-		if (!window) error("could not create window");
-
-		glfwMakeContextCurrent(window);
-		glfwSwapInterval(1);
+			throw runtime_error("no such position/transition: " + config.start);
 
 		Camera camera;
 		Style style;
@@ -131,7 +120,7 @@ int main(int const argc, char const * const * const argv)
 			foreach (pos : i->second)
 			{
 				glfwPollEvents();
-				if (glfwWindowShouldClose(window)) return 0;
+				if (glfwWindowShouldClose(window)) return;
 
 				camera.rotateHorizontal(-0.013);
 				camera.setOffset(cameraOffsetFor(pos));
@@ -147,17 +136,17 @@ int main(int const argc, char const * const * const argv)
 				int width, height;
 				glfwGetFramebufferSize(window, &width, &height);
 
-				if (config->dimensions)
+				if (config.dimensions)
 				{
-					width = config->dimensions->first;
+					width = config.dimensions->first;
 
-					bottom = height - config->dimensions->second;
-					height = config->dimensions->second;
+					bottom = height - config.dimensions->second;
+					height = config.dimensions->second;
 				}
 
 				renderWindow(
 					{{0, 0, 1, 1, none, 50}},
-//					third_person_windows_in_corner(.3,.3,.01,.01 * (double(width)/height)),
+	//				third_person_windows_in_corner(.3,.3,.01,.01 * (double(width)/height)),
 					nullptr, // no viables
 					graph, pos, camera,
 					none, // no highlighted joint
@@ -176,8 +165,31 @@ int main(int const argc, char const * const * const argv)
 			}
 
 		}
+	}
+}
 
-		sleep(2);
+
+
+int main(int const argc, char const * const * const argv)
+{
+	try
+	{
+		std::srand(std::time(nullptr));
+
+		optional<Config> const config = config_from_args(argc, argv);
+		if (!config) return 0;
+
+		Graph const graph = loadGraph(config->db);
+
+		if (!glfwInit()) error("could not initialize GLFW");
+
+		GLFWwindow * const window = glfwCreateWindow(640, 480, "GrappleMap", nullptr, nullptr);
+		if (!window) error("could not create window");
+
+		glfwMakeContextCurrent(window);
+		glfwSwapInterval(1);
+
+		do_playback(*config, graph, window);
 
 		glfwTerminate();
 	}
