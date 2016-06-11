@@ -122,22 +122,29 @@ function node_clicked(d)
 	node_selection_changed();
 }
 
-function goto_search()
+function query_for(n)
 {
-	window.location.href = "../index.html?" + nodes[selected_node].tags.join(",");
-		// todo: reimplement GrappleMap::query_for...
+	var q = n.tags.join(",");
+	n.discriminators.forEach(function(d){ q += ",-" + d; });
+	return q;
 }
 
-function goto_composer()
+function update_links()
 {
-	window.location.href = "../composer/index.html?p" + selected_node;
-		// todo: if currently editing a linear path, load that
+	document.getElementById('search_link').href =
+		"../index.html?" + query_for(nodes[selected_node]);
+
+	document.getElementById('composer_link').href =
+		"../composer/index.html?p" + selected_node;
 }
 
 function mouse_over_node(d)
 {
 	if (d.id != selected_node && try_move(d.id))
+	{
 		tick_graph(svg);
+		update_links();
+	}
 }
 
 function updateCamera()
@@ -198,6 +205,7 @@ window.addEventListener('DOMContentLoaded',
 
 		makeScene(keyframe);
 
+		update_links();
 		make_graph();
 
 		auto_enable_edit_mode();
