@@ -375,7 +375,13 @@ function makeScene(initialPos)
 
 	externalCamera.attachControl(canvas);
 
-	var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), scene);
+	var light0 = new BABYLON.PointLight('light1', new BABYLON.Vector3(2,2,2), scene);
+	light0.specular = new BABYLON.Color3(0.57, 0.57, 0.57);
+	light0.diffuse = new BABYLON.Color3(0.07, 0.07, 0.07);
+
+	var light1 = new BABYLON.PointLight('light1', new BABYLON.Vector3(-2,2,-2), scene);
+	light1.specular = new BABYLON.Color3(0.57, 0.57, 0.57);
+	light1.diffuse = new BABYLON.Color3(0.07, 0.07, 0.07);
 
 	var draw = animated_position_from_array(initialPos, scene);
 
