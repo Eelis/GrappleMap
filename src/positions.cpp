@@ -25,7 +25,7 @@ extern PerJoint<JointDef> const jointDefs =
 	, { RightHand, 0.02, true}
 	, { LeftFingers, 0.02, false}
 	, { RightFingers, 0.02, false}
-	, { Core, 0.1, false}
+	, { Core, 0.1, true}
 	, { Neck, 0.05, false}
 	, { Head, 0.11, true}
 	}};
