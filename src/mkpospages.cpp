@@ -593,6 +593,7 @@ namespace
 			write_heading(ctx);
 			write_view_controls(ctx.html, ctx.view, "p" + to_string(ctx.n.index));
 			write_tag_list(ctx);
+			write_nav_links(ctx);
 
 			ctx.html << "</td>";
 		}
