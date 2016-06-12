@@ -108,42 +108,60 @@ function on_pop_back_button_clicked()
 	refreshPostChoices();
 }
 
+function drillButton(textA, textB, onclick)
+{
+		var btn = document.createElement("button");
+		btn.style.margin = "3px";
+		btn.style.textAlign = "left";
+		btn.style.width = "45%";
+		btn.appendChild(document.createTextNode(textA));
+		btn.appendChild(document.createElement("br"));
+
+	var table = document.createElement("table");
+	var row = document.createElement("tr");
+
+	var cell = document.createElement("td");
+	cell.style.paddingLeft = "15px";
+	cell.style.verticalAlign = "top";
+	cell.appendChild(document.createTextNode("↳"));
+	row.appendChild(cell);
+
+	cell = document.createElement("td");
+	cell.appendChild(document.createTextNode(textB));
+	row.appendChild(cell);
+	table.appendChild(row);
+
+	btn.appendChild(table);
+
+	btn.addEventListener("click", onclick);
+	
+	return btn;
+}
+
 function refreshPreChoices()
 {
 	var elem = document.getElementById("pre_choices");
 
 	elem.innerHTML = "";
 
-	var choices = nodes[start_node].incoming;
-
-	for (var i = 0; i != choices.length; ++i)
-	{
-		var step = choices[i];
-		var from_node = step_from(step).node;
-
-		var btn = document.createElement("button");
-		btn.style.margin = "3px";
-		btn.style.textAlign = "left";
-		btn.appendChild(document.createTextNode(nodes[from_node].description));
-		btn.appendChild(document.createElement("br"));
-		btn.appendChild(document.createTextNode(indent + "↳ " + transitions[step.transition].description[0]));
-		btn.addEventListener("click", function(c){ return function(){
-				steps = [c].concat(steps);
-				start_node = step_from(c).node;
-				resetFrames();
-				frame = -1;
-				k = 0;
-				frame_in_seq = -1;
-				thepos = ideal_pos();
-				refreshDrill();
-				refreshPreChoices();
-			}}(step));
-
-		elem.appendChild(btn);
-	}
+	nodes[start_node].incoming.forEach(function(step)
+		{
+			elem.appendChild(drillButton(
+				nodes[step_from(step).node].description,
+				transitions[step.transition].description[0],
+				function(c){ return function(){
+					steps = [c].concat(steps);
+					start_node = step_from(c).node;
+					resetFrames();
+					frame = -1;
+					k = 0;
+					frame_in_seq = -1;
+					thepos = ideal_pos();
+					refreshDrill();
+					refreshPreChoices();
+				}}(step)));
+		});
 }
-
-var indent = "\u00a0 \u00a0 \u00a0 ";
 
 function refreshPostChoices()
 {
@@ -159,27 +177,18 @@ function refreshPostChoices()
 
 	document.getElementById("post_choices_label").style.display = choices.length == 0 ? 'none' : 'inline';
 
-	for (var i = 0; i != choices.length; ++i)
-	{
-		var step = choices[i];
-		var to_node = step_to(step).node;
-
-		var btn = document.createElement("button");
-		btn.style.margin = "3px";
-		btn.style.textAlign = "left";
-		btn.appendChild(document.createTextNode(transitions[step.transition].description[0]));
-		btn.appendChild(document.createElement("br"));
-		btn.appendChild(document.createTextNode(indent + "↳ " + nodes[to_node].description));
-
-		btn.addEventListener("click", function(c){ return function(){
-				steps.push(c);
-				resetFrames();
-				refreshDrill();
-				refreshPostChoices();
-			}}(step));
-
-		elem.appendChild(btn);
-	}
+	choices.forEach(function(step)
+		{
+			elem.appendChild(drillButton(
+				transitions[step.transition].description[0],
+				nodes[step_to(step).node].description,
+				function(c){ return function(){
+					steps.push(c);
+					resetFrames();
+					refreshDrill();
+					refreshPostChoices();
+				}}(step)));
+		});
 }
 
 function node_link(node)
