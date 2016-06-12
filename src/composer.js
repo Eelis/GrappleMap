@@ -508,6 +508,17 @@ function resetFrames()
 	else keyframes = follow(steps, mirror_view);
 
 	document.getElementById("slider").max = keyframes.length - 1;
+
+	var dianodes=[];
+	steps.forEach(function(s){
+			dianodes.push(transitions[s.transition].from.node);
+			dianodes.push(transitions[s.transition].to.node);
+		});
+
+	if (steps.length == 0) dianodes.push(start_node);
+
+	document.getElementById('explorer_link').href =
+		"../explorer/index.html?" + dianodes.join(",");
 }
 
 function decode_steps(s)
@@ -520,19 +531,6 @@ function decode_steps(s)
 		else
 			r.push({transition: parseInt(seqs[i]), reverse: false});
 	return r;
-}
-
-function goto_explorer()
-{
-	var dianodes=[];
-	steps.forEach(function(s){
-			dianodes.push(transitions[s.transition].from.node);
-			dianodes.push(transitions[s.transition].to.node);
-		});
-
-	if (steps.length == 0) dianodes.push(start_node);
-
-	window.location.href = "../explorer/index.html?" + dianodes.join(",");
 }
 
 function random_drill()
