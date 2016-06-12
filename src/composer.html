@@ -53,11 +53,21 @@
 			<input type="range" min=0 max=100 step=1 id="slider" style='width:100%'
 				oninput='on_slide()' onmouseover='sliding=true' onmouseleave='sliding=false'>
 			<br>
-			Prepend:<div id='pre_choices' style='margin-left:15px'></div><br>
+			<br>
 			<div id='controls' style='padding:15px'></div><br>
 
-			<div id='post_choices_label'>Append:</div>
-			<div id='post_choices' style='margin-left:15px'></div>
+			<table>
+				<tr>
+					<td style='width:50%;vertical-align:top;padding-right:5px'>
+						Prepend transition:<div id='pre_choices' style='margin-left:15px'></div><br>
+					</td>
+					<td style='width:50%;vertical-align:top;padding-left:5px'>
+						<div id='post_choices_label'>Append transition:</div>
+						<div id='post_choices' style='margin-left:15px'></div>
+					</td>
+				</tr>
+			</table>
+
 
 		</div>
 		</div>

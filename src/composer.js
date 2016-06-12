@@ -110,12 +110,11 @@ function on_pop_back_button_clicked()
 
 function drillButton(textA, textB, onclick)
 {
-		var btn = document.createElement("button");
-		btn.style.margin = "3px";
-		btn.style.textAlign = "left";
-		btn.style.width = "45%";
-		btn.appendChild(document.createTextNode(textA));
-		btn.appendChild(document.createElement("br"));
+	var btn = document.createElement("button");
+	btn.style.textAlign = "left";
+	btn.style.width = "100%";
+	btn.appendChild(document.createTextNode(textA));
+	btn.appendChild(document.createElement("br"));
 
 	var table = document.createElement("table");
 	var row = document.createElement("tr");
