@@ -91,22 +91,24 @@ int main(int const argc, char const * const * const argv)
 		else if (!config->script.empty())
 			fr = smoothen(frames(graph, readScene(graph, config->script), config->frames_per_pos));
 		else if (optional<NodeNum> start = node_by_desc(graph, config->start))
-			fr = smoothen(frames(graph, randomScene(graph, *start, config->num_transitions), config->frames_per_pos));
+		{
+			Frames x = frames(graph, randomScene(graph, *start, config->num_transitions), config->frames_per_pos);
+
+			auto & v = x.front().second;
+			auto & w = x.back().second;
+			auto const firstpos = v.front();
+			auto const lastpos = w.back();
+			v.insert(v.begin(), config->frames_per_pos * 15, firstpos);
+			w.insert(w.end(), config->frames_per_pos * 15, lastpos);
+
+			fr = smoothen(x);
+		}
 		else
 			throw runtime_error("no such position/transition: " + config->start);
 
 		unsigned frameindex = 0;
 
 		string const separator = "      ";
-
-		{
-			auto & v = fr.front().second;
-			auto & w = fr.back().second;
-			auto const firstpos = v.front();
-			auto const lastpos = w.back();
-			v.insert(v.begin(), config->frames_per_pos * 15, firstpos);
-			w.insert(w.end(), config->frames_per_pos * 15, lastpos);
-		}
 
 		Camera camera;
 		camera.zoom(1.2);
