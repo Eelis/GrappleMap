@@ -140,10 +140,13 @@ function drillButton(textA, textB, onclick)
 function refreshPreChoices()
 {
 	var elem = document.getElementById("pre_choices");
-
 	elem.innerHTML = "";
 
-	nodes[start_node].incoming.forEach(function(step)
+	var choices = nodes[start_node].incoming;
+	document.getElementById("pre_choices_label").style.display =
+		choices.length == 0 ? 'none' : 'inline';
+
+	choices.forEach(function(step)
 		{
 			elem.appendChild(drillButton(
 				nodes[step_from(step).node].description,
@@ -165,7 +168,6 @@ function refreshPreChoices()
 function refreshPostChoices()
 {
 	var elem = document.getElementById("post_choices");
-
 	elem.innerHTML = "";
 
 	var end_node = (steps.length == 0)
@@ -173,8 +175,8 @@ function refreshPostChoices()
 		: step_to(steps[steps.length - 1]).node;
 
 	var choices = nodes[end_node].outgoing;
-
-	document.getElementById("post_choices_label").style.display = choices.length == 0 ? 'none' : 'inline';
+	document.getElementById("post_choices_label").style.display =
+		choices.length == 0 ? 'none' : 'inline';
 
 	choices.forEach(function(step)
 		{
