@@ -4,7 +4,7 @@ set -ev
 
 function find_used
 {
-	find . -type l | xargs readlink
+	find .. -type l | xargs readlink
 }
 
 function find_present

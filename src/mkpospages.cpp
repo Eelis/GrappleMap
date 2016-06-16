@@ -60,7 +60,15 @@ namespace
 	{
 		string db;
 		string output_dir;
+		optional<string> image_url;
 	};
+
+	template<typename T>
+	optional<T> opt_arg(boost::program_options::variables_map const & vm, string const & name)
+	{
+		if (vm.count(name)) return vm[name].as<T>();
+		return optional<T>();
+	}
 
 	optional<Config> config_from_args(int const argc, char const * const * const argv)
 	{
@@ -73,6 +81,8 @@ namespace
 			("output_dir",
 				po::value<string>()->default_value("."),
 				"output directory")
+			("image_url",
+				po::value<string>())
 			("db",
 				po::value<string>()->default_value("GrappleMap.txt"),
 				"database file");
@@ -93,7 +103,8 @@ namespace
 
 		return Config
 			{ vm["db"].as<string>()
-			, vm["output_dir"].as<string>() };
+			, vm["output_dir"].as<string>()
+			, opt_arg<string>(vm, "image_url") };
 	}
 
 	vector<Position> frames_for_sequence(Graph const & graph, SeqNum const seqNum)
@@ -338,7 +349,7 @@ namespace
 		ImageMaker::BgColor const bg_color,
 		string const base_linkname)
 	{
-		mkimg.gif(output_dir, smoothen(frames), v, 200, 150, bg_color, base_linkname);
+		mkimg.gif(output_dir + "/images/", smoothen(frames), v, 200, 150, bg_color, base_linkname);
 	}
 
 	string transition_gifs(
@@ -348,7 +359,7 @@ namespace
 		ImageMaker::BgColor const bg_color,
 		string const base_linkname)
 	{
-		return mkimg.gifs(output_dir, smoothen(frames), 200, 150, bg_color, base_linkname);
+		return mkimg.gifs(output_dir + "/images/", smoothen(frames), 200, 150, bg_color, base_linkname);
 	}
 
 	ImageView xmirror(ImageView const v)
@@ -466,6 +477,7 @@ namespace
 			vector<Trans> incoming, outgoing;
 			ImageView view;
 			string const output_dir;
+			string const image_url;
 			TagQuery query;
 		};
 
@@ -473,10 +485,10 @@ namespace
 		{
 			return "<em>via</em> "
 				+ link(
-					"composer/index.html?" + to_string(trans.step.seq.index),
+					"../composer/index.html?" + to_string(trans.step.seq.index),
 					img(
 						transition_image_title(ctx.graph, trans.step.seq),
-						trans.base_filename + code(ctx.view) + ".gif", ""))
+						ctx.image_url + "/" + trans.base_filename + code(ctx.view) + ".gif", ""))
 				+ " <em>to</em>";
 		}
 
@@ -494,10 +506,10 @@ namespace
 					<< "<tr><td style='" << ImageMaker::css(bg_color(trans)) << "'>"
 					<< "<em>from</em> "
 					<< div("display:inline-block",
-						link("p" + to_string(trans.other_node.index) + code(v) + ".html",
+						link(to_string(trans.other_node.index) + code(v) + ".html",
 							img(position_image_title(ctx.graph, trans.other_node),
-								ctx.mkimg.rotation_gif(
-									ctx.output_dir, translateNormal(trans.frames.front()),
+								ctx.image_url + "/" + ctx.mkimg.rotation_gif(
+									ctx.output_dir + "/images/", translateNormal(trans.frames.front()),
 									ctx.view, 200, 150, bg_color(trans),
 									"rot" + to_string(ctx.n.index)
 									+ "in" + to_string(trans.step.seq.index)),
@@ -522,14 +534,15 @@ namespace
 					<< "<tr><td style='" << ImageMaker::css(bg_color(trans)) << "'>"
 					<< transition_card(ctx, trans)
 					<< " <div style='display:inline-block'>"
-					<< "<a href='p" << trans.other_node.index << code(v) << ".html'>"
-					<< img(position_image_title(ctx.graph, trans.other_node),
-						ctx.mkimg.rotation_gif(
-							ctx.output_dir, translateNormal(trans.frames.back()),
-							ctx.view, 200, 150, bg_color(trans),
-							"rot" + to_string(ctx.n.index)
-							+ "out" + to_string(trans.step.seq.index)),
-						"")
+					<< link(
+						to_string(trans.other_node.index) + code(v) + ".html",
+						img(position_image_title(ctx.graph, trans.other_node),
+							ctx.image_url + "/" + ctx.mkimg.rotation_gif(
+								ctx.output_dir + "/images/", translateNormal(trans.frames.back()),
+								ctx.view, 200, 150, bg_color(trans),
+								"rot" + to_string(ctx.n.index)
+								+ "out" + to_string(trans.step.seq.index)),
+							""))
 					<< "</a></div></td></tr>";
 			}
 
@@ -546,7 +559,7 @@ namespace
 			{
 				if (first) first = false; else ctx.html << ", ";
 
-				ctx.html << "<a href='index.html?" << tag << "'>" << tag << "</a>";
+				ctx.html << link("../index.html?" + tag, tag);
 			}
 
 			ctx.html << "</td></tr></table>";
@@ -563,27 +576,29 @@ namespace
 
 			ctx.html
 				<< "<br><br>Go to:"
-				<< " <a href='composer/index.html?p" << ctx.n.index << "'>composer</a>"
-				<< ", <a href='explorer/index.html?" << ctx.n.index << "'>explorer</a>"
-				<< ", <a href='index.html?" << join(v, ",") << "'>search</a>";
+				<< " " << link("../composer/index.html?p" + to_string(ctx.n.index), "composer")
+				<< ", " << link("../explorer/index.html?" + to_string(ctx.n.index), "explorer")
+				<< ", " << link("../index.html?" + join(v, ","), "search");
 		}
 
 		void write_heading(Context const & ctx)
 		{
 			auto const pos_to_show = orient_canonically_with_mirror(ctx.graph[ctx.n].position);
 
+			ctx.mkimg.png(ctx.output_dir + "/images/", pos_to_show, ctx.view,
+				480, 360, ctx.mkimg.WhiteBg, 'p' + to_string(ctx.n.index));
+
+			ctx.mkimg.png(ctx.output_dir + "/images/", pos_to_show, ctx.view,
+				320, 240, ctx.mkimg.WhiteBg, 'p' + to_string(ctx.n.index));
+
 			ctx.html
 				<< "<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>"
 				<< "<h1>" << nlbr(desc(ctx.graph[ctx.n])) << "</h1>"
 				<< "<br><br>"
-				<< img(position_image_title(ctx.graph, ctx.n), ctx.mkimg.png(ctx.output_dir, pos_to_show, ctx.view, 480, 360, ctx.mkimg.WhiteBg,
-					'p' + to_string(ctx.n.index)), "")
+				<< img(position_image_title(ctx.graph, ctx.n),
+					ctx.image_url + "/p" + to_string(ctx.n.index) + code(ctx.view) + "480x360.png"
+					, "")
 				<< "<br>";
-
-			ctx.mkimg.png(
-				ctx.output_dir, pos_to_show,
-				ctx.view, 320, 240, ctx.mkimg.WhiteBg,
-				'p' + to_string(ctx.n.index));
 		}
 
 		void write_center(Context const & ctx)
@@ -591,7 +606,7 @@ namespace
 			ctx.html << "<td style='text-align:center;vertical-align:top'>";
 
 			write_heading(ctx);
-			write_view_controls(ctx.html, ctx.view, "p" + to_string(ctx.n.index));
+			write_view_controls(ctx.html, ctx.view, to_string(ctx.n.index));
 			write_tag_list(ctx);
 			write_nav_links(ctx);
 
@@ -619,10 +634,9 @@ namespace
 				<< make_svg(ctx.graph, m, hc, ctx.output_dir) << "</body></html>";
 		}
 
-		void write_it(ImageMaker const & mkimg, Graph const & graph, NodeNum const n, string const output_dir)
+		void write_it(ImageMaker const & mkimg, Graph const & graph, NodeNum const n,
+			string const output_dir, string const image_url)
 		{
-			string const pname = "p" + to_string(n.index);
-
 			cout << ' ' << n.index << std::flush;
 
 			set<NodeNum> nodes{n};
@@ -711,11 +725,10 @@ namespace
 
 			foreach (v : views())
 			{
-				char const vc = code(v);
-
-				ofstream html(output_dir + pname + vc + ".html");
-				Context ctx{mkimg, html, graph, n, incoming, outgoing, v, output_dir, query_for(graph, n)};
-				write_page(ctx);
+				ofstream html(output_dir + "/position/" + to_string(n.index) + code(v) + ".html");
+				write_page(Context
+					{ mkimg, html, graph, n, incoming, outgoing
+					, v, output_dir, image_url, query_for(graph, n) });
 			}
 		}
 	}
@@ -739,7 +752,18 @@ int main(int const argc, char const * const * const argv)
 
 		write_transition_gifs(mkimg, graph, output_dir);
 
-		foreach (n : nodenums(graph)) position_page::write_it(mkimg, graph, n, output_dir);
+		ofstream(output_dir + "/config.js")
+			<< "image_url='"
+			<< (config->image_url
+					? *(config->image_url)
+					: "images/")
+			<< "';";
+
+		foreach (n : nodenums(graph))
+			position_page::write_it(mkimg, graph, n, output_dir,
+				config->image_url
+					? *(config->image_url)
+					: "../images/");
 
 		cout << '\n';
 	}

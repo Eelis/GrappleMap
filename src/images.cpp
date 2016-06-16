@@ -37,13 +37,13 @@ namespace
 		unsigned const delay,
 		std::function<vector<string>(string)> make_frames)
 	{
-		if (!boost::filesystem::exists(output_dir + filename))
+		if (!boost::filesystem::exists(output_dir + "/" + filename))
 		{
-			string const gif_frames_dir = output_dir + "gifframes/";
+			string const gif_frames_dir = output_dir + "/gifframes/";
 
 			string command = "convert -depth 8 -delay " + to_string(delay) + " -loop 0 ";
 			foreach (f : make_frames(gif_frames_dir)) command += gif_frames_dir + f + ' ';
-			command += output_dir + filename;
+			command += output_dir + "/" + filename;
 
 			if (std::system(command.c_str()) != 0)
 				throw std::runtime_error("command failed: " + command);
@@ -105,8 +105,15 @@ void ImageMaker::png(
 	}
 		// todo: clean up
 
-	boost::gil::png_write_view(path,
-		boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf2.data(), width*3)));
+	try
+	{
+		boost::gil::png_write_view(path,
+			boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf2.data(), width*3)));
+	}
+	catch (std::ios_base::failure const &)
+	{
+		error("could not write to " + path);
+	}
 }
 
 void ImageMaker::png(
@@ -176,26 +183,22 @@ void ImageMaker::png(
 }
 
 void ImageMaker::png(
-	string const output_dir,
 	Position const pos,
 	double const angle,
 	string const filename,
 	unsigned const width, unsigned const height, V3 const bg_color) const
 {
-	if (!boost::filesystem::exists(output_dir + filename))
-	{
-		double const ymax = std::max(.8, std::max(pos[0][Head].y, pos[1][Head].y));
+	if (boost::filesystem::exists(filename)) return;
 
-		Camera camera;
-		camera.hardSetOffset({0, ymax - 0.57, 0});
-		camera.zoom(0.55);
-		camera.rotateHorizontal(angle);
-		camera.rotateVertical((ymax - 0.6)/2);
+	double const ymax = std::max(.8, std::max(pos[0][Head].y, pos[1][Head].y));
 
-		png(pos, camera, width, height,
-			output_dir + filename, bg_color,
-			{{0, 0, 1, 1, none, 45}});
-	}
+	Camera camera;
+	camera.hardSetOffset({0, ymax - 0.57, 0});
+	camera.zoom(0.55);
+	camera.rotateHorizontal(angle);
+	camera.rotateVertical((ymax - 0.6)/2);
+
+	png(pos, camera, width, height, filename, bg_color, {{0, 0, 1, 1, none, 45}});
 }
 
 string ImageMaker::png(
@@ -207,27 +210,29 @@ string ImageMaker::png(
 {
 	string const attrs = code(view) + to_string(width) + 'x' + to_string(height);
 
-	string const filename =
+	string filename =
 		to_string(boost::hash_value(pos))
 		+ attrs
 		+ '-' + to_string(bg_color) + ".png";
 
+	if (!base_linkname.empty()) filename = "store/" + filename;
+
 	if (view.mirror) pos = mirror(pos);
 
 	if (view.heading)
-		png(output_dir, pos, angle(*view.heading), filename, width, height, color(bg_color));
+		png(pos, angle(*view.heading), output_dir + "/" + filename, width, height, color(bg_color));
 	else if (view.player)
 	{
 		Camera camera;
 
-		png(pos, camera, width, height, output_dir + filename, color(bg_color),
+		png(pos, camera, width, height, output_dir + "/" + filename, color(bg_color),
 			{{0, 0, 1, 1, *view.player, 80}});
 	}
 	else abort();
 
 	if (!base_linkname.empty())
 	{
-		string const linkname = output_dir + base_linkname + attrs + ".png";
+		string const linkname = output_dir + "/" + base_linkname + attrs + ".png";
 
 		unlink(linkname.c_str());
 		if (symlink(filename.c_str(), linkname.c_str()))
@@ -245,7 +250,12 @@ string ImageMaker::rotation_gif(
 	if (view.mirror) p = mirror(p);
 
 	string const base_filename = to_string(boost::hash_value(p)) + "rot" + to_string(bg_color);
-	string const gif_filename = base_filename + ".gif";
+	string const gif_filename = "store/" + base_filename + ".gif";
+
+	string const linkname =
+		base_linkname +
+		to_string(width) + 'x' + to_string(height) +
+		'c' + to_string(bg_color) + ".gif";
 
 	make_gif(output_dir, gif_filename, 8, [&](string const gif_frames_dir)
 		{
@@ -254,20 +264,15 @@ string ImageMaker::rotation_gif(
 			for (auto i = 0; i < 360; i += 5)
 			{
 				string const frame_filename = base_filename + "-" + to_string(i) + "-" + to_string(bg_color) + ".png";
-				png(gif_frames_dir, p, i/180.*pi(), frame_filename, width, height, color(bg_color));
+				png(p, i/180.*pi(), gif_frames_dir + "/" + frame_filename, width, height, color(bg_color));
 				frames.push_back(frame_filename);
 			}
 
 			return frames;
 		});
 
-	string const linkname =
-		base_linkname +
-		to_string(width) + 'x' + to_string(height) +
-		'c' + to_string(bg_color) + ".gif";
-
-	unlink((output_dir + linkname).c_str());
-	if (symlink(gif_filename.c_str(), (output_dir + linkname).c_str()))
+	unlink((output_dir + "/" + linkname).c_str());
+	if (symlink(gif_filename.c_str(), (output_dir + "/" + linkname).c_str()))
 		perror("symlink");
 
 	return linkname;
@@ -283,7 +288,7 @@ string ImageMaker::gif(
 	string const attrs = to_string(width) + 'x' + to_string(height) + code(view);
 
 	string filename
-		= to_string(boost::hash_value(frames))
+		= "store/" + to_string(boost::hash_value(frames))
 		+ attrs + '-' + to_string(bg_color) + ".gif";
 
 	make_gif(output_dir, filename, 3, [&](string const gif_frames_dir)
@@ -299,7 +304,7 @@ string ImageMaker::gif(
 	if (base_linkname.empty())
 		error("gifs must have name for symlink");
 
-	string const linkname = output_dir + base_linkname + attrs + ".gif";
+	string const linkname = output_dir + "/" + base_linkname + attrs + ".gif";
 
 	unlink(linkname.c_str());
 	if (symlink(filename.c_str(), linkname.c_str()))
@@ -323,8 +328,8 @@ string ImageMaker::gifs(
 	{
 		string const
 			suffix = code(view) + string(".gif"),
-			filename = base_filename + suffix,
-			linkname = output_dir + ext_linkbase + suffix;
+			filename = "store/" + base_filename + suffix,
+			linkname = output_dir + "/" + ext_linkbase + suffix;
 
 		make_gif(output_dir, filename, 3, [&](string const gif_frames_dir)
 			{

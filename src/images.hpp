@@ -14,10 +14,7 @@ class ImageMaker
 	OSMesaContext ctx = nullptr;
 
 	void png(
-		string output_dir,
-		Position pos,
-		double angle,
-		string filename,
+		Position pos, double angle, string filename,
 		unsigned width, unsigned height, V3 bg_color) const;
 
 public:

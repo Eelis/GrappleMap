@@ -9,7 +9,8 @@ output=$outputbase/GrappleMap
 
 echo "Creating $output/."
 
-mkdir -p $output/{gifframes,composer,search,explorer}
+mkdir -p $output/{composer,search,explorer,position}
+mkdir -p $output/images/{gifframes,store}
 
 function download
 {

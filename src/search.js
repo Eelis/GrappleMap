@@ -334,10 +334,10 @@ function update_position_pics()
 
 			var vc = view_code(view);
 
-			link.href = "p" + n + vc + ".html";
+			link.href = "position/" + n + vc + ".html";
 
 			var img = document.createElement("img");
-			img.src = "p" + n + vc + "320x240.png";
+			img.src = image_url + "/p" + n + vc + "320x240.png";
 			img.setAttribute('title', position_image_title(nodes[n]));
 			link.appendChild(img);
 
@@ -360,7 +360,7 @@ function update_transition_pics()
 			link.href = "composer/index.html?" + e; // todo: preserve view
 
 			var img = document.createElement("img");
-			img.src = "t" + e + "200x150" + view_code(view) + ".gif";
+			img.src = image_url + "/t" + e + "200x150" + view_code(view) + ".gif";
 			img.setAttribute('title', transition_image_title(transitions[e]));
 			link.appendChild(img);
 
