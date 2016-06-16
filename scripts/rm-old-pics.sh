@@ -1,10 +1,12 @@
 #!/bin/bash
 
+# to be run from images/store dir
+
 set -ev
 
 function find_used
 {
-	find .. -type l | xargs readlink
+	find .. -type l | xargs readlink | xargs -n1 basename
 }
 
 function find_present
