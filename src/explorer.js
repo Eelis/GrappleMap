@@ -12,6 +12,11 @@ var force;
 function on_edit()
 {
 	node_selection_changed();
+
+	document.getElementById('click_instruction').style.display =
+		(document.getElementById('edit_mode_checkbox').checked
+			? 'block'
+			: 'none');
 }
 
 function on_mirror_button_clicked()
@@ -23,7 +28,10 @@ function on_mirror_button_clicked()
 function auto_enable_edit_mode()
 {
 	if (selected_nodes.length <= 5)
+	{
 		document.getElementById('edit_mode_checkbox').checked = true;
+		document.getElementById('click_instruction').style.display = 'block';
+	}
 }
 
 function node_selection_changed()

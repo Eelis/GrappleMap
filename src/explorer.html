@@ -15,6 +15,7 @@
 				background:white;
 				padding-left:30px;
 				padding-right:30px;
+				padding-bottom:10px;
 				text-align: center;
 			}
 			html, body {
@@ -49,7 +50,9 @@
 			<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>
 			<h2>Explorer</h2>
 			<hr>
-
+			<p>Drag nodes to unclutter.</p>
+			<p>Use arrow keys to rotate.</p>
+			<hr>
 			<p>
 				View: &nbsp;<select id='view_select' onchange='on_view_change()'>
 					<option value="external">external</option>
@@ -59,12 +62,11 @@
 				<button onclick='on_mirror_button_clicked()'>mirror</button>
 			</p>
 			<p>
-				<input type='checkbox' id='edit_mode_checkbox' onchange='on_edit()'> edit node selection
+				Open in: <a id='search_link'>search</a>, <a id='composer_link'>composer</a>
 			</p>
-			<p>
-				(<a id='search_link'>search</a>,
-				<a id='composer_link'>composer</a>)
-			</p>
+			<hr>
+			<p><input type='checkbox' id='edit_mode_checkbox' onchange='on_edit()'> Edit node selection</p>
+			<p id='click_instruction' style='display:none'>Click on nodes to<br>add/remove them.</p>
 		</div>
 
 		<script src='explorer.js'></script>
