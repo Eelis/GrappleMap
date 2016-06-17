@@ -512,7 +512,7 @@ namespace
 									ctx.output_dir + "/images/", translateNormal(trans.frames.front()),
 									ctx.view, 200, 150, bg_color(trans),
 									"rot" + to_string(ctx.n.index)
-									+ "in" + to_string(trans.step.seq.index)),
+									+ "in" + to_string(trans.step.seq.index) + code(v)),
 								"")))
 					<< ' ' << transition_card(ctx, trans) << "</td></tr>";
 			}
@@ -541,7 +541,7 @@ namespace
 								ctx.output_dir + "/images/", translateNormal(trans.frames.back()),
 								ctx.view, 200, 150, bg_color(trans),
 								"rot" + to_string(ctx.n.index)
-								+ "out" + to_string(trans.step.seq.index)),
+								+ "out" + to_string(trans.step.seq.index) + code(v)),
 							""))
 					<< "</a></div></td></tr>";
 			}
