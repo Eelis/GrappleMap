@@ -42,4 +42,4 @@ echo "Converting database to javascript."
 src/grapplemap-dbtojs --output_dir=$output
 
 echo -e "\nFor the position pages with pictures/gifs, run:\n"
-echo -e "  src/grapplemap-mkpospages --output_dir=${outpubase}.\n"
+echo -e "  src/grapplemap-mkpospages --output_dir=${outputbase}\n"
