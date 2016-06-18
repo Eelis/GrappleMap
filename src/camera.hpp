@@ -39,13 +39,13 @@ public:
 
 	void setOffset(V2 o)
 	{
-		offset = offset * 0.99 + V3{o.x, offset.y, o.y} * 0.01;
+		offset = offset * 0.97 + V3{o.x, offset.y, o.y} * 0.03;
 		computeMv();
 	}
 
 	void setOffset(V3 o)
 	{
-		offset = offset * 0.99 + o * 0.01;
+		offset = offset * 0.97 + o * 0.03;
 		computeMv();
 	}
 
