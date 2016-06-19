@@ -63,7 +63,7 @@ bool dfsScene(
 {
 	if (size == 0) return true;
 
-	if (double(steps_taken.size()) / scene.size() < 0.89)
+	if (double(steps_taken.size()) / scene.size() < 0.91)
 		return false;
 
 	std::multimap<std::pair<size_t /* occurrences */, double>, Step> choices;
