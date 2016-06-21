@@ -14,15 +14,11 @@ remote = {}
 for name, hash in csv.reader(sys.stdin):
 	remote[name] = hash
 
-dir = 'GrappleMap/images'
-
-print "cd gm"
-
 good = 0
 bad = 0
 seen = 0
 
-dirlist = [x for x in os.listdir(dir)
+dirlist = [x for x in os.listdir('.')
              if x.endswith(".gif") or x.endswith(".png")]
 
 perpercent = len(dirlist) / 100
@@ -32,11 +28,11 @@ for f in dirlist:
 		sys.stderr.write('\rComparing checksums: ' + str(seen / perpercent) + '%')
 	seen += 1
 
-	if f in remote and remote[f] == hashlib.md5(open(dir + '/' + f, "rb").read()).hexdigest():
+	if f in remote and remote[f] == hashlib.md5(open(f, "rb").read()).hexdigest():
 		good += 1
 	else:
 		bad += 1
-		print "put " + dir + "/" + f
+		print f
 
 sys.stderr.write('\nAlready there: ' + str(good))
 sys.stderr.write(', to upload: ' + str(bad) + '\n')
