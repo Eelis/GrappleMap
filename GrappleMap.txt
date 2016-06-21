@@ -246,8 +246,8 @@ tags: pass_around leg_drag combat_base
     fNCAaaTIYKTa6J8BUeMIfJyecHHBWf1IuIAe3H5CZgCIUH2fIG3GucmHRFecsOcEtdsQB
 stepping\nback
 tags: pass bottom_supine back_step
-    xIfFwPFncswrwTe3AnCfbKyfx3fIzJDqcuyDCAjaDCFZe8Evzte7IhBIcmJgF9lpJ2HCi
-    mNRGvipGuEZeBOFIyePFRFEauPLJCeqFkFNa8QQKbdiFIFMawR0C3giKyHNkwL6JKmgMe
+    xIfFwPFncswrwTe3AnCfbKyfx3fIzJDqcuyDCAjaDCFZe8Evzue7IiBIcmJgF6lrJZHCi
+    jNUGvipGuEXeAOFIyePFRFEauPMJCeqFkFNa8QQKbdiFIFMawR0C4giKyHDkqL4JMlTMc
     HacSuME7cIrRGNbMygEnaMuYGsc0xAEYb1uDEhimBoIXghymCQcmEBF2bKCMEYczMQJ0b
     ALLAGboLiK4dCHDzhfhKuG1eAGgzggvJ4GifEF2z5g0JhEZfwF7GkbMG5HNczNiIzd9Pi
 standing\nbetween legs
@@ -402,10 +402,10 @@ tags: pass_under
     VJ7JwdTTmGbdwKjLTdtPSGChMJOM3dPPnGJi1JnNidKN7FMjOI8HSf4NyLAbIMMN8bWMb
 single-leg\nfrom knees
 tags: single_leg_takedown standing
-    lIazUqrXaz1Oocb0R6s6cxYTnwaLR7tCbjZzrDaYMLyEbeU4rdgRQEuwgdShuAloJAzmj
-    8LGtuhfLlyKfxLhwlhGIfxoicIaxqhOHDwEiHHcyciQHSv4jQHiuxjbO9xmlrJ9zumhII
-    vDazx4vvbFS3tWaMBlt3enQ2uDbMAxvcdtQLwZhFx2w9hpLzvvmxCWw1l9GhCYj2yxE9j
-    CC6BYfzxzFXfhEJCoboxoGDaWErDrbxwBHHbvDTDMavvRIuaKC8zSmtCYE4kzAoHvkbzm
+    lTaHUqsgaz1znMdySWscdAZsnyb9Svs7cpZqrya2MTysa3U9rhgNQFuzf6SjuAloJAzlj
+    8LHtuhfLlyKfxLhwlhGIfxoicIaxqhOHDwEiHHcyciQHSv4jQHiuzjaPaxmlrJ9zumhII
+    vDazx4vvbFS3tWaMBlt3enQ2uCbKAyvbdrQNwZhJx3xahtLuvwmvCUw2l7GjCYj2yxE9j
+    CC5BYfzxzFXfhEJCoboxoGDaWErDrbxwBHHbvDTDMavvRIuaKC8zRmtCZE4kzApHvkbzm
 distance closed\nguard w/ 2-on-1
 tags: full_guard closed_guard bottom_supine top_kneeling
     AGazxyvSaAGuBNaFA3zxaEFTCyaMzOyJaEG3I6aZBDDhaYL5CvdtCvAYdkFQICiTEmGmj
@@ -414,10 +414,10 @@ tags: full_guard closed_guard bottom_supine top_kneeling
     wIOJgbrNEO5a9EyI7dSKgLzcmGLJveFJiL4dxHaKid9InLZdIIuKpbMIGPAcVLvRneJMb
 arm-out\nguillotine
 tags: guillotine top_posture_broken top_kneeling
-    uYa7TlDbaAZCxRcuRxFIbyW1w3bgRoFIaKYeBPa1MpLba2T2CNfXRfFKfmTtJlg2J3L9f
-    hNaGfjQH2N2aXM0HhghF3MJaMIQHxfuE3MwbaHBHEecFhLYauGIGCgiPgLofdKsMEddJj
-    ABfSPiJbiBVwCdfrLWHwf0TtCBfhNjHFhqTpHQbePcFrklNxHfbNIhGzfrIPPlfKKeMlj
-    XIYOKbiLGHTk9H4K5diLaJDheICKFeaKkKcf2IGKXfmKaJweWIEKpeAG6OvitJ8OgjSMq
+    vjaATbC8azZzxOc6R7FrcjXexobPRzFza9X1BTaYMqLda5TYCNfRRdFLfkTrJlg3J2L9f
+    hNaGejRH2N2aXM0HhghF3MJaMIQHxfuE3MwbaHBHEecFhLYauGIGDgiPgLpfcKtMEdcJj
+    ABg5O7JciBVxCqffMtHwf0TtCyfcNXHEhqToH3a5PcFrkmNyHfbNIkGyfqIPPlfKKeMlj
+    XIYOKbiLGHTk9H4K5djLaJDheICKFd9KkKcf2IGKXfmKaJweWIEKqeAG6OvitJ8OgjSMq
 kneeling\nsingle-leg
 tags: single_leg_takedown
     KAazB5u8azDYLKcpE8xGaSBhLia6EPxybpCAMRa7LxBhfBGGKdgrHUHFigFQIdiyPXC4i
@@ -449,10 +449,10 @@ toe hold
     8NRLibIRtPffNJXJMdZOgKXgzJlJZfbNOKbhwI4JMfoMxIVhxJlMNdZLBReeaPRSmfQRD
 bottom coming\nup into\nguillotine
 tags: guillotine
-    OIazy6JtazvrPBcyB4I1ccyHPsa5BOIMaNyhP8aYIwHhaYEUNlgdEHJRhxEQOwhHNrJai
-    VM1O9dsLvGHkAJrK1dRK6F2gnImKDevJ6FHgUJwKQfIJPFEf3KwMsiXHZLRiuNJLRh7Qj
-    uXa7TmDeaAZBxScvRxFJbzWZw6bfRkFKaJYdBNaYMrK6aYT7C7f0RcFufgTVIZgJKhMOe
-    VNRENfaI4N7aZLDGocSFVMpaCHDF2cnEPL9a6GuGIbODULDauFtHkf3P0Lff0LMNufDKl
+    OHazy1I5azv9PBcxB4JMdHx4Pta7BKI7cqylP7a2ICHja3EVNmf9EKJRhtEQOwhHNrJai
+    VM1O9dsLvGHkAJrK1dRK6F2gnImKDevJ6FHgUJwKQfIJPFEf3KwMsiXHZLRiuNILRh7Qk
+    vjaATbC8azZzxOc6R7FrcjXexobPRzFza9X1BTaYMqLda5TYC7fXRaFyfdTUIZgJKhMOe
+    VNREOe9I2N7aZLDGqcSFRMpaCHDGccmEFL9a6GuHccjDMLDauFtHkf3P0Lff0LMNufDKl
 seated\nbutterfly w/\nreverse 2-on-1
 tags: bottom_seated butterfly top_kneeling two_on_one
     PmaAuPFNazvrOTcBxSG2chyxPwbcxHFQbAx7PVaYEEECbdETMpdVzqIIdYzYMQl5CwHvl
@@ -957,10 +957,10 @@ tags: bottom_turned_away seatbelt back
     IRlN5aWMiKbgMNrMad5OxKycZPiLxe4O2JzcaPcL1fNPYJNaUOPQHdSNQL5dYRIJWftSd
 over/under\npass w/\nleg trapped
 tags: pass_split bottom_supine
-    yedLzHAOazr3BLevy1BVbSvjA3dgzkAKa8uVHCaYyUvGa0zBDte4CEzNfeDkFWd6LwBEg
-    xMAFuaTH9y6cDMCBkaEHTA4cfQvAdaKIvCgcfQ3zDbUIEDlbZQuCqfgGPEgfENbEgfxPS
-    voazOqzUcOvPy7aEOAwScNx0x4bAOyyicwyeywixOCByb3EnCtcRODDscjK4Ksf0QXLIf
-    cMbGxdxRAK9a0KaFWe0NFHiauIhF5fOMDGxbaHrFhf1LIFnbCHHGIcuNXLngUOqLpjBOt
+    xLcTzcATazsnA4dYAuBOc2uXAIc4zmADb7uSHna2yRvIa0zCDpe9CFzNfdDlFWd6LwBEg
+    xMBFuaTH9y6cDMDBkaEHUA5cfQvAdaKIwCgcfQ4zCbUIFDmbZQuCofgGSEffENcEgfxPS
+    voazOszTcOvQy8aEOBwRcNx1x4bBOzyhcwyfywixODByb3EoCtcRODDscjK4Ksf0QXLJf
+    cMaGxdxRBK9a0KaFXe0NFHiauIhF5fOMEGxbaHrFhf1LIFnbCHHGIcuNXLngUOqLpjBOt
 flattened\nbutterfly w/\nstiff arms
 tags: butterfly top_kneeling bottom_supine
     PuaEveGvaBvBOVcoyuHIczyyPJbkx0GIbyylQXbfENEuaYEQMldrz2IDdOz4Ndi8HBHOi
@@ -1084,10 +1084,10 @@ tags: bottom_double_unders butterfly top_posture_broken bottom_seated top_kneeli
     WAiBXjHuJJKhVxtFUk9vbHqkSvbGtlbwlGClUvnHHlCwtFrlCvUDMfJDoDTkGArDlm5zn
 double\noutside ashi
 tags: footsies
-    t8aMuZGVc1tjvAaJyoGHa5wvvpbNxmGTcuwdyKfaCnH9egCQzXbCIaDEbGHuB5jGJEGwh
-    TMzzkgXGZJzgAJkBqg0DkHceUF4CdhtCnHRe1E0DigKB5Hwe5DPCidUK1Eqi8LbFalhJL
-    ScazGqG8b5PIPyaEIZD9aWNNPsaIHvFebPNyLtbOBTGLfVIbEAbUBfCUeVCxLXehx5KSj
-    EzeJbaTzKHziBCqGrdiBJG4eNEyHvd5BBHPd2FkHwe6CsIwc4EVGxfIAeLwg5x9NOhNwU
+    umazvRJdc4tUvLaEzlHibQwRvFbuyfIlcKwCy0ftCJIiesDiz7bTIwDGbDHAB4jWJyGwi
+    KMbzng0G1JzgBJkBqg0DkHceUF4CdhtCnHRe1E1DigKB5Hwe5DOCPedK0EEkgKFF6maJv
+    ScazGqG8b5PIPyaEIZD9aWNNPsaIHvFebPNyLyaYBIGLfVIbEFbQBgC1eWCsMhevx6K1j
+    vzaJeaZybHFiAClHmdkA4G6eOExH9egBmHOd3FjHRffB6Ivc5EVGJfvz9L9hgxUOKhLym
 deep half\nbackdoor\nsweep
 tags: deep_half
     KHa0CAvYcTCmLWcEFFyOdazYLqbhFnyDc9BmMXa1L5C6feGcMBgbHoJDhqFvIOivPEEPk
@@ -1301,10 +1301,10 @@ tags: footsies heel_hook
     fxfM1e2EAKXd8w9KlhICJJjhczMJuixB9Jqh5AKI3ihAVJKhSBWL2cjzJPxhFzJPBj8AM
 honey hole
 tags: footsies
-    zGeMBdxxclCDDcdwAYAbclz6Cmd3BZzZc9BjFEdUH3ElhoEzI4bGCpJveRACP7eQHWMvi
-    vGhPHaTFyJVibCpLuaHGvGGgREKKpa9GXFBgKFtJQawHZEWfGFEMZdACXOlgYHHOShrKe
-    vAazuZO5i4yEwSaEywMdgOxOwxbzxvMUhdyYyDhiALISf9EtzWbQEUDubNDJCcfMMyGZd
-    6LRzccVODKcaTMWvGauN2OeaLLGuza3NZPta6LttyawOFQhawKGCZbYH1EZfPMQFJinNg
+    zFeMBexwclCDDbdwAYAaclz6Cld3BZzYc9BjFDdUH3ElhoEAI3bGCpJueRADP7eQHWMti
+    wGgPEaTFyJXicCnLwaHGuGCgQENKoa9GXFAgKFuJPawHZEVfGFEMYdBCYOjgYHFN7ifJ1
+    vzazu0O4i4yEwRaEywMcgOxOwwbAxwMThdyYyChiALIRf9EtzWbQEUDtbNDJB3fzMHGYd
+    6LSyJcJOjJ6aTNeuWbdM9LzbPJdufb0MmLNcMIjtxblLrMBcpHlCZbYH2ETfOMPFIimNg
 postured up\nmount
 tags: mount bottom_supine top_kneeling
     IeaBzAC5aAA7JDc5BXBycJDII6bLB3BybkDvLza3IsAGaYKoHneXEyDOeAFqIimVGDCPn
@@ -1523,10 +1523,10 @@ tags: butterfly bottom_overhook bottom_seated top_kneeling
     NK3FygRG9PjfRMGJGglGVN6fHIxKzhdG2OHgPIMKUhUH2OjhUIbK8eqMvKAkhKBJYmsI7
 twister\nside control\nw/ grapevine
 tags: twister_side grapevine top_on_side bottom_supine
-    JeiiBDJNazyGL7fYCeLHdBxVKJf0CwKUdby2I5aYGWIfheDVPscXE1O8gEEHLdfANMKHj
-    BKeLeaYOLLYhzGfHYauMeHRgdF9GXbaLTHCeZFQGdaKKTIrd2FQN4eXIBKfhUMpHMiAM2
-    JqbSw2tVaMEIGSaEzuwDaEHiH7bkzxwxaEFRLXeuEmCRbrDdHlfdJvGJbCIVPAc8NLQgb
-    sIWNag6NkNfaUFnPsgpJTRvbhEKQugeJdSNbwEEQlfPHXTfcIEiKCcCKzQ8cDLpTfegK5
+    JeiiBDJNazyHL7fYCeLHdBxVKJf0CwKUdby2IWaYGZIfheDWPbcYERO8gEEGLdfCNLKHj
+    BKeL2aYNSL8hCGeIoaOLPH6gcGEG6a6LRHGfaFVGhaMKVIqd5FRN4eXIBKfhUMpHMiAM2
+    JpbSw2tVaMEIGSaEzuwCaEHiH7bkzxwyaEFSLXeuEmCQbrDcHkfeJvGJbCIVPCc7NIP8b
+    tIQNag6NkMLaVFIPrgpJTQUbREzQugeJdRFcnDIQlfPHXROdyDiKAcCKAQ4cBLjTdefK5
 rolled\nonto side\nin mount
 tags: mount bottom_on_side bottom_turned_away
     TXazU0NoaBIHRXdEUZPgaELSRAceUWONbFKYKOaYU4QiimLzP8ffT7SPggRIJ6irUcKwi
@@ -1589,10 +1589,10 @@ tags: full_guard bottom_turned_in top_kneeling top_post_hand top_posture_broken
     DNPKdhENDOeaTJhJlirJFNwbuE4JVjdIPOgcdEiKtiGHKN5cnC3IXcsNXPdd0PlRyfnPr
 distance\nclosed guard
 tags: full_guard closed_guard bottom_supine top_kneeling
-    zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEnGni
+    zMazy7vVaAGvCmbHBvy4ctFTCnaTAkyHbmGOI8a3BHDfa0L0CCdoCvA1diFTIAiUEnGni
     UJlJAejEcGgemKnLldGH0KxdLJDLWeEIHLretKfMKegJGMydPKBCYg3ERHWjAG4JNlkHW
-    wYgRzkuVi1BpzJeVAZwZgkC1y2f9BcxihwCjAjgVHMDYhjA0Gdc7IwHZdgFgNPcFNtQhc
-    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKlbQIEPKcWLqRseNMc
+    wYgQzjuWi0BpzIeVAWwYgkC1y3f9A9xfhxCjAngUHSD3hgA3Gbc8IwHYdiFfNOcFNsQhc
+    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKkbRIDPKcWLqRseNMc
 triangle\nthreat
 tags: triangle top_kneeling
     AlaFBEwoazHbC7b3DIzrczH1CXaZCMyXbhIlJFa4EoEcaYMPDidJEUA3evHJKeinGbI1h
@@ -1697,10 +1697,10 @@ tags: omoplata
     MKwJoeQRkEIgnJgF8cdRkDqcwKXE1bxRfCNchL1E0aAQlDgcwNeNzfyKLI6jrNeG1kYNX
 spider guard\nw/ shins\nagainst biceps
 tags: top_kneeling spider_guard
-    QbaAvfESaAvQOTcfyiGJcAyqP1bmx0FLbyypPCa4ETEfa3E8L8eqzSIreiABMXjLGZHxj
-    5GxP6gtFXE0f9F0OddVIEF3eYJ1NUdvJQG1e1KRMOdBKrIefcKuKthYBPKhkpHgJWlCJz
-    HbfHBnNDgbBpIedwEeMDdnDHHKeTD5M1eJDOGpieJYNxhRJVH2bSHzLIbDHoG9fgPmLWe
-    LQjFcgyLlN9foMcERhQHnP0f8IiEzigF9QEgkHbFchXE6QagJF6J3bOLqJuf6QCJIiBRo
+    QcaAvfESaAvQOTcfyiGJcAyqP1bmx0FLbyypPCa4ETEfa3E7L8eqzSIreiAAMXjLGZHxj
+    5GxP6gtFXE0f9F0OedVIEF3eYJ1NUdvJQG1e1KRMOdBKrIefcKuKthYBPKhkpHgJWlCJz
+    HbfHBnNDgbBpIedwEeMDdnDHHKeTD4M1eIDNGpidJXNxhRJVHZbTHuLIbEHnHcffPmMee
+    YPOFcgyLlOfeNLxERhQHmPQgzHREzigGaQshxHaFchXE6P2hFFUJYbMLkJFf1QyJIizRo
 omoplata\nescape roll
 tags: omoplata
     PjaMPwK1boPPNWaEL6KCa2L7NQbHM8JPbuNcKBhkLaEzdRJIJ7bFGSHRbCDSLDjFFQGWi
@@ -1715,9 +1715,9 @@ tags: omoplata
     zQmvpcxWcyNfaNRw9d5SIz1fCRYxzfbR3ArftTbxQeUQMA9eoTtuXbMSrAYbnTaDBbWS3
 standing\nsingle leg\nturned in
 tags: single_leg_takedown standing
-    SeazszHxkMNPOvaEseIghXLAPubBsAIfjqLkR1g2vFJZmnFsOCngwjLInoyDQ4sPCMMds
-    5DAQtobDfIlrMBmOGkVFfKmn7CGOhjTFPK5nlDmM8jJGqMjnlDANMrax7OQtLEcOUuIGJ
-    GiazHmMYaTHTFtaEKXKSaFKZFYbCJ3K6bAJWGNhZH0McidJlGOn4LHKenNNcIGptDFNVo
+    SdazszHxkMNPOwaGseIghXLAPwbGsEIejpLmRMg2wwJ1mpFmOEncwmLInnyGQ4sPCMMes
+    4DyQtobDfIlrMBmOGkVFfKmn7CGOhjTFPK5nlDmM8jJGqMjnlDANNq7x7OQtLEcOUuIGJ
+    GhazHlMYaSHTFoaEKZKUaHKYFKbzJZLubNKaGNh7H1MhiAJgGPn1LFKcnQNeIGptDFNVo
     hFeIakREnNbjGEZLTkVCwI9j2GIMQlGCRHRj5GPMCmSDnHdkvHOJ0pVJqLroWD3MYoFBW
 turtle\nstepping\nover
 tags: turtle
@@ -1775,10 +1775,10 @@ tags: darce side_control bottom_turned_in top_kneeling
     KzlQYebybMIbeuIO2bvAJPLawxJP5ckAOPPbdyQQ5bTBAQQaUzDHQcnxBMrc4BDOVc4Cu
 forward leaning\nleg drag vs t-rex
 tags: leg_drag combat_base bottom_supine t_rex
-    OuazCFDPbQx7LcaTA1Cfezz3LXbJBUCnc8AgKPhYEDBta1GMD6ifCTA3hKE1JthHKIEYf
-    MMiKGdgJJB7duO8K5auMUFzaUPWKCbbNVGLbeQgKJaAO7HOauQhELiJG8HchvMlIjhbOG
-    EZazrXuJe6BgHjbruHymfNBtFXaWuGxlfoCsALa0zfAle2IDFhbCEwGte1FjEdbsOdIpe
-    NNLBHbJKjJfesJbDKfqKoGbe7MaC4gsKDGefLNfDuhHKAFiguNGGjclIHGzcTODF4eqQL
+    OwaCCIDUbQx7Lga0A6Ciezz2LYbUB2Crc8AgKxhMFzBwa1GKD9ifCTA6hKE1JuhHKJEZf
+    MMiKIdiJICcdqO9K6auMXFxaXPVKDbaNYGKbfQgKJaBO8HMauQhEOiJG8HchvMkIjhbOH
+    E5azrXuNe6BdHpbruIypfNBrF3aWuHxofoCoAPa0zeAoe2IDFkbCEvGwe1FjEdbsOdIqe
+    NNMBHbHKjJfesJeDNfsKoGee7L8C5gsKCGefLNgDvhHKAFiguNFGlclIIGzcTOEF4eqQL
 limp armed out\nof cocoon
 tags: bottom_seated standing
     OPaHvmBpaBCHM8dWvCDqaEzCNIc4wGC8bIAAOLhoBPCGg1EPJNj8xAG6jOz3KTo9FlF6p
@@ -1871,10 +1871,10 @@ tags: bottom_supine
     sHzOubJRhNsbKDSP4eXO1RAbgFbQFfROgSMbDFsQmfZMZS1cKF0KKbPJpQObZKkTlcGKy
 quarter z
 tags: z_guard quarter_guard bottom_turned_in top_kneeling knee_slice fetal
-    3taXOfT1bsEQ1fdDMQTGeZFP04clNASEd0FmUrboPrLOdkGpR0fSKPROgGHaKbjML9Kyk
-    7GSJZe5L7NoiyD7HZboLzJng6DqGMbKLxIchbCXFIa7LnHhgmDmPyjlJGJBkOJyG4ltJr
+    1VaAPMT1bsEQ1bdpNtTEeZFP0kcCOpSEd0FnTHdEP4LMdhGoR7gUJ9RshcGxJ9jNL5J4k
+    8GEJYe5L7NiiFEeHZboLzJmg6DqGMbLLxIchbCXFJa7LnHggmDmPnj3I7JEkOJrG4ltJr
     TdifCHU5hWFXPChfClSHgvDuQshDDvSYggEVMNgJJmRnbbJpM5fpCANhbUDSEwgZFcD3b
-    QF9I3hCEgH0boIwLeiXHCF7auMmJWiRHWFiaDNjJqjqIXFFauOyJedBDHDreyF1AYfdGO
+    QF9I6hFEmH0boIwKijeH7F7auMmI5i3ItFiaDNjIujvJxFFauOyJedBDHDreyF1AYfdGO
 ashi
 tags: footsies
     I4chGnNjeBMAGjdvItJ7dFK3HLdoILKAdvMqG7gLOPFUbfQ4DJe4I3D0bCKsx4iRMrypf
@@ -1889,10 +1889,10 @@ tags: bottom_supine standing full_guard
     QLrLIbUOJQBbHG9MSfsMLPCeYJNM2gLMDPzfXKzMrhuLLOpgoK2MubULqRMcUNXTYefOz
 seated leg\ndrag start
 tags: leg_drag top_seated bottom_supine footsies
-    HQazJTCZaXD3H7bLGnDXa5AvI0bzHtEab5BBPva7E4E4haGcJQbGBbGIdxAvOLjuCrJCl
-    kCFOufCzNGdifBAO4bvAGH8iwFrQnbAAIIHiWGwQ3auAzJSioGQKpfTAnMtlbCJNbnaEn
-    IOgFx6ITkqxMFNeyywHag7xVGvfuzoHUhWyREtjtEJJlhSFGCfcWFKFNbTFOAAefN4Esb
-    uPvCCfdJXGZa9LyGwesIvJJccIhHGe3IMKzcEHlIHeqIdKecMF8DLbMJDCqdpP2C2fcRV
+    HQazJTCZaYD3H8bLGoDXa2ArI0bzHtD9bWBxPwa7E5EJgZGcJPbGBbGIdxAvOLjuCrJDl
+    jCFOufBzOGeigBAO5bwAGH7iwFsQnbAAJIIiWGwQ4auAzJSioGQKpfTAoMulbCJNbnaEn
+    IOgFx6ITkqxNFNeyywHag7xVGvfvzpHUhWyRC0jzDNJmhSFGCfcXFFFPbUFHAGegN0EBb
+    wPsAJeMJnG3bbLwD4gGHIJJcfIiFihcHBKsc2HvFXhfGyKkcvGeDQbMJxC0dPPsDKgkQa
 reverse\nleg drag
 tags: leg_drag bottom_turned_in top_kneeling
     xbazyhoBaMGcy6dnzHp1aQCIyzb7Afqta8D0Cpb5FXvEdZHCA7eRzIxQfBBgGehWFBBXh
@@ -2159,10 +2159,10 @@ tags: leg_drag lockdown
     NwbRda3FDKWdHu8PEeIG2JnfiyUPufUHtJTggzzOxgmIaJNgxAOLvclABQ2dpysTseexx
 leg drag to\nside control
 tags: side_control
-    ODaACAMacuuqM7dZCALhe0wQNocYDxKodNwzNAbnKfEqeqAtMlghFrJZhLCZJ9hgMHFwg
-    qKFKGduJVBQesMIK6awMVERcxO9KDbaNWFCclP7KJaAO8GibcQcJqi4G4HlheMDGAhwO8
-    E7azrXyhfszSHqbruHBTfLAOF4aWuGAEfFBuAPaZzcBVgXH9FjbCEsHAetEXEfbsN7Iqe
-    NNMBCbxKiJhetJcEdeQKbGde6L9DWfUJvGffLNfEOgNI8FiguNFGqcuICGzcYOOGfebRb
+    HGaGwHLRcvuEHQdTyzKYe2w5IdcyyPKadSwEKxa0FbD8e4z4MuhAEkJciDC6Kbg4M5Fog
+    iKSKGdAJXBHekMRK6auMXEOczO6KEbaNWFCclP7KJaAO8GhbcQcJBiHHpHnheMEGAhwO8
+    FQaAstyifszRIQaEuFBUfLAOHraOuPAFfFBuBRaYyRBVgXH9FvbCEGHFezE2EfbsN9Ite
+    QNSBBbvKiJgetJfEgeSKbGfe6L7DXfUJvGffLNfEPgNI8FiguNFGvczILGzcYOOGfebRb
 gangsta-\nlean w/ \nhead&armpit
 tags: mount crossface
     LeazIHx7aAHMLAb2L3BwbOIKL1aILvAjbvJxNta9SdCSe1OZLZe2MIIFfiLbKqfvUdFMg
@@ -2565,10 +2565,10 @@ ref: Ryan Hall "Back Attacks", Volume 3: Rolling Back Attacks, Technique 4: Side
 twister roll
 properties: top
 ref: Ryan Hall "Back Attacks", Volume 3, Technique ? @ 1:39
-    JeiiBDJNazyGL7fYCeLHdBxVKJf0CwKUdby2I5aYGWIfheDVPscXE1O8gEEHLdfANMKHj
-    BKeLeaYOLLYhzGfHYauMeHRgdF9GXbaLTHCeZFQGdaKKTIrd2FQN4eXIBKfhUMpHMiAM2
-    JqbSw2tVaMEIGSaEzuwDaEHiH7bkzxwxaEFRLXeuEmCRbrDdHlfdJvGJbCIVPAc8NLQgb
-    sIWNag6NkNfaUFnPsgpJTRvbhEKQugeJdSNbwEEQlfPHXTfcIEiKCcCKzQ8cDLpTfegK5
+    JeiiBDJNazyHL7fYCeLHdBxVKJf0CwKUdby2IWaYGZIfheDWPbcYERO8gEEGLdfCNLKHj
+    BKeL2aYNSL8hCGeIoaOLPH6gcGEG6a6LRHGfaFVGhaMKVIqd5FRN4eXIBKfhUMpHMiAM2
+    JpbSw2tVaMEIGSaEzuwCaEHiH7bkzxwyaEFSLXeuEmCQbrDcHkfeJvGJbCIVPCc7NIP8b
+    tIQNag6NkMLaVFIPrgpJTQUbREzQugeJdRFcnDIQlfPHXROdyDiKAcCKAQ4cBLjTdefK5
     IGgZzwEzaLupLofTBJIfaGuGJWfABGHda9vDI7a5GRHQeYBqOZeGGgNyhyErILhcM6Hej
     iH7KpcZOrHmfREWHVavL8Dvd2FEGTbbLRCdd8FUF8aMKQBAcXF0MPhsIMHDioKME5isLC
     HFbgxKtTaMEIFkbmABwAaEHkGLbNAvwvaEFTMbd9EeCQbiDgHrfDI2GUbWINPLdSNAP9b
@@ -2583,10 +2583,10 @@ ref: Ryan Hall "Back Attacks", Volume 3, Technique ? @ 1:39
     sJpLVgZL7MPbGGaM1gsH9MkfIEBNtgPG2MEgOD4MHgHFYL6hVEfKMcWLxRfdxK2SFfxJT
 fishnet
 properties: top
-    JeiiBDJNazyGL7fYCeLHdBxVKJf0CwKUdby2I5aYGWIfheDVPscXE1O8gEEHLdfANMKHj
-    BKeLeaYOLLYhzGfHYauMeHRgdF9GXbaLTHCeZFQGdaKKTIrd2FQN4eXIBKfhUMpHMiAM2
-    JqbSw2tVaMEIGSaEzuwDaEHiH7bkzxwxaEFRLXeuEmCRbrDdHlfdJvGJbCIVPAc8NLQgb
-    sIWNag6NkNfaUFnPsgpJTRvbhEKQugeJdSNbwEEQlfPHXTfcIEiKCcCKzQ8cDLpTfegK5
+    JeiiBDJNazyHL7fYCeLHdBxVKJf0CwKUdby2IWaYGZIfheDWPbcYERO8gEEGLdfCNLKHj
+    BKeL2aYNSL8hCGeIoaOLPH6gcGEG6a6LRHGfaFVGhaMKVIqd5FRN4eXIBKfhUMpHMiAM2
+    JpbSw2tVaMEIGSaEzuwCaEHiH7bkzxwyaEFSLXeuEmCQbrDcHkfeJvGJbCIVPCc7NIP8b
+    tIQNag6NkMLaVFIPrgpJTQUbREzQugeJdRFcnDIQlfPHXROdyDiKAcCKAQ4cBLjTdefK5
     IJh9BiKHaFylLwfEAXL5d3xBKsfVBSLadwyBIEa3GqH1g1DHPkcIFFOPfSDLKqgvMKIUj
     dIuLnccOdFYhNE6HYaxMiGvdwECGXbaLTF5cnEYGdaKKTGObkEQNZf4H3I5iyLgGzjmLN
     LccvvptVaJEHIMaTxMwpaFHwJHbYxMwuaEF5LEd3D4CEbLC8HnfgJmGPbHICPtdNNKQgb
@@ -3653,10 +3653,10 @@ properties: bidirectional top
     sLUNRcsR2IAixHtKJauP6Ezg5GtJCa1PRDJf9F4IJavO2DXeWGkN7f2JpKwhON8ICiqPV
     MmcevjwWaMyGJUaExGyCaEB1KxbUxuy1aEAGNlelDhFRbrAnH0fyHCIDb4GxOlcJOTQub
     tJYPAeQKWO2aTFySpc4IqSjclHZS3b1IbSGdsHySCaSHTR2eqG6KPdfJ5PWbOMJSadcNd
-    MoiiA2NVazysOTfYCAPYdByoNuf0CoORdbzaKqaYFYKFheCRQ4cXGmQSgEFWJ4fAM7KOj
-    BJCJKaYN3NnhzGjHyauKyJygdEOGJbaJTJqeZErGnaKIHKcd2EIOxeXJfJDhULvG6iALf
-    N8bSwNwXaMyFKVaEydyCaEB1L4bkyGy1aEADN0euExFRbrAkHUfdHMHxbCG1Occ8OCQtb
-    sKjL3g6NnOSaUFWPogpKWS5bhGOQBgeKEUkbwHaQTfPJqUScIGZKCcCJUQrcDMWSxegNm
+    MoiiA2NVazytOTfYCAPYdBypNuf0CnOQdbzaKhaYFXKGheCRQRcYF7QSgEFWJ4fCM7KOj
+    BJCKOaYNvNxhCGmH5aOKkJBgcFmGSa6JTJsfaExGqaMIKKbd5EJOweXJfJDhULvG6iALf
+    N9bSwNwXaMyFKVaEydyBaEB0L4bkyGy1aEAEN1euExFRbrAjHTfeHMHxbCG1Oec7OAQob
+    tKbL3g6NnOjaVF5PngpKVSAbRGrQBgeKFTAcnFTQTfPJqTSdyFxKAcCJUQqcBMPSvefNm
 bottom gets\n2-on-1
 properties: bottom
 ref: Ryan Hall
@@ -4188,10 +4188,10 @@ double swim\ninside
 properties: bottom
 ref: https://www.youtube.com/watch?v=N7CzcgVuvdA "Brazilian Jiu-JItsu - Advanced Basics - Transitioning to Triangle from Closed Guard - Firas Zahabi"
 ref: Ryan Hall "The Triangle" Volume 2: "Angles, Mechanics, and Entries", Technique 3 @ 9:11
-    zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEnGni
+    zMazy7vVaAGvCmbHBvy4ctFTCnaTAkyHbmGOI8a3BHDfa0L0CCdoCvA1diFTIAiUEnGni
     UJlJAejEcGgemKnLldGH0KxdLJDLWeEIHLretKfMKegJGMydPKBCYg3ERHWjAG4JNlkHW
-    wYgRzkuVi1BpzJeVAZwZgkC1y2f9BcxihwCjAjgVHMDYhjA0Gdc7IwHZdgFgNPcFNtQhc
-    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKlbQIEPKcWLqRseNMc
+    wYgQzjuWi0BpzIeVAWwYgkC1y3f9A9xfhxCjAngUHSD3hgA3Gbc8IwHYdiFfNOcFNsQhc
+    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKkbRIDPKcWLqRseNMc
     AGazxyvSaAGuBNaFA3zxaEFTCyaMzOyIaEG3I5aZBDDhaYL6CvdsCvAWdhFQIyiMEkGpi
     3JjJCecEbFReEKLLmdOHZJ9d2J1LXeDIILgeBJ6MJegJFMpeeKqCTg4EVHYjuG0JSk4HY
     w0gTzpuVi1BpzHe6BawZgkC1yVgjBxxihwCjAmgYH6DWg9A0F9cXIxHNcRFcNwc4NyP9c
@@ -4472,10 +4472,10 @@ properties: top
 pendulum sweep\nstart
 properties: bottom sweep
 ref: Ryan Hall "The Triangle" Volume 2: "Angles, Mechanics, and Entries", Technique ? @ ?
-    zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEnGni
+    zMazy7vVaAGvCmbHBvy4ctFTCnaTAkyHbmGOI8a3BHDfa0L0CCdoCvA1diFTIAiUEnGni
     UJlJAejEcGgemKnLldGH0KxdLJDLWeEIHLretKfMKegJGMydPKBCYg3ERHWjAG4JNlkHW
-    wYgRzkuVi1BpzJeVAZwZgkC1y2f9BcxihwCjAjgVHMDYhjA0Gdc7IwHZdgFgNPcFNtQhc
-    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKlbQIEPKcWLqRseNMc
+    wYgQzjuWi0BpzIeVAWwYgkC1y3f9A9xfhxCjAngUHSD3hgA3Gbc8IwHYdiFfNOcFNsQhc
+    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKkbRIDPKcWLqRseNMc
     AGazxyvSaAGuBNaFA3zxaEFTCyaMzOyIaEG2I6aZBDDhaYL4CsdqCxAZdiFNIqjaEmGhi
     VJnJEeHDUG7epJ0LidvHxLhdOI1LOeoIlMjeyJnMwdXJmNrdRJuCSg4EQHNjBG6JFllHT
     y9fuGsygkPCBCteuHHA6i7EmBpfbIjAGjjC0DtirNUGCg8AFF0cWKaGydhGFO7cJL6Pzc
@@ -4559,10 +4559,10 @@ properties: bottom
 ...
 tags: armbar
 properties: bottom
-    zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEnGni
+    zMazy7vVaAGvCmbHBvy4ctFTCnaTAkyHbmGOI8a3BHDfa0L0CCdoCvA1diFTIAiUEnGni
     UJlJAejEcGgemKnLldGH0KxdLJDLWeEIHLretKfMKegJGMydPKBCYg3ERHWjAG4JNlkHW
-    wYgRzkuVi1BpzJeVAZwZgkC1y2f9BcxihwCjAjgVHMDYhjA0Gdc7IwHZdgFgNPcFNtQhc
-    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKlbQIEPKcWLqRseNMc
+    wYgQzjuWi0BpzIeVAWwYgkC1y3f9A9xfhxCjAngUHSD3hgA3Gbc8IwHYdiFfNOcFNsQhc
+    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKkbRIDPKcWLqRseNMc
     AGazxyvSaAGuBNaFA3zxaEFTCyaMzOyJaEG3I6aZBDDhaYL6CqdaCsAOcQFKIgi1EjGii
     wJqI2eTGpH4eiJ9MddTIVMjdMJsMTeKJwNjeuJUNVemKfOudWJSCNgGE0HPi4G7JJkNHU
     xVhHFzBtnECAALfUHbBWj0DkzOgSHzCHkYCCD2hPMQIQh6BZGacuIEIbbWFxOlcSNGQrc
@@ -4612,10 +4612,10 @@ properties: bottom
 ref: Ryan Hall "The Triangle" Volume 2: "Angles, Mechanics, and Entries", Technique 10: "Closed Guard: Hip Bump Triangle" @ 46:57
 ref: Eddie Bravo "Mastering the System" Episode 52 @ 15:33
 ref: Eddie Bravo "Mastering the System" Episode 84 @ 23:12
-    zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEnGni
+    zMazy7vVaAGvCmbHBvy4ctFTCnaTAkyHbmGOI8a3BHDfa0L0CCdoCvA1diFTIAiUEnGni
     UJlJAejEcGgemKnLldGH0KxdLJDLWeEIHLretKfMKegJGMydPKBCYg3ERHWjAG4JNlkHW
-    wYgRzkuVi1BpzJeVAZwZgkC1y2f9BcxihwCjAjgVHMDYhjA0Gdc7IwHZdgFgNPcFNtQhc
-    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKlbQIEPKcWLqRseNMc
+    wYgQzjuWi0BpzIeVAWwYgkC1y3f9A9xfhxCjAngUHSD3hgA3Gbc8IwHYdiFfNOcFNsQhc
+    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKkbRIDPKcWLqRseNMc
     AGazxyvSaAGuBNaFA3zxaEFTCyaMzOyIaEG2I6aZBDDhaYL3CudrCxA0djFOHYjZDUFTj
     3IYJIfLDbFefvJNLedAGpJeevK4MaehGSKaeVLQMGd1H5K1d3MkCPg7ENHekHGyIHmMHf
     vFeiESAwf3vxy6c1FAB4dSx4yid6FYB9fkxRBogyLtHbh4BzGrcmIPIHcIF3MxfIOQNTh
@@ -4993,10 +4993,10 @@ ref: Eddie Bravo "Mastering the System" Episode 98 @ ?
 escape\nstart
 properties: bottom
 ref: Eddie Bravo "Mastering the System" Episode 98 @ ?
-    vAazuZO5i4yEwSaEywMdgOxOwxbzxvMUhdyYyDhiALISf9EtzWbQEUDubNDJCcfMMyGZd
-    6LRzccVODKcaTMWvGauN2OeaLLGuza3NZPta6LttyawOFQhawKGCZbYH1EZfPMQFJinNg
-    zGeMBdxxclCDDcdwAYAbclz6Cmd3BZzZc9BjFEdUH3ElhoEzI4bGCpJveRACP7eQHWMvi
-    vGhPHaTFyJVibCpLuaHGvGGgREKKpa9GXFBgKFtJQawHZEWfGFEMZdACXOlgYHHOShrKe
+    vzazu0O4i4yEwRaEywMcgOxOwwbAxwMThdyYyChiALIRf9EtzWbQEUDtbNDJB3fzMHGYd
+    6LSyJcJOjJ6aTNeuWbdM9LzbPJdufb0MmLNcMIjtxblLrMBcpHlCZbYH2ETfOMPFIimNg
+    zFeMBexwclCDDbdwAYAaclz6Cld3BZzYc9BjFDdUH3ElhoEAI3bGCpJueRADP7eQHWMti
+    wGgPEaTFyJXicCnLwaHGuGCgQENKoa9GXFAgKFuJPawHZEVfGFEMYdBCYOjgYHFN7ifJ1
     qBazwxONeZwxubaExFLMdmx3s6byxzMNefytwafuB6GJgPzNAWbCFBEibND6AQhvLFFZi
     JKsy4dJNIHbemJvwsauNAJHc5Gevqa7NZJmd4FouzavOOJFdPD7DOdPHXDmiGLoC6lcKI
     yZcQA1vUbTCRCCcqBNzncaBwBFbQAWx9bAA8ESgYD1DmfKz5JhbHCrJxcyyOMZivEQJHi
@@ -5053,10 +5053,10 @@ ref: Eddie Bravo "Mastering the System" Episode 98 @ ?
     wO7yjgjKiCJenMfBlf4HqDHegH1B9gaGrD3ehGPCve6FLEqc7GgBcdTLKCFieNfDJkFNC
     uQg6Kdy5azrSweeeIfAHaEvewGfvIIzoaQuHDqgnHwEKffvzGBb7C8IzbCz2Kzi1EqMuh
     zzCKyeSGCN2dtxVGGdyHAOXauuQFwd6HgPla9tQEwdcG7PSawsPKRddDkLwjfBJKhlBBs
-    IHclwMGseMx3FfclxZEEdwA5Gpc9ynFWd3ANHkhoDJJQdUGuBteRGxDgbGGYFaivLME0e
-    QPKCSibHJC4aTOiGqgRFTFPaHKYHzgKFgGIa9KdH1fGEKHTawKbBYdAKIFAgYN3HBhrPG
-    xbi4KCCMazrAxKgOHGFkaEukyshdIPEAbztyFcf9HJGxhiwVGYbNCAJDbQzXMDd6JoPqf
-    MFrL9aTMKSDcVDIJbaLPMTHauAjIra6QMUaa3ziHmawQ8VeawyHK1bYD5OqfPH3OsinIU
+    IHclwMGteMx3Feclx0EEdwA4Gpc9ynFWd3AMHlhoDKJQdUGtBteRGyDgbGGXE9iwLLEZe
+    QPLCPicHLC5aTOgGugQFRFNaHK0HAgKFgGIa9KeH1fGELHTawKbB0dBKIFAgYN2HLifOV
+    xbi4KDCLazrAxJgOHGFkaEukythdIPEzbAtzFcf9HJGwhiwVGYbNCAJCbQzXMEd6JoPCf
+    zFoMsaTMNSycJC8IcbPMhTebdzfHicML5SQb0ygF3cpMmSlblxeK1bYD6OrfOHYOsimIU
 kick through\ntriangle
 properties: bottom
 ref: Ryan Hall "The Triangle" Volume 3: "Advanced Guard Attacks and Top Control", Technique 1
@@ -5157,10 +5157,10 @@ tags: arm_choke
     2SRE5f4OWKtf8ODJbfyPhIie5SiJQeSP8HpfNSXJFeQRoGdf1SrGUbOOGHWe1TPIWhiUS
 ...
 properties: top
-    vAazuZO5i4yEwSaEywMdgOxOwxbzxvMUhdyYyDhiALISf9EtzWbQEUDubNDJCcfMMyGZd
-    6LRzccVODKcaTMWvGauN2OeaLLGuza3NZPta6LttyawOFQhawKGCZbYH1EZfPMQFJinNg
-    zGeMBdxxclCDDcdwAYAbclz6Cmd3BZzZc9BjFEdUH3ElhoEzI4bGCpJveRACP7eQHWMvi
-    vGhPHaTFyJVibCpLuaHGvGGgREKKpa9GXFBgKFtJQawHZEWfGFEMZdACXOlgYHHOShrKe
+    vzazu0O4i4yEwRaEywMcgOxOwwbAxwMThdyYyChiALIRf9EtzWbQEUDtbNDJB3fzMHGYd
+    6LSyJcJOjJ6aTNeuWbdM9LzbPJdufb0MmLNcMIjtxblLrMBcpHlCZbYH2ETfOMPFIimNg
+    zFeMBexwclCDDbdwAYAaclz6Cld3BZzYc9BjFDdUH3ElhoEAI3bGCpJueRADP7eQHWMti
+    wGgPEaTFyJXicCnLwaHGuGCgQENKoa9GXFAgKFuJPawHZEVfGFEMYdBCYOjgYHFN7ifJ1
     t3aEuUO2f7ykvwaEyhLzeJyvvjbIxhMrfpzlyugVAuIdg8ExArbOEND4bCEdCjfOMMGYe
     cLZy7cTOwJ7aTMVvLauN5OfaLLGuCa2NZPta6LttCawOEQhawKGCUbRIlE5fTM6F1inMR
     z1eGBgxTbqC0DrdlAWAGbqAxCHdXB0z7clBsFweaIlD0hwDPIXbCCWIHdXz7Q3fuEpNLi
@@ -5173,10 +5173,10 @@ stand up
 properties: top
 ref: Marcelo Garcia
 ref: Eddie Bravo "Mastering the System" Episode 65 @ 8:49
-    zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEnGni
+    zMazy7vVaAGvCmbHBvy4ctFTCnaTAkyHbmGOI8a3BHDfa0L0CCdoCvA1diFTIAiUEnGni
     UJlJAejEcGgemKnLldGH0KxdLJDLWeEIHLretKfMKegJGMydPKBCYg3ERHWjAG4JNlkHW
-    wYgRzkuVi1BpzJeVAZwZgkC1y2f9BcxihwCjAjgVHMDYhjA0Gdc7IwHZdgFgNPcFNtQhc
-    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKlbQIEPKcWLqRseNMc
+    wYgQzjuWi0BpzIeVAWwYgkC1y3f9A9xfhxCjAngUHSD3hgA3Gbc8IwHYdiFfNOcFNsQhc
+    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKkbRIDPKcWLqRseNMc
     zRaAAUx0aAExBXdyBkzKdxFPClb8BgzFcaGjI2aZBCDba3LXCXevCLBAeQF9JZiWE8Hwj
     rJHK5eqEHHUeWKZONcDFHKscrNyP2c1FxK5cXOAQWb6FLLPckPnD7iaEUJmjWHFLck3Jb
     wTh0A2wKjcCvzmfCCkzMhCDQySgUCUzqhYCrAfgSJzFPhsz9GbdbIuH1c9FjNRcFNxQhc
@@ -5550,10 +5550,10 @@ ref: Eddie Bravo "Mastering the System" Episode 67 @ 42:50
     2Uiv7hbT3CvaTPVztjiSKC6auLEzZkdRXEja0LMAYj4ReERboKEyzcgQ8BNdiVXCKezX7
     wiazAfq1c5CXwqciDutZdUEZw7a6C0sEdqFoALaYIMrVczL7zyhIG3wfgqH1DngvO8yNi
     nRgCvczMFuQhbO0zZauPiu8dSRNzia0QfvmdIS2zsavRrwjc5TAyShkLlByhEQZCLh8Tm
-    wdgRAvtii1AuwWeVDDtzgkC5wjf9DhuihwCOstgVINzThjGGv3c7NxzDdgMxxOcFWrCYc
-    vURtRaTUNFsa2Q7umbRQLBybaPdukdbQGB1cnPcvldNQdBqdkOFyQbQQAACcWWoBgeNYa
-    yyazCiqjaAEIyrbrFRtiaEGVzwaSE1rTaEG7C0aZKNrsaYNVxNdrGFukdkHUAGiUMlvAi
-    UOeBvejMWuLemORz0dGQRyhdLRpzVeERLytetSuzMegS1yZdPTxwqg3IFyjjANLyYlkPH
+    wegQAutii0AuwXeVDBtygkC5wlf9DgughxCMsrgUIUzUhgGMv2c8NvzDdiMvxOcFWqCYc
+    vURtRaTUNFsa2Q7umbRQLBxbaPeukdbQGB1cnPcvmdNQcBqdkOFyRbRQzADcWWoBgeNX9
+    ykazCnqkaAELypbHFSsXctGAzgaTE4r3bmGXCZa3KSrua0NPxSdoGLukdiHYAGiUMlvAi
+    UOeBvejMWuLemOSz0dGQRyhdLRpzVeERMysetSuzMegS1yZdPTxwrg3IFyjjANLyYlkPH
 upa to get\narm back
 tags: upa
 properties: bottom
@@ -6067,10 +6067,10 @@ ref: Ryan Hall "The Deep Half Guard", Volume 2: Deep Half Attacks, Section ?: "?
     uTvFDaTOezccFSuBqauOtBtbLV6AgaIOZCrbIWUzIbQO5DCb3WGBjfCNDEkfGTAEDf2Wa
     uUazT2sCbQJsyCaEUCu3cCMaxybzUBu9b5KOyzihVQB6cjLoC0cWVjElb5RZKHgSXRMJe
     ITuGNekXOKUbyQvFTeYTKHgaHOmF5fWSXGJbINOFdgaRZFvb1NPHlcKU6MfgBVyMyiXUg
-    yydLGLA8azy7B5evF5CfbSCnBndgGoA4a8BZHWaYFYv0a0GFDNe4JIz7feKoGgd6SABYg
-    xTEFOaTPdzqcDTGBEaEOXBocfXzAxaKPzCAcfX7zXbUPIDFbZXyCKfgNTEAfEUfEAfxWW
-    vIazVuAecOCTzraEVExccNE4yobAVCyCcwFiyQixVGBSb3LrCNcRVHDMcjR8KMf0X1L2f
-    cTfGRdxYELta0ReGge0UJHCauPlGqfOTHGRbaOvFBf1SMFHbCOLG2cuU1LHgUVuLJjBVx
+    x5cTGgBdazzrBodYHyB8c2B1A2c4GqAXb7BWHHa2FVv2a0GGDJe9JJz7fdKpGgd6SABYg
+    xTFFOaTPdzqcDTHBEaEOYBpcfXzAxaKPACAcfX8zWbUPJDGbZXyCIfgNWEzfEUgEAfxWW
+    vIazVwAdcOCUzsaEVFxbcNE5yobBVDyBcwFjyQixVHBSb3LsCNcRVHDMcjR8KMf0X1L3f
+    cTeGRdxYFLta0ReGhe0UJHCauPlGpfOTIGRbaOvFBf1SMFHbCOLG2cuU1LHgUVuLJjBVx
 sweep
 tags: butterfly_sweep
 properties: bottom
@@ -6420,10 +6420,10 @@ https://www.youtube.com/watch?v=4Dsk8LI-WO0
     OEAElcVMFBGdkDGAldKLTzMcVHzzgelMjzrd3H3yeeiLty1ebJfCccHIlGmfWHkHLibHg
     iOaGG0pFazM0lQbiI1sCcLMMlFbaHystboNmrUaYESyUaYPyrxfWJStBeMMMyvjKHkAei
     YMqw3fGFsAXezNQAqdUG6BjfcJxBFd9GXBofTItCFdFHwByfhHjukiULwzNj0JSBXlwJL
-    l8gRISlLi1LMpleVIwoogkLOoUf9I7ochwK3tVgVNzsIhjFYy3c7KAyudgGVH7cFJUG9c
-    vEBF0aTNEDJa2BHB4bRMFBobaFlBYdbMGBqcnERBCdNLCAOdkFoCqbQIbIocWG7KeeNGH
-    ocazGMpBaAPfrJbrHjr9aEMyq1aSF8scaENXxaaZDnySaYPcsrdrH3tgdkLDyqiUFRzGi
-    UK9y7ejE6AdemL2CPdGG4DadLIRDIeEHgEgetINEXegHyFmdPIpugg3JEzyjAIoBylkHX
+    l8gQIRlMi0LLpieVIvongkLOoTf9I4oahxK4t1gUNCsOhgFXy2c8KBytdiGVH6cFJUG9c
+    vEBF0aTNEDJa2BHB3bRMFBobaFlBYdbMGBqcnESBCdNLCAOdkFpCpbRIbIocWG7KdeNGH
+    ofazG0pEaAPerJbHHlrMctMPq2aTGor2bmNMxfa3DoyOa0PasydoHYtkdiLDyqiUFRzGi
+    UK8y8ejE6AeemL2CPdGG4DadLIQDJeEHgEgetINEXegHyFmdPIpugg3JDzyjAIoBylkHX
 retract one\nunderhook
 properties: bottom
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series I, Volume 5: The Guard (Sweeps), Technique ? @ 11:55
@@ -6973,10 +6973,10 @@ tags: pass_split
 properties: top
 ref: Ryan Hall "The Deep Half Guard", Volume 2: Deep Half Attacks, Section ? @ 15:00
 note: in "Science of Jiu Jitsu", Volume 1: "Defending the Guard Pass", Technique 3 @ 6:21, Demian Maia shows a gi version where he pins the knee with a pants grip and executes the pass standing/sprawling. not sure if that works no-gi
-    yedLF9AOazyvBLevFtBVbSBLA3dgFMAKa8BnHCaYFmvGa0F3Dte4I6zNfeJMFWd6RYBEg
-    xS2FuaTOBy6cDS4BkaEOlA4cfWXAdaKOXCgcfXvzDbUO6DlbZWWCqfgNhEgfETDEgfxWk
-    voazUSzUcOChy7aEU2wScNEsx4bAU0yicwEGywixU4Byb3KPCtcRU5DscjRwKsf0XpLIf
-    cSDGxdxX2K9a0QCFWe0T7HiauOJF5fOS5GxbaNTFhf1SaFnbCN9GIcuUpLngUUSLpjBUV
+    xLcTFEATazyPA4dYGWBOc2BpAIc4FOADb7BkHna2FjvIa0F4Dpe9I7zNfdJNFWd6RYBEg
+    xS3FuaTOBy6cDS5BkaEOmA5cfWXAdaKOYCgcfXwzCbUO7DmbZWWCofgNkEffETEEgfxWk
+    voazUUzTcOCiy8aEU3wRcNEtx4bBU1yhcwEHywixU5Byb3KQCtcRU5DscjRwKsf0XpLJf
+    cSCGxdxX3K9a0QCFXe0T7HiauOJF5fOS6GxbaNTFhf1SaFnbCN9GIcuUpLngUUSLpjBUV
     xaa1HjpHaRzuyCeiGjsedhAOzacUGirDb3BgFraZEqtja9HNCCeRJDyYeGKeFDdSROBGg
     ITwFkaVOfzbcOS5BbaBOfA3cfWXAaaKOZCfcfXvzAbWO7DkbZWWBre2NNEhfCTyEIfFWd
     u2azTGzBazCvyJaEUjwlaEEnxAboUGxHaGEKx8h8UEABbxKQCtcxUXDmbMRpLgc0XZMBb
@@ -6998,10 +6998,10 @@ properties: top
 tags: pass_under
 todo: find no-gi source, because ryan grabs the belt with both hands
 ref: Ryan Hall "Back Attacks", Volume 2: Finishes, Technique 24: "Over Under to Double Under" @ 1:28:38
-    yedLzHAOazr3BLevy1BVbSvjA3dgzkAKa8uVHCaYyUvGa0zBDte4CEzNfeDkFWd6LwBEg
-    xMAFuaTH9y6cDMCBkaEHTA4cfQvAdaKIvCgcfQ3zDbUIEDlbZQuCqfgGPEgfENbEgfxPS
-    voazOqzUcOvPy7aEOAwScNx0x4bAOyyicwyeywixOCByb3EnCtcRODDscjK4Ksf0QXLIf
-    cMbGxdxRAK9a0KaFWe0NFHiauIhF5fOMDGxbaHrFhf1LIFnbCHHGIcuNXLngUOqLpjBOt
+    xLcTzcATazsnA4dYAuBOc2uXAIc4zmADb7uSHna2yRvIa0zCDpe9CFzNfdDlFWd6LwBEg
+    xMBFuaTH9y6cDMDBkaEHUA5cfQvAdaKIwCgcfQ4zCbUIFDmbZQuCofgGSEffENcEgfxPS
+    voazOszTcOvQy8aEOBwRcNx1x4bBOzyhcwyfywixODByb3EoCtcRODDscjK4Ksf0QXLJf
+    cMaGxdxRBK9a0KaFXe0NFHiauIhF5fOMEGxbaHrFhf1LIFnbCHHGIcuNXLngUOqLpjBOt
     wZbPy2xzaCqmyke5z7w0d8rvyYdRzCxrcUr4Fcd7Cxv0aYyxyDggDuvBenExD5eSJEAce
     DNrFbgsFlzaaWQaFScmECC1bLRUFCa5EQEcbMSkGaauFUFcbRRtyue6HHCEfbL6DQf2On
     tNazP3z1bHv0xeaEOyxbcoykv1blOnyubSypylhyQfBAblExCCcgOLDAbFLdKkfUQSLFf
@@ -7412,10 +7412,10 @@ ref: Eddie Bravo "Mastering the System" Episode 67 @ 56:10
 bottom gets\n2-on-1
 properties: bottom
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 3: Sweeps and Turnovers, Technique 1 @ 2:00
-    zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEnGni
+    zMazy7vVaAGvCmbHBvy4ctFTCnaTAkyHbmGOI8a3BHDfa0L0CCdoCvA1diFTIAiUEnGni
     UJlJAejEcGgemKnLldGH0KxdLJDLWeEIHLretKfMKegJGMydPKBCYg3ERHWjAG4JNlkHW
-    wYgRzkuVi1BpzJeVAZwZgkC1y2f9BcxihwCjAjgVHMDYhjA0Gdc7IwHZdgFgNPcFNtQhc
-    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKlbQIEPKcWLqRseNMc
+    wYgQzjuWi0BpzIeVAWwYgkC1y3f9A9xfhxCjAngUHSD3hgA3Gbc8IwHYdiFfNOcFNsQhc
+    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKkbRIDPKcWLqRseNMc
     AGazxyvSaAGuBNaFA3zxaEFTCyaMzOyJaEG3I6aZBDDhaYL5CvdtCvAYdkFQICiTEmGmj
     aJiJoeiDUGieBJ5LEdQHmKqdJIQMseEHZLAd1IjM4enI5L8dfHoCZg3ETHYjAG1JNlkHW
     wZgRzluVi1BpzJeWAZwZgkC1y2f9BcxihwCjAjgVHLDYhjA0F6ceIpHWcWFhNOcwNAQjc
@@ -7434,10 +7434,10 @@ properties: top
     pIRJvfcLHBedVGdJ6eqPLCGbOJMJOedQXCucJKIJgc4RkCIcqLYFGgQDBFCiiJoFwjBLF
     HnhiusGujMutGWe7xtGngWwOGQgvw9HbidwRBFhbBqKEhHCCEDcdFtIgbCFlEsctOOJTc
     BOcAdbzM8L8a1KpBhbgI7JqddHRBVciILJSepHKDeceIFI5flHiGBbMJkHfcFO5GVeoQ2
-    JZazvpBqaAvHI0bryPDLaEyzKgaSyhCmaEyrMdaZEJAgaYEUIbdrzrEwdkzNJAiUFFEbi
-    UGeKfejGrDeemGDHOdGJRF0dLJYHweEKJFVetK4G4egLUGadPMcGng3A2GVjAGrG6lkIu
-    IagRs5Fli1slH7eVwjEYgkuWHAf9vNFKhwuQCvgVAcKdhjzZEOc7FGIwdgFAEjcFOKJHc
-    vOtATaTMaM2a2LsCnbRIoJIbaIFCmdbIiKbcnILDtdNH5JJdkH5GLbQJjG3cWPoHeeNRf
+    JLazvpBqaAvKIYbHyPDwctyaJ0aTygCybmyjMba3EOAja0EQIfdozzEvdizRJAiUFFEbi
+    UGeKfejGsDeemGEHOdGJRF0dLJYHweEKJFVetK4G4egLVGadPMcGng3A2GWjAGsG6lkIu
+    IcgQs4Fmi0smH8eVwgEYgkuVHDf9vNFJhxuOCsgUAiKdhgz5ENc8FEIwdiFzEkcFOJJIc
+    vOtASaTMaM1a2LsCmbRIoJIbaIFCmdbIiKbcnILDtdNH5JJdkH5GLbRJiG3cWPoHeeNRf
 push over
 properties: top
 ref: Marcelo Garcia "Advanced Brazilian Jiu Jitsu Techniques" p228: X-PASS
@@ -8194,10 +8194,10 @@ ref: Ryan Hall "Back Attacks", Volume 3: The Rolling Back Attack, Technique 4: S
     rJXLta8O4M9hLF6IobnMfJyfnFVHrb0MRIzgaF2GpcvMfHofFGfOXeTIcLxhDMvI5iwNe
     ExbgxhtWaMEICUcaAwwEaEHhEfb1z1wyaEFRJ7dqDmCYbrDrHmfjJoHcbCITPCdoNAQHb
     sIsOrhRMIOfaYEsQRgjJHSyaEEKRcgVIFSHbtDNQUgJHrRQbOCVK9c9JHQIcEK2TmcOLv
-    JeiiBDJNazyGL7fYCeLHdBxVKJf0CwKUdby2I5aYGWIfheDVPscXE1O8gEEHLdfANMKHj
-    BKeLeaYOLLYhzGfHYauMeHRgdF9GXbaLTHCeZFQGdaKKTIrd2FQN4eXIBKfhUMpHMiAM2
-    JqbSw2tVaMEIGSaEzuwDaEHiH7bkzxwxaEFRLXeuEmCRbrDdHlfdJvGJbCIVPAc8NLQgb
-    sIWNag6NkNfaUFnPsgpJTRvbhEKQugeJdSNbwEEQlfPHXTfcIEiKCcCKzQ8cDLpTfegK5
+    JeiiBDJNazyHL7fYCeLHdBxVKJf0CwKUdby2IWaYGZIfheDWPbcYERO8gEEGLdfCNLKHj
+    BKeL2aYNSL8hCGeIoaOLPH6gcGEG6a6LRHGfaFVGhaMKVIqd5FRN4eXIBKfhUMpHMiAM2
+    JpbSw2tVaMEIGSaEzuwCaEHiH7bkzxwyaEFSLXeuEmCQbrDcHkfeJvGJbCIVPCc7NIP8b
+    tIQNag6NkMLaVFIPrgpJTQUbREzQugeJdRFcnDIQlfPHXROdyDiKAcCKAQ4cBLjTdefK5
 bottom gets\nto knees
 properties: bottom
     D9aUxcPYaOq4HNaEwsRjbDuuGYaIxCQdb6tCJrb0DWLVfhx1QicREHPbgmD0NGfdNXK4i
@@ -8227,26 +8227,30 @@ Karo Parisyan "Judo for Mixed Martial Arts", "Heel Hook" p187
     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
-    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
+    JSaDwoJOazuoLDbVzqKAczxtLfaEyUJFbww5NRa1FhF3a1CWNIf1AqJ8gqBhQEhiJhLCi
+    oKdSLegGvIme6KkSvauInKUbELaSda0JtLnauLvRvauKrMEauLUMUgpEHOkhTKHOQhCNg
+    uFazIoBYiAJ3ymaXIKCMgJGYxgbNIqDvhIHMBahtINJoi6EtGccEJgGVcHFDOrbuMuQjb
+    sHGJVa2NsPOcmC5LEdxKCQOfkF8MVdVKxRJggFYM5fdKfR2g5GXKnbQH9QkbQKtSGbWLC
+    JRaDwmBWazC5LCbVzpEhbJAoLdaEySDTcaBGN8a6E8FCgzGILNe1zYIMg2AAPHjqHVKvi
+    6I4Q7e5GMHlgLGCSzblH4JLd1IXTca6JaKAegJYUkaEJoLtdlKcL1hBDxNhjgJiOvjMLz
+    uzazInB0iAJ2yhaVILCNgJGYxabNIqDxhJHKA9hrINJui6EAGccDJfGScJFDObbsMCQgb
+    BHwJvaTMuPsaXCYMVcQLaQpeHE4NYduLsQ7fJEKOiexKLRigJFzKlbNH5PUbGKlSmbWLr
+    LXazyqBsazDAJzcNz5DkcUBoKpbFAyDacKCONsezF3F0giH6JrfpAsFWguBbM7mpFnILk
+    4H1NqhXD6GFgSHyOHd9E9JQelJaPMelFSKKd6J2QudvGrLAdeKeI5jiClLdmjHvMenMJq
+    uvazInAAiqInycaTILCaf0F1w6bMIqCshjGwA6hpINIVi3EVGccGJgGJcsFCNRbwMLQib
+    NHZI9bpMvOyaTDNKteKKrNSfaDUK0fUKhOUfVEcKBgDJfODgWEXKjbQH1PObIKISdcvLr
+    MhaNCuBdazDSJkbGAvCedVCGJ5ctBuClddDUMbhwFOGAfGIKHafLBpDGgqCsLvkoBuIgm
+    KEFMvf3zVEukqGiMWbSAaGzhoIFNnbDBjHKgOIBNHauBLHSfwINFGjFAjKPmmDrMGn3Eq
+    uqaAImy9icGEx8aRIMBwfGFbw3bMIrBthaFjA2hnIOH9iWFjGdcIJfGAcaFENwbBMVQib
+    ZIoJkdgLINvaTESHQgFJRL6euCVHMhOJbMDfHCRGOhQIiLPgFDgKjbSHVPIbKK7R3c4Lq
+    K6eqJ6CkaWGJHMd4ItCpcZDAI7d7H4CEdbEZNYgfDEHWhgGIIhdHAyE3fzACNDh9zNJ1k
+    sCBL6d9xRFJiyCdNpaFzRH4hcFBNba9A1IPgIGuNKawB3IJfsGRH4haxYMokrAZN9lRCs
+    ujaCIjDJjlyRxZaLIODPfGzzwXbKIsEKgGy9Bgg7HSJ5hMDpF6cdITGVbRFiOcd4L3P0d
+    IHvJzd0LFR9aTEvI2g3INTeaLAjIWh3H3TIa6zbIzh6GPTtawx5KmbXHWQgepKcRLgzKa
+    CzeMGYCBclJxEfdwDSBTclFWEEd3E8COc9GLLxdUFCHUhoEQICbGzHHmeRynQ5eQwJNIi
+    wyTOOaTvQI5icyVNoaHzPJjgQC2Nba9A1JlgKEhNKawB3I8fGEVLddBwHPTgYx6RLifzx
+    u7azG4IHi4sByMaEHSGrgOuzxKbAHCHNhduCBChiHBKgf9AYFObQIJGJbNE7NwfzK8Ptd
+    6GyM5cJOOSjaTEEJ4bdRnPIbPBfI1b0RxO4cMAAHSblRDOGcpzmJ5bYHQO9fOIPPYimIm
 ...
 properties: top
     A5b9SzD1bZUCCacaO0CrbzRfCscZP8CucDSbIjf9O1Clh0N3HPbDJwEectJ3JdbsBcGVf
@@ -8608,8 +8612,8 @@ ref: Marcelo Garcia "Winning Techniques of Brazilian Jiu-Jitsu", Series II, Volu
     lQWKTgVK3FleFPEKYcKLtFDauQJL9coLLFNa9RNMlbrMDFMavSXFGhDLoJJjQPwLlk3Rg
     JrbQwZGQdqucHBa3z5GtaFwIIgcczAGYbYwHHLh3DbLsekBpCVdCFxFBbFDZFhdXNSJYb
     IMDBGc5K0J6bkHYCbgQJkIifbGYB3h0IRICgfGfC6iLIDHGgZFJFSbVIhH4drNOJlePPJ
-    xIfFxNFncsxpwTe3BlCfbKzdx3fIAHDqcuzBCAjaEAFZe8Ftzte7JfBIcmKeF9lpK0HCi
-    mOPGvipHsEZeBPDIyePGPFEauQJJCeqGiFNa8ROKbdiGGFMawSYC3giLwHNkwM4JKmgNc
+    xIfFxNFncsxpwTe3BlCfbKzdx3fIAHDqcuzBCAjaEAFZe8Ftzue7JgBIcmKeF6lrKXHCi
+    jOSGvipHsEXeAPDIyePGPFEauQKJCeqGiFNa8ROKbdiGGFMawSYC4giLwHDkqM2JMlTNa
     HacSvKE7cIsPGNbMzeEnaMvWGsc0yyEYb1vBEhimCmIXghzkCQcmFzF2bKDKEYczNOJ0b
     AMJAGboMgK4dCIBzhfhLsG1eAHezggvK2GifEG0z5g0KfEZfwG5GkbMH3HNczOgIzd9Qg
 lockdown
@@ -9321,10 +9325,10 @@ properties: bottom
     SExOUgBERE3gXDQN5e6IEGgfGHNNqfbJHGwfMI0MdeTJRHJfUJsKrhLApKelxFeJJm1Hl
     JedMDdMoewCQIpaWFxMTblEuIwclFCMgcCEXHgizIkMPisINHSbCIuLCbFH9GQhBNlMdh
     ON3FqhvIVOEgmKhEVigEQPsg5F5EDizDFP6hsE5FmioCFPAhLDZJ0cFL6JqinN2JDkZOg
-    QbaAvfESaAvQOTcfyiGJcAyqP1bmx0FLbyypPCa4ETEfa3E8L8eqzSIreiABMXjLGZHxj
-    5GxP6gtFXE0f9F0OddVIEF3eYJ1NUdvJQG1e1KRMOdBKrIefcKuKthYBPKhkpHgJWlCJz
-    HbfHBnNDgbBpIedwEeMDdnDHHKeTD5M1eJDOGpieJYNxhRJVH2bSHzLIbDHoG9fgPmLWe
-    LQjFcgyLlN9foMcERhQHnP0f8IiEzigF9QEgkHbFchXE6QagJF6J3bOLqJuf6QCJIiBRo
+    QcaAvfESaAvQOTcfyiGJcAyqP1bmx0FLbyypPCa4ETEfa3E7L8eqzSIreiAAMXjLGZHxj
+    5GxP6gtFXE0f9F0OedVIEF3eYJ1NUdvJQG1e1KRMOdBKrIefcKuKthYBPKhkpHgJWlCJz
+    HbfHBnNDgbBpIedwEeMDdnDHHKeTD4M1eIDNGpidJXNxhRJVHZbTHuLIbEHnHcffPmMee
+    YPOFcgyLlOfeNLxERhQHmPQgzHREzigGaQshxHaFchXE6P2hFFUJYbMLkJFf1QyJIizRo
 to quarter
 properties: bottom
     CvaHoUtCd6GaEAaPrVvmc3C2C8aOrJvJdzEiAHa0x0ChfbD7HLbDxHFrewxMNmfHDrIWi
@@ -9347,10 +9351,10 @@ omoplata
 tags: omoplata
 properties: bottom
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series IV, Volume 1: The Omoplata Basic Positioning, Technique 5 @ 20:22
-    QbaAvfESaAvQOTcfyiGJcAyqP1bmx0FLbyypPCa4ETEfa3E8L8eqzSIreiABMXjLGZHxj
-    5GxP6gtFXE0f9F0OddVIEF3eYJ1NUdvJQG1e1KRMOdBKrIefcKuKthYBPKhkpHgJWlCJz
-    HbfHBnNDgbBpIedwEeMDdnDHHKeTD5M1eJDOGpieJYNxhRJVH2bSHzLIbDHoG9fgPmLWe
-    LQjFcgyLlN9foMcERhQHnP0f8IiEzigF9QEgkHbFchXE6QagJF6J3bOLqJuf6QCJIiBRo
+    QcaAvfESaAvQOTcfyiGJcAyqP1bmx0FLbyypPCa4ETEfa3E7L8eqzSIreiAAMXjLGZHxj
+    5GxP6gtFXE0f9F0OedVIEF3eYJ1NUdvJQG1e1KRMOdBKrIefcKuKthYBPKhkpHgJWlCJz
+    HbfHBnNDgbBpIedwEeMDdnDHHKeTD4M1eIDNGpidJXNxhRJVHZbTHuLIbEHnHcffPmMee
+    YPOFcgyLlOfeNLxERhQHmPQgzHREzigGaQshxHaFchXE6P2hFFUJYbMLkJFf1QyJIizRo
     NhazvOESaAvSMfcgyUGJcAyrNjbiyEFJbxyuPUa0EUEea2E3LzfeBdH4eFAgJUlzG9EUj
     jGlOdk9FwCGfrHCNhhyHmFQc8JxNFgzH4GPcNKjMVfBIsHYdrKcIUiAB1HfkJGSGplhJi
     EtgQBhOohFxOGLewC5NQfPA1FUfBDpNrg2ArEng5JPMbjLGuICb9G7MecIGKJadOP3Nhg
@@ -9375,10 +9379,10 @@ omoplata
 tags: omoplata
 properties: bottom
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series IV, Volume 1: The Omoplata Basic Positioning, Technique 6 @ 24:34
-    zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEnGni
+    zMazy7vVaAGvCmbHBvy4ctFTCnaTAkyHbmGOI8a3BHDfa0L0CCdoCvA1diFTIAiUEnGni
     UJlJAejEcGgemKnLldGH0KxdLJDLWeEIHLretKfMKegJGMydPKBCYg3ERHWjAG4JNlkHW
-    wYgRzkuVi1BpzJeVAZwZgkC1y2f9BcxihwCjAjgVHMDYhjA0Gdc7IwHZdgFgNPcFNtQhc
-    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKlbQIEPKcWLqRseNMc
+    wYgQzjuWi0BpzIeVAWwYgkC1y3f9A9xfhxCjAngUHSD3hgA3Gbc8IwHYdiFfNOcFNsQhc
+    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKkbRIDPKcWLqRseNMc
     AGazxyvSaAGuBNaFA3zxaEFTCyaMzOyJaEG3I6aZBDDhaYL6CxdtCsA0dpFRIZiTFNF8h
     4J5JwesEwGodvKPMFdXHcKydLJDNGexHHLretKfOydNInMydPKBDmgZEVIhiRIuKekeJD
     wTh0A2yXiABjzmfCCkB3gTCkySgUCUBPhZBnAfgRJzIthrAfF6c0IGHpcqFdNXcyNcQfc
@@ -9450,18 +9454,18 @@ elbow remains\ntrapped
 properties: top
 tags: omoplata
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series IV, Volume 2: Advanced Omoplata 2, Technique 1 @ 0:55
-    qZboITrpaMEBuGa2JouNaEF4tAbuJ9tLbHF9wVdRPvvDhkJrCQbCMnzUbFJ2CUifNjAZj
-    FIyBPe4QuAUf4FAyXfjNdzVcgEgxLfyNGyLbKEawLfiMRyCauDYDkebIUBFjNLlBrmbMB
-    xFri0gGQqyOkviopZ9DmqjPGwAoGZFElppPbAtkRVJANjHP9u7gjUXu0fKRgCbbQVpA5b
-    sP0Cpe7YHxPbpMCCyeIUkALerMdCgeUS6BDfpL9Bqd7SpB7fUNfwxcrTGB6bUSCEHbWR1
-    sJazMABjazAOwpaGMSDaaIDYvjbpNzBIaXDHyqggRawRdlHPDmc0M9DrbCJLEckYMXztj
-    SKBEIgkMrx1f0IiACfIMRwofbMgzwf2MbwIfuNwyEe3L0xKeNNYDPfUJSBDlkLKALnoNb
-    plqFT8ptqxPMpGmWUepbmUQeqwn3UrqnnLP3wtk5VvwqkFP2txeBVjtFehRBCbbBVBBob
-    sQaxXbgXDx6dWN2y2aI1FBlfHLMzhbd2SAHgIL8Awa43iAXhyM3wxbQTHB6bSSPEIbWSx
-    t3aDKrGcaAGExJaFK3EJaPJ6wyaWLMEgaEILxYdGRXxAb2HBEscVPzCJcGMgzYjMRczxk
-    HLTzwfgSryJgUJexHe8OEwWeFMtx8evNywIecNGzqelNvxveFODDEgJNEzFk6OHxEmUOQ
-    iwazV2jCbrM6l5btVOmHaEOVkPcgVSmbbSOmo6hHVBpWhJOrstbFVZrJclSpBjbsVXA5b
-    zQuwVcxW2y1faOhx7d5TkARfCR9yrfbSCBrftTiyweURiCceoTtvUbMToBYbnTcEybWSG
+    AFboITA5aMEBEma2JoEtaEF4DgbuJ9DrbHF9GBdRPvFjhkJrMwbCMnJAbFJ2MAifNjKFj
+    FIyLve4QuKAf4FAIDfjNdJBcgEgHrfyNGIrbKEaGrfiMRIiauDYM0ebIULljNLlK7mbMB
+    Hlri0gQwqyOkEYopZ9M2qjPGGgoGZFN1ppPbJ9kRVJKtjHP9ENgjUXEGfKRgLRbQVpKLb
+    sP0L5e7YHHvbpMCMeeIUkKrerMdLWeUS6LjfpL9K6d7SpLNfUNfGdcrTGLMbUSCOnbWR1
+    CtazMbN1aAF6F9aELAO4cbJiFiaFMMNRbMIHIoe0RbHAeeHaNCe2MEOfeOI0LhmFN1IBk
+    pJHL2ivP5JfgTGEJqfJOjI6cREYJtfYM2ImccEaICfgMiIoaSEaOfiOKBJCl8LLH0n5Mq
+    y0qGT8y9qxPMzkmXUeyRmUQez9n4Urz0nMP3GdkXVwF7kzP3DheEViDnemRALRbAVGK9b
+    sQeHDbgXDH0djNoIIaI1FK7fTLNIXbd2SKmgOMbKca43iKIhTMPGfbRTFLNbUSTOpbWSx
+    DJaDKrPSaAGEHpaFK3OpaPJ6GeaWLMNWaEILHEdGRXHgb2HBN8cVPzMpcGMgJEjMRcJdk
+    HLTJcfgSrIpgUJeHne8OEGCeFMtHOevNyGoecNGI6elNvHbeFODNkgJNEJlk6OHHkmUOQ
+    scazV2tibrM6vLbtVOwnaEOVuvcgVSvRbSOmyMhHVBzChJOrB9bFVZBpclSpKZbsVXKLb
+    zQuGBcxW2IHfaOhHNd5TkKxfCR9H7fbSCK7ftTiIceURiLSeoTtFAbMToLEbnTcOebWSG
 escape roll
 properties: top
     ETazqtzCazufFccGtsAncrxlFXbxsXzEbbw2JFa6yLxVbbDIETfVAkBbf5zYD9bXIczmc
@@ -10100,34 +10104,38 @@ to honey
 properties: bottom
 ref: Eddie Bravo "Mastering the System" Episode 88 @ 16:11
 ref: ?? "Mastering the System" Episode 100 @ 30:47
-    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
+    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
 shrug and\ngrab arm
 ref: ?? "Mastering the System" Episode 100
 ref: Randy Couture "Wrestling for Fighters", Section "Securing the Two-on-One" @ p67
@@ -10597,8 +10605,8 @@ top defeats\nfar arm
 properties: top
 ref: Marcelo Garcia "Winning Techniques of Brazilian Jiu-Jitsu", Series II, Volume 4: Advanced Guard Passing, Technique 9 @ 34:31
 todo: find name
-    xIfFwPFncswrwTe3AnCfbKyfx3fIzJDqcuyDCAjaDCFZe8Evzte7IhBIcmJgF9lpJ2HCi
-    mNRGvipGuEZeBOFIyePFRFEauPLJCeqFkFNa8QQKbdiFIFMawR0C3giKyHNkwL6JKmgMe
+    xIfFwPFncswrwTe3AnCfbKyfx3fIzJDqcuyDCAjaDCFZe8Evzue7IiBIcmJgF6lrJZHCi
+    jNUGvipGuEXeAOFIyePFRFEauPMJCeqFkFNa8QQKbdiFIFMawR0C4giKyHDkqL4JMlTMc
     HacSuME7cIrRGNbMygEnaMuYGsc0xAEYb1uDEhimBoIXghymCQcmEBF2bKCMEYczMQJ0b
     ALLAGboLiK4dCHDzhfhKuG1eAGgzggvJ4GifEF2z5g0JhEZfwF7GkbMG5HNczNiIzd9Pi
     qfazGvFCcswdtvaOIeCDb3ypsRbxG7DNcRyqwxgtEdE4eqETxMcqJSBpbEKlD2kbI3ESi
@@ -10628,8 +10636,8 @@ todo: find name
 ...
 properties: top
 ref: Eddie Bravo "Mastering the System" Episode 100 @ 1:09:46
-    HtcswrO8fFwPKBbKyfPXe3AnJqcuyDONfIzJGRe8EvKgjaDCK8cmJgNne7IhFeimNRGHl
-    pJ2HReBOFGlipGuHcauPLEiePFRG3a8QQDeeqFkG4awR0CFdiFIJNgiKyE3kwL6C6mgMe
+    HtcswrO8fFwPKBbKyfPXe3AnJqcuyDONfIzJGRe8EvKgjaDCK8cmJgNme7IiFeijNUGKl
+    rJZHTeAOFGlipGuHcauPMEiePFRG3a8QQDeeqFkG4awR0CFdiFIJMgiKyFdkqL4C4lTMc
     HJcIrRFGcSuMItaMuYF3bMygHSb1uDGoc0xADTghymIzimBoGObKCMJ0cmEBCQbALLHSc
     zMQBMdCHDMaboLiFPeAGgNzfhKuGyfEF2NAgvJ4HRfwF7MLg0JhGwbMG5E3czNiEhd9Pi
     GwdkyiUEb3x1J1cKzpTVdaBrITdpzYS1cNAkG3eMGmMjdlBkNjbQHNQhdVHcJXhaOAJZk
@@ -10640,10 +10648,14 @@ ref: Eddie Bravo "Mastering the System" Episode 100 @ 1:09:46
     6LBPsbXNbQcjbIPLAaHNZOvhVE4KrbaOeNmh7EqJsauOEMMhiDHPLemJTMIicOdKli0O2
     HSbaq9S1hCCIHfaEuLQTezCeHvbLtVQ3fBDdGHg0x7Lth3F3FZbECDJrbCDXCze3KiG4e
     iMjyucQKdJfaTOAzebAGkNybkOLykcuGFOgb7PtxacnF6PwciO4GjbQGWEpfaMoFchyNf
-    H8eMzwFAclzeKZdwBBJeclyZJGd3BQIjc9zNIidUIBJxhoE5OybGGuP2eRFoQneQPfOFi
-    vLERAaTM9PcibG2NKaHLbLdgRGJMEa9KPJUgKGALxawLfJjfGGiRcdAJrPagYNVNWhrQc
-    I1azr8Vzi4HuHJaEvETUgOEZH7bzuETHhdGkHDhiyvM4f9HWFXbQCvJqbNDTCLfMJOGRd
-    6Mny8cVJtICaTPgwOauGKMwaLQUvZa3F0NBa6RxuMawFROJawRsGhbYGREHfPLPE0inMD
+    JDciy0E0cEw9LCdmBTIEcEx0KddEBxHxduyeHxe4HKJ1hxDiNDbJHhPIehFtOOfaPkNsi
+    NLGQGbsNbQciPHUMDaEMyMLhiFLLubbMwLxhrFuKravMXKUgqEVQpdYJKN1hyN7L3ifPG
+    IsaRrBUoiqE6HuaEvdSrfFDwHObEuhSugjEMHahbymL3haG6FYbLCyJpbFDTCHfsJ1GZe
+    eMjyNcVJZIQaTOWx3aVGpM4a1PQw7bNGkNVbCQwvWbsFYPdbqQhGibUGTEwfwL8E6hYMW
+    H6eMzwFyclzeKXdwBAJdclyZJEd3BPIhc9zNIhdUIAJwhoE5OxbGGsP0eRFoQneQPfOFi
+    wLCRyaTM7PeicG1NMaHLbK8gQGIMDa9KOJTgKGALxawLfJhfGGiRadBJqPagYNSNvifPy
+    IYazr7Vyi4HtHHaEvETTgOEYH5bAuFTGhdGjHBhiyvM3f9HVFWbQCvJpbNDTCyfzJQGQd
+    6MnyYcJIVImaTPqwObdFCL4bPNiwNb0EyMPcMMKwQblDpN4cpMwGgbYGREDfOLLEZimMD
 bottom\nangles out
 properties: bottom
     QyaztQGuazuRPQbRxiHhbQyiQJaTwGGlaXxHR6a3DsE6a2EuM3d6zMJjd3zOOUivGBJBj
@@ -11442,10 +11454,10 @@ ref: Jean Jacques Machado "The Grappler's Handbook - Volume 2: Tactics for Defen
     INAKUgoUFGThbLZHzeJSNFHdoNKGqfcSuESejOdFtenR7Eld1PnOihaNpJHkMQqG7llQU
     TbhkIjUzhrPbPVf1JfQ4giPTQghhIvR8gWQBJJjeIQNAgLVAIGeeNJKncHQGz8ddRGC0b
     VVJBlbENtHgaTXhEZdxMJI1cBTIEUePM2IrdtUwFXfhNIIAeJT9FZckQCALcTUoz1eYVO
-    U7azOLRKaAGSRzbrO5PUaEJ6SxaSP3PxaEIKNeaZUcIKaYI7QIdrOxO3dkLfLpiUR5IVi
-    UNfKVejSZIcemMwGRdGRXF5dLQjFWeERZE3etQDEFegR0D4dPRgOyg3NqJIjAPTHSlkQN
-    WCgRMeWii1JkTBeVNlTKgkJVTSf9MFT6hwKBNXgVJwQVhjQCJFc7NEK6dgQ4A2cFQsDfc
-    vVoCcaTMkHfa2XoGgbRMlIFbaTiGldbMiIJcnTLGWdNNgJcdkS6GYbQQMBqcWTfzKeNT5
+    U2azOyRHaAGURybHO3QdctJJSsaTPNPJbmIRM9a3UcIPa0I9QCdoODOZdiLgLpiUR5IVi
+    UNgKUejSZIcemMwGQdGRXF6dLQjFVeERZE2etQDEFegR0D4dPRgOyg3NqJIjAPUHSlkQN
+    WDgQMeWii0JkTEeVNlTKgkJUTUf9MHT8hxKzNQgUJvQQhgQFJHc8NCK7diQ4A3cFQsDfc
+    vVoCcaTMkHfa2XoGgbRMlIEbaTiGldbMjIJcnTLGWdNNgJcdkS6G0bRQMBqcWTfzLeNT5
 escape
 properties: bottom
 todo: wip
@@ -11477,14 +11489,14 @@ todo: need source
     mN2KMhcWiFtf7NEIqdZUYC7d7QMHrdLUbCmeSRwG5cvTVBXelSFMBhpOdHnksQOFrkzSB
     H2aGEtNIb2NNGEaEHUKhbzPeHgbEG5LzbXPHH5h0JDKZfBVwFGc8N1IgbOQnzIepU5Dhb
     CXNDdgdSEGLaUUIGEixSkJMdTVSG9iTTsKIeHWiHQjXTyKtfZWiEbbSRWA0djXmA2ezZK
-    V1aAPYNraAEYSOclQGMJcAH4Tpa5Q7L2bxHlM4bbTyF5aZKyPgeqNAMoeaLiJjjNSlHik
-    SNlLng6VBEKg9L9JqdmVDCVeMPiIbc2VOCneTQrHCb8U1CQecRrMphJNIHPkGP5FXlvRQ
-    JnfYFOM2egPdH5eWI4KzcsRfIsggIzLedMRuG5jkOtHrhAVyFmcoOhIgcEQxzPeCUSC7c
-    TYhAAfKQnGMcPVjEbhkOZKze1U1DMiyOTJMfWVxEHjuODKeg4V0ExbMSxAWerXqANgMYB
-    VnaAM4NsaAEYSecfN6MKcAH3TcbmOLL7byHkNKa4S0F4a3KCPdeqM4MfeiKMKqjLSoHbj
-    5N1NggtT4FUf9LLJ0dVUrDAeYPcITdvUZDAe1QuHJdBUyEFfcQ9MFhYM7IrkpQyGulCRP
-    KPfHKlO3gbPdJndwM1MGdnPYJaeTMyMQeJQlDRiePrIBhRULGJbSO5JibDRIAifgTyCKe
-    LXMB1gyPrHifoWJEMhQMzLrf8VxFwigLxMIgkViGIhXLjNcgJUdFabOS9ATf6V8AsiBWP
+    UXaAOQR4azHeRJcfPzPMcnJvSCbmQjPCbhIxMMa4TZIVa8KaO7etOqOhfoKYJsjJSPHbk
+    NN4LzgTVREMhdL9JpdkVDCVeMPiIbc2VOCneTQrHCb8U1CQecRsMrhVN3HGksQOFCk4Si
+    JnfYFNM6egO4H5eWI5KBcqQ8ItgeIvLAdoRjG2jfOxHcg5VaFIctOtIGbVQGzSeAUPC0c
+    QYiAAfKQnGcccUXEbhkOZJbeWWqDMiyOTIVgdWyEHjuODJXg2WhELbRSDAUesXqANgNYC
+    UXaAOQNTaAF0RJcfPzMScAI0SCbmQjMkbyIdMMa4TZFYa3KTOPeqOeL6eiLFJxjLS3GKj
+    5OnMbgtU0FHf9L0IUdVU3C3eYPcHKdvVuCVe1QtGDdBUWDVfcRfMihYN2HKkpQ1FFlCR6
+    KJfHK5OsgbQmI1dwNBL1dnQSIReTM7L9eIRfDiidPsHthRVeGebTPiIubESgznffTeBVe
+    YXABtgyPhGzeNWKEvhQMGKugzVUFkigLKLqhxV0GyhXLEMchFUVEgbMS9zPf1VWzbizWt
 escape
 properties: bottom
 ref: Jean Jacques Machado "The Grappler's Handbook - Volume 2: Tactics for Defense", DEFENSE AGAINST ARM-TRIANGLE CHOKE: Option #2 @ p48
@@ -11560,10 +11572,10 @@ properties: bottom bidirectional
     6HXGkfNB3yPhFJrIldlEJCxgULuJfdoFDDOgYLBJacMGKEygFKBzRhZDeDUkTGfFzmjHH
     xifEESCkebBMz2dPGuCXciEYzGffGwCNdEEyDcjWJZH6heGDBNc1KnDKbHHyInfvPeLDd
     oLmEfetRiJtdAHfDWhuOsH3foDBDHiDNQHVfTCsDsiwMxGSgnBYFTbNLkKAeWNwLUheNG
-    ykaAvgrjaAEazLcfyfutcAEtAibmxctPbyFcFca4B3xSa3KLy8eqBnxfeiECE1jLFrA6j
-    5JdGkgtCoy2f9KLG6dVFACKeYMDHNdvGBD1e1MsHvdBHPExfcLizvhYDTDskpHDEYlCJp
-    wZfHF5BhgbBgzPdwHaCkdnDvzpeTHrCFeJDiCWieMkHChRGWCdbSJwEvbDGDHufgPkLme
-    LMlDbgyN9JJfoHYzYhQLMH1f8D0yRigLbHBgkCNyuhXJ1GtgJCrGsbOKyJYf6OoKHiBOJ
+    ykaAvgrkaAEazLcfyfutcAEtAibmxctPbyFbFca4B3xSa3KLy7eqBnxeeiECE1jLFrA6j
+    5JdGjgtCpy2f9KLG6dVFACKeYMDHNdvGCD1e1MsHwdBHPExfcLizvhYDTDskpHDEYlCJp
+    wZfHF4BhgbBfzPdwHaCkdnDvzoeTHrCFeIDiCWidMjHChRGWB7bTJvEvbEGCHvffPhLae
+    YLODbgyN9JieNHtzYhQLLHAgzDQyRigLcHshxCVyuhXJ1GfhFCpGjbMKxJ3f1OdKHizOJ
 ...
 todo: need source
 properties: bottom
@@ -11759,10 +11771,10 @@ ref: Jean Jacques Machado "The Grappler's Handbook - Volume 2: Tactics for Defen
     OKeF5hNDhFEflJ5F1eMF8JJd6JoGyfvG8KHeHJUHzeTHJLOd2KaCSg3E9FukEHQHdmHH6
     xgiHA0x2mCBEzzgaCiz1kbDHy6hrCRz1kHCoAkhuJxGpiMBjFNdaIiHHcZE9NDctNrPUc
     NIPJfb0OPOwa7EJHxdiLhKEc5FmHueyK5KrejFtHWe3JYJHeZGdJ0b2IFPDc3LARFeDMo
-    zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEnGni
+    zMazy7vVaAGvCmbHBvy4ctFTCnaTAkyHbmGOI8a3BHDfa0L0CCdoCvA1diFTIAiUEnGni
     UJlJAejEcGgemKnLldGH0KxdLJDLWeEIHLretKfMKegJGMydPKBCYg3ERHWjAG4JNlkHW
-    wYgRzkuVi1BpzJeVAZwZgkC1y2f9BcxihwCjAjgVHMDYhjA0Gdc7IwHZdgFgNPcFNtQhc
-    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKlbQIEPKcWLqRseNMc
+    wYgQzjuWi0BpzIeVAWwYgkC1y3f9A9xfhxCjAngUHSD3hgA3Gbc8IwHYdiFfNOcFNsQhc
+    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKkbRIDPKcWLqRseNMc
 escape
 properties: top
 todo: wip
@@ -11787,10 +11799,10 @@ ref: Jean Jacques Machado "The Grappler's Handbook - Volume 2: Tactics for Defen
     WQeJBfGM6BUeSMMF7eGO8Ekd7QmFReRQlFbemRiE2eiQ6FJduR2DhhyKwEfhBQaELfIRZ
     ChgNBuFkmIEBCIerEjD3jOGCBTfFEbFiklGfxIh9IXJng6KwAscWMZD9cHMyz0cXVJFkc
     WVNyhdgRoI6eITLBJd7PcGYdbQlCyeHOlGHd3PoDPeMOGFEdIODCIbVQyCEdpWuCIfuX4
-    H3azDczuaACCGIbrGvBwaEFJH1aSF5z9aEFrJjaZMHxoaYLFFQdrG1B9dkG1GBiUNmBai
-    UNnHaejOcAbemNHEqdGRmCBdLRiD1eEScCpetSmDsegTkCxdPTwDSg3IrDSjANSDQlkPV
-    GtgRAIDJi1zGF5eVDUC6gkCeFBf9DlDShwCdz7gVHcHNhjHMBQc7MTFydgNbArcFVRFPc
-    vV8xiaTSXJra2Tty9bRPlGqbaQmy9dbPfGScnQvAgdNO9GvdkPNDqbQQIC5cWWMC5eNYE
+    HOazDbzuaACGGGbHGvBkctFiHLaTF2AlbmFkJha3MMxsa0LBFSdoHaB8diG4GBiUNmBai
+    UNnHaejOdAbemNHEpdGRnCBdLRiD1eEScCpetSnDsegTkCxdPTwDSg3IrDSjANSDQlkPV
+    GugQAHDJi0zHF7eVDSC6gkCdFEf9DlDRhxCbz3gUHiHNhgHSBQc8MRFydiM9ArcFVQFPc
+    vV9xhaTSXJra2Tty8bRPlGqbaQmy9dbPfGScnQvAgdNO9GvdkPNDqbRQHC6cWWMC5eNYE
 sweep
 properties: bottom
 ref: Jean Jacques Machado "The Grappler's Handbook - Volume 2: Tactics for Defense", MOUNT ESCAPE: Option #2 @ p54
@@ -11818,10 +11830,10 @@ ref: Jean Jacques Machado "The Grappler's Handbook - Volume 2: Tactics for Defen
     NFWK8gqzjOye9FDOpdRzEPaegBnOSe5zvPTfdASP9e7y6QCeTzNIrh0EsNkklDcPElFDi
     Fgg2K7Bui3HuGzeFIzDOg0FoHdfmJHCPhZFbN8f7J1GEitzrNpdKDAKVdbAPUdfdAbQ4g
     nvLWxbTCqM7d3u0UIauFSLLcMyUUPa1G3LId5yVUxauIbLreDz5O1clzJSWfUxMUvh1xV
-    C0azDcHAaAKrGsbrCjISaEGYFmaSBvJuaEIfJWaZwAP8aYGOHpdrCJJydkFHL5iUynPhi
-    UCLMqejxpP7emDnQBdGxMRCdLziRueExCSAetyOSKegxoTrdPx1JHg3DtN5jAAhPLlky6
-    BVgRFWCIi1IKEJeVEmE8gkHKEzf9E4EFhwG8KUgVHfGRhjAHOuc7CuMydgzlWzcFylTCc
-    vtPV4aTCCPla2stR3bRDeOAbawLRZdbDiOscnwjRfdNCrN6dkw1QEbQyYVKcWvFXheNuz
+    C8azDoHCaAKqGtbHClIEctHoFtaTBKJgbmIaJ1a3wzP1a0GOHtdoCCJCdiFGL4iUynPhi
+    UCLMqejxqP7emDnQBdGxNRBdLziRueExCSAetyPSKegxpTrdPx2JHg3DtN5jAAhPLlky6
+    BTgQFVCHi0IKEGeVEmE7gkHMEwf9E2EDhxHbK1gUHfGVhgAEOtc8CwMwdizlWycFymTCc
+    vtPV4aTCCPla2suR3bRDfOBbawLRYdbDiOrcnwjRfdNCrN5dkw2QDbRyYVKcWvFXgeNuA
 escape
 properties: bottom
 todo: wip
@@ -11851,10 +11863,10 @@ ref: Jean Jacques Machado "The Grappler's Handbook - Volume 2: Tactics for Defen
     0QKL1a3SUUPc6MbM5bTOTQTeOMBM1c5PtQRf7MJNMd2OVPFgFMCQCb0M4S4c1SKUOeoUi
     LHazAHFGaGxqNtcgDqFXelybNyaTCSGjc7yOR1bmHSHpaYE7Nwf4E1J5htEvQxjELYLVh
     vN0R5f8JlLtcSN9RhdVMRPOcfOiReeDNYQZcHOtRLehO2RTcfPeL4iCIcOgiTNrPAj0Pr
-    IGgRAbFTi1A1KkeVCXGVgkDrJBf9COHxhwCXHzgVJcN2hjE0Mpc7MFPwdgKFQJcFUFVbc
-    vRCMsaTUgWra2NjLKbRQgR9baMELGdbQcSBcnMvMwdNPrRRdkL9PYbQOLTocWTMUweNVh
-    LsazBdEiaAFWMpbrEEHNaEHaNbaSDwGwaEHMSdaZHZH7aYOpL1drFBI5dkHOQtiUKaL9i
-    UNtRqejKuLyemOkQ9dGOFPFdLPIRleEPzQaetQGRAegQOQYdPRxLjg3HUOCjAMePPlkNS
+    IHgQAaFTi0A2KjeVCUGVgkDqJDf9CMHvhxCVHAgUJjN5hgE5Mnc8MEPvdiKDQIcFUEVbc
+    vRCMsaTUgWqa2NjLJbRQgR9baMFLGdbQbSAcnMuMwdNPrRRdkMaPYbROKTocWTMUweNVh
+    LfazBlEkaAFZMnbHEFHoctGWMXaTDDGCbmHzSea3H5H8a0OjL8doFFI6diHSQtiUKaMai
+    UNtRrejKuLzemOkQ9dGOGPFdLPIRmeEPzQaetQHRAegQOQYdPRxLjg3HUOCjAMePPlkNS
 knee inside pass
 tags: pass_split
 properties: top
@@ -12011,18 +12023,18 @@ ref: Demian Maia "Science of Jiu Jitsu" Volume 1: "Defending The Guard Pass", Te
     6RkGejjQ7y7a0N2IJgrPixfaBRUJofnPDwta4SRJ9eIOPwkauTZE1gJOIBqgfSNALfvVh
     NkbGCwMfaIHsMkbVF3Jua9JOLHcoEOKRbNJQE3edFlNngBOjFWbKLPIpbJOEzgbsTcDrb
     wVMxFdaO7G8dqTAz1gAPQGchBSzA3hnPOG5ixSrCegUQeGJjNSDEbbUPQAIcdVsztcfXM
-    SjazCFKBaJAjQfcZEwJJcTC9Q7bREXJvbrCRPDdqLwFAa3IyJ7huKaGHhVIMF3iISQB9f
-    4QuJ3hCQLA3cXNbIed9PjzObZRgIHdBQqyRcaSbILchQpyObzTiGRhmM4DIhcSxCqgqUH
-    Mfe2C0SzbeLYJ9dBFFO6aGM3JOeBEBP1bPNkC5fPF1MAgVQCFdcLLQIfciNVzJcwTzEkb
-    KV5yFdtO6IOcmUYBzguO0H1gjTgBzhKOQIChkTQCAisPfIyiuTgEwbRP6BybWVGz5cVXE
-    OyaBFsNvaCBvNvcDIjMvc0EdNRbdIeMqbCDZLUa1OHHkaYInLRgeJQJrhHHnGZjxQ9Drh
-    gO7KGgIQ0CidvMyHpd6QxA4cxQEGXd6RNz5cVRpFYdnSazLckStIdhPLwEsijRyC8hRTS
-    Oah2B5P5jlHhM1fBEzN0gPI7MigJDVOPhWJuFXhbGkNlhbP4Fmc1L5IhcxOjzwcxTvEnb
-    7WfyockOVIydMUSAGfuNiHLhtSMApgKM1HViqTBBfhCNxIpjyThEsbZQfBEcnVoAFdLXu
-    OzazFOG6aABALWbrIdHBaEFgNiaSIpGtaEEpLAaZOVBiaYIPKVdrIjHBdkGHIRiUOlDXi
+    R2aTEtMLazCePRdrF1LNcUETQLcqGDK8bDEsPvd8NhFAa3IyKjhoJ6GQhUILFQixSKB7f
+    SPMJ1hCQMCAgfK9Ied9PjAYc6NMIHdBQqAlcpOBILchQpAxbfO1G7huM3Dxg1RZBThfT7
+    Mfe2C0SPbxNBJ9dBFFPfaEMVJOeBEBPYbnNUDafJGdMtf3RAFycIL0IjbDOdzEcxTDEkb
+    KV5yFdtO7IOcmUYBzguO0H1gjTgBzhKOQIChkTQCAisPfIyiuTgEobRP7BxbWVFz5cVXE
+    OzaAFmMCaACmNvcDIjLEcSEZNVbfH4KYbCEALObjOFFcaYIyLJfZJAI9gdGZHkjcQLDhg
+    ZOEK0goQ1CUekKRHtd9QzBrdwOVGXd6RMBjenPUFZdnR9A6d4Q7HZhHKXEBinQKC6iZSU
+    NihpBcS0gDJ0LLeWDsQkeeK6LgggCYQIfDLqFfg8GoMUhaQXFoc5L3IkcCOjzwcxTvEnb
+    7WeyockOVIydMUSAGfuNiHLhtSMApgKM1HViqTBBfhCNxIpjyThEtb0QdBEcnVoAFdLXu
+    OmazFHG5aABDLUbHIcHCctENM5aTIfGHbmEoLwa3OYBoa0INKTdoIrHzdiGKIRiUOlDXi
     UL0I0ejPmCVemLRE9dGQ0DydLP9EreERACUetQ2DregSmCwdPR8Ixg3IJGbjANDFglkPs
-    OegRCTMdi1AMMveVFBKxgkCNMjf9ETLfhwC7FGgVFZMmhjJPEMc7LRHZdgNJzCcFTkEmc
-    vVVx2aTPlILa2U5BhbRMTHobaQYBkdbMOHKcnRiCndNNdHIdkQuExbQPZBCcWVjANeNWZ
+    OfgQCTMdi0ANMxeVFAKxgkCMMlf9EULfhxC5FAgUF2MjhgJVEMc8LPH0diNIzDcFTjEmc
+    vVVx2aTPlILa2U5BhbRMTHobaQYBkdbMOHKcnRiCndNNdHIdkQuEybRPYBCcWVjANeNWZ
 guillotine
 tags: guillotine
 properties: top
@@ -12039,17 +12051,17 @@ ref: Eddie Bravo "Mastering the System" Episode 33 @ 6:49
     4NtRIgzNpE0l3LVOgd8NEGsh3LfNudnMSGQiAMoMjdUMzGQhNNpLwi8IcLKjWN8MxjfQB
     uVa2TqzCaz3SxLcQRRBbcB1fwUbKRvBia81vA1cDMdFBaYWeDog2RiFvhMUdKAgFLzMXd
     RO6F3hlMoN6aTLDFMe0ITLabhIqFlelHRKZccHsFZdHG0JXchGJHEgbQKMHfiMJOqe1KL
-    OIazy6JtazvrPBcyB4I1ccyHPsa5BOIMaNyhP8aYIwHhaYEUNlgdEHJRhxEQOwhHNrJai
-    VM1O9dsLvGHkAJrK1dRK6F2gnImKDevJ6FHgUJwKQfIJPFEf3KwMsiXHZLRiuNJLRh7Qj
-    uXa7TmDeaAZBxScvRxFJbzWZw6bfRkFKaJYdBNaYMrK6aYT7C7f0RcFufgTVIZgJKhMOe
-    VNRENfaI4N7aZLDGocSFVMpaCHDF2cnEPL9a6GuGIbODULDauFtHkf3P0Lff0LMNufDKl
+    OHazy1I5azv9PBcxB4JMdHx4Pta7BKI7cqylP7a2ICHja3EVNmf9EKJRhtEQOwhHNrJai
+    VM1O9dsLvGHkAJrK1dRK6F2gnImKDevJ6FHgUJwKQfIJPFEf3KwMsiXHZLRiuNILRh7Qk
+    vjaATbC8azZzxOc6R7FrcjXexobPRzFza9X1BTaYMqLda5TYC7fXRaFyfdTUIZgJKhMOe
+    VNREOe9I2N7aZLDGqcSFRMpaCHDGccmEFL9a6GuHccjDMLDauFtHkf3P0Lff0LMNufDKl
 arm-in
 properties: top
 todo: need source
-    OIazy6JtazvrPBcyB4I1ccyHPsa5BOIMaNyhP8aYIwHhaYEUNlgdEHJRhxEQOwhHNrJai
-    VM1O9dsLvGHkAJrK1dRK6F2gnImKDevJ6FHgUJwKQfIJPFEf3KwMsiXHZLRiuNJLRh7Qj
-    uXa7TmDeaAZBxScvRxFJbzWZw6bfRkFKaJYdBNaYMrK6aYT7C7f0RcFufgTVIZgJKhMOe
-    VNRENfaI4N7aZLDGocSFVMpaCHDF2cnEPL9a6GuGIbODULDauFtHkf3P0Lff0LMNufDKl
+    OHazy1I5azv9PBcxB4JMdHx4Pta7BKI7cqylP7a2ICHja3EVNmf9EKJRhtEQOwhHNrJai
+    VM1O9dsLvGHkAJrK1dRK6F2gnImKDevJ6FHgUJwKQfIJPFEf3KwMsiXHZLRiuNILRh7Qk
+    vjaATbC8azZzxOc6R7FrcjXexobPRzFza9X1BTaYMqLda5TYC7fXRaFyfdTUIZgJKhMOe
+    VNREOe9I2N7aZLDGqcSFRMpaCHDGccmEFL9a6GuHccjDMLDauFtHkf3P0Lff0LMNufDKl
     LsazBqJrazvwLTbWENI0cdyMK9aKEiILaPynJDaYKRGUaYEVMzeuFtJ9hfELPrgMNsKOj
     PNOPxb4NkIelKKsLDdvMKGAhNJMKLedMaGjgwJUKPfqLQGxfPIMMphGIrNqiPNuNXiUP4
     uYa7TlDtaAZ2xScvRxFYbXXGw5bkRjFSaLYqBNaZMrK5a1T8DPfMRkFXfXUoJ3gZK3Nrf
@@ -12070,22 +12082,26 @@ arm-out
 properties: top
 todo: wip
 ref: Eddie Bravo "Mastering the System" Episode 33 @ 6:49
-    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
+    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
 bottom\nclinches leg
 properties: bottom
 ref: Eddie Bravo "Mastering the System" Episode 17 @ 19:33
@@ -12313,10 +12329,10 @@ ref: Ryan Hall "The Triangle" Volume 2: "Angles, Mechanics, and Entries", Techni
     rJULsebHaC7iLLnKcd7LcG5h8NbJ1fdLVHRh2OfJXe6NaHYg1O0EnhsF0IQkhIGKolRJ7
     AGh2BpB8jayvCofVDZBPhJBXBYhgDRCRh5A3B8kbJXIwfsDEEodILOGLb0JyJBepS5Nvb
     NQaFDeIQIOGaTLLGSe6MMMkeaKcGUgfMcM0fgJWG3gkKWMkgaJdH3cdNJLOdiRONEeZSD
-    EtazzjwSaADiE4brCPAeaEESFYaSBNyUaEFmKwaZGKzPaYL6EAdrDJBrdkFEIyiUIJDVi
-    ULAJuejI9DfemMnIMdGNhHcdLObISeEOcHBetPcIZegPsIjdPP7DEg3FXGvjAKAHxlkMm
-    BPgRx1yXi1yzDaeVAWzKgkA4Ctf9AIAphwAEzOgVGSGEhjDlEgc7KOHzdgI8HKcFTcMuc
-    vQCDxaTSnOaa2MsDebROkJYbaLnDbdbOfKrcnLgD5dNNzJKdkKRHAbQNfKucWSBLseNUc
+    EgazzqwTaADlE2bHCQzQctECFIaTBTy1bmFaKwa3GQzQa0L1EGdoDPBsdiFIIyiUIJDVi
+    ULAJtejJaDfemMnIMdGNiHcdLOaISeEOcHAetPcIZegPsIjdPP7DEg3FYGvjAKBHxlkMm
+    BPgQx0yXi0yADaeVATzJgkA4Cvf9AGAmhxADzNgUGZGHhgDqEec8KNHydiI6HJcFTbMuc
+    vQCDxaTSnOaa2MsDebROkJXbaLoDbdbOeKqcnLgD5dNNzJJdkKRHAbRNeKucWSALseNUc
 top\ndrives in
 properties: top
 ref: Ryan Hall "The Triangle" Volume 2: "Angles, Mechanics, and Entries", Technique 5 @ 22:16
@@ -12647,17 +12663,17 @@ ref: Marcelo Garcia "Winning Techniques of Brazilian Jiu-Jitsu", Series II, Volu
     1Nir7kwM3zDhqMSuriDJ4wfiUKuvqihJfvCjmJvwBiKJBusjWJuwNk2R6x7nNNnyVoTK7
     A7bhxgscaLSSyIbTzZqibYPZzOcKzsrHcdQoAujeBauqhVNRvWmAFwwCmRJcEnlHDvFwn
     OIaEMh0AAEEj5KVFJemyFFKfUKfGcdtxUFXeBKiGrcgx8GCdXJqzPodGxFxnzFjH4otFs
-    k1azPfoNazX9n5b0NMqLcxVInqaLNAq3bjWvsWaYJGxcbeTHrogRNgt4gdPOwHloHwADj
-    8KWu8hfISAafxKmyMhGGLzNicG0zZhOGvzniHFRAFiQGXyNjQFLu0jbMPzblrISBDmhH9
-    A6azwPuMbFQQywaMzstZenOuzqbMyTvadtOyCphFxcyzhpKbzxmxBrz0l9E5HYj2zrIIj
-    CEsHjfzyeI0fhGfHLboybJJaWGaI0bxxJKUbvFXJxavw8LTaKFtDImtCLJqkzBQL4kbBz
+    lbaHPkpaazX2nrdyOtpJdAV0nlb9NYqCcpWfsOa2JOwYa3TJrrgNNkt6f6PRwHloHxACj
+    8KXu7hfITAafxKnyLhGGMzNicG0zYhOGvzniHFRAEiQGYyMjQFMu2jaMRzblrITBDmhH9
+    A6azwQuMbFQRyvaMzttZenOvzobKyUu8drOBCohJxeyAhtJ7zymvBqz0l7E7HYj2zsIHj
+    CErHifzyeIZfhGfHKboybJIaWGbIZbxxKKUbvFYJwavw8LSaKFtDGmtCNJqkzBRL3kbBA
 stand up
 tags: single_leg_takedown
 ref: Marcelo Garcia "Winning Techniques of Brazilian Jiu-Jitsu", Series II, Volume 2: Arm Drags, Technique 3 @ 6:50
-    k1azPfoNazX9n5b0NMqLcxVInqaLNAq3bjWvsWaYJGxcbeTHrogRNgt4gdPOwHloHwADj
-    8KWu8hfISAafxKmyMhGGLzNicG0zZhOGvzniHFRAFiQGXyNjQFLu0jbMPzblrISBDmhH9
-    A6azwPuMbFQQywaMzstZenOuzqbMyTvadtOyCphFxcyzhpKbzxmxBrz0l9E5HYj2zrIIj
-    CEsHjfzyeI0fhGfHLboybJJaWGaI0bxxJKUbvFXJxavw8LTaKFtDImtCLJqkzBQL4kbBz
+    lbaHPkpaazX2nrdyOtpJdAV0nlb9NYqCcpWfsOa2JOwYa3TJrrgNNkt6f6PRwHloHxACj
+    8KXu7hfITAafxKnyLhGGMzNicG0zYhOGvzniHFRAEiQGYyMjQFMu2jaMRzblrITBDmhH9
+    A6azwQuMbFQRyvaMzttZenOvzobKyUu8drOBCohJxeyAhtJ7zymvBqz0l7E7HYj2zsIHj
+    CErHifzyeIZfhGfHKboybJIaWGbIZbxxKKUbvFYJwavw8LSaKFtDGmtCNJqkzBRL3kbBA
     k0azPewCaBTjn5b0NMtmaFU8npaLNAukbHUIsVa3JJyXgfSDsfg2NAsviHQVwTlUIpAtk
     9MnvThkILzsg0KwzmiMG0zcjAGYAojnGCy4kcFOAQkrG6yck7FDuEkENKzjl5JVBJmgIK
     A7aAwOtlddQHywaQzts9gCPgzrbKyRt1fsOXBBh6ybx2iCKxzrnOBKzUmUFgHAkkzBH7j
@@ -12676,25 +12692,29 @@ tags: single_leg_takedown
     9ImHef3DCEdfLJtIgf4HGHRgbG6IufCIPHUhiGxIwgtJQHhhPFAzyhJD7FakWGHHglSH7
     KAa4B8veaED0LOcsFnxPa2BrLlbaEVxJbBCOMUa6LtBWfAGmLngsG1IliEG7PKiAN3Klj
     aPPSKfmMyLaeEQAVDcnL2OsbSQ0WPbRLZPzbyRtW6aELLQmaKQXLtjzJZMZiUOJNkjCRh
-    xDazvxqHazChz7b0xRtGcxDez3aLxbs3bjDNFGaYAUxTbeIuBNgRALAogdEaI4loDDHjj
-    8IxHfhfCFHGfxHTKwhGFiKGicGkLdhOGkLAiHFwK1iQG7LsjQEXDvjbDYIIlrGrKhmhIs
-    UDazDRzGbFFdRfaMCpBAenDCR6bMC2BXdtEKULhFFdHghpGkPLmxD4Mxl9FPUGj2LcQhj
-    CNIVzfzJ9OIfhODVMboKyO3aWPhWEbxLyPFbvQiXpavLPQuaKQ2P2mtIrSYkzNqUbkbPN
+    xEaHvIqXazCAzfdyxvs3dACnzFb9xfs9cpDhFxa2APxNa3IjBLgNAPAmf6EeI4loDDHij
+    8IwHehfCEHFfxHTKwhGFhKGicGkLdhOGkLAiHFwK1iQG7LsjQEWDvjaD0IHlrGrKhmhIs
+    UCazDRzGbFFdRfaMCpBAenDCR4bKC1BUdrEJUJhJFdHlhtGkPNmvD5Mvl7FQUGj2LdQij
+    CNHVzfzJ9OIfhODVMboKyO3aWPhWDbxLxPFbvQjXpavLPQuaKQ2P1mtIqSXkzNrUbkbPN
 stand up\nand turn in
 tags: single_leg_takedown
 todo: need source
-    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
+    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
 switch\nstance
 properties: bidirectional
     KhazPET1aKFnNJaLOrXfaEHfMKbROJV9bvG9LyiyOZRvgoGNQvmUMqQ6naIKOQvINYNVv
@@ -13154,10 +13174,10 @@ ref: Eddie Bravo "Mastering the System" Episode 12 @ 32:44
 break\ndown
 ref: Eddie Bravo "Mastering the System" Episode 12 @ 33:28
 properties: bottom
-    zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEnGni
+    zMazy7vVaAGvCmbHBvy4ctFTCnaTAkyHbmGOI8a3BHDfa0L0CCdoCvA1diFTIAiUEnGni
     UJlJAejEcGgemKnLldGH0KxdLJDLWeEIHLretKfMKegJGMydPKBCYg3ERHWjAG4JNlkHW
-    wYgRzkuVi1BpzJeVAZwZgkC1y2f9BcxihwCjAjgVHMDYhjA0Gdc7IwHZdgFgNPcFNtQhc
-    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKlbQIEPKcWLqRseNMc
+    wYgQzjuWi0BpzIeVAWwYgkC1y3f9A9xfhxCjAngUHSD3hgA3Gbc8IwHYdiFfNOcFNsQhc
+    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKkbRIDPKcWLqRseNMc
     zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yJaEG3I6aZBDDhaYL5CsdhCqAWdgFPH0jLD8Fxj
     JI7I3fiDnFlfcKlKfexHiJleNIJKCfHHOJWfzJxLhfEIWK9fjJUCNgZECGVkiGGIummHd
     vdf7BavwhpzixVdOCaxueMAWxGfeCyxQgcACBufKIaEAgeBvHdbCJiIbbJFGLpgGL8O1g
@@ -13576,10 +13596,10 @@ ref: Ryan Hall "Passing the Guard", Volume 2, Technique 1 @ 3:48
     zELNifAH5Gth1z8MGbUGcFMdYBtMVaHFLEAdxBrMHauEuEecwCcLchBCrGQi8HlFkjaJz
     zVh9ywVFaGwICnfQzWSxaFuFBJfRyDSTaEv1CYiWEGPlbkBVFkcoE3ISbZEgEWegNgKsf
     mNiB7ctJXL3bpLhFuefIhMfbNGYFufmHDMQcVGEGFfWHpMMdrFuH3cFIuHIePNxG4gOPf
-    R6dLv40aazwuTIevzhXkbSyrTedgyGXna8xcVoaYETRwa0tAQGe4BUO2feyyINd6GFGCg
-    xCPLVaTFkFTcDAnK3aEBfCGcfDkKaaKAlCtcfECJRbUzPDjbZFvMnfgB1GJfEFvD9fxGe
-    DaazxiWhcOwDD0aEAVTncNuiDLbAzUTxcwvJDOixAmOub3AwERcREaIzcjD9EMf0MuJIf
-    cMpC6dxISLva0LkGJe0HfMhauG6HLfOG7MTbaF9Iqf1F5MkbCE6GEcuH4HsgUMGHqjBMJ
+    SscTvtZSazwER6dYy1XDc2yeS6c4ynXob7w5Vna2EERva0tCQEe9BQO1fdyyINd6GFGBg
+    xCPLVaTFkFTcDAoK2aEBgCGcfDlJ9aKAlCscfECJQbUzODjbZFwMjfgB0GJfEFvD9fxGe
+    C8azxjWgcOwDDZaEAXTlcNuiDJbBzUTwcwvIDOixAnOub3AwERcREaIzcjEaEMf0MuJJf
+    cMqC6dxITLva0LkGJe0HgMhauG6HKfOG7MSbaF9Iqf1F6MkbCE6GFcuH5HtgUMGHqjBMJ
 top pummels\nto leg drag
 tags: pass_around leg_drag
 properties: top
@@ -13898,26 +13918,26 @@ ref: Ryan Hall "The Deep Half Guard", Volume 3: Advanced Deep Half Attacks, Sect
 basic\ntakedown
 tags: single_leg_takedown
 todo: need source
-    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
+    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
-    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
+    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
 bottom\nstands up
 properties: bottom
 ref: Rafael Mendes vs Cobrinha ADCC 2009 @ 1:11
@@ -14042,10 +14062,10 @@ bottom goes\noctopus
 properties: bottom
 tags: octopus
 ref: Eduardo Telles "?", Volume 5: Octopus Guard, Section 2: ? @ 5:29
-    zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEnGni
+    zMazy7vVaAGvCmbHBvy4ctFTCnaTAkyHbmGOI8a3BHDfa0L0CCdoCvA1diFTIAiUEnGni
     UJlJAejEcGgemKnLldGH0KxdLJDLWeEIHLretKfMKegJGMydPKBCYg3ERHWjAG4JNlkHW
-    wYgRzkuVi1BpzJeVAZwZgkC1y2f9BcxihwCjAjgVHMDYhjA0Gdc7IwHZdgFgNPcFNtQhc
-    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKlbQIEPKcWLqRseNMc
+    wYgQzjuWi0BpzIeVAWwYgkC1y3f9A9xfhxCjAngUHSD3hgA3Gbc8IwHYdiFfNOcFNsQhc
+    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKkbRIDPKcWLqRseNMc
     zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEoGni
     UJlJvelEDF5enKoKreSIDKpeaJ6KVfMJpLuevKDLrfrKxMzdOKrCYg3ERHWjAG3JNlkHW
     wZgSznuYi0BqzIeYA4w0gkC1yXgaBlxnhwChAfhnHRDZg3BcF7doIiHNcxE5NhfYLqP5c
@@ -14939,18 +14959,18 @@ ref: Ryan Hall "Arm Triangles", Volume 2: Creating Openings & Finishing, Techniq
     2KXKvdfIPB2d7KBJNdmMYB8dNOYJTdUN5ChdgP6JhduO7CXb7QcE7i6E8HnicKAIficM5
     CNazsFvYfXy9FdaKvrzGf0zGDJaFvrywfUAuzfaYAvAffYGZFubCDSGUeVEGDBbxNpIsc
     aNHATaZJCLiaTKbBde8JBILeaI7A8goJFHMe0IOB8g5KbG0faJUGhcnH7FQcROoFdetQo
-    OnazCjDvbQyeK1aTAOB1ezAfLObJBEB9c8AsKNhYEqBxa1GZD0ifCZA3hKFgJIhHKzFif
-    MMmKSdgJxCzduPjLqauMGF3aUPYK0bbNJHfbeQeLaaAOUIjauQcERiJHcHvhvMiIJhbOA
-    Eoazr2uze6BMGQbruFycfNBPFuaWuIxefoCRAva0zvAve2IUFfbCEzGte1FjECbsOiINe
-    NNFBVbJKwJqesI3DZfqKvGue7MaDjgsKLGAfLNfDJhHKIFFguNIGtclIHGZcTOCGAeqQL
+    OpaCCmDAbQyeK4a0ATB4ezAeLPbUBNCdc8ArKyhMFnBAa1GYD3ifCZA6hKFfJJhHKAFjf
+    MMlKUdiJvCEdqPjLrauMJF1aXPXK1baNLHebfQfLaaBOWIgauQcETiJHcHwhvMhIJhbOB
+    Euazr1uDe6BJGWbruGyffNBNFAaWuJxhfoCOAya0ztAxe2ITFibCEyGwe1FjECbsOiIOe
+    NNGBVbHKvJqesI6D2fsKvGxe7L8DkgsKLGBfLNfDKhHKIFGguNIGvclIIGZcTOCGAeqQL
 far arm\nbrabo
 properties: top
 todo: maybe to vice grip first?
 ref: Ryan Hall "Arm Triangles", Volume 2: Creating Openings & Finishing, Technique 12: ? @ 1:23:07
-    OuazCFDPbQx7LcaTA1Cfezz3LXbJBUCnc8AgKPhYEDBta1GMD6ifCTA3hKE1JthHKIEYf
-    MMiKGdgJJB7duO8K5auMUFzaUPWKCbbNVGLbeQgKJaAO7HOauQhELiJG8HchvMlIjhbOG
-    EZazrXuJe6BgHjbruHymfNBtFXaWuGxlfoCsALa0zfAle2IDFhbCEwGte1FjEdbsOdIpe
-    NNLBHbJKjJfesJbDKfqKoGbe7MaC4gsKDGefLNfDuhHKAFiguNGGjclIHGzcTODF4eqQL
+    OwaCCIDUbQx7Lga0A6Ciezz2LYbUB2Crc8AgKxhMFzBwa1GKD9ifCTA6hKE1JuhHKJEZf
+    MMiKIdiJICcdqO9K6auMXFxaXPVKDbaNYGKbfQgKJaBO8HMauQhEOiJG8HchvMkIjhbOH
+    E5azrXuNe6BdHpbruIypfNBrF3aWuHxofoCoAPa0zeAoe2IDFkbCEvGwe1FjEdbsOdIqe
+    NNMBHbHKjJfesJeDNfsKoGee7L8C5gsKCGefLNgDvhHKAFiguNFGlclIIGzcTOEF4eqQL
     DscPrzCjczxpDtglsABCewAuDOe7tmBSc6AfDXehz5Bwa4GJDukoDCA1hXE0JphzKIEQf
     GMzKJdcJKBScJOxK6auMVFkawPUKDbbNXGiblQaKJaAO8HraSQFEviJHtG7hnMjIihbOE
     E7azrXt7e1BQHqbruHxJfEBzF1aWuJwRfhCHAOaZy4Ake2ItFjbCEuGBe0E7EebsObIqe
@@ -15103,14 +15123,14 @@ pass
 properties: top
 ref: Eddie Bravo "Mastering the System", Episode 82 @ 1:10:19
 ref: Eddie Bravo "Mastering the System", Episode 84 @ 48:25
-    OuazCFDPbQx7LcaTA1Cfezz3LXbJBUCnc8AgKPhYEDBta1GMD6ifCTA3hKE1JthHKIEYf
-    MMiKGdgJJB7duO8K5auMUFzaUPWKCbbNVGLbeQgKJaAO7HOauQhELiJG8HchvMlIjhbOG
-    EZazrXuJe6BgHjbruHymfNBtFXaWuGxlfoCsALa0zfAle2IDFhbCEwGte1FjEdbsOdIpe
-    NNLBHbJKjJfesJbDKfqKoGbe7MaC4gsKDGefLNfDuhHKAFiguNGGjclIHGzcTODF4eqQL
-    ODaACAMacuuqM7dZCALhe0wQNocYDxKodNwzNAbnKfEqeqAtMlghFrJZhLCZJ9hgMHFwg
-    qKFKGduJVBQesMIK6awMVERcxO9KDbaNWFCclP7KJaAO8GibcQcJqi4G4HlheMDGAhwO8
-    E7azrXyhfszSHqbruHBTfLAOF4aWuGAEfFBuAPaZzcBVgXH9FjbCEsHAetEXEfbsN7Iqe
-    NNMBCbxKiJhetJcEdeQKbGde6L9DWfUJvGffLNfEOgNI8FiguNFGqcuICGzcYOOGfebRb
+    OwaCCIDUbQx7Lga0A6Ciezz2LYbUB2Crc8AgKxhMFzBwa1GKD9ifCTA6hKE1JuhHKJEZf
+    MMiKIdiJICcdqO9K6auMXFxaXPVKDbaNYGKbfQgKJaBO8HMauQhEOiJG8HchvMkIjhbOH
+    E5azrXuNe6BdHpbruIypfNBrF3aWuHxofoCoAPa0zeAoe2IDFkbCEvGwe1FjEdbsOdIqe
+    NNMBHbHKjJfesJeDNfsKoGee7L8C5gsKCGefLNgDvhHKAFiguNFGlclIIGzcTOEF4eqQL
+    HGaGwHLRcvuEHQdTyzKYe2w5IdcyyPKadSwEKxa0FbD8e4z4MuhAEkJciDC6Kbg4M5Fog
+    iKSKGdAJXBHekMRK6auMXEOczO6KEbaNWFCclP7KJaAO8GhbcQcJBiHHpHnheMEGAhwO8
+    FQaAstyifszRIQaEuFBUfLAOHraOuPAFfFBuBRaYyRBVgXH9FvbCEGHFezE2EfbsN9Ite
+    QNSBBbvKiJgetJfEgeSKbGfe6L7DXfUJvGffLNfEPgNI8FiguNFGvczILGzcYOOGfebRb
 ...
 properties: top bidirectional
     OZazBtywaDDpMvaQyJySaEzKMIbBzZy9bGAMNvhBC7BxhBC3Jjl6zwFymczsJgmTIKEFk
@@ -16310,17 +16330,17 @@ ref: Eddie Bravo "Mastering the System" Episode 82 @ 37:26
     1G0J0e1L7NzijDSHZbnLzJpg6DrGMbKLxIchbCXFIa7LnHhgmDmQjiJJuKDkCJFH7lmJM
     T9hHEKXrd0E7QMgsDGTMelEjRkhdEQUBd5FsMUf8J4P6bDJ7M3fxC7NgbSDKExg1FdD2b
     QF9I5hFEuH0boIwLyiXHzF7auMmKjiYHTFiaDNjJQjBIUFFauOyJddADFDreAF0AYfdGO
-    3taXOfT1bsEQ1fdDMQTGeZFP04clNASEd0FmUrboPrLOdkGpR0fSKPROgGHaKbjML9Kyk
-    7GSJZe5L7NoiyD7HZboLzJng6DqGMbKLxIchbCXFIa7LnHhgmDmPyjlJGJBkOJyG4ltJr
+    1VaAPMT1bsEQ1bdpNtTEeZFP0kcCOpSEd0FnTHdEP4LMdhGoR7gUJ9RshcGxJ9jNL5J4k
+    8GEJYe5L7NiiFEeHZboLzJmg6DqGMbLLxIchbCXFJa7LnHggmDmPnj3I7JEkOJrG4ltJr
     TdifCHU5hWFXPChfClSHgvDuQshDDvSYggEVMNgJJmRnbbJpM5fpCANhbUDSEwgZFcD3b
-    QF9I3hCEgH0boIwLeiXHCF7auMmJWiRHWFiaDNjJqjqIXFFauOyJedBDHDreyF1AYfdGO
+    QF9I6hFEmH0boIwKijeH7F7auMmI5i3ItFiaDNjIujvJxFFauOyJedBDHDreyF1AYfdGO
 ...
 properties: bottom
 ref: Eddie Bravo "Mastering the System" Episode 82 @ 37:26
-    3taXOfT1bsEQ1fdDMQTGeZFP04clNASEd0FmUrboPrLOdkGpR0fSKPROgGHaKbjML9Kyk
-    7GSJZe5L7NoiyD7HZboLzJng6DqGMbKLxIchbCXFIa7LnHhgmDmPyjlJGJBkOJyG4ltJr
+    1VaAPMT1bsEQ1bdpNtTEeZFP0kcCOpSEd0FnTHdEP4LMdhGoR7gUJ9RshcGxJ9jNL5J4k
+    8GEJYe5L7NiiFEeHZboLzJmg6DqGMbLLxIchbCXFJa7LnHggmDmPnj3I7JEkOJrG4ltJr
     TdifCHU5hWFXPChfClSHgvDuQshDDvSYggEVMNgJJmRnbbJpM5fpCANhbUDSEwgZFcD3b
-    QF9I3hCEgH0boIwLeiXHCF7auMmJWiRHWFiaDNjJqjqIXFFauOyJedBDHDreyF1AYfdGO
+    QF9I6hFEmH0boIwKijeH7F7auMmI5i3ItFiaDNjIujvJxFFauOyJedBDHDreyF1AYfdGO
     1haCM0TZbeESYFc0L2TveKFQYybGMHSwdIFpROaYOeLGdqGpShgrJ3RyhbGxKajNLVKsl
     qGIJYe7L6NukBDfHZbqLzJSibCZGMbLLxIFhQCAFJa7LnH4gVDiPxjJJpJJkQJmG9lsJq
     R8hPEhUWh9FpPcgZB5SmguDpPMh9CFSRgiELJrjbFcRsbiJoM4eABvNdbQDVEogTE8Edb
@@ -16387,10 +16407,10 @@ ref: Eddie Bravo "Mastering the System" Episode 82 @ 37:26
 bottom goes\nfor single
 properties: bottom
 todo: need source
-    3taXOfT1bsEQ1fdDMQTGeZFP04clNASEd0FmUrboPrLOdkGpR0fSKPROgGHaKbjML9Kyk
-    7GSJZe5L7NoiyD7HZboLzJng6DqGMbKLxIchbCXFIa7LnHhgmDmPyjlJGJBkOJyG4ltJr
+    1VaAPMT1bsEQ1bdpNtTEeZFP0kcCOpSEd0FnTHdEP4LMdhGoR7gUJ9RshcGxJ9jNL5J4k
+    8GEJYe5L7NiiFEeHZboLzJmg6DqGMbLLxIchbCXFJa7LnHggmDmPnj3I7JEkOJrG4ltJr
     TdifCHU5hWFXPChfClSHgvDuQshDDvSYggEVMNgJJmRnbbJpM5fpCANhbUDSEwgZFcD3b
-    QF9I3hCEgH0boIwLeiXHCF7auMmJWiRHWFiaDNjJqjqIXFFauOyJedBDHDreyF1AYfdGO
+    QF9I6hFEmH0boIwKijeH7F7auMmI5i3ItFiaDNjIujvJxFFauOyJedBDHDreyF1AYfdGO
     VdaBTBSLbtELVmctQlRSe3ELUqbFQ3Q5dQE9NYd0SdKyb8GPPsgmLUPmgXIhGXjtMGHBk
     OHsH2e2NsLXkbF0HjaWM1I6g4E3GgbyNzHThxEIFiaLNWGTgOE6MyjmKwGEkjJ2D4kzJx
     TibNBnXYaJDePHcHA8UDbaBEQSdiBGU7a3CZPji1FcQya4IbLqe7AYMzb2CCF1hHHnC0d
@@ -16468,36 +16488,40 @@ ref: Eddie Bravo "Mastering the System" Episode 82 @ 1:09:45
     7O3ECh5KlxIenRiFVg4OewVavS0Gjf9O2xza9TYFWeYO7yfauUOz0eiKwzMkjNpAJmaO7
     zjj7IBAVgFGYASgVHGDeeyEZA8hUIMDmfrF4FBgpNTHEiQKnIBbKJHKLdtHbQZbzOVSge
     dLhMmaTPyNRfeJ7IxauNVKvfcMPHWa3OUJUfENRHAcjOMISe1OmMSbNKCSCdGN2TGfnPS
-    JeaXGwKpazN1FVa5EUHAbLLUGCb5FNHPbzNiJthaJvBJa7QBD6dxGZCybGJLDOlkKAAfj
-    uOiFgifHjyrfCMmGSiwLiyJbvNmHkiWMrxTbAOnGMioNxxkauOMBzfTJFBYlbMMCKnaOo
-    ACkqGOAVgFGYBSg7FCDdeyEYB6hWGNDpfuF5GghSMmILjtH5IHbTJNKZcWG5QSbuPbSle
-    fLkMea9OtNUfdJ9HXccOnKfesL6GIcEOoJHe3NaF1cMNkIBeqNyMVbMKMSCdpN1TCfcPI
+    JeaYGwKqazN1FSa2ERHAbLLVGAbWFJHPbzNjJHgZJfBJa7QCD6dxGZCybGJLDOljKAAfj
+    uOjFeigHkysfBMmGTiwLjyIbwNnHjiWMsxUbAOoGMioNxxkauONBAfTJFBYlbMMCKnaOo
+    ADkqGPAVgFGYBSg7FBDeeyEZB5hWGNDqfvF6GghSMnI1jzGmIAbUJKKVcXG1QJbwPgSee
+    gLmMabbOvOIeMIkHYcfOnLggGJKGTc2OpKnhcKAF1cvNtI9hfKoMNbMKMRNdPN4RPgkO5
 bottom\nbails
 properties: bottom
 ref: Eddie Bravo "Mastering the System" Episode 82 @ 1:10:50
-    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
+    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
 bottom\ngets up
 properties: bottom
 ref: Eddie Bravo "Mastering the System" Episode 82 @ 1:09:45
-    JeaXGwKpazN1FVa5EUHAbLLUGCb5FNHPbzNiJthaJvBJa7QBD6dxGZCybGJLDOlkKAAfj
-    uOiFgifHjyrfCMmGSiwLiyJbvNmHkiWMrxTbAOnGMioNxxkauOMBzfTJFBYlbMMCKnaOo
-    ACkqGOAVgFGYBSg7FCDdeyEYB6hWGNDpfuF5GghSMmILjtH5IHbTJNKZcWG5QSbuPbSle
-    fLkMea9OtNUfdJ9HXccOnKfesL6GIcEOoJHe3NaF1cMNkIBeqNyMVbMKMSCdpN1TCfcPI
+    JeaYGwKqazN1FSa2ERHAbLLVGAbWFJHPbzNjJHgZJfBJa7QCD6dxGZCybGJLDOljKAAfj
+    uOjFeigHkysfBMmGTiwLjyIbwNnHjiWMsxUbAOoGMioNxxkauONBAfTJFBYlbMMCKnaOo
+    ADkqGPAVgFGYBSg7FBDeeyEZB5hWGNDqfvF6GghSMnI1jzGmIAbUJKKVcXG1QJbwPgSee
+    gLmMabbOvOIeMIkHYcfOnLggGJKGTc2OpKnhcKAF1cvNtI9hfKoMNbMKMRNdPN4RPgkO5
     IQazENFoaDNFGyc9GgEObaJ5Hkb3GJEGb7LdLZgIIVDSg5PWFJeEGMDnegJFHtljK9CRk
     ANoIRi4HgAggJMOK4hQKzy5czNGLWhXLvx1b0OeLKhgMBxRaMOpDwieHZFnlVMZGPnCOv
     C4j0DWBvfEErDGgpEdDZcXEkEihwEVD8emELIViGJXJJiuFgI1bMJYLebYG0RpbEO6S5d
@@ -16529,10 +16553,10 @@ properties: bottom
 tags: inversion
 todo: need a better source, that lady is all over the place
 ref: Eddie Bravo "Mastering the System" Episode 82 @ 1:12:35
-    JeaXGwKpazN1FVa5EUHAbLLUGCb5FNHPbzNiJthaJvBJa7QBD6dxGZCybGJLDOlkKAAfj
-    uOiFgifHjyrfCMmGSiwLiyJbvNmHkiWMrxTbAOnGMioNxxkauOMBzfTJFBYlbMMCKnaOo
-    ACkqGOAVgFGYBSg7FCDdeyEYB6hWGNDpfuF5GghSMmILjtH5IHbTJNKZcWG5QSbuPbSle
-    fLkMea9OtNUfdJ9HXccOnKfesL6GIcEOoJHe3NaF1cMNkIBeqNyMVbMKMSCdpN1TCfcPI
+    JeaYGwKqazN1FSa2ERHAbLLVGAbWFJHPbzNjJHgZJfBJa7QCD6dxGZCybGJLDOljKAAfj
+    uOjFeigHkysfBMmGTiwLjyIbwNnHjiWMsxUbAOoGMioNxxkauONBAfTJFBYlbMMCKnaOo
+    ADkqGPAVgFGYBSg7FBDeeyEZB5hWGNDqfvF6GghSMnI1jzGmIAbUJKKVcXG1QJbwPgSee
+    gLmMabbOvOIeMIkHYcfOnLggGJKGTc2OpKnhcKAF1cvNtI9hfKoMNbMKMRNdPN4RPgkO5
     I8aNGbKpazN1FXciHtHAbLLUGXbnHXHPbzNiIZhIJOBJa7QCEbdAG3CybHJKDElxKKAfj
     tOjF5iCH4yrfEMlHqiiL4yJbtNnG5ijNmxTbAOnGPhaNYxkauONBDfZJGBTlbMSCKnaOo
     ACkpGOB0iHEgBSg7FCEDhdCaB6hXGOEIhXDsGehXMnIFkOIqIXb7JRKXelHBQqbwPyRjf
@@ -16572,10 +16596,10 @@ ref: Eddie Bravo "Mastering the System" Episode 82 @ 1:13:14
     xG8OacKHhFJjbCJKzaSIbCLg8E7Jka4IbBPgXFVIvaxIXBQfZGNJnfwDcI6hYIOIhjvKR
     uAaBsmJukezTwraEvDIlgMy7vQbAuKIqhAAgvZgczUEshMFWy3bCD5CEbDDnyMe7LUDne
     DMBvxbTMFF4aTM2s0bhJqJjdHMrspcbJ6KhcUMprdcdKsKPcvLlByb2HzARe9NJBRhANH
-    zTeMz1xtclASDmdwAFAEcly4Cid3BrAac9AcDZdUH8DAhoEqIHbGDwJyeRBSN9eQKBK3i
-    vH7OlaTIcJwibDIJ1aHH4FNgRFaISa9IfEzgKFCH4awI6DTfGFCMmdAE1MugYJWMohrMw
-    xtazsZPsi4BmxQaEwIMSgOzPxLbzvENghdA8yZhizlH0f9FszebQDFCXbNDpzxfMLDEld
-    6L9v7cVMUHbaTNZsQauLtLpaLNLrMa3K9MFa6NSqDawLyNDawNjBqbYHrCafPMBCMinNc
+    zTeMz2xtclASDmdwAFAFcly4Cid3BrAac9AcDZdUH8DAhoErIHbGDvJzeRBTOaeQKBK3i
+    wH5OiaTIbJzicDHJ4aHH4FKgQFcISa9IfEzgKFCH4awI6DTfGFDMmdBE1MugYJULIifL8
+    xtazsZPsi4BmxQaEwIMSgOzPxLbAvFNghdA8yZhizkH0f9FszebQDFCXbNDpznfzLKEld
+    6MavKcJMtG1aTOfsmbdKqJrbPKIrSb0JtJScMJUrqblIpKUcpJaBqbYHrB4fOMzCLimNc
 reverse
 properties: top
 ref: Eddie Bravo "Mastering the System" Episode 82 @ 1:14:04
@@ -16854,10 +16878,10 @@ ref: Ryan Hall "50/50 Guard", Volume 2: "Transitions, Skill Drills, and Entries"
 to 50/50
 todo: wip
 ref: Ryan Hall "50/50 Guard", Volume 2: "Transitions, Skill Drills, and Entries", Section 2: Reverse Heel Hook to 50/50 @ 5:35
-    HQazJTCZaXD3H7bLGnDXa5AvI0bzHtEab5BBPva7E4E4haGcJQbGBbGIdxAvOLjuCrJCl
-    kCFOufCzNGdifBAO4bvAGH8iwFrQnbAAIIHiWGwQ3auAzJSioGQKpfTAnMtlbCJNbnaEn
-    IOgFx6ITkqxMFNeyywHag7xVGvfuzoHUhWyREtjtEJJlhSFGCfcWFKFNbTFOAAefN4Esb
-    uPvCCfdJXGZa9LyGwesIvJJccIhHGe3IMKzcEHlIHeqIdKecMF8DLbMJDCqdpP2C2fcRV
+    HQazJTCZaYD3H8bLGoDXa2ArI0bzHtD9bWBxPwa7E5EJgZGcJPbGBbGIdxAvOLjuCrJDl
+    jCFOufBzOGeigBAO5bwAGH7iwFsQnbAAJIIiWGwQ4auAzJSioGQKpfTAoMulbCJNbnaEn
+    IOgFx6ITkqxNFNeyywHag7xVGvfvzpHUhWyRC0jzDNJmhSFGCfcXFFFPbUFHAGegN0EBb
+    wPsAJeMJnG3bbLwD4gGHIJJcfIiFihcHBKsc2HvFXhfGyKkcvGeDQbMJxC0dPPsDKgkQa
     HfazMcEvfjIvH8a1IBEJefEWIqbJJOEZfoFGNqffGvC2jgAjJTbWBxGGdoAvOejazFJmk
     OyfNCgcDdHAg1v2KqiEEjHqhcAlJqjfETHBh0BlIhjdEjHZhsCuJ9eVyqLSkEzpMom1AB
     GQdJxSKuhevwEmcdAeHFePv2EOdvzUItfFwQANisCwIDg7DABmceFuE2bCFGA5hEJEE6g
@@ -17938,18 +17962,18 @@ ref: Eddie Bravo "Mastering the System" Episode 88 @ 12:20
     QNBz0huHpIYdRLgBqg2DsICawIwCahqCqI7bAHYDfgLB6JJbnGNB2dHKOEkiCMNFpk1Nm
     MjaMLQFyeuIdJwaHJqEahuGtKXaEJhFrgWGKJSbuCuHFmbCODadfBODSgoDHMbeGyOKHj
     QAdJDaTzyGUiZCOGKc6BzGxeIDtHBd5BwGzfDEnHre1CsHnfZFfGufCAmLLhmzsN7iwzg
-    t8aMuZGVc1tjvAaJyoGHa5wvvpbNxmGTcuwdyKfaCnH9egCQzXbCIaDEbGHuB5jGJEGwh
-    TMzzkgXGZJzgAJkBqg0DkHceUF4CdhtCnHRe1E0DigKB5Hwe5DPCidUK1Eqi8LbFalhJL
-    ScazGqG8b5PIPyaEIZD9aWNNPsaIHvFebPNyLtbOBTGLfVIbEAbUBfCUeVCxLXehx5KSj
-    EzeJbaTzKHziBCqGrdiBJG4eNEyHvd5BBHPd2FkHwe6CsIwc4EVGxfIAeLwg5x9NOhNwU
+    umazvRJdc4tUvLaEzlHibQwRvFbuyfIlcKwCy0ftCJIiesDiz7bTIwDGbDHAB4jWJyGwi
+    KMbzng0G1JzgBJkBqg0DkHceUF4CdhtCnHRe1E1DigKB5Hwe5DOCPedK0EEkgKFF6maJv
+    ScazGqG8b5PIPyaEIZD9aWNNPsaIHvFebPNyLyaYBIGLfVIbEFbQBgC1eWCsMhevx6K1j
+    vzaJeaZybHFiAClHmdkA4G6eOExH9egBmHOd3FjHRffB6Ivc5EVGJfvz9L9hgxUOKhLym
 add other leg
 properties: bottom
 todo: stub
 ref: Eddie Bravo "Mastering the System" Episode 88 @ 16:34
-    xjazxpPii4FMxGaEA8MIgOEfxBbzz4M6hdFyyPhiDLHQf9JSy4bQH5CNbNHPznfMP3Ebd
-    6QzvXcVRkG1aTSpsGauPTLfaLSbrCa3PzMva6SiqtawPYNtawRJBgbYLRB0fPQ1CCinRC
-    zJeMErxjclFiDcdwE5AuclDuB8d3FRz0c9ECDPdUMyDqhoIQIxbGHWJoeRGiNZeQO1KTi
-    vMxObaTMCJmibH8JRaHMuFDgRJAIIa9MFEpgKJ2HUawNwDJfGJ2McdAJrMkgYOmMehrQW
+    xjazxpPii4FMxGaEA8MIgOEfxBbAz5M6hdFyyPhiDKHQf9JSy4bQH5CNbNHPzdfzQaEbd
+    6QAvAcJQTGRaTSFscbdOQJhbPO8rIb0NTJIcMOkrgblMPKKcpNABgbYLRBUfOQZCBimRC
+    zJeMEsxjclFiDcdwE5AvclDuB8d3FRz0c9ECDPdUMyDqhoIRIxbGHVJpeRGjN0eQO1KTi
+    wMvN8aTMBJpicH7JUaHMuFAgQJCIIa9MFEpgKJ2HUawNwDJfGJ3McdBJrMkgYOkLyifQy
     McikGgPii4FLI9hcEwMJgOEfJkhYFLM6hdFyCuitGXHPf8JSzfcoH2CRbNHPztfGQaD5d
     9QEvUcURcGWaTSmsKauPWLgaLSbrFa2PzMva6SiqxawPXNtawRJBibZLTB1fTRhC0inRi
     zKeMEsxucwFuDcdwE5AQcKD0B8d3FRAlc8FlDOdUMzDHhsJCIebEHMI6ePF6MNf0MLMHi
@@ -17995,10 +18019,10 @@ todo: replace with something real. really i just want a footsies entry attempt a
     FEDPhdrEkFbbKC9RKaAF6A5axDLSKbeGFz4bbEbTRavGLzbaxEWKdcoIAJyg0DZIHjuD9
     MZfJKHO2azVWJLd4KdLjaYV4KlflJIMrbMVyDBgfICJwfvQuB6bCNwCGedP8wJgfJszwj
     lMDwAcdLKANiDQ2ApclJZELhMPpBAcNJOFXilPmCvckI7GYhCOWyzdQODyeitKiyNkxIG
-    OzazWwwfi4OVN2aESOySgOQkOabzTSyrhdO3MMhiQfDwf9KvMmbQLVIEbNMlLJfMDZGTd
-    6DFO5cVCzDZaTBWSpauDSzLaLClTua3D8ywa6CiUCawDHxzawCUJ1bYIfI3fPC7IqinCy
-    LQeMPBOfclOEImdwO6K8clQzJod3OhLzc9PrHpdUHFHZhoLlCUbGMtB7eRN9xaeQFCAmi
-    vHZw5aTH2B4ibMjBoaHHYFJgRKHCxa9HLGWgKKcDjawGRHCfGKazbdAK8yQgYGdyQhrDD
+    OzazWwwfi4OVN2aESOySgOQlN9bATSyrhdO3MMhiQfDwf9KvMmbQLVIEbNMlLTfzDRGUd
+    6DEPucJCZD8aTBGSWbdETBSbPFjTsb0FOBscMF8TXblGRAscpGVJ1bYIfI9fOC9IqimCy
+    LReMPAOfclOEImdwO6K7clQAJod3OhLzc9PqHqdUHFHYhoLlCUbGMuB7eRN8w9eQFCAmi
+    wH0w7aTH3B1icMkBlaHHYFNgQKFCxa9HKGWgKKcDjawGRHCfGKazcdBK7yRgYGfzxifDZ
 ...
 ref: Eddie Bravo "Mastering the System", Episode 88 @ 26:20
     I4chGfNCeBMeGpdvItKldFKRHSdoIHKSdvMdHxgLOMGrbfQ5DRe4JbEdbCKzyniRMQyVf
@@ -18693,29 +18717,29 @@ ref: Eddie Bravo "Mastering the System", Episode 84 @ 48:11
     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
-    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
+    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
-    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
+    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
 reverse
 properties: top
 ref: Eddie Bravo "Mastering the System" Episode 84 @ 48:35
-    OuazCFDPbQx7LcaTA1Cfezz3LXbJBUCnc8AgKPhYEDBta1GMD6ifCTA3hKE1JthHKIEYf
-    MMiKGdgJJB7duO8K5auMUFzaUPWKCbbNVGLbeQgKJaAO7HOauQhELiJG8HchvMlIjhbOG
-    EZazrXuJe6BgHjbruHymfNBtFXaWuGxlfoCsALa0zfAle2IDFhbCEwGte1FjEdbsOdIpe
-    NNLBHbJKjJfesJbDKfqKoGbe7MaC4gsKDGefLNfDuhHKAFiguNGGjclIHGzcTODF4eqQL
+    OwaCCIDUbQx7Lga0A6Ciezz2LYbUB2Crc8AgKxhMFzBwa1GKD9ifCTA6hKE1JuhHKJEZf
+    MMiKIdiJICcdqO9K6auMXFxaXPVKDbaNYGKbfQgKJaBO8HMauQhEOiJG8HchvMkIjhbOH
+    E5azrXuNe6BdHpbruIypfNBrF3aWuHxofoCoAPa0zeAoe2IDFkbCEvGwe1FjEdbsOdIqe
+    NNMBHbHKjJfesJeDNfsKoGee7L8C5gsKCGefLNgDvhHKAFiguNFGlclIIGzcTOEF4eqQL
     CkdypXz4cFw9Bzf9sszydNAACreWsxz8cwz4FzevyKBuaYGLBojwAYAfgBC2IghwH4Dyg
     FJ8JndsF9AGc3KqJTb2J2CZcuN7JOcGK9DHdbO0JEb8MgEtcqPLDyi0EGGahLJWG5hJMo
     EwazrBuidoz7Gpa3uMxVdfADE3aNupwQdhByAxaZzCz8eDHtFAbCEnGGe2FkEibuN2HWf
@@ -18795,18 +18819,18 @@ top settles\nin side
 properties: top
 ref: Eddie Bravo "Mastering the System" Episode 82 @ 1:10:19
 ref: Eddie Bravo "Mastering the System" Episode 84 @ 48:25
-    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
+    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
@@ -18818,18 +18842,14 @@ ref: Eddie Bravo "Advanced Rubber Guard", Section "Stoner Control Pass" @ p272
     NQYv2a3QfHOdHMTu6eIOmEzfiKpuIfUN6DNggKJuigmMZCDgxKjCoclL1C2dpRVDieeUu
     Edcnx4IbbYwGFFcPBqFnelxnF4bWAhFFcZxCI1a5GtBRaYC0FsgKEABShHEzFUgvNTAQg
     BNnHqeLJSxoduNrGxa1LGynauQpF2a5MPyPaZRsGlauNUzpauSrDRh1IsDjhrOoDlhcQ0
-    LUe1zzETfctKIueXAVCUdQwBJJfiByEbeBwvHMfJIfG8cWCAAUeGIECLbCHRAecwRCFJc
-    KQYvYa2QfHPdHMRu5eIOoEyfiKouIfUN7DLggKJuhgmM1CCgxKkCmcmL5CWdhQ8DrdRTG
-    MAbju7BpaFzWKnc7xtBedUBOLpb5xGASczB3JFboEpyxa6InE5gwFrBqgqE2FMgDNDAEg
-    uN1HseGJMxedoNqGwa2LGynauQqF2a5MPyPa0RtGlauNUzpauStCLihIHDehvOqDlhcQ2
-    LgffBmEocTupHMfmCvB7cDxkI1fuC9DvcNw9HwgnJPHHbWCAA0eyIpDbbCHMz3dIRiFrb
-    3Q0xebNN3GWbVMwzBe3O8Eae8LOyEfWPoEfgqLGyTg9OVDag4LfCncsLVCPc2RvC9eaTT
-    CSfcs1BpaGzXCigtwpBedTBODofFvSARcyB4HzeVBpysa9IoCvh8EVyVhAFTEGgKNYzCh
-    aOEIdecMnxBdhM6JGdkQax6auQmJWdxRsyza6RkJycySgyOaxSsBCixJbCjhrPfCRhmRO
-    KLfsDbDYazveG9fLD6BEbrxXInfFENC0aWxWG4gXLrIeaZCuBqetIdDHbCHJAxeNQ1EHb
-    sRozHetMrHmbxNACKe6PpEKeQNsCIfLQvE2fUMMDFguQWEagNMpCzcuLSCncYR4CGebUr
-    wUcuxEuoaAFNxNe0z5vUdZFOyGdNzNvDcYGKECeqDKvobnNsy2hLGewFghIFDsgqNWyOh
-    gPVG7esP0yiduM9D5cxSqxRawP9DkclTnyjbaRaCEbcTsydaASmzzi4KjBChePTCmhwSo
+    LTe1zAETfctKIueXAVCUdQwBJKfiByEbeBwwHMfJIeG5cWCCAUeGIKCObCHWAXcgR5FUc
+    HQYxRdnOKHPdHMRBDeOPOEyfiKoCue4QIDLggKJDJeXQxCCgxKkCfcoMfDedvQ0DrdRTF
+    MAbju7BpaFzWKnc7xtBedUBOLpb5xHASczB3JAbuEpyxa5InE4gBFMBpgzFjFUgyNRABg
+    qOlHreHJOxcdmNpGwa2LGynauQqF2a5MPyPa0RtGlauNUzpauStCKigI8DfhtOpDlhcQ2
+    KLfsDbDhaAvJG9fLD6AfaExUInfFENBEaOx4G4gXLrHdaYCaBlezIiDwbCHXAueQQ7EIb
+    sRqzJetMuHobvNACIe6PnEIeSNsCIfLQvE2fUMMDFguQWEagNMpCuczL1CncYR4CGebUr
+    xfcvxSBpaGzXx7e2AjBedTBOyVdSzSARcyB4EVe4Dlyta0IpzPiDGlwxhAHxDAgiN9yMg
+    4QkHgekP9yjdANbD8czSnxRauQbDjclToyjbaRaCEbcTsydaASmzoiHKEBAhePTCmhwSo
 capoeira\npass
 properties: top
 ref: Eddie Bravo "Mastering the System" Episode 17 @ 20:37
@@ -19021,10 +19041,10 @@ properties: top
     hPQuyf2SKx6gqNBxpewP5uYgkQAypeHPkuVfeRgyJd9OfvzeSSgsKbNNjwsbBR6ysb2TP
 push head\noutside
 ref: Marcelo Garcia "Winning Techniques of Submission Grappling", Series IV, Volume 6: The Crucifix, Technique 1 @ 1:40
-    DIazFqKoaTFXCTaEI1IiaFI3DobCH7IwbAH0EdhZF4JCidHpEen4JLHEnNLgF6ptBJLlo
+    DHazFpKoaSFXCOaEI3IkaHI2DabzH3IUbNIeEdh7F5JHiAHkEfn1JJHCnQLiF6ptBJLlo
     hDiFAkRCrKBjGC3JjkVAAGzj2EMKglGAVFhj5ETJ2mSBrEDkvFSHqpVHuIRoWB7KooFz0
-    PEazqDEXkMLTLVaEqiFGhXJEMUbBqEFFjqJoPrg2tJHpmnDwL2ngunI8nowHOusPAQJDs
-    5BENTobBjFLrMzqL6kVDjHMn7AKLHjTDTIvnlBqKyjJEuJJnlBELcrawbMgtLCgMkuIEN
+    PDazqDEXkMLTLWaGqiFGhXJEMWbGqIFEjpJqPcg2uAHrmpDqL4ncuqI8nnwKOusPAQJEs
+    4BCNTobBjFLrMzqL6kVDjHMn7AKLHjTDTIvnlBqKyjJEuJJnlBELdq7wbMgtLCgMkuIEN
     DIazFqKoaSFXCSaEI3IjaEI4DobzH7IubyH0Eeh6F3JCikHqD7nSJTHAnKLfFEoXBZK1o
     nDiFBkmCsKAjIC5JjkVAAGzj2EMKglGAVFhj5ETJ2mSBrEDkvFSHcp1HCIvoTB6KioGz6
     PCazqDEXkMLTLTaEqhFGhXJEMVbyqBFEjpJqPwg6tNHrmpDpL0m3ulJanmwJOotIAfJkt
@@ -19626,10 +19646,10 @@ ref: Marcelo Garcia "Advanced Brazilian Jiu Jitsu Techniques", COUNTER KNEE-ON-B
 top\nstands up
 properties: top
 ref: Marcelo Garcia "Winning Techniques of Submission Grappling", Series III, Volume 3: Sweeps and Turnovers, Technique 6 @ 22:09
-    QbaAvfESaAvQOTcfyiGJcAyqP1bmx0FLbyypPCa4ETEfa3E8L8eqzSIreiABMXjLGZHxj
-    5GxP6gtFXE0f9F0OddVIEF3eYJ1NUdvJQG1e1KRMOdBKrIefcKuKthYBPKhkpHgJWlCJz
-    HbfHBnNDgbBpIedwEeMDdnDHHKeTD5M1eJDOGpieJYNxhRJVH2bSHzLIbDHoG9fgPmLWe
-    LQjFcgyLlN9foMcERhQHnP0f8IiEzigF9QEgkHbFchXE6QagJF6J3bOLqJuf6QCJIiBRo
+    QcaAvfESaAvQOTcfyiGJcAyqP1bmx0FLbyypPCa4ETEfa3E7L8eqzSIreiAAMXjLGZHxj
+    5GxP6gtFXE0f9F0OedVIEF3eYJ1NUdvJQG1e1KRMOdBKrIefcKuKthYBPKhkpHgJWlCJz
+    HbfHBnNDgbBpIedwEeMDdnDHHKeTD4M1eIDNGpidJXNxhRJVHZbTHuLIbEHnHcffPmMee
+    YPOFcgyLlOfeNLxERhQHmPQgzHREzigGaQshxHaFchXE6P2hFFUJYbMLkJFf1QyJIizRo
     QWaztkESaFvSQbdNuZHCcXwMQicsvpGucqxAPAaYCbFfeyD6NNgWzaKifUzAM8jOHXHFk
     oGwPyf1GIFbgsF4OmdmJKF3eYJ1NGc8KPG1e1KRMqdxKRIefcKuLBi8CdKpkjHkJWlCJz
     HbfHBnOngJBMIedwEeMJdDC8HKeSD4M5eVDCGpicJYNwhOJSH2bUHqLKbFG7GXdBPLLMd
@@ -19785,10 +19805,10 @@ ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Vo
 open\nguard
 properties: bottom
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 3: Sweeps and Turnovers, Technique 2 @ 6:30
-    zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEnGni
+    zMazy7vVaAGvCmbHBvy4ctFTCnaTAkyHbmGOI8a3BHDfa0L0CCdoCvA1diFTIAiUEnGni
     UJlJAejEcGgemKnLldGH0KxdLJDLWeEIHLretKfMKegJGMydPKBCYg3ERHWjAG4JNlkHW
-    wYgRzkuVi1BpzJeVAZwZgkC1y2f9BcxihwCjAjgVHMDYhjA0Gdc7IwHZdgFgNPcFNtQhc
-    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKlbQIEPKcWLqRseNMc
+    wYgQzjuWi0BpzIeVAWwYgkC1y3f9A9xfhxCjAngUHSD3hgA3Gbc8IwHYdiFfNOcFNsQhc
+    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKkbRIDPKcWLqRseNMc
     zPazySvQaAGtCnbrBtzwaEFSCpaSz5yFaEGZI7a2BHDja1L4Cyc7CrA2ddFQHyknDBFkk
     CIkJKgjEnGWgqJMMthgHtLbgOKSMEidIoLDhVLeNTivIEMpikL8CIgXErHjk3GnI9mxHw
     wYgQzju5iYBrzHeVAXw5gkC1y3f9BbxvhvCfAOgAHSElgmBTGbchIqIwcbFtMZgZMZOGg
@@ -19797,18 +19817,18 @@ ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Vo
     uIXKMguCMEIgGLyMyfeGpI2fXLGMrfDHAJ8gxL5Nhf7IpLbgLLrC5hsEuHDkJG3Jtl6In
     u5iGJjElkOwdxYgPHLDEhixmxDhnI2EgisxSEuh5I0Iqh7DsGZbDI7I0bGF4M5f6N5Qlf
     HKaIwfZMZNneOGIEKhRMDMagCC1DViHL0LwhnB9DMiqKJKihAB5LgcvJJOLgYL3O5jzL5
-    A6aAwcvuaAF2CXcfyWyEcAFRDkbmxPx7byGGIUa4BTCWa3LACNeqB7BpeiFBJejLFgFUj
-    5JAJ4gtB4D6f9LqLjdVE6H2eYMIL9dvF0Jge1MmL2dBHgJCfcK8DxhYEyH0kpHFJLlCJc
-    BnfHG5EUgbBGEldwHKGhdnDLDYeTH5GAeJDvIbieMoL0hRGmG3bSJIITbDGxM7fgOGQwe
-    LLaIGgyN9OffoG5FahQMhLYf8DpDZigLRLogkCgDrhXKLKdgJB5LobOJ6Prf6NoQdiBNC
+    A6aAwbvuaAF1CXcfyVyEcAFRDkbmxOx7byGFIUa4BTCWa3LACNeqB7BpeiFBJejLFgFUj
+    5JzJ3gtB4D5f9LqLjdVE6H2eYMIL9dvF1Jhe1MmL2dBHgJCfcK8DxhYEyH0kpHFJLlCJc
+    BnfHG5ETgbBGEldwHKGhdnDKDXeTH4GzeIDuIbidMnL1hRGnGXbTJIISbEGwM9ffODQfe
+    YKEIHgyN9NKeNGDFahQMhLwgzDjDZigLSLghxCqDrhXKLJZhFB5LgbMJ7Puf1NcQdizNC
 sweep
 todo: wip
 properties: bottom
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 3: Sweeps and Turnovers, Technique 2 @ 8:08
-    DhaAvfrYaAvQBZcfyitPcAyqC7bmx0sRbyypCIa4ETrla3E8zeeqzSvxeiABz3jLGZuDj
-    5GxDcgtFXr6f9F0BjdVIEs9eYJ1A0dvJQt7e1KRzUdBKrvkfcKuxzhYBPxnkpHgw2lCJz
-    uhfHBnAJgbBpvkdwEezJdnDHuQeTD5z7eJDOtvieJYADhRJVu8bSHzyObDHouffgPmy2e
-    LQjsigyLlBffoMcrXhQHnC6f8IirFigF9DKgkHbsihXE6DggJF6w9bOLqwAf6QCwOiBRo
+    DiaAvfrYaAvQBZcfyitPcAyqC7bmx0sRbyypCIa4ETrla3E7zeeqzSvxeiAAz3jLGZuDj
+    5GxDcgtFXr6f9F0BkdVIEs9eYJ1A0dvJQt7e1KRzUdBKrvkfcKuxzhYBPxnkpHgw2lCJz
+    uhfHBnAJgbBpvkdwEezJdnDHuQeTD4z7eIDNtvidJXADhRJVu5bTHuyObEHnuiffPmzke
+    YPOsigyLlBleNLxrXhQHmCWgzHRrFigGaDyhxHasihXE6C8hFFUw4bMLkwLf1QywOizRo
     DhaAvfrYaAvOBZcfyitPcAymC7bmx0sSbyynCHa5ESrsbaE7y7dnzlvQetAOCiiVF3ygl
     aFNDqeIHRudi0GvAvdGKKtvfQJozqduLotZfcKrypefLwvifbKxy8hjBiABkJHlA4ljJS
     yulXAVBDdZB4wZiAAWz1cmEVxfjwB3AOdwERxnjwI1BWhtKqtHdKH8xfcIIsvTgOQuzsc
@@ -19841,10 +19861,10 @@ sweep
 todo: wip
 properties: bottom
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 3: Sweeps and Turnovers, Technique 2 @ 10:42
-    QbaAvfESaAvQOTcfyiGJcAyqP1bmx0FLbyypPCa4ETEfa3E8L8eqzSIreiABMXjLGZHxj
-    5GxP6gtFXE0f9F0OddVIEF3eYJ1NUdvJQG1e1KRMOdBKrIefcKuKthYBPKhkpHgJWlCJz
-    HbfHBnNDgbBpIedwEeMDdnDHHKeTD5M1eJDOGpieJYNxhRJVH2bSHzLIbDHoG9fgPmLWe
-    LQjFcgyLlN9foMcERhQHnP0f8IiEzigF9QEgkHbFchXE6QagJF6J3bOLqJuf6QCJIiBRo
+    QcaAvfESaAvQOTcfyiGJcAyqP1bmx0FLbyypPCa4ETEfa3E7L8eqzSIreiAAMXjLGZHxj
+    5GxP6gtFXE0f9F0OedVIEF3eYJ1NUdvJQG1e1KRMOdBKrIefcKuKthYBPKhkpHgJWlCJz
+    HbfHBnNDgbBpIedwEeMDdnDHHKeTD4M1eIDNGpidJXNxhRJVHZbTHuLIbEHnHcffPmMee
+    YPOFcgyLlOfeNLxERhQHmPQgzHREzigGaQshxHaFchXE6P2hFFUJYbMLkJFf1QyJIizRo
     QbaAvfESaAvQOTcfyiGJcAyqP1bmx0FLbyypPCa4ETEga4E7L7eqzSIreiABMYjJGZHxj
     5GxPDfUGFE0geFNOmdlJLEYeGJQNGc8KPFSeUKLMqdxKRG7eYKFKthYBPKikpHgJWlCJz
     HbfKBxGVghB6IbdGEpH3dOEFHFe4ElIyeZD4Gqi8JRPhfFFuGucrIcJZbCHpGKfFPIKzd
@@ -19925,10 +19945,10 @@ ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Vo
 top recedes,\nbottom sits
 properties: bottom
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 3: Sweeps and Turnovers, Technique 4 @ 17:49
-    QbaAvfESaAvQOTcfyiGJcAyqP1bmx0FLbyypPCa4ETEfa3E8L8eqzSIreiABMXjLGZHxj
-    5GxP6gtFXE0f9F0OddVIEF3eYJ1NUdvJQG1e1KRMOdBKrIefcKuKthYBPKhkpHgJWlCJz
-    HbfHBnNDgbBpIedwEeMDdnDHHKeTD5M1eJDOGpieJYNxhRJVH2bSHzLIbDHoG9fgPmLWe
-    LQjFcgyLlN9foMcERhQHnP0f8IiEzigF9QEgkHbFchXE6QagJF6J3bOLqJuf6QCJIiBRo
+    QcaAvfESaAvQOTcfyiGJcAyqP1bmx0FLbyypPCa4ETEfa3E7L8eqzSIreiAAMXjLGZHxj
+    5GxP6gtFXE0f9F0OedVIEF3eYJ1NUdvJQG1e1KRMOdBKrIefcKuKthYBPKhkpHgJWlCJz
+    HbfHBnNDgbBpIedwEeMDdnDHHKeTD4M1eIDNGpidJXNxhRJVHZbTHuLIbEHnHcffPmMee
+    YPOFcgyLlOfeNLxERhQHmPQgzHREzigGaQshxHaFchXE6P2hFFUJYbMLkJFf1QyJIizRo
     PMaApWFRazsBOBcmsXG6cAvrPBbksJGdbsvgPZa1zEE0bjBUL4e0vBIIePwLM1j9DJHVk
     yDcPlf6EmFAgyDXN7dUHFGafcH1NPdsIOGSe4I3MBdAJgH9fcI0KRh1yCKpkXEyKmlCHa
     GKg9xsOFghxnI8eMyXMJdEzaIofUzzNleSzuGzibFQNEhMFLHybCHRLfbCHIG2hQMYL8h
@@ -19961,22 +19981,26 @@ ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Vo
     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
-    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
+    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
 end in\nnorth/south
 properties: bottom
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 3: Sweeps and Turnovers, Technique 4 @ 17:37
@@ -20024,15 +20048,15 @@ ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Vo
     VOSKwjrJEEQgiRdMjfKKhDjcQTrNDfBKmDib0UnNWeDLgCwa1UAFljdI5Ihl5NPKsntOB
     PqckBFP9caziNHbtEON2aEBZNwczDUOjbXBtJvh0FDP0guGqHzbRH8LibDHSFTeZO7Lmf
     hQoCYcTL4NWeHMvB5dyHZKsf8KqBeerHJJ6hfJXBifuG2IYhjJgJIbMLTIxftP6IlhZQ5
-    HJfFzjOhcsDjE3e3BMKFbKC2GnfIBTLqcuD1HVjaHFKee8KjCJe7JLD1cmLPHflpOYGji
-    mSXJyipMfDGeBR9LAePMSDCauTqMMeqM2C7a8UoM1diNFCsawVlEpgiNEHskwRBIZmgSO
-    QHcSCWQEcIznOqbMFBOhaMBwOwc0EROXb1BAKAimGMP9ghGUHAcmICLfbKIUEHczQCJsb
-    ASzB1boMVMFdCPLBkfhLtJ6eAMlBygvK7JCfELKCFg0KVIvfwK5I4bMMDGMczSBGhd9UG
+    HKfFzjOicsDjE4e3BLKGbKC2GofIBTLrcuD1HWjaHFKfe8KjCKe7JLD2cmLPHflrOUGii
+    jSZJyipMfDEeAR7LBePMSDCauTqMMeqM2C7a8UoM1diNGCsawVlEpgiNFHkkqRuI2lTSO
+    QIcSCWQFcIznOrbMFCOiaMBxOxc0EROYb1BAKAimGMQaghGUHBcmICLgbKIUEHczQCJtb
+    ASzB2boMVMGdCPLBkfhLtJ6eAMlBygvK7JDfELKCGg0KVIvfwK5I4bMMDGMczSAGid9UG
 sweep
 properties: bottom
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 3: Sweeps and Turnovers, Technique 14 @ 52:44
-    xIfFwPFncswrwTe3AnCfbKyfx3fIzJDqcuyDCAjaDCFZe8Evzte7IhBIcmJgF9lpJ2HCi
-    mNRGvipGuEZeBOFIyePFRFEauPLJCeqFkFNa8QQKbdiFIFMawR0C3giKyHNkwL6JKmgMe
+    xIfFwPFncswrwTe3AnCfbKyfx3fIzJDqcuyDCAjaDCFZe8Evzue7IiBIcmJgF6lrJZHCi
+    jNUGvipGuEXeAOFIyePFRFEauPMJCeqFkFNa8QQKbdiFIFMawR0C4giKyHDkqL4JMlTMc
     HacSuME7cIrRGNbMygEnaMuYGsc0xAEYb1uDEhimBoIXghymCQcmEBF2bKCMEYczMQJ0b
     ALLAGboLiK4dCHDzhfhKuG1eAGgzggvJ4GifEF2z5g0JhEZfwF7GkbMG5HNczNiIzd9Pi
     wPdaw3FzdYwnwQcQAICEccxOxzdFzMDDc6ymBIiaCWF2fcEszndXHSCbbUJeE2kWKJGAh
@@ -20071,8 +20095,8 @@ sweep
 properties: bottom
 todo: should end elsewhere
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 3: Sweeps and Turnovers, Technique 15 @ 55:38
-    HofFxNO3csxpGze3BlLVbKzdHJfIAHM6cuzBMgjaEAPFe8FtI9e7JfLocmKePPlpK0Rii
-    mOPQbipHsOFeBPDSeePGPPkauQJTieqGiPta8ROTRdiGGPsawSYMJgiLwRtkwM4TqmgNc
+    HofFxNO3csxpGze3BlLVbKzdHJfIAHM6cuzBMgjaEAPFe8FtJae7JgLocmKePMlrKXRii
+    jOSQbipHsODeAPDSeePGPPkauQKTieqGiPta8ROTRdiGGPsawSYMKgiLwRjkqM2TslTNa
     QQcSvKONcIsPQtbMzeN3aMvWP8c0yyOEb1vBNXimCmSDghzkMwcmFzPIbKDKOEczNOTGb
     AMJKmboMgUKdCIBIXfhLsQHeAHeIWgvK2PYfEG0JLg0KfOFfwG5P0bMH3RtczOgSfd9Qg
     GGazzlO8cKx8FSaFCZMiclArGHbsB4NDcZAEKNg1CtPqfMGNIhegImKCbCJEP2jvLTPUf
@@ -20605,10 +20629,10 @@ escape
 properties: top
 todo: Saulo starts from a full guard quillotine, and ends with some trachea forearm pressuring to make bottom let go of the guillotine
 ref: Saulo Ribeiro "Jiu Jitsu University", Section 12-0: Classic guillotine escape @ p87
-    ABfSPiJbiBVwCdfrLWHwf0TtCBfhNjHFhqTpHQbePcFrklNxHfbNIhGzfrIPPlfKKeMlj
-    XIYOKbiLGHTk9H4K5diLaJDheICKFeaKkKcf2IGKXfmKaJweWIEKpeAG6OvitJ8OgjSMq
-    uYa7TlDbaAZCxRcuRxFIbyW1w3bgRoFIaKYeBPa1MpLba2T2CNfXRfFKfmTtJlg2J3L9f
-    hNaGfjQH2N2aXM0HhghF3MJaMIQHxfuE3MwbaHBHEecFhLYauGIGCgiPgLofdKsMEddJj
+    ABg5O7JciBVxCqffMtHwf0TtCyfcNXHEhqToH3a5PcFrkmNyHfbNIkGyfqIPPlfKKeMlj
+    XIYOKbiLGHTk9H4K5djLaJDheICKFd9KkKcf2IGKXfmKaJweWIEKqeAG6OvitJ8OgjSMq
+    vjaATbC8azZzxOc6R7FrcjXexobPRzFza9X1BTaYMqLda5TYCNfRRdFLfkTrJlg3J2L9f
+    hNaGejRH2N2aXM0HhghF3MJaMIQHxfuE3MwbaHBHEecFhLYauGIGDgiPgLpfcKtMEdcJj
     Cse9JrFomsRBFzdAKPFFiMRMEAeyLfFEjKQII0b9PYE7kyJOHmbRJdFPekGPPLeWH8Nsi
     VGlO3cSMfJjkqEGK7dgKRKngLGIKGdZJVJ8gsHWKUfbJDJtfsIiJ7dYGBPOhAHfQEjOIn
     vcaQTeC9azZvwSdKRxATb1WUw8chRzCgcaXhCCaYNAHSeTUlCyhQMOD1iRP7JBh4HSL9e
@@ -20617,30 +20641,30 @@ ref: Saulo Ribeiro "Jiu Jitsu University", Section 12-0: Classic guillotine esca
     UCbPodBLhJUh8CELSeZJoKkfpF4KPewIOKbf3HeJKfbICJlfzH6JIdvFHPdfBEEQFhJFf
     viaVTgrRfnNFuxbAPIuuguLjvMbwQtupgAMOAWdhMfzQihQQCuizHXDFjOLgLRg4FOLQf
     ZKJLSkCCMH0fgNoOZh4BHLGeKK2QfhTBILUdXJZQMgKBuMieAITGKibICMrfpH4M5cPHC
-    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
+    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
-    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
+    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
 to back
 todo: stub
 ref: Saulo Ribeiro "Jiu Jitsu University", Section 15-4: Overwrap to back @ p104
@@ -21179,10 +21203,10 @@ todo: need source
     IEnNOfIGpHWdjBlMHbFFUDRcQCIMiaxFnDmcrDRMmauD3DYcqEYMSgFDwHtgFG7FjgDIG
     H7kivdWGccwLHMg1wZTpccuVHgilw8TSckwfEhihDlQgbFB7F8bFD3JKb6EoEcdZMJI8e
     dNxDIdeIbLZaVLKHmePJzNCbVHOHZfMKaObcQG3Jdf2J8NScLFMHyb7IaGve1NTHig9Pe
-    T3dLxp11azyEVkevAMY0bSAjUTdgz8Zba8y5WqaYGwTIa0uSR2e4C4QKfezzJId6G1HWg
-    xCYMXaTFZHtcDAsMvaEBRDYcfC3LIaKARDDcfEkLtbUAjEnbZFiNKfgCKHMfEFDE8fxF6
-    E3azw7X9cOypFxaEAOVucNvNFobAzLVvcwxeFoixAeP0b3BtF3cRD7JJcjEuE7f0MoJ2f
-    cMODPdxICLVa0LVHAe0HnM8auHNIDfOHmNPbaGUJpf1GoNnbCFOHrcuIbHLgUMRHJjBMU
+    UscTwR1IazyNTKdYAlZkc2z8UOc4zOZdb7yXWra2GhTHa0uUR1e9C1QJfdzzJId6G1HUg
+    xCYMXaTFZHscDAtMuaEBRDYcfC4LHaKARDCcfEkLsbUAjEnbZFjNHfgCJHLfEFDE8fxF6
+    E2azw7X8cOyoFwaEAPVtcNvMFnbBzMVvcwxdFoixAePZb3BtF3cRD8JJcjEuE8f0MoJ3f
+    cMPDPdxIDLVa0LVHAe0HoM8auHNIDfOHmNPbaGUJpf1GpNnbCFOHrcuIcHMgUMRHJjBMU
 backtake
 properties: bottom
 ref: Ryan Hall "The Deep Half Guard", Volume 3: Advanced Deep Half Attacks, Section 2: The Armdrag @ 7:43
@@ -21375,10 +21399,10 @@ properties: top
 pummel
 properties: top
 ref: Ryan Hall "Arm Triangles", Volume 1: Positions & Theory of Choking, Technique 21: Leg Drag @ 2:06:36
-    OnazCjDvbQyeK1aTAOB1ezAfLObJBEB9c8AsKNhYEqBxa1GZD0ifCZA3hKFgJIhHKzFif
-    MMmKSdgJxCzduPjLqauMGF3aUPYK0bbNJHfbeQeLaaAOUIjauQcERiJHcHvhvMiIJhbOA
-    Eoazr2uze6BMGQbruFycfNBPFuaWuIxefoCRAva0zvAve2IUFfbCEzGte1FjECbsOiINe
-    NNFBVbJKwJqesI3DZfqKvGue7MaDjgsKLGAfLNfDJhHKIFFguNIGtclIHGZcTOCGAeqQL
+    OpaCCmDAbQyeK4a0ATB4ezAeLPbUBNCdc8ArKyhMFnBAa1GYD3ifCZA6hKFfJJhHKAFjf
+    MMlKUdiJvCEdqPjLrauMJF1aXPXK1baNLHebfQfLaaBOWIgauQcETiJHcHwhvMhIJhbOB
+    Euazr1uDe6BJGWbruGyffNBNFAaWuJxhfoCOAya0ztAxe2ITFibCEyGwe1FjECbsOiIOe
+    NNGBVbHKvJqesI6D2fsKvGxe7L8DkgsKLGBfLNfDKhHKIFGguNIGvclIIGZcTOCGAeqQL
     OnazCjDvbQyeK1aTAOB1ezAfLObJBEB9c9ArKxhYEnBxa2G0DNh2CBAEhvEyIpi3KKDRg
     IMdI9j3GgBxdjOmIHgdHOEpawP8JdfXIZEYaWRdIBfrJXF0auRMDZi9GMGqhOMgHpiuOC
     Eoazr2uze6BMGQbruFycfNBPFuaWuIxefoCQAxa0zxAwe2IUFebDEAGte6FgEmbAN2Iwe
@@ -22000,10 +22024,10 @@ pass
 properties: top
 todo: wip, also has several alternative endings
 ref: Roberto "Cyborg" Abreu - Half Guard Pass to Back, https://www.youtube.com/watch?v=k5gx7leNBEA
-    3taXOfT1bsEQ1fdDMQTGeZFP04clNASEd0FmUrboPrLOdkGpR0fSKPROgGHaKbjML9Kyk
-    7GSJZe5L7NoiyD7HZboLzJng6DqGMbKLxIchbCXFIa7LnHhgmDmPyjlJGJBkOJyG4ltJr
+    1VaAPMT1bsEQ1bdpNtTEeZFP0kcCOpSEd0FnTHdEP4LMdhGoR7gUJ9RshcGxJ9jNL5J4k
+    8GEJYe5L7NiiFEeHZboLzJmg6DqGMbLLxIchbCXFJa7LnHggmDmPnj3I7JEkOJrG4ltJr
     TdifCHU5hWFXPChfClSHgvDuQshDDvSYggEVMNgJJmRnbbJpM5fpCANhbUDSEwgZFcD3b
-    QF9I3hCEgH0boIwLeiXHCF7auMmJWiRHWFiaDNjJqjqIXFFauOyJedBDHDreyF1AYfdGO
+    QF9I6hFEmH0boIwKijeH7F7auMmI5i3ItFiaDNjIujvJxFFauOyJedBDHDreyF1AYfdGO
     3taXOfT0bsEQ1fdDMQTEeZFP04clNASDd0FnUhbXOPLLdgGoSggJJ8RPgAGtKIjJLKKak
     7GwJZe7L6NHkODqHZbqLzKNhLEnGMbLLxJSgVEIFJa6LnKffFE0PCjMIpJHkOJiG5ltJr
     TdifCHU5hWFXPChfClSHgvDuQshDDvSYggEVMNgJJmRnbbJpM5fpCANhbUDSEwgZFcD3b
@@ -22439,10 +22463,10 @@ Erik Paulson https://www.youtube.com/watch?v=J1OvDhD5E8I @ 0:17
     tOxNHiFJiKkbbNpQsfTKSOzblOtRzfGLvPJbzOUSceBLyQPa3OCI2eUIDJIh7N1K8jBPM
     U2kKGaX9o3DoR9i3EDXQlpDbSgkmFlXkmnEcMqlUIGUalvKiQ5hxFZUbfDGzLSdkLnQac
     LNGLua5HjUceDO3IIebHZRvh3PxICfnHCQEiXPXJvf8G5Qtj5PqQzdAHKNsdpNFMfdAPZ
-    TEfFvaY0csAEQre3wSVAbKzvRHfIxkV4cuADRLjaDiTle8GrMde7D2MXcmGnPilpKdNoi
-    mNQScipH9K4eBMpT1ePJgKFauNDU7eqJIJXa8OsVcdiKoI4awPcMSgiIeOPkwMOP1mgOm
-    1rcSAV2gcIxsYzbMCVZraMyXYRc0CeZ5b1zaUyimC7ZVghECRccmD9UFbKFlMqczLbQyb
-    AOfKJboGWUmdCMkKqfhFmSIeAIoKJgvE3SofEHGLSg0FaRufwGLRDbMIpNWczNCMWd9Pv
+    TCfFu9YYcsADQpe3wSVybKzuRFfIxkV2cuACRKjaDiTke8GqMce7D3MWcmGnPilrJ9Nmi
+    jNSSbipH8K1eAMnT0ePJfKFauNDU7eqJHJWa8OrVcdiKnI4awPcMQgiIfOJkqMFP4lTOn
+    1pcSAS2ecIxpYxbMCUZpaMyVYPc0CcZ3b1y8UximC5ZUghEARbcmD8UEbKFkMpczLbQxb
+    AOfKJboGWUldCMjKpfhFmSHeAInKIgvE4SnfEHGLQg0FaRsfwGKRCbMIoNVczNBMWd9Pv
 reverse\nbutterfly
 properties: bottom
 ref: Eddie Bravo "Mastering the System" Episode 100 @ 1:08:19
@@ -22479,16 +22503,24 @@ ref: Eddie Bravo "Mastering the System" Episode 100 @ 1:08:19
     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
-    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
+    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
 to side
 properties: bottom
 ref: Eddie Bravo "Mastering the System" Episode 100 @ 1:08:19
@@ -22496,18 +22528,22 @@ ref: Eddie Bravo "Mastering the System" Episode 100 @ 1:08:19
     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
-    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
+    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
@@ -22515,10 +22551,10 @@ ref: Eddie Bravo "Mastering the System" Episode 100 @ 1:08:19
 sit up
 properties: bottom
 ref: BJ Penn "Mixed Martial Arts - The book of knowledge", Section: Sit-Up Guard @ p184
-    zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEnGni
+    zMazy7vVaAGvCmbHBvy4ctFTCnaTAkyHbmGOI8a3BHDfa0L0CCdoCvA1diFTIAiUEnGni
     UJlJAejEcGgemKnLldGH0KxdLJDLWeEIHLretKfMKegJGMydPKBCYg3ERHWjAG4JNlkHW
-    wYgRzkuVi1BpzJeVAZwZgkC1y2f9BcxihwCjAjgVHMDYhjA0Gdc7IwHZdgFgNPcFNtQhc
-    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKlbQIEPKcWLqRseNMc
+    wYgQzjuWi0BpzIeVAWwYgkC1y3f9A9xfhxCjAngUHSD3hgA3Gbc8IwHYdiFfNOcFNsQhc
+    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKkbRIDPKcWLqRseNMc
     zPazySvRaAGtCnbrBtzxaEFSCpaSz5yFaEGZI7a2BHDja0L5CydbCtAWc2FSG3kFD0EGk
     lI2Ikf9DwFsf6KLJ0edGPJxe7JQKFfbHpKhgbJwLreOIpLvfVJbCvgUEHFRk5GxHjm9Hl
     w9gZzIwdiLAxzMe3BxxBgBDeyNf3BRx9hlB9AOgpIrEYgEBkGBcJI8IgcxFRLNgJNUP0f
@@ -22590,10 +22626,10 @@ properties: bottom
     ZJFKHfID8GIfXLTK1c5HpJrc8J5K7dXIjKfdZJyLkdSJxLudxJjDEgwFzIqj8HQKRjKIS
     yghsByxziFDaAQfsDiAmheE9zWgvDHAbhIDPA7hcKjF4gVADFvbSIJHnbWFvNtdCNlPpd
     HIfJ8gLMfMBgRGaJbj7JSJRkaGDIVlcI7JFljG7Jnk2HRJdlpImJObNI3O3ecK3QagDLj
-    zTazyUvSaAGuCnbrBtzxaEFTCwaSz6yIaEG2I5aZBDDhaYL5CudrCuAYdkFQIAiUEnGni
+    zMazy7vVaAGvCmbHBvy4ctFTCnaTAkyHbmGOI8a3BHDfa0L0CCdoCvA1diFTIAiUEnGni
     UJlJAejEcGgemKnLldGH0KxdLJDLWeEIHLretKfMKegJGMydPKBCYg3ERHWjAG4JNlkHW
-    wYgRzkuVi1BpzJeVAZwZgkC1y2f9BcxihwCjAjgVHMDYhjA0Gdc7IwHZdgFgNPcFNtQhc
-    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKlbQIEPKcWLqRseNMc
+    wYgQzjuWi0BpzIeVAWwYgkC1y3f9A9xfhxCjAngUHSD3hgA3Gbc8IwHYdiFfNOcFNsQhc
+    vIFJTaTPaPka2EhHlbRLZLfbaFLHgdbLXLzcnFpHDdNKTKLdkFsKkbRIDPKcWLqRseNMc
 get up
 todo: stub
 properties: bottom
@@ -23136,3 +23172,116 @@ todo: need source
     oNFM2guIlE1cYMKLNdyLnIMdGKWKAdpLTJsddLYJBebLBKzdQMfEkiRIeINiiMFKxiqOH
     LCaOz1EoaACcMedDCnFhdmEAMlceCnEQbZEDOJboINGabjLlKwflESGUfzFRNpfeNBH4f
     kOEOOaTOoGOaTNSLuaPRbJIaQQQKlbkRsKnayRSJkavRCLgbqSkJKgqI0KTe0OXKUe4RD
+enter z
+properties: top
+todo: this is not quite what Denny does
+ref: Denny Prokopos https://www.youtube.com/watch?v=VnvGJOPNgkM @ 0:02
+    VgazB9JgazzFS8aEy4LbaEwyTubwz7KObGxsTihHDbIEgIBDPwlGyULWlGx3MtnrH8ISk
+    7GyQKnqGhHshnD7OzjOGiIod7GMPqjgG3Icd0H3PthWHiHHcTIzMOmuChJTmCIJJAmPLm
+    KOmivMRuj7xFKsizvxPnhzzpJ6jBwrP0iNzJF3iqBUOrijGsHScEFbLxb5FiGOdFN4Med
+    BOaEub3KjNebZJWGweVH5OpfXIDHnfVIePfgZIAIAfTHVODiaIBJxbPI8JwebONJmfJQY
+    3laAvEJaazzN1bdtuLLcaWwK1ocJv1K1bRxUXQepBMMAgdC3StiIA2P1kNzeP8mlJnLPm
+    aHTSHiBIqJDlMDKQlffJjJUh9GcQveXKwJPhhHaQldOK5Jlf8G5PIkZDANxlzJ7MCmfMw
+    MqkJwSRLjpxPK4hIyEOLhAy5LBiZy5P3hVzFMNiDFRQ6gJGtIHc6ESMgb0E4IDfSNzMmc
+    jOuKahcJnNAbfJ8MwkhHRQzerJQMsjTI8RxffJQMYkDJZRrgxJ4KkcFISKxeqO5KgfzRs
+    3laAvEQhbsy30VdpvvQ4eZzK1tcCwEQhd0Aw0DdEDpOKdhHiUxgUCKQVhcB3TsjNKSOmk
+    8IZTqe5K3NhiFE6ScboMIK6g6ItRJbLNPKfhbJoRca7OJKhgmKpSAj3EWQOkOKnPSltMN
+    NZify1RIhWysMmhfCfOxgvzNNKhDBTPYggz3RSgJHqTAbbDaLFfpEHMWbUEZK0gZNDLIb
+    QOpLShFI4PmboLAPOjeJjSfauOJPHi3KzSQaDPQQtjvLvT8auPXLjdBIHLneyOWLdfdRw
+back\nstep
+properties: top
+ref: Denny Prokopos https://www.youtube.com/watch?v=VnvGJOPNgkM @ 0:05
+    3laAvEQhbsy30VdpvvQ4eZzK1tcCwEQhd0Aw0DdEDpOKdhHiUxgUCKQVhcB3TsjNKSOmk
+    8IZTqe5K3NhiFE6ScboMIK6g6ItRJbLNPKfhbJoRca7OJKhgmKpSAj3EWQOkOKnPSltMN
+    NZify1RIhWysMmhfCfOxgvzNNKhDBTPYggz3RSgJHqTAbbDaLFfpEHMWbUEZK0gZNDLIb
+    QOpLShFI4PmboLAPOjeJjSfauOJPHi3KzSQaDPQQtjvLvT8auPXLjdBIHLneyOWLdfdRw
+    3IaDEnQhbsy32aaEA0Q4eZzK11bzCbQhd0AxZMgrGEOKdgHiUlgVCoQJhqCaSLmrKwOcm
+    FHMVmivKFMEjvEHRKhoIWPLhIHbRof7IYPPgZIiQ2fBHSQifLIdSMj4E1P6m5JPOsniLX
+    NZify1RIhWysMmhfCfOxgvzNNKhDBTPYggz3RSgJHqTzbbDaLFfoEJMVbWE4KXgYNFLYb
+    LOiLcg0IYPNaXLDOMg0K2P0feL9OWgJMkPYfQNjQegDMEPqgZNxLkdIIHLoesOYLdfdRw
+    3IaDEnQbbsyH2aaEA0QOeWzN18bzCbQldLAsZDgEF8PbcJHaTwiWDSQahYCJQDlELVLZn
+    nJjPPjjHVMrmMEEOuh8D6M4iVCBN3iOC9NNhRCNNjiuCaNygIClQekKF4N8mMK6Nfm2ND
+    OwhSr7P5hsyYL2gOuCNygMBDNhhCuMOOggBgMXiSBBTba6CDJrdHEEMNciFcKagWNvMgb
+    VOpKmgQISPyaYLcOigVKqP0fgLvOSgKLzPYfQMFP5gELQPqgZMTKxc8IRKWeqOwLeffQ0
+    3FaEEoMMduAV15aGA5KOgcCs1ya6CpLOfgC5Wge8EvOhbdIdQqioGkMVhyFDPvljOeKCm
+    YNnQci3J9HkkhLuOffkKmFzgrMkNCeoK3E4fUNpNLc9KUEReHNFNukIICMTmiOSM3muRy
+    P0e3xcMdazvMO7c2AdLGaEzrO4eozPMWaHyDKPiGDbSMcNBPI6b2ErMJb2E4IveRNELSb
+    sOmF7cZJ8PcbIK2HRgOKzMKe5JNIvgVLJMvfUKKJPg4LCLkgvKKKicaIDKgdwPmKleMRF
+    RKlDtjMUcHykOskguaJVc6ApPrkYuZLhdJAANTmKByOBe7GsJekeFZHQgRGqMpmxLqI1k
+    OPuMzjfIaGLhGMONmfjJkFNdtNCNleUKAFkdvONNbdCKSEWcxPxHqjzJRKXl1NJL3l6Qb
+    PSdFywQXg0tONhbPAvOMeXv5NmcZzGP2fCwaKFiBCDRXe2CQInclEvL4bLEBG8dPNiLwb
+    sOdEDbUJMOKcBKXEIf2JjLOeNIHFlgTJ1LgfRI2GCg9JJJ0f4IKJ2bUItJjc3OQJceuQ3
+    FyfFvMMTcsx2Dze3yPJkbKyFESfIyCKicuzrHNjaDPKHe8FPDie7G9E3cmIPIVlrK1I0i
+    jPdKvipHSGeeAO1MDePHYGwauQiNPeqHQGha8RmOddiIpFSawSrFSgiKvJDkqNvLClTOm
+    O8cSw6OdcItENAbMAfMraMwkNvc0zuM7b1wcJ9imCjPAghA4HIcmEQLkbKEeGSczNjLYb
+    AN1DnboKoOodCKvClfhI9K4eAHPCtgvIKKsfEHnDvg0IiJcfwG0J8bMImJnczOHJqd9QQ
+posture\nand wedge
+properties: top
+ref: Garry Tonon https://www.youtube.com/watch?v=XjnZr_SVaWo @ 0:51
+    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
+flying\nscissor
+a.k.a. kani basami
+ref: Stephan Kesting https://www.youtube.com/watch?v=XRklGgwpbj0
+    3eaAGxQZaILl1EaODdSKaIH71PbNEhStbOI41lhXHnRgiyKqXsnhFdTYnqGnXDvlKwSMv
+    IIwWjrEM3Pot0LgTYuNOFOQwIOBTvvKPkOixxPuSrvOPZOLxmQIV6rbGyVawzJKUNyvLy
+    KZaAMNKMazYEHmaVNlHzaEWIIobSNkIwbAXaLOhUNyKLh6WtJrofPcIWnKSPNkvwN6Otv
+    4S4NasaKOQBrWShP6tSIlScuyO9Qiu5HOSJvvOsQVv0IsTNvcNIKKrzRLOUwhQiQDyePZ
+    QuaCDwQTaZLyM6bZDPSDb7IvOscyD4R2cTJDTNgHFLQDjlLURxngFeO2oAHCWnu8IOQ8w
+    xJnWkqLHhMXu5KMS6pvJAOqwOOuT1pRKuOfxDPrTIpvLJOIxiQCSfrnGBTTv2JDUrx1Lg
+    KZaAMNKMazYEHmaVNlHzaEWIIobSNkIwbAXaLOhUNyKLh6WtJrofPcIWnKSPNjvuN4Otv
+    4S4Mqr8KZQBrWShOZtYIfScuyO9Piu9HRSJvvOsQivMImTNvcNIKKrzRLOUwhQiQDyePZ
+    QGazDtTlkYWhM1aHDrQmjiUSN2bLDHQ8krUxPzinFePen4OZLAnZF6K5pjJATwtGG6P7v
+    9J7TvpAEILswBKEUDlvErNRwROeViktEWOcxAPbUQjpFkOExaQhN1rrG8SIviJiTZxcKH
+    KZaAMNKMazYEHmaVNlHzaEWIIobSNkIwbAXaLOhUNyKLh6WtJrofPcIWnKSPNjvrN3Otv
+    4S4LHr8K8QBrWShNSt6IbScuyO9OlveHVSJvvOsPBvuIfTNvcNIKKrzRLOTwhQhQDyePZ
+    GpdRVOOpmHY5CYeCUMLdnkXpEde4UhMAncWPITicQiPMomQOJ3lHKrKKoYL2P0nJE0PFs
+    lHuQkjdDWNfviKcQEe7C3NPwROfQTdSDhNSxNPaQQcTCxNVxBQoKLoZHFQoqqFBSWraFB
+    KZaAMNKMazYEHmaVNlHzaEWIIpbTNkIwbAXaLLhZNAKKh9WrJAonPgIZnNSUMlvKN0NTw
+    HSMLEr6LdOar7TNMysfG7PCqWPONlsUGiP4qXOENxsiE7PUp1NKKRrzRXN4wzP0Qmx0PZ
+    JbiR00G5mC0WGXhXX8FnlWXKIkiiYfGPl8X3KihtRCLJoqTFGXkkMcIqntNCLomyEsLLr
+    wHhMKilCYJGujKtOJeGClIBxfNzPPd6CNHVxTOuQmc3CnInx4PGH3nlJiLKo2FQNLqvEQ
+    KZaBMNKNaEYEHnaYNlHFa0WJIrbXNkIGb0W6LmicNFLtinWvGlmxPGGZmzTmHLvIOXFTv
+    OT1IAtMKJJ0tAUwKGr6HoNfrCSkLxscGoOirxRxMarfFTOpqPQvGIqrRuGUwIRxHWy6Q7
+    JbiQ0TG6mC0WGXhXX4FolWXJImiiYdGPl9X3JGhFRrJHn1RYDWiVNNDUmCOlInmqGhFsq
+    HIiKviDEsA2rgJLNufTDcxPsmMzOtfrCsxnsGNMOZejCywvrUOnDYlhKbHjoZGWJeqyFS
+    KZaGMONddy1YHpbdNnKFdlZgIwb9NmLneoZVJBiWOmI1khXfDekuQLCWlzUiwNqOPiwqq
+    EUDzDpvLMAvplWoCPo8I0EqqYVpDzoNHXFprMUZEDplHBGqrrUlzlmbRWwbrAR0wqubRI
