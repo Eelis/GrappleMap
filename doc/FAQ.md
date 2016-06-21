@@ -58,20 +58,22 @@ the most awesome (no-gi) grappling map ever. :)
 See also [Can I help map techniques?](#can-i-help-map-techniques).
 
 
-## What tools do you have?
+## What tools are there?
 
 Apart from the composer and explorer, which are part of the web pages,
 there is a transition editor, and some utilities for making videos of
 scripted or randomly generated matches, like this one:
 
-[![demo](https://img.youtube.com/vi/REqz5DBH0xw/0.jpg)](https://www.youtube.com/watch?v=REqz5DBH0xw)
+[![demo](https://img.youtube.com/vi/-y2x1KwtI6w/0.jpg)](https://www.youtube.com/watch?v=-y2x1KwtI6w)
 
 
 ## What's the editor like?
 
 It's a very minimalistic but highly specialized character animation editor
 where you edit transitions simply by dragging the joints into place for each
-respective keyframe. It is written in C++ and uses GLFW.
+respective keyframe. It is written in C++ and uses GLFW. It runs on Linux
+and [Windows](http://eel.is/GrappleMap/windows-packages/)
+(and probably other platforms, too, but I haven't tried).
 
 A mini manual is [here](https://github.com/Eelis/GrappleMap/blob/master/doc/editing.md).
 
@@ -88,18 +90,23 @@ quality of the individual transition animations.
 The graph structure itself is obviously a gross simplification.
 Real grappling is a continuous space where
 even individual positions and transitions occur in infinite variety.
-But, something is better than nothing.
+Still, all grappling instructionals include examples
+of forms that a technique can or should take.
+The GrappleMap tries to connect and integrate all these fragmented
+examples, in order to form a more complete picture.
 
-The transition animations are very rudimentary, in part because
+The transition animations are pretty rudimentary, in part because
 they are manually edited rather than motion-captured, and in part
 because the animation system itself is currently based on
-very simplistic fixed-interval keyframes. This means that things
-like small-scale hand fighting and battling for grips is barely modeled at all.
+very simplistic fixed-interval keyframes, which limits joints to
+5 direction changes per second.
+This means that things like small-scale hand fighting and battling
+for grips is barely modeled at all.
 Usually the level of detail in the map is that a grip is either
 acquired without great strain, or not at all, and that's it.
 The timing of techniques is also not really captured at all.
-Really, the animations are only very rough first order approximations.
-
+The animations are really just schematics showing how the different
+entanglements and postures flow into eachother, not live action.
 
 ## What about gi techniques?
 
@@ -181,20 +188,7 @@ existing transitions and positions, to reflect a more refined understanding of t
 different angles, dynamics, and controls around the area in question. But that is to be expected:
 every part of the map is fair game for refinement at all times.
 
-One thing that needs to be stressed is the need for citations of instructional source materials,
-and the pedigree of the instructors. The GrappleMap is only useful to people if they can be confident
-that
-
-  1. it contains only proven, battle-tested bread and butter techniques
-     that the very best practitioners rely on in top competition; and
-  2. the instructional materials cited provide the best exposition, by instructors
-     who have been successful with the technique at the highest level.
-
-You can still use the GrappleMap *software* to map any moves you like, including
-experimental ones you're just playing with at the gym, in a database of your own.
-And you're free to base that custom database off of "the" GrappleMap.
-
-Anyway, I hang out in #grapplemap on Freenode IRC. Do [drop by](https://webchat.freenode.net/)! I'll gladly help people get going.
+Anyway, I hang out in #grapplemap on Freenode IRC. Do [drop by](https://webchat.freenode.net/) or mail me at grapplemap@contacts.eelis.net, I'll gladly help people get going.
 
 
 ## Can I help improve the software/website?
