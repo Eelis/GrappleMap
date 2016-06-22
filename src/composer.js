@@ -386,7 +386,7 @@ function updateDrawnPos()
 {
 	var therealpos = ideal_pos();
 
-	thepos = (thepos ? interpolate_position(thepos, therealpos, sliding ? 0.08 : drag) : therealpos);
+	thepos = (thepos ? interpolate_position(thepos, therealpos, sliding ? 0.12 : drag) : therealpos);
 }
 
 function tick()
