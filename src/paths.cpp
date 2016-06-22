@@ -63,7 +63,7 @@ bool dfsScene(
 {
 	if (size == 0) return true;
 
-	if (double(steps_taken.size()) / scene.size() < 0.91)
+	if (double(steps_taken.size()) / scene.size() < 0.93)
 		return false;
 
 	std::multimap<std::pair<size_t /* occurrences */, double>, Step> choices;
@@ -76,7 +76,7 @@ bool dfsScene(
 
 		if (!scene.empty() && scene.back().seq == s.seq) continue;
 
-		double const score = norm2(follow(g, n, s.seq).reorientation.reorientation.offset);
+		double const score = rand()%1000;//norm2(follow(g, n, s.seq).reorientation.reorientation.offset);
 
 		choices.insert({{c, score}, s});
 	}
