@@ -551,13 +551,19 @@ namespace
 
 		void write_tag_list(Context const & ctx)
 		{
-			ctx.html << "<br><br><table><tr><td>Tags:</td><td>";
+			ctx.html << "<br><br><table style='border-collapse:collapse;padding:0px;margin:auto'><tr><td style='vertical-align:top;padding:0px'>Tags:&nbsp;</td><td style='padding:0px;text-align:left'>";
 
-			bool first = true;
+			int i = 0;
 
 			foreach (tag : tags(ctx.graph[ctx.n]))
 			{
-				if (first) first = false; else ctx.html << ", ";
+				if (i != 0)
+				{
+					ctx.html << ", ";
+					if (i % 2 == 0) ctx.html << "<br>";
+				}
+
+				++i;
 
 				ctx.html << link("../index.html?" + tag, tag);
 			}
@@ -575,7 +581,7 @@ namespace
 			}
 
 			ctx.html
-				<< "<br><br>Go to:"
+				<< "<br>Go to:"
 				<< " " << link("../composer/index.html?p" + to_string(ctx.n.index), "composer")
 				<< ", " << link("../explorer/index.html?" + to_string(ctx.n.index), "explorer")
 				<< ", " << link("../index.html?" + join(v, ","), "search");
