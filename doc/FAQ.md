@@ -64,7 +64,7 @@ Apart from the composer and explorer, which are part of the web pages,
 there is a transition editor, and some utilities for making videos of
 scripted or randomly generated matches, like this one:
 
-[![demo](https://img.youtube.com/vi/-y2x1KwtI6w/0.jpg)](https://www.youtube.com/watch?v=-y2x1KwtI6w)
+[![demo](https://img.youtube.com/vi/HFCER0sNZvY/0.jpg)](https://www.youtube.com/watch?v=HFCER0sNZvY)
 
 
 ## What's the editor like?
