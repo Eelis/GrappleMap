@@ -179,8 +179,8 @@ namespace
 		glEnable(GL_LIGHT1);
 		glEnable(GL_LIGHTING);
 
-		GLfloat light_diffuse[] = {0.57, 0.57, 0.57, 1.0};
-		GLfloat light_ambient[] = {0.07, 0.07, 0.07, 0.0};
+		GLfloat light_diffuse[] = {0.65, 0.65, 0.65, 1.0};
+		GLfloat light_ambient[] = {0.03, 0.03, 0.03, 0.0};
 		GLfloat light_position0[] = {2.0, 2.0, 2.0, 0.0};
 		GLfloat light_position1[] = {-2.0, 2.0, -2.0, 0.0};
 
