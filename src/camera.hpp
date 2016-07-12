@@ -9,7 +9,7 @@ class Camera
 {
 	V2 viewportSize;
 	V3 offset{0,0,0};
-	V3 orientation{0, -0.7, 1.7};
+	V3 orientation{0, -0.6, 1.7};
 		// x used for rotation over y axis, y used for rotation over x axis, z used for zoom
 	M proj, mv, full_;
 
