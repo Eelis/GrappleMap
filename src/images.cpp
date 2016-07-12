@@ -49,6 +49,24 @@ namespace
 				throw std::runtime_error("command failed: " + command);
 		}
 	}
+
+	vector<double> smoothen_v(vector<double> const & v)
+	{
+		vector<double> r;
+
+		for (size_t i = 0; i != v.size(); ++i)
+		{
+			double c = 1;
+			double t = v[i];
+			
+			if (i != 0) { t += v[i-1]; ++c; }
+			if (i != v.size() - 1) { t += v[i+1]; ++c; }
+
+			r.push_back(t / c);
+		}
+
+		return r;
+	}
 }
 
 void ImageMaker::png(
@@ -185,12 +203,11 @@ void ImageMaker::png(
 void ImageMaker::png(
 	Position const pos,
 	double const angle,
+	double const ymax,
 	string const filename,
 	unsigned const width, unsigned const height, V3 const bg_color) const
 {
 	if (boost::filesystem::exists(filename)) return;
-
-	double const ymax = std::max(.8, std::max(pos[0][Head].y, pos[1][Head].y));
 
 	Camera camera;
 	camera.hardSetOffset({0, ymax - 0.57, 0});
@@ -204,6 +221,7 @@ void ImageMaker::png(
 string ImageMaker::png(
 	string const output_dir,
 	Position pos,
+	double const ymax,
 	ImageView const view,
 	unsigned const width, unsigned const height,
 	BgColor const bg_color, string const base_linkname) const
@@ -220,7 +238,7 @@ string ImageMaker::png(
 	if (view.mirror) pos = mirror(pos);
 
 	if (view.heading)
-		png(pos, angle(*view.heading), output_dir + "/" + filename, width, height, color(bg_color));
+		png(pos, angle(*view.heading), ymax, output_dir + "/" + filename, width, height, color(bg_color));
 	else if (view.player)
 	{
 		Camera camera;
@@ -257,6 +275,8 @@ string ImageMaker::rotation_gif(
 		to_string(width) + 'x' + to_string(height) +
 		'c' + to_string(bg_color) + ".gif";
 
+	double const ymax = std::max(.8, std::max(p[0][Head].y, p[1][Head].y));
+
 	make_gif(output_dir, gif_filename, 8, [&](string const gif_frames_dir)
 		{
 			vector<string> frames;
@@ -264,7 +284,7 @@ string ImageMaker::rotation_gif(
 			for (auto i = 0; i < 360; i += 5)
 			{
 				string const frame_filename = base_filename + "-" + to_string(i) + "-" + to_string(bg_color) + ".png";
-				png(p, i/180.*pi(), gif_frames_dir + "/" + frame_filename, width, height, color(bg_color));
+				png(p, i/180.*pi(), ymax, gif_frames_dir + "/" + frame_filename, width, height, color(bg_color));
 				frames.push_back(frame_filename);
 			}
 
@@ -293,11 +313,21 @@ string ImageMaker::gif(
 
 	make_gif(output_dir, filename, 3, [&](string const gif_frames_dir)
 		{
-			vector<string> v;
+			vector<double> ymaxes;
 			foreach (pos : frames)
+				ymaxes.push_back(std::max(.8, std::max(pos[0][Head].y, pos[1][Head].y)));
+			for (int i = 0; i != 10; ++i)
+				ymaxes = smoothen_v(ymaxes);
+
+			vector<string> v;
+			int i = 0;
+			foreach (pos : frames)
+			{
 				v.push_back(
-					png(gif_frames_dir, pos, view, width, height, bg_color,
+					png(gif_frames_dir, pos, ymaxes[i], view, width, height, bg_color,
 						"" /* no symlink */));
+				++i;
+			}
 			return v;
 		});
 
@@ -334,10 +364,22 @@ string ImageMaker::gifs(
 		make_gif(output_dir, filename, 3, [&](string const gif_frames_dir)
 			{
 				vector<string> v;
+
+				vector<double> ymaxes;
 				foreach (pos : frames)
+					ymaxes.push_back(std::max(.8, std::max(pos[0][Head].y, pos[1][Head].y)));
+				for (int i = 0; i != 10; ++i)
+					ymaxes = smoothen_v(ymaxes);
+
+				int i = 0;
+				foreach (pos : frames)
+				{
 					v.push_back(
-						png(gif_frames_dir, pos, view, width, height, bg_color,
+						png(gif_frames_dir, pos, ymaxes[i], view, width, height, bg_color,
 							"" /* no symlink */));
+					++i;
+				}
+
 				return v;
 			});
 

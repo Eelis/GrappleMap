@@ -429,27 +429,25 @@ namespace
 		{
 			cout << '.' << std::flush;
 
+			auto const props = properties(g, sn);
+
+			bool top = props.count("top") != 0;
+			bool bottom = props.count("bottom") != 0;
+
+			auto frames = frames_for_sequence(g, sn);
+
+			if (g.from(sn).reorientation.swap_players)
+				foreach (p : frames)  std::swap(p[0], p[1]);
+
+			auto const reo = canonical_reorientation_with_mirror(frames.front());
+
+			foreach (p : frames) p = reo(p);
+
 			foreach (v : views())
-			{
-				auto const props = properties(g, sn);
-
-				bool top = props.count("top") != 0;
-				bool bottom = props.count("bottom") != 0;
-
-				auto frames = frames_for_sequence(g, sn);
-
-				if (g.from(sn).reorientation.swap_players)
-					foreach (p : frames)  std::swap(p[0], p[1]);
-
-				auto const reo = canonical_reorientation_with_mirror(frames.front());
-
-				foreach (p : frames) p = reo(p);
-
 				transition_gif(
 					mkimg, output_dir, frames, v,
 					bg_color(top, bottom),
 					't' + to_string(sn.index));
-			}
 		}
 
 		std::endl(cout);
@@ -591,10 +589,12 @@ namespace
 		{
 			auto const pos_to_show = orient_canonically_with_mirror(ctx.graph[ctx.n].position);
 
-			ctx.mkimg.png(ctx.output_dir + "/images/", pos_to_show, ctx.view,
+			double const ymax = std::max(.8, std::max(pos_to_show[0][Head].y, pos_to_show[1][Head].y));
+
+			ctx.mkimg.png(ctx.output_dir + "/images/", pos_to_show, ymax, ctx.view,
 				480, 360, ctx.mkimg.WhiteBg, 'p' + to_string(ctx.n.index));
 
-			ctx.mkimg.png(ctx.output_dir + "/images/", pos_to_show, ctx.view,
+			ctx.mkimg.png(ctx.output_dir + "/images/", pos_to_show, ymax, ctx.view,
 				320, 240, ctx.mkimg.WhiteBg, 'p' + to_string(ctx.n.index));
 
 			ctx.html
