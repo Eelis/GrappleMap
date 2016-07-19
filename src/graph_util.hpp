@@ -133,6 +133,7 @@ optional<PositionInSequence> node_as_posinseq(Graph const &, NodeNum);
 
 pair<vector<Position>, ReorientedNode> follow(Graph const &, ReorientedNode const &, SeqNum, unsigned frames_per_pos);
 ReorientedNode follow(Graph const &, ReorientedNode const &, SeqNum);
+NodeNum follow(Graph const &, NodeNum, SeqNum);
 
 bool connected(Graph const &, NodeNum, NodeNum);
 

@@ -204,6 +204,14 @@ ReorientedNode follow(Graph const & g, ReorientedNode const & n, SeqNum const s)
 		"node " + std::to_string(n.node.index) + " is not connected to sequence " + std::to_string(s.index));
 }
 
+NodeNum follow(Graph const & g, NodeNum const n, SeqNum const s)
+{
+	if (g.from(s).node == n) return g.to(s).node;
+	if (g.to(s).node == n) return g.from(s).node;
+	throw std::runtime_error(
+		"node " + std::to_string(n.index) + " is not connected to sequence " + std::to_string(s.index));
+}
+
 set<string> tags_in_desc(vector<string> const & desc)
 {
 	set<string> r;
