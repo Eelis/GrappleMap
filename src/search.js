@@ -277,6 +277,9 @@ function add_paged_elems(target, page_size)
 
 			for (var i = 0; i*page_size < items.length; ++i)
 			{
+				if ((i+1) * page_size >= items.length && page > i)
+					page = i;
+
 				target.appendChild(document.createTextNode(' '));
 
 				if (i == page)
