@@ -51,7 +51,6 @@
 			<h2>Explorer</h2>
 			<hr>
 			<p>Drag nodes to unclutter.</p>
-			<p>Use arrow keys to rotate.</p>
 			<hr>
 			<p>
 				View: &nbsp;<select id='view_select' onchange='on_view_change()'>
@@ -61,6 +60,7 @@
 				</select>
 				<button onclick='on_mirror_button_clicked()'>mirror</button>
 			</p>
+			<input type="range" min=0 max=40 step=1 id="rotation_slider" style='width:100%' oninput='on_rotate()'>
 			<p>
 				Open in: <a id='search_link'>search</a>, <a id='composer_link'>composer</a>
 			</p>

@@ -25,6 +25,12 @@ function on_mirror_button_clicked()
 	reo.mirror = !reo.mirror;
 }
 
+function on_rotate()
+{
+	var v = parseInt(document.getElementById("rotation_slider").value);
+	externalCamera.alpha = v * 0.16;
+}
+
 function auto_enable_edit_mode()
 {
 	if (selected_nodes.length <= 5)
