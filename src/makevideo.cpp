@@ -136,7 +136,7 @@ int main(int const argc, char const * const * const argv)
 					white, // background
 //					{{0, 0, 1, 1, none, 50}}, // view
 					third_person_windows_in_corner(.3,.3,.01,.01 * (double(width)/height)),
-					14, // grid size
+					16, // grid size
 					4 // grid line width
 					);
 
