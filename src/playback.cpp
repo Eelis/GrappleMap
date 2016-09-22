@@ -25,6 +25,7 @@ struct Config
 	string start;
 	optional<string /* desc */> demo;
 	optional<pair<unsigned, unsigned>> dimensions;
+	optional<string> dump;
 };
 
 optional<Config> config_from_args(int const argc, char const * const * const argv)
@@ -34,13 +35,14 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 	po::options_description desc("options");
 	desc.add_options()
 		("help,h", "show this help")
-		("frames-per-pos", po::value<unsigned>()->default_value(9),
+		("frames-per-pos", po::value<unsigned>()->default_value(12),
 			"number of frames rendered per position")
 		("script", po::value<string>()->default_value(string()),
 			"script file")
 		("start", po::value<string>()->default_value("staredown"), "initial position")
 		("length", po::value<unsigned>()->default_value(50), "number of transitions")
 		("dimensions", po::value<string>(), "window dimensions")
+		("dump", po::value<string>(), "file to write sequence data to")
 		("db", po::value<string>()->default_value("GrappleMap.txt"), "database file")
 		("demo", po::value<string>(), "show all chains of three transitions that have the given transition in the middle");
 
@@ -65,11 +67,24 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 		, vm["frames-per-pos"].as<unsigned>()
 		, vm["length"].as<unsigned>()
 		, vm["start"].as<string>()
-		, vm.count("demo") ? optional<string>(vm["demo"].as<string>()) : boost::none
+		, vm.count("demo") ? vm["demo"].as<string>() : optional<string>()
 		, dimensions
+		, vm.count("dump") ? vm["dump"].as<string>() : optional<string>()
 		};
 }
 
+void dump(std::ostream & o, PerJoint<V3> const & p)
+{
+	foreach(j : {
+		Core, Neck, Head,
+		LeftHip, LeftKnee, LeftAnkle, LeftHeel, LeftToe,
+		LeftShoulder, LeftElbow, LeftWrist, LeftHand, LeftFingers,
+		RightHip, RightKnee, RightAnkle, RightHeel, RightToe,
+		RightShoulder, RightElbow, RightWrist, RightHand, RightFingers})
+	{
+		o << p[j].x << ' ' << p[j].y << ' ' << p[j].z << ' ';
+	}
+}
 
 void do_playback(
 	Config const & config,
@@ -90,11 +105,37 @@ void do_playback(
 		else if (!config.script.empty())
 			fr = smoothen(frames(graph, readScene(graph, config.script), config.frames_per_pos));
 		else if (optional<NodeNum> start = node_by_desc(graph, config.start))
-			fr = smoothen(frames(graph, randomScene(graph, *start, config.num_transitions), config.frames_per_pos));
-	//		else if (optional<SeqNum> start = seq_by_desc(graph, config->start))
-	//			fr = frames(graph, Scene{randomScene(graph, *start, config->num_transitions)}, config->frames_per_pos);
+		{
+			Frames x = frames(graph, randomScene(graph, *start, config.num_transitions), config.frames_per_pos);
+
+			auto & v = x.front().second;
+			auto & w = x.back().second;
+			auto const firstpos = v.front();
+			auto const lastpos = w.back();
+			v.insert(v.begin(), config.frames_per_pos * 15, firstpos);
+			w.insert(w.end(), config.frames_per_pos * 15, lastpos);
+
+			fr = smoothen(x);
+		}
 		else
 			throw runtime_error("no such position/transition: " + config.start);
+
+		if (config.dump)
+		{
+			int n = 0;
+			std::ofstream f(*config.dump);
+
+			foreach (x : fr)
+			foreach (p : x.second)
+			{
+				dump(f, p[0]);
+				dump(f, p[1]);
+				++n;
+			}
+
+			std::cout << "Wrote " << n << " frames to " << *config.dump << '\n';
+			return;
+		}
 
 		Camera camera;
 		Style style;
