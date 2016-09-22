@@ -1,0 +1,81 @@
+# Written by MakeHuman 1.1.0
+version v1.1.0
+tags grappleman
+camera 23.0 60.5 0.0503274741282 0.113200008775 -0.0707040318847 1.225
+modifier torso/torso-vshape-decr|incr 0.402000
+modifier armslegs/l-lowerarm-scale-vert-decr|incr 0.364000
+modifier armslegs/l-upperarm-scale-vert-decr|incr 0.012000
+modifier stomach/stomach-tone-decr|incr 0.208000
+modifier armslegs/r-upperleg-muscle-decr|incr 0.064000
+modifier armslegs/r-foot-scale-decr|incr -0.376000
+modifier armslegs/r-upperarm-scale-horiz-decr|incr 0.506000
+modifier macrodetails-universal/Muscle 0.740000
+modifier macrodetails/African 0.000000
+modifier neck/neck-trans-down|up 0.012000
+modifier hip/hip-scale-depth-decr|incr -0.442000
+modifier macrodetails-proportions/BodyProportions 0.506000
+modifier torso/torso-scale-horiz-decr|incr -0.818000
+modifier torso/torso-trans-backward|forward 0.026000
+modifier neck/neck-scale-horiz-decr|incr -0.506000
+modifier macrodetails/Gender 1.000000
+modifier torso/torso-scale-vert-decr|incr 0.350000
+modifier armslegs/l-upperarm-shoulder-muscle-decr|incr 0.402000
+modifier pelvis/bulge-decr|incr 0.026000
+modifier macrodetails-height/Height 0.526000
+modifier breast/BreastSize 0.500000
+modifier torso/torso-muscle-dorsi-decr|incr 0.702000
+modifier armslegs/r-lowerarm-scale-vert-decr|incr 0.364000
+modifier armslegs/l-foot-scale-decr|incr -0.350000
+modifier armslegs/l-lowerleg-scale-horiz-decr|incr -0.012000
+modifier macrodetails/Age 0.500000
+modifier armslegs/r-lowerarm-muscle-decr|incr 0.546000
+modifier breast/BreastFirmness 0.500000
+modifier macrodetails/Asian 0.000000
+modifier armslegs/lowerlegs-height-decr|incr -0.988000
+modifier armslegs/r-lowerarm-scale-horiz-decr|incr 0.520000
+modifier armslegs/l-upperleg-scale-vert-decr|incr -0.012000
+modifier eyes/l-eye-trans-in|out 0.026000
+modifier armslegs/l-lowerarm-muscle-decr|incr 0.546000
+modifier armslegs/upperlegs-height-decr|incr 0.364000
+modifier armslegs/r-foot-trans-backward|forward 0.012000
+modifier head/head-age-decr|incr -0.364000
+modifier macrodetails/Caucasian 1.000000
+modifier armslegs/r-upperarm-shoulder-muscle-decr|incr 0.416000
+modifier armslegs/l-lowerarm-scale-horiz-decr|incr 0.520000
+modifier hip/hip-scale-horiz-decr|incr 0.142000
+modifier armslegs/l-upperarm-scale-horiz-decr|incr 0.506000
+modifier armslegs/l-upperarm-scale-depth-decr|incr 0.194000
+modifier head/head-scale-horiz-decr|incr 0.454000
+modifier torso/torso-scale-depth-decr|incr -1.000000
+modifier armslegs/r-upperarm-muscle-decr|incr 0.234000
+modifier armslegs/l-upperleg-muscle-decr|incr 0.038000
+modifier hip/hip-scale-vert-decr|incr 0.702000
+modifier armslegs/r-upperleg-scale-vert-decr|incr -0.052000
+modifier armslegs/r-upperarm-scale-depth-decr|incr 0.194000
+modifier hip/hip-trans-down|up -1.000000
+modifier armslegs/l-upperarm-muscle-decr|incr 0.220000
+modifier armslegs/l-lowerarm-fat-decr|incr 0.116000
+modifier armslegs/l-upperarm-fat-decr|incr 0.116000
+modifier armslegs/r-lowerarm-fat-decr|incr 0.116000
+modifier armslegs/r-lowerarm-scale-depth-decr|incr 0.442000
+modifier head/head-scale-vert-decr|incr 0.286000
+modifier torso/torso-trans-in|out 0.026000
+modifier neck/neck-scale-vert-decr|incr 0.026000
+modifier armslegs/r-upperarm-fat-decr|incr 0.116000
+modifier armslegs/l-lowerarm-scale-depth-decr|incr 0.428000
+modifier macrodetails-universal/Weight 0.500000
+modifier hip/hip-trans-backward|forward 0.012000
+modifier stomach/stomach-pregnant-decr|incr 0.064000
+modifier hip/hip-waist-down|up -0.052000
+teeth Teeth_Base 0a5ec82a-0d5f-43ce-a765-8f076f95692d
+skeleton cmu_mb.mhskel
+eyebrows eyebrow001 9c81ec3a-faa5-4c94-9cdb-992300ba3084
+eyes Low-Poly 1cc97a30-85a1-42e6-a9f7-b3e753732baa
+clothes male_casualsuit06 be449715-fd7d-49d1-bca1-7fdd4264bc2d
+clothesHideFaces True
+background other grapplebody.png 0.910714285714 -2.1333398819 2.50000286102 1.0
+background front grapplebody.png 0.910714285714 0.400001525879 1.43333530426 1.02
+expression threaten01.mhpose
+skinMaterial skins/middleage_caucasian_male/middleage_caucasian_male.mhmat
+material Low-Poly 1cc97a30-85a1-42e6-a9f7-b3e753732baa eyes/materials/brown.mhmat
+subdivide False
