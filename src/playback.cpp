@@ -15,6 +15,7 @@
 #include <fstream>
 
 using namespace GrappleMap;
+namespace po = boost::program_options;
 
 struct Config
 {
@@ -26,11 +27,18 @@ struct Config
 	optional<string /* desc */> demo;
 	optional<pair<unsigned, unsigned>> dimensions;
 	optional<string> dump;
+	optional<uint32_t> seed;
 };
+
+template<typename T>
+optional<T> optionalopt(po::variables_map const & vm, string const & name)
+{
+	if (vm.count(name)) return vm[name].as<T>();
+	return optional<T>();
+}
 
 optional<Config> config_from_args(int const argc, char const * const * const argv)
 {
-	namespace po = boost::program_options;
 
 	po::options_description desc("options");
 	desc.add_options()
@@ -43,6 +51,7 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 		("length", po::value<unsigned>()->default_value(50), "number of transitions")
 		("dimensions", po::value<string>(), "window dimensions")
 		("dump", po::value<string>(), "file to write sequence data to")
+		("seed", po::value<uint32_t>(), "PRNG seed")
 		("db", po::value<string>()->default_value("GrappleMap.txt"), "database file")
 		("demo", po::value<string>(), "show all chains of three transitions that have the given transition in the middle");
 
@@ -67,9 +76,10 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 		, vm["frames-per-pos"].as<unsigned>()
 		, vm["length"].as<unsigned>()
 		, vm["start"].as<string>()
-		, vm.count("demo") ? vm["demo"].as<string>() : optional<string>()
+		, optionalopt<string>(vm, "demo")
 		, dimensions
-		, vm.count("dump") ? vm["dump"].as<string>() : optional<string>()
+		, optionalopt<string>(vm, "dump")
+		, optionalopt<uint32_t>(vm, "seed")
 		};
 }
 
@@ -219,6 +229,8 @@ int main(int const argc, char const * const * const argv)
 
 		optional<Config> const config = config_from_args(argc, argv);
 		if (!config) return 0;
+
+		std::srand(config->seed ? *config->seed : std::time(nullptr));
 
 		Graph const graph = loadGraph(config->db);
 
