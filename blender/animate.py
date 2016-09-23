@@ -2,16 +2,6 @@ import bpy
 from mathutils import Matrix, Vector
 from math import sin, cos
 
-dump = open('/home/eelis/projects/GrappleMap/dev/dump').read()[:-2]
-d = list(map(float, dump.split(' ')))
-
-di = 0
-def readvec():
-    global di
-    r = Vector((d[di], d[di+1], d[di+2]))
-    di += 3
-    return r
-
 def ncross(a,b):
     return a.normalized().cross(b.normalized())
 
@@ -27,6 +17,17 @@ def assignBone(poseBone, matrix, armaBone, scale):
     poseBone.rotation_mode = 'XYZ'
     poseBone.rotation_euler = (mi * matrix).to_euler()
     poseBone.scale = Vector((scale,scale,scale))
+
+dump = open('/home/eelis/projects/GrappleMap/dev/dump').read()[:-2]
+d = list(map(float, dump.split(' ')))
+
+di = 0
+
+def readvec():
+    global di
+    r = Vector((d[di], d[di+1], d[di+2]))
+    di += 3
+    return r
 
 def readPlayer():
     pos = {}
@@ -66,6 +67,13 @@ def readPlayer():
 
     return pos
 
+positions = []
+
+while di != len(d):
+    red = readPlayer()
+    blue = readPlayer()
+    positions.append([red, blue])
+
 arma = bpy.data.armatures['redplayer']
 
 def cmu_enrich(p):
@@ -95,8 +103,8 @@ def cmu_enrich(p):
 
     p['cmu_leftshoulder'] = p['cmu_spine1'] + (mm2 * (0.1 * spine1_resize * arma.bones['LeftShoulder'].head))
     p['cmu_rightshoulder'] = p['cmu_spine1'] + (mm2 * (0.1 * spine1_resize * arma.bones['RightShoulder'].head))
-    p['cmu_righthand'] = p['rightwrist'] * 0.9 + p['rightelbow'] * 0.1
-    p['cmu_lefthand'] = p['leftwrist'] * 0.9 + p['leftelbow'] * 0.1
+    p['cmu_righthand'] = lerp(p['rightwrist'], p['rightelbow'], 0.1)
+    p['cmu_lefthand'] = lerp(p['leftwrist'], p['leftelbow'], 0.1)
     p['cmu_spine'] = p['core'] + corefwd * -0.05
 
     backofhand = ncross(
@@ -316,9 +324,6 @@ def orientBone(bone, m, arma, gm_tonext, toscale):
 
 def orientPlayer(pos, obj, arma):
 
-    bpy.context.scene.objects.active = obj
-    #bpy.ops.object.mode_set(mode='POSE')
-
     rootPoseBone = obj.pose.bones['Hips']
     rootArmaBone = arma.bones['Hips']
 
@@ -335,6 +340,10 @@ def orientPlayer(pos, obj, arma):
 
     rootPoseBone.location = mi * (-rootTrans + (pos['hips'] * 10))
 
+add_keyframes = False
+do_render = True
+
+scene = bpy.context.scene
 
 redobj = bpy.data.objects['redplayer']
 redarma = bpy.data.armatures['redplayer']
@@ -342,30 +351,95 @@ redarma = bpy.data.armatures['redplayer']
 blueobj = bpy.data.objects['blueplayer']
 bluearma = bpy.data.armatures['blueplayer']
 
-old_frame = bpy.data.scenes[0].frame_current
-bpy.data.scenes[0].frame_current = 0
+lamp = bpy.data.objects['Lamp']
+
+old_frame = scene.frame_current
+
+jump_duration = 110
+
+# script will malfunction if there's keyframes in its way
 
 camera = bpy.data.objects['camera']
+lightoff = Vector((0, 0, 8))
+initial_pos = positions[0]
+
+banner_height = 4.5 # todo: query
+camera_center = Vector((0, ((positions[jump_duration][0]['core'] + positions[jump_duration][1]['core']) / 2).y, 0))
+
+camera.location.x = 0
+camera.location.y = -4
+camera.location.z = banner_height
+camera.rotation_mode = 'XYZ'
+camera.rotation_euler.z = 0
+camera.rotation_euler.x = 1.25
+
+def key(pos):
+    scene.objects.active = redobj
+    orientPlayer(pos[0], redobj, redarma)
+
+    if add_keyframes: bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
+
+    scene.objects.active = blueobj
+    orientPlayer(pos[1], blueobj, bluearma)
+
+    if add_keyframes: bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
+
+def render():
+    if do_render:
+        bpy.context.scene.render.filepath = "//frames/" + str(bpy.context.scene.frame_current).zfill(5)
+        bpy.ops.render.render(write_still=True)
+
+
+def movelight(to):
+    lamp.location.x = to.x
+    lamp.location.y = -to.z
+    lamp.location.z = 8
+
+    if add_keyframes:
+        lamp.keyframe_insert(data_path="location", frame=scene.frame_current)
+
+## WAIT
+
+scene.frame_current = 0
+movelight(camera_center + lightoff)
+for bla in range(100):
+    if add_keyframes:
+        camera.keyframe_insert(data_path="location", frame=scene.frame_current)
+        camera.keyframe_insert(data_path="rotation_euler", frame=scene.frame_current)
+    render()
+    scene.frame_current += 1
+
+## JUMP
+
+jump_size = banner_height - (camera_center.y + 1)
+i = 0
+
+for bla in range(jump_duration):
+    camera.location.z = banner_height - (jump_size / 2) + cos((bla / jump_duration) * 3.1415) * (jump_size / 2)
+
+    if add_keyframes:
+        camera.keyframe_insert(data_path="location", frame=scene.frame_current)
+        camera.keyframe_insert(data_path="rotation_euler", frame=scene.frame_current)
+
+    key(positions[i])
+    render()
+    scene.frame_current += 1
+    i += 1
+
+## ROTATION
 
 rot = 0
-camera_center = None
-start_frame = 0
+rotspeed = 0
 
-while di != len(d):
+for [red, blue] in positions[jump_duration:]:
 
-    print(bpy.data.scenes[0].frame_current)
-
-    red = readPlayer()
-    blue = readPlayer()
+    print(scene.frame_current)
 
     new_center = (red['core'] + blue['core']) / 2
 
-    if camera_center is None:
-        camera_center = new_center
-
-    camera_center.x = camera_center.x * 0.95 + new_center.x * 0.05
-    camera_center.y = max(0.7, camera_center.y * 0.995 + new_center.y * 0.005)
-    camera_center.z = camera_center.z * 0.95 + new_center.z * 0.05
+    camera_center.x = lerp(camera_center.x, new_center.x, 0.01)
+    camera_center.z = lerp(camera_center.z, new_center.z, 0.01)
+    camera_center.y = max(0.7, lerp(camera_center.y, new_center.y, 0.009))
 
     campos = camera_center + Vector((sin(rot) * 4, 1, cos(rot) * 4))
 
@@ -376,30 +450,32 @@ while di != len(d):
     camera.rotation_euler.z = rot
     camera.rotation_euler.x = 1.25
 
-    camera.keyframe_insert(data_path="location", frame=bpy.data.scenes[0].frame_current)
-    camera.keyframe_insert(data_path="rotation_euler", frame=bpy.data.scenes[0].frame_current)
+    if add_keyframes:
+        camera.keyframe_insert(data_path="location", frame=scene.frame_current)
+        camera.keyframe_insert(data_path="rotation_euler", frame=scene.frame_current)
 
-    rot += 0.015
+    movelight(camera_center + lightoff)
 
-    p = blue
-    cmu_enrich(p)
+    rot += rotspeed
 
-#    mark = p['rightfingers']
-#    marker = bpy.data.objects['marker']
-#    marker.location.x = mark.x
-#    marker.location.y = -mark.z
-#    marker.location.z = mark.y # + 1
-#    marker.keyframe_insert(data_path="location", frame=bpy.data.scenes[0].frame_current)
+    if rotspeed < 0.015: rotspeed += 0.000035
 
-    orientPlayer(red, redobj, redarma)
-    orientPlayer(blue, blueobj, bluearma)
+    #p = blue
+    #cmu_enrich(p)
 
-    if bpy.data.scenes[0].frame_current >= start_frame:
-        bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
-        bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
+    #if add_keyframes:
+    #    mark = p['rightfingers']
+    #    marker = bpy.data.objects['marker']
+    #    marker.location.x = mark.x
+    #    marker.location.y = -mark.z
+    #    marker.location.z = mark.y # + 1
+    #    marker.keyframe_insert(data_path="location", frame=bpy.data.scenes[0].frame_current)
 
-    bpy.data.scenes[0].frame_current += 1
+    key([red, blue])
+    render()
+    scene.frame_current += 1
 
-bpy.data.scenes[0].frame_current = old_frame
+
+scene.frame_current = old_frame
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
