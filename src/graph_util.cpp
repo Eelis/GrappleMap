@@ -350,9 +350,13 @@ vector<Path> in_paths(Graph const & g, NodeNum const node, unsigned size)
 {
 	if (size == 0) return {Path()};
 
+	auto const is = in_steps(g, node);
+
+	if (is.empty()) return {Path()};
+
 	vector<Path> r;
 
-	foreach (x : in_steps(g, node))
+	foreach (x : is)
 		foreach (e : in_paths(g, from(g, x).node, size - 1))
 		{
 			e.push_back(x);
@@ -366,9 +370,13 @@ vector<Path> out_paths(Graph const & g, NodeNum const node, unsigned size)
 {
 	if (size == 0) return {Path()};
 
+	auto const os = out_steps(g, node);
+
+	if (os.empty()) return {Path()};
+
 	vector<Path> r;
 
-	foreach (x : out_steps(g, node))
+	foreach (x : os)
 		foreach (e : out_paths(g, to(g, x).node, size - 1))
 		{
 			e.insert(e.begin(), x);
