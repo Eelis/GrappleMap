@@ -39,7 +39,6 @@ optional<T> optionalopt(po::variables_map const & vm, string const & name)
 
 optional<Config> config_from_args(int const argc, char const * const * const argv)
 {
-
 	po::options_description desc("options");
 	desc.add_options()
 		("help,h", "show this help")
@@ -96,6 +95,38 @@ void dump(std::ostream & o, PerJoint<V3> const & p)
 	}
 }
 
+
+Frames prep_frames(
+	Config const & config,
+	Graph const & graph)
+{
+	if (config.demo)
+	{
+		if (auto step = step_by_desc(graph, *config.demo))
+			return demoFrames(graph, *step, config.frames_per_pos);
+		else
+			throw runtime_error("no such transition: " + *config.demo);
+	}
+	else if (!config.script.empty())
+		return smoothen(frames(graph, readScene(graph, config.script), config.frames_per_pos));
+	else if (optional<NodeNum> start = node_by_desc(graph, config.start))
+	{
+		Frames x = frames(graph, randomScene(graph, *start, config.num_transitions), config.frames_per_pos);
+
+		auto & v = x.front().second;
+		auto & w = x.back().second;
+		auto const firstpos = v.front();
+		auto const lastpos = w.back();
+		v.insert(v.begin(), config.frames_per_pos * 5, firstpos);
+		w.insert(w.end(), config.frames_per_pos * 15, lastpos);
+
+		return smoothen(x);
+	}
+	else
+		throw runtime_error("no such position/transition: " + config.start);
+}
+
+
 void do_playback(
 	Config const & config,
 	Graph const & graph,
@@ -103,49 +134,7 @@ void do_playback(
 {
 	for (;;)
 	{
-		Frames fr;
-
-		if (config.demo)
-		{
-			if (auto step = step_by_desc(graph, *config.demo))
-				fr = demoFrames(graph, *step, config.frames_per_pos);
-			else
-				throw runtime_error("no such transition: " + *config.demo);
-		}
-		else if (!config.script.empty())
-			fr = smoothen(frames(graph, readScene(graph, config.script), config.frames_per_pos));
-		else if (optional<NodeNum> start = node_by_desc(graph, config.start))
-		{
-			Frames x = frames(graph, randomScene(graph, *start, config.num_transitions), config.frames_per_pos);
-
-			auto & v = x.front().second;
-			auto & w = x.back().second;
-			auto const firstpos = v.front();
-			auto const lastpos = w.back();
-			v.insert(v.begin(), config.frames_per_pos * 15, firstpos);
-			w.insert(w.end(), config.frames_per_pos * 15, lastpos);
-
-			fr = smoothen(x);
-		}
-		else
-			throw runtime_error("no such position/transition: " + config.start);
-
-		if (config.dump)
-		{
-			int n = 0;
-			std::ofstream f(*config.dump);
-
-			foreach (x : fr)
-			foreach (p : x.second)
-			{
-				dump(f, p[0]);
-				dump(f, p[1]);
-				++n;
-			}
-
-			std::cout << "Wrote " << n << " frames to " << *config.dump << '\n';
-			return;
-		}
+		Frames const fr = prep_frames(config, graph);
 
 		Camera camera;
 		Style style;
@@ -219,8 +208,6 @@ void do_playback(
 	}
 }
 
-
-
 int main(int const argc, char const * const * const argv)
 {
 	try
@@ -234,17 +221,37 @@ int main(int const argc, char const * const * const argv)
 
 		Graph const graph = loadGraph(config->db);
 
-		if (!glfwInit()) error("could not initialize GLFW");
 
-		GLFWwindow * const window = glfwCreateWindow(640, 480, "GrappleMap", nullptr, nullptr);
-		if (!window) error("could not create window");
+		if (config->dump)
+		{
+			Frames const frames = prep_frames(*config, graph);
+			int n = 0;
+			std::ofstream f(*config->dump);
 
-		glfwMakeContextCurrent(window);
-		glfwSwapInterval(1);
+			foreach (x : frames)
+			foreach (p : x.second)
+			{
+				dump(f, p[0]);
+				dump(f, p[1]);
+				++n;
+			}
 
-		do_playback(*config, graph, window);
+			std::cout << "Wrote " << n << " frames to " << *config->dump << '\n';
+		}
+		else
+		{
+			if (!glfwInit()) error("could not initialize GLFW");
 
-		glfwTerminate();
+			GLFWwindow * const window = glfwCreateWindow(640, 480, "GrappleMap", nullptr, nullptr);
+			if (!window) error("could not create window");
+
+			glfwMakeContextCurrent(window);
+			glfwSwapInterval(1);
+
+			do_playback(*config, graph, window);
+
+			glfwTerminate();
+		}
 	}
 	catch (exception const & e)
 	{
