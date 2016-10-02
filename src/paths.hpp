@@ -13,11 +13,6 @@ namespace GrappleMap
 
 	Frames frames(Graph const &, vector<Path> const & script, unsigned frames_per_pos);
 
-	bool dfsScene(
-		Graph const &,
-		vector<pair<vector<Step>, vector<Step>>> const & in_out,
-		ReorientedNode, size_t, Path &, vector<Step> & steps_taken);
-
 	Path randomScene(Graph const &, NodeNum start, size_t);
 
 	vector<Path> paths_through(Graph const &, Step, unsigned in_size, unsigned out_size);

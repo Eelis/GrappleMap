@@ -56,51 +56,91 @@ Frames frames(Graph const & g, vector<Path> const & script, unsigned const frame
 	return full;
 }
 
-bool dfsScene(
-	Graph const & g,
-	vector<pair<vector<Step>, vector<Step>>> const & in_out,
-	ReorientedNode const n, size_t const size, Path & scene, vector<Step> & steps_taken)
+class PathFinder
 {
-	if (size == 0) return true;
+	Graph const & graph;
+	vector<pair<vector<Step>, vector<Step>>> const io = in_out(graph);
+	Path scene;
+	size_t unique_steps_taken = 0;
+	vector<unsigned> in_seq_counts = vector<unsigned>(graph.num_sequences(), 0);
+	vector<unsigned> out_seq_counts = vector<unsigned>(graph.num_sequences(), 0);
+	vector<bool> standing;
+	size_t longest_ever = 0;
 
-	if (double(steps_taken.size()) / scene.size() < 0.93)
+	bool do_find(ReorientedNode const n, size_t const size)
+	{
+		if (size == 0) return true;
+
+		if (double(unique_steps_taken) / scene.size() < 0.93)
+			return false;
+
+		if (io[n.node.index].second.size() > 32) abort();
+
+		std::array<std::pair<size_t, Step>, 32> choices;
+
+		auto * choices_end = choices.begin();
+
+		foreach (s : io[n.node.index].second)
+		{
+			if (std::find(scene.end() - std::min(scene.size(), Path::size_type(15ul)), scene.end(), s) != scene.end()) continue;
+
+			if (!scene.empty() && scene.back().seq == s.seq) continue;
+
+			*(choices_end++) = std::make_pair(
+				(s.reverse ? in_seq_counts : out_seq_counts)[s.seq.index] * 1000 + (rand()%1000),
+				s);
+
+			//norm2(follow(g, n, s.seq).reorientation.reorientation.offset);
+		}
+
+		std::sort(choices.begin(), choices_end);
+
+		for (auto i = choices.begin(); i != choices_end; ++i)
+		{
+			Step const s = i->second;
+
+			auto & c = (s.reverse ? in_seq_counts : out_seq_counts)[s.seq.index];
+
+			bool const taken_before = (c != 0);
+
+			if (!taken_before) ++unique_steps_taken;
+			++c;
+			scene.push_back(s);
+
+			if (scene.size() > longest_ever)
+			{
+				longest_ever = scene.size();
+				//std::cout << longest_ever << std::endl;
+			}
+
+			if (do_find(follow(graph, n, s.seq), size - 1))
+				return true;
+
+			if (!taken_before) --unique_steps_taken;
+			--c;
+			scene.pop_back();
+		}
+
 		return false;
-
-	std::multimap<std::pair<size_t /* occurrences */, double>, Step> choices;
-
-	foreach (s : in_out[n.node.index].second)
-	{
-		if (std::find(scene.end() - std::min(scene.size(), Path::size_type(15ul)), scene.end(), s) != scene.end()) continue;
-
-		size_t const c = std::count(scene.begin(), scene.end(), s);
-
-		if (!scene.empty() && scene.back().seq == s.seq) continue;
-
-		double const score = rand()%1000;//norm2(follow(g, n, s.seq).reorientation.reorientation.offset);
-
-		choices.insert({{c, score}, s});
 	}
 
-	foreach (c : choices)
+public:
+
+	explicit PathFinder(Graph const & g)
+		: graph(g)
 	{
-		Step const s = c.second;
-
-		bool const taken_before =
-			std::find(steps_taken.begin(), steps_taken.end(), s) != steps_taken.end();
-
-		if (!taken_before) steps_taken.push_back(s);
-		scene.push_back(s);
-
-		if (dfsScene(g, in_out, follow(g, n, s.seq), size - 1, scene, steps_taken))
-			return true;
-
-		if (!taken_before) steps_taken.pop_back();
-		scene.pop_back();
-
+		foreach(n : nodenums(g))
+			standing.push_back(tags(g[n]).count("standing") != 0);
 	}
 
-	return false;
-}
+	Path find(ReorientedNode const n, size_t const size)
+	{
+		if (do_find(n, size))
+			return scene;
+		else
+			throw std::runtime_error("could not find path");
+	}
+};
 
 /*
 Scene randomScene(Graph const & g, SeqNum const start, size_t const size)
@@ -145,11 +185,7 @@ Scene randomScene(Graph const & g, SeqNum const start, size_t const size)
 
 Path randomScene(Graph const & g, NodeNum const start, size_t const size)
 {
-	Path s;
-	vector<Step> steps_taken;
-
-	if (!dfsScene(g, in_out(g), {start, {}}, size, s, steps_taken))
-		throw runtime_error("could not find sequence");
+	Path const s = PathFinder(g).find({start, {}}, size);
 
 	int worst_count = 0;
 	SeqNum worst_seq;
@@ -205,9 +241,9 @@ Frames demoFrames(Graph const & g, Step const s, unsigned const frames_per_pos)
 {
 	Frames f;
 
-	auto scenes = paths_through(g, s, 1, 1);
+	auto scenes = paths_through(g, s, 1, 4);
 
-	cout << "Playing " << scenes.size() << " scenes.\n";
+	cout << "Generating " << scenes.size() << " demo scenes.\n";
 
 	foreach (scene : scenes)
 	{
