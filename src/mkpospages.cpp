@@ -229,7 +229,7 @@ namespace
 		foreach(n : nodenums(g))
 			html
 				<< "<tr>"
-				<< "<td><a href='p" << n.index << "n.html'>" << nlspace(desc(g[n])) << "</a></td>"
+				<< "<td><a href='position/" << n.index << "n.html'>" << nlspace(desc(g[n])) << "</a></td>"
 				<< "<td>" << in(g, n).size() << "</td>"
 				<< "<td>" << out(g, n).size() << "</td>"
 				<< "<td>" << tags(g[n]).size() << "</td>"
