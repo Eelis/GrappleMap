@@ -67,6 +67,8 @@ class PathFinder
 	vector<bool> standing;
 	size_t longest_ever = 0;
 
+	static constexpr SeqNum begin_trans{838};
+
 	bool do_find(ReorientedNode const n, size_t const size)
 	{
 		if (size == 0) return true;
@@ -103,7 +105,9 @@ class PathFinder
 
 			bool const taken_before = (c != 0);
 
-			if (!taken_before) ++unique_steps_taken;
+			bool const count_as_unique = !taken_before || s.seq == begin_trans;
+
+			if (count_as_unique) ++unique_steps_taken;
 			++c;
 			scene.push_back(s);
 
@@ -116,7 +120,7 @@ class PathFinder
 			if (do_find(follow(graph, n, s.seq), size - 1))
 				return true;
 
-			if (!taken_before) --unique_steps_taken;
+			if (count_as_unique) --unique_steps_taken;
 			--c;
 			scene.pop_back();
 		}
