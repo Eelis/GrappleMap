@@ -30,7 +30,7 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 	po::options_description desc("options");
 	desc.add_options()
 		("help,h", "show this help")
-		("frames-per-pos", po::value<unsigned>()->default_value(12),
+		("frames-per-pos", po::value<unsigned>()->default_value(11),
 			"number of frames rendered per position")
 		("script", po::value<string>()->default_value(string()),
 			"script file")
