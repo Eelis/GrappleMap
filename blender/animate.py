@@ -342,6 +342,7 @@ def orientPlayer(pos, obj, arma):
 
 add_keyframes = False
 do_render = True
+render_start = 0
 
 scene = bpy.context.scene
 
@@ -385,7 +386,7 @@ def key(pos):
     if add_keyframes: bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
 
 def render():
-    if do_render:
+    if do_render and bpy.context.scene.frame_current >= render_start:
         bpy.context.scene.render.filepath = "//frames/" + str(bpy.context.scene.frame_current).zfill(5)
         bpy.ops.render.render(write_still=True)
 
@@ -471,8 +472,10 @@ for [red, blue] in positions[jump_duration:]:
     #    marker.location.z = mark.y # + 1
     #    marker.keyframe_insert(data_path="location", frame=bpy.data.scenes[0].frame_current)
 
-    key([red, blue])
-    render()
+    if add_keyframes or (do_render and scene.frame_current >= render_start):
+        key([red, blue])
+        render()
+
     scene.frame_current += 1
 
 
