@@ -168,6 +168,11 @@ inline bool is_bidirectional(Sequence const & s)
 	return properties_in_desc(s.description).count("bidirectional") != 0;
 }
 
+inline bool is_detailed(Sequence const & s)
+{
+	return properties_in_desc(s.description).count("detailed") != 0;
+}
+
 inline bool is_top_move(Sequence const & s)
 {
 	return properties_in_desc(s.description).count("top") != 0;

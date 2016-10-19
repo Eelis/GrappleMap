@@ -393,7 +393,7 @@ function tick()
 {
 	if (!sliding && !paused && steps.length != 0)
 	{
-		k += Math.min(engine.getDeltaTime() / speed, 2);
+		k += Math.min(engine.getDeltaTime() / 100, 2);
 		if (k >= 1)
 		{
 			k -= 1;
@@ -552,9 +552,26 @@ function random_drill()
 	pick_bullet();
 }
 
+function double_frames(frames)
+{
+	var r = [frames[0]];
+	for (var i = 1; i != frames.length; ++i)
+	{
+		r.push(interpolate_position(frames[i-1], frames[i], 0.5));
+		r.push(frames[i]);
+	}
+	return r;
+}
+
 window.addEventListener('DOMContentLoaded',
 	function()
 	{
+		transitions.forEach(function(t)
+			{
+				if (t.properties.indexOf("detailed") == -1)
+					t.frames = double_frames(t.frames);
+			});
+
 		var s = window.location.href;
 		var qmark = s.lastIndexOf('?');
 		if (qmark != -1)
