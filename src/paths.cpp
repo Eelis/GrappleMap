@@ -86,7 +86,7 @@ class PathFinder
 		{
 			if (std::find(scene.end() - std::min(scene.size(), Path::size_type(15ul)), scene.end(), s) != scene.end()) continue;
 
-			if (!scene.empty() && scene.back().seq == s.seq) continue;
+			if (!scene.empty() && from(graph, scene.back()).node == to(graph, s).node) continue;
 
 			*(choices_end++) = std::make_pair(
 				(s.reverse ? in_seq_counts : out_seq_counts)[s.seq.index] * 1000 + (rand()%1000),
