@@ -364,15 +364,22 @@ camera = bpy.data.objects['camera']
 lightoff = Vector((0, 0, 8))
 initial_pos = positions[0]
 
-banner_height = 4.5 # todo: query
-camera_center = Vector((0, ((positions[jump_duration][0]['core'] + positions[jump_duration][1]['core']) / 2).y, 0))
+banner_height = 4.47 # todo: query
 
-camera.location.x = 0
-camera.location.y = -4
-camera.location.z = banner_height
-camera.rotation_mode = 'XYZ'
-camera.rotation_euler.z = 0
-camera.rotation_euler.x = 1.25
+
+def set_cam(center, rot):
+
+    camera.rotation_mode = 'XYZ'
+    camera.rotation_euler.z = rot
+    camera.rotation_euler.x = 1.25
+    camera.rotation_euler.y = 0
+
+    campos = center + Vector((sin(rot) * 4, 1, cos(rot) * 4))
+
+    camera.location.x = campos.x
+    camera.location.y = -campos.z
+    camera.location.z = campos.y
+
 
 def key(pos):
     scene.objects.active = redobj
@@ -390,7 +397,6 @@ def render():
         bpy.context.scene.render.filepath = "//frames/" + str(bpy.context.scene.frame_current).zfill(5)
         bpy.ops.render.render(write_still=True)
 
-
 def movelight(to):
     lamp.location.x = to.x
     lamp.location.y = -to.z
@@ -401,7 +407,9 @@ def movelight(to):
 
 ## WAIT
 
+set_cam(Vector((0, banner_height-1, 0)), 0)
 scene.frame_current = 0
+camera_center = Vector((0, ((positions[jump_duration][0]['core'] + positions[jump_duration][1]['core']) / 2).y, 0))
 movelight(camera_center + lightoff)
 for bla in range(100):
     if add_keyframes:
@@ -442,14 +450,7 @@ for [red, blue] in positions[jump_duration:]:
     camera_center.z = lerp(camera_center.z, new_center.z, 0.01)
     camera_center.y = max(0.7, lerp(camera_center.y, new_center.y, 0.009))
 
-    campos = camera_center + Vector((sin(rot) * 4, 1, cos(rot) * 4))
-
-    camera.location.x = campos.x
-    camera.location.y = -campos.z
-    camera.location.z = campos.y
-    camera.rotation_mode = 'XYZ'
-    camera.rotation_euler.z = rot
-    camera.rotation_euler.x = 1.25
+    set_cam(camera_center, rot)
 
     if add_keyframes:
         camera.keyframe_insert(data_path="location", frame=scene.frame_current)
