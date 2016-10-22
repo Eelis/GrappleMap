@@ -361,7 +361,7 @@ jump_duration = 110
 # script will malfunction if there's keyframes in its way
 
 camera = bpy.data.objects['camera']
-lightoff = Vector((0, 0, 8))
+lightoff = Vector((0, 2, 6))
 initial_pos = positions[0]
 
 banner_height = 4.47 # todo: query
@@ -371,10 +371,10 @@ def set_cam(center, rot):
 
     camera.rotation_mode = 'XYZ'
     camera.rotation_euler.z = rot
-    camera.rotation_euler.x = 1.25
+    camera.rotation_euler.x = 1.27
     camera.rotation_euler.y = 0
 
-    campos = center + Vector((sin(rot) * 4, 1, cos(rot) * 4))
+    campos = center + Vector((sin(rot) * 4.3, 1, cos(rot) * 4.3))
 
     camera.location.x = campos.x
     camera.location.y = -campos.z
@@ -460,7 +460,7 @@ for [red, blue] in positions[jump_duration:]:
 
     rot += rotspeed
 
-    if rotspeed < 0.015: rotspeed += 0.000035
+    if rotspeed < 0.013: rotspeed += 0.000035
 
     #p = blue
     #cmu_enrich(p)
