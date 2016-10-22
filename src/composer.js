@@ -536,7 +536,7 @@ function decode_steps(s)
 
 function random_drill()
 {
-	steps = random_path(32);
+	steps = random_path(64);
 	start_node = step_from(steps[0]).node;
 
 	resetFrames();
@@ -589,21 +589,19 @@ window.addEventListener('DOMContentLoaded',
 				start_node = step_from(steps[0]).node;
 			}
 
+			resetFrames();
+			frame = -1;
+			k = 0;
+			thepos = ideal_pos();
+
+			refreshDrill();
+			refreshPreChoices();
+			refreshPostChoices();
 		}
 		else
 		{
-			steps = random_path(32);
-			start_node = step_from(steps[0]).node;
+			random_drill();
 		}
-
-		resetFrames();
-		frame = -1;
-		k = 0;
-		thepos = ideal_pos();
-
-		refreshDrill();
-		refreshPreChoices();
-		refreshPostChoices();
 
 		canvas = document.getElementById('renderCanvas');
 		engine = new BABYLON.Engine(canvas, true);
