@@ -107,3 +107,9 @@ are the same position.
 ### "bidirectional"
 
 As the name suggests.
+
+### "detailed"
+
+Doubles the keyframe density (i.e. halves the duration of each keyframe).
+
+The increased control over timing and joint paths that this doubling provides can make detailed transitions look significantly better, but they are a little bit more work to edit.
