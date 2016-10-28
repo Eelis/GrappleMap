@@ -131,7 +131,7 @@ void do_playback(
 		Camera camera;
 		Style style;
 		style.background_color = white;
-		style.grid_size = 14;
+		style.grid_size = 20;
 		style.grid_color = V3{.7, .7, .7};
 		camera.zoom(1.2);
 		camera.hardSetOffset(cameraOffsetFor(fr.front().second.front()));
