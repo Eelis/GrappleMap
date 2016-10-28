@@ -8,8 +8,8 @@
 
 namespace GrappleMap {
 
-using NodeNumIter = boost::counting_iterator<NodeNum, boost::incrementable_traversal_tag, uint32_t>;
-using SeqNumIter = boost::counting_iterator<SeqNum, boost::incrementable_traversal_tag, uint32_t>;
+using NodeNumIter = boost::counting_iterator<NodeNum, std::forward_iterator_tag, int32_t>;
+using SeqNumIter = boost::counting_iterator<SeqNum, std::forward_iterator_tag, int32_t>;
 
 using NodeNumRange = boost::iterator_range<NodeNumIter>;
 using SeqNumRange = boost::iterator_range<SeqNumIter>;
