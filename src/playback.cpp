@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <GLFW/glfw3.h>
 #include <GL/glu.h>
-#include <boost/program_options.hpp>
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -29,13 +28,6 @@ struct Config
 	optional<string> dump;
 	optional<uint32_t> seed;
 };
-
-template<typename T>
-optional<T> optionalopt(po::variables_map const & vm, string const & name)
-{
-	if (vm.count(name)) return vm[name].as<T>();
-	return optional<T>();
-}
 
 optional<Config> config_from_args(int const argc, char const * const * const argv)
 {

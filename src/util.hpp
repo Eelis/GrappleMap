@@ -7,6 +7,7 @@
 #include <map>
 #include <set>
 #include <boost/optional.hpp>
+#include <boost/program_options.hpp>
 #include <boost/range.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <iostream>
@@ -92,6 +93,13 @@ namespace GrappleMap
 			r += x;
 		}
 		return r;
+	}
+
+	template<typename T>
+	optional<T> optionalopt(boost::program_options::variables_map const & vm, string const & name)
+	{
+		if (vm.count(name)) return vm[name].as<T>();
+		return optional<T>();
 	}
 }
 

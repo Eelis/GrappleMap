@@ -21,6 +21,7 @@ struct Config
 	string start;
 	optional<string /* desc */> demo;
 	optional<pair<unsigned, unsigned>> dimensions;
+	optional<uint32_t> seed;
 };
 
 optional<Config> config_from_args(int const argc, char const * const * const argv)
@@ -37,6 +38,7 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 		("start", po::value<string>()->default_value("staredown"), "initial position")
 		("length", po::value<unsigned>()->default_value(50), "number of transitions")
 		("dimensions", po::value<string>(), "window dimensions")
+		("seed", po::value<uint32_t>(), "PRNG seed")
 		("db", po::value<string>()->default_value("GrappleMap.txt"), "database file")
 		("demo", po::value<string>(), "show all chains of three transitions that have the given transition in the middle");
 
@@ -63,6 +65,7 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 		, vm["start"].as<string>()
 		, vm.count("demo") ? optional<string>(vm["demo"].as<string>()) : boost::none
 		, dimensions
+		, optionalopt<uint32_t>(vm, "seed")
 		};
 }
 
@@ -74,6 +77,8 @@ int main(int const argc, char const * const * const argv)
 
 		optional<Config> const config = config_from_args(argc, argv);
 		if (!config) return 0;
+
+		std::srand(config->seed ? *config->seed : std::time(nullptr));
 
 		Graph const graph = loadGraph(config->db);
 
