@@ -1,0 +1,78 @@
+Judo for MMA
+
+	Volume 1: osoto-gari
+
+		wip   01:30   1  real-time demo (only)
+		      02:49   2  wrist and neck control from clinch
+		      05:56   3  freeing arm in clinch
+		      07:43   4  more arm freeing, and the throw
+		      10:52   5  setup from opponent throwing punch in clinch
+		wip   12:26   6  more throw details
+		wip   15:58   7  establishing pin from throw
+		      17:55   8  more pinning details
+		      19:09   9  alternative setup when opponent breaks neck grip in clinch
+		      21:56  10  force-landing
+		      23:10  11  same as 10?
+		      24:30  12  variation into knee pick if opponent retracts arm in clinch
+		      27:17  13  variation into ankle pick if opponent frees arm in clinch
+		todo  29:59  14  neck crank and arm trap subs from kesa gatame
+		todo  32:41  15  another arm trap sub from kesa gatame
+		      35:15  16  arm triangle from kesa gatame
+		later 38:17  17  reverse triangle from kesa gatame
+
+	Volume 2: ouchi-gari
+
+		wip     42:24   1  live demo (only)
+		todo    43:03   2  adjusting grip from clinch
+		todo    44:36   3  freeing arm in clinch
+		        46:01   4  more arm freeing options
+		        46:50   5  throw itself
+		        50:05   6  more details on throw
+		        51:36   7  punch attempt setup
+		        53:47   8  setup from evaded osoto-gari
+		        56:00   9  ankle pick
+		todo    58:16  10  clinch into over/under body lock ouchi gari
+		later 1:00:24  11  arm trap behind back from clinch
+		todo  1:02:19  12  kouchi-gari (variation if opponent steps back)
+		todo  1:03:59  13  sumi-gaechi
+		todo  1:06:38  14  leg lock after takedown (live demo only)
+		      1:07:36  15  again, demo only?
+		      1:08:47  16  breakdown of leg lock
+		      1:11:04  17  ankle lock to outside heel hook
+		todo  1:13:32  18  to knee bar
+		      1:16:52  19  to toe hold
+		      1:17:51  20  toe hold from guard
+		      1:20:10  21  toe hold to heel hook
+
+	Volume 3: drop seoi-nagi
+
+		wip    
+
+	Volume 4: uchi-mata
+
+		wip     43:43   1  live demo
+		todo    45:10   2  gripping and throwing
+		        50:36   3  whizzer version
+		        54:06   4  setup as counter to body lock trip attempt
+		todo    59:06   5  uchi mata to ouchi gari
+		      1:02:41   6  foot sweep setups
+		later 1:06:15   7  uchi mata counter to uchi mata
+		wip   1:09:18   8  uchi mata to arm bar
+		todo  1:11:50   9  knee-on-belly to knee bar
+		todo  1:14:13  10  uchi mata to half guard pass
+		      1:18:28  11  uchi mata to the back
+
+	Volume 5: kimura
+
+		todo  01:29   1  standing kimura takedown
+		      02:10   2  breakdown
+		      05:55   3  more details
+		      10:52   4  ending in either side control or mount
+		      14:18   5  preventing bridge from mounted kimura
+		      16:17   6  kimura to arm bar
+		      18:40   7  kimura harai gochi
+		      23:02   8  
+
+	Volume 6: submissions
+
+		wip        10

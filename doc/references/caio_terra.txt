@@ -1,0 +1,189 @@
+111 Half Guard Techniques
+
+	DISC 1:
+
+		Getting Out of Bad Spots Part 1
+
+			done 0:02:16   1. Recover Full Guard
+			wip  0:05:01   2. Sweep From Head Control
+			done 0:07:56   3. Recovering Knee Shield From Head Control
+			skip 0:13:59   4. Sweep With Lapel and Pants Grip
+			todo 0:17:40   5. Recovering Knee Shield From Knee Slide Pass
+			wip  0:18:40   6. Sweep From Knee Slide Pass
+			todo 0:21:07   7. Getting Underhook From Knee Slide Pass
+			skip 0:23:00   8. Hip Bump Sweep
+			done 0:25:53   9. Sweep to Mount When Opponent Moves to Inverted Half Guard
+			todo 0:28:47  10. Taking the Back When Opponent Moves to Inverted half Guard
+			skip 0:32:52  11. Roll Over Sweep When Opponent Moves to Inverted Half Guard
+
+		Getting Out of Bad Spots Part 2 - Knee Shield
+
+			skip 0:35:43   1. Taking the Back (counter to lapel grip, need no-gi setup)
+			skip 0:37:49   2. Roll Over Sweep (continuation of previous)
+			wip  0:39:13   3. Taking the Back From Knee Grip
+			todo 0:40:50   4. Kimura Sweep/Submission
+			skip 0:45:21   5. Straight Armlock
+			skip 0:48:02   6. Loop Choke
+			skip 0:50:50   7. Loop Choke to Sweep to Mount
+			skip 0:53:00   8. Brabo Choke
+			skip           9. Brabo Choke Variation 2 With Sweep
+			skip          10. Brabo Choke Variation 3 With Sweep
+			todo 1:00:43  11. Taking the Back When Opponent Pummels
+			     1:03:00  12. Sweep When Opponent Pummels (hmm lots of gi grips)
+			     1:06:42  13. Sweep 2 When Opponent Pummels With Kimura
+			     1:09:47  14. Reverse Triangle When Opponent Pummels (looks kinda awkward and uses sleeve grip)
+			     1:13:35  15. Sweep to Kneebar
+			     1:17:07  16. Roll Under Armbar 1 (gi grips)
+			     1:22:19  17. Roll Under armbar 2
+			todo 1:24:21  18. To the Crucifix
+
+		Underhooks and Hooks 
+
+			     1:28:53   1. Taking the Back (why doesn't top guy do a whizzer?)
+			     1:33:40   2. Roll Under Sweep (SKIP unless you can find a no-gi version)
+			     1:37:58   3. Knee Drag Sweep (seems a bit dubious the way he gets the wrist control)
+			wip  1:40:38   4. Knee Push Sweep
+			todo 1:42:08   5. Ankle Pick Sweep
+			todo 1:43:42   6. Underhook the Knee Sweep
+
+		When Opponent Attempts to Move to Inverted Half Guard
+
+			skip 1:45:19   7. Arm Trap With Collar to Ankle Pick or Triangle Finish
+			     1:48:32   8. Take the Back When Opponent Switches to Inverted Half Guard
+			     1:50:39   9. Leg Trap Sweep When Opponent switches to Inverted Half Guard
+			     1:53:33  10. Roll Over Sweep
+
+		Using Leg Hooks 
+
+			wip  1:55:47  11. Taking the Back
+			wip  1:58:05  12. Beating the Overhook to the Back With Arm Drag
+			todo 2:00:15  13. Jumping to Triangle From the Knees
+			TODO 2:02:57  14. Takedown From Knees
+			todo 2:05:29  15. Single Leg to Back
+			TODO 2:07:45  16. Single Leg Takedown
+			todo 2:10:36  17. Single Leg Takedown Variation
+
+		Underhook When Opponent Pushes Head
+
+			later 2:12:28  18. Toe Grab to Deep Half Guard Sweep to Knee Bar
+			skip  2:18:14  19. Take the Back With Lapel Grip
+			skip           20. Roll Under Sweep With Lapel Grip
+
+
+	DISC 2:
+
+		Half Guard Single Leg
+
+			[seems to start with end of something else]
+
+			     0:02:22   1. Takedown
+			     0:05:58   2. Kimura Style Sweep
+			     0:09:44   3. Dive Under Sweep With Sleeve Grip
+			skip 0:13:22   4. Collar Drag Sweep
+			skip 0:15:46   5. Collar Drag Variation With Triangle
+			skip 0:17:50   6. Lapel Grip With Foot on the Hip Sweep
+			skip 0:21:26   7. Tomoe Nage to Double Leg Takedown
+			todo 0:24:15   8. Single Leg Sitting and Standing
+
+		Half Guard Scissor
+
+			skip 0:28:25   1. Scissor Sweep (need no-gi version)
+			               2. Back Roll Sweep
+			skip 0:33:15   3. X-Guard Technical Lift (gi grips)
+			skip 0:40:03   4. X-Guard Sweep 1
+			     0:42:17   5. X-Guard Sweep 2
+			     0:44:47   6. X-Guard to the Back
+
+		Deep Half Guard
+
+			               1. Pendulum Sweep
+			     0:56:00   2. Pendulum to Rollover Sweep
+			todo 0:57:47   3. Pendulum to the Back/Sweep (gi grips, but also useful parts)
+			skip 1:01:37   4. Pendulum to Omoplata (need no-gi version)
+			TODO 1:03:27   5. Pendulum to Technical Lift
+			skip 1:05:01   6. Pendulum to Knee Ride to Back (need no-gi version)
+			todo 1:07:36   7. Homer Simpson Sweep
+			     1:13:11   8. Homer Simpson to Back
+			     1:15:20   9. Homer Simpson to Back 2
+			     1:16:38  10. Collar Grip Hip Bump Sweep
+			     1:20:42  11. Collar Grip Sweep
+			skip 1:22:44  12. Double Under Sweep
+			              13. Double Under Sweep 2
+
+		Opponent attempts to go to Inverted Half
+
+			     1:29:17  1. Take the Back (need source to confirm that belt grip is not necessary)
+			     1:32:08  2. Roll Over Sweep
+			done 1:36:02  3. Leg Hook Sweep
+
+		Inverted Half
+
+			skip 1:39:51  4. Back Roll Sweep (gi grips)
+			todo 1:44:45  5. Triangle
+			todo 1:48:43  6. Kimura and Americana Roll Over Sweep
+			skip 1:54:07  7. Collar Choke and Sweep
+			skip 1:57:54  8. Lapel Grip Sweep to Mount (need no-gi version)
+			skip 2:00:17  9. Lapel Grip to the Back (need no-gi version)
+
+
+	DISC 3:
+
+		Upside Down Half
+
+			     0:00:00  0. Introduction
+			skip 0:00:17  1. Sweep 1
+			              2. Sweep 2
+			              3. Triangle
+
+		Terra's Guard
+
+			     0:09:24  0. Introduction
+			skip 0:11:47  1. Backdoor Escape to Back (lot of gi gripping)
+			              2. Sweep 1
+			     0:15:51  3. Sweep 2
+			              4. Sweep 3 With Armlock
+			skip 0:21:58  5. Triangle  (need no-gi version)
+			              6. Upside Down Armbar
+			              7. Sweep to Inverted Half Guard
+			              8. Sweep to Knee Bar
+			              9. Leg Hook Sweep
+
+		50/50
+
+		When Opponent Prevents Back Take
+
+			0:34:26   0. Introduction
+			0:35:10   1. Kneebar
+			0:38:49   2. Kneebar to Toehold
+			0:42:44   3. Sweep
+			0:45:05   4. To the Back
+			0:49:09   5. Straight Ankle Lock
+
+		From Cross Grip
+
+			          6. Calf Slicer
+			0:57:08   7. Kneebar
+			0:58:55   8. To the Back
+			1:01:32   9. Technical Lift
+
+		Kimura
+
+			1:05:02   0. Introduction
+			1:05:27   1. Kimura
+			1:12:01   2. Hip Bump Sweep
+			1:16:03   3. Sweep to Armbar
+			          4. To Roll Under Armbar
+			1:29:59   5. Take the Back
+
+		Bonus Section
+
+			              1. Caio Terra vs. Bruno Malfacine (2008 World Championships Black Belt Semi-Final)
+			              2. Caio Terra vs. Yasuke Homna (2008 World Championships Black Belt Final)
+			     1:48:45  3. Caio Terra vs. Carlos Vieira Holanda (2009 No-Gi World Championships Black Belt Final)
+			              4. Caio Terra vs. Rafael Freitas (2010 World Championships Black Belt Semi-Final)
+			     2:03:11  5. Caio Terra vs Samir Chantre (2010 No-Gi World Championships Black Belt Final)
+			     2:15:32  6. Rolled Up Part 1 With Caio Terra
+			todo             - defeating z guard
+			todo 2:28:30     - double under defense
+			     2:37:29  7. Rolled Up Part 2 With Caio Terra 
+

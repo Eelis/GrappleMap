@@ -74,7 +74,7 @@ class PathFinder
 	{
 		if (size == 0) return true;
 
-		if (double(unique_steps_taken) / scene.size() < 0.93)
+		if (double(unique_steps_taken) / scene.size() < 0.96)
 			return false;
 
 		if (io[n.node.index].second.size() > 32) abort();

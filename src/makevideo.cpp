@@ -20,7 +20,7 @@ struct Config
 	unsigned num_transitions;
 	string start;
 	optional<string /* desc */> demo;
-	optional<pair<unsigned, unsigned>> dimensions;
+	pair<unsigned, unsigned> dimensions;
 	optional<uint32_t> seed;
 };
 
@@ -37,7 +37,7 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 			"script file")
 		("start", po::value<string>()->default_value("staredown"), "initial position")
 		("length", po::value<unsigned>()->default_value(50), "number of transitions")
-		("dimensions", po::value<string>(), "window dimensions")
+		("dimensions", po::value<string>()->default_value("1280x720"), "video resolution")
 		("seed", po::value<uint32_t>(), "PRNG seed")
 		("db", po::value<string>()->default_value("GrappleMap.txt"), "database file")
 		("demo", po::value<string>(), "show all chains of three transitions that have the given transition in the middle");
@@ -48,14 +48,10 @@ optional<Config> config_from_args(int const argc, char const * const * const arg
 
 	if (vm.count("help")) { cout << desc << '\n'; return none; }
 
-	optional<pair<unsigned, unsigned>> dimensions;
-	if (vm.count("dimensions"))
-	{
-		string const dims = vm["dimensions"].as<string>();
-		auto x = dims.find('x');
-		if (x == dims.npos) throw runtime_error("invalid dimensions");
-		dimensions = pair<unsigned, unsigned>(std::stoul(dims.substr(0, x)), std::stoul(dims.substr(x + 1)));
-	}
+	string const dims = vm["dimensions"].as<string>();
+	auto x = dims.find('x');
+	if (x == dims.npos) throw runtime_error("invalid dimensions");
+	pair<unsigned, unsigned> dimensions{std::stoul(dims.substr(0, x)), std::stoul(dims.substr(x + 1))};
 
 	return Config
 		{ vm["db"].as<string>()
@@ -126,13 +122,9 @@ int main(int const argc, char const * const * const argv)
 				camera.rotateHorizontal(-0.012);
 				camera.setOffset(cameraOffsetFor(pos));
 
-				int width = 640, height = 480;
-
-				if (config->dimensions)
-				{
-					width = config->dimensions->first;
-					height = config->dimensions->second;
-				}
+				int const
+					width = config->dimensions.first,
+					height = config->dimensions.second;
 
 				std::ostringstream fn;
 				fn << "vidframes/frame" << std::setw(5) << std::setfill('0') << frameindex << ".png";

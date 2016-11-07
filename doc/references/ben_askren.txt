@@ -1,0 +1,71 @@
+manhandling manifesto
+
+	volume 1: the askren single
+
+		empty 00:00 intro
+		todo  02:32 fundamentals of the single leg
+		      03:52 drill 1
+		todo  04:58 head inside finish 1
+		todo  06:26 head inside finish number 2
+		hmm   08:50 head inside single mid level position
+		      11:06 head outside finish 1
+
+	volume 2: double leg mastery
+
+		empty  00:00 intro to double leg
+		empty  00:25 double for mma
+		todo   00:59 basic double leg
+		todo   01:43 drill 1
+		done   03:40 double leg drill 2
+		todo   04:34 setups for double leg
+		todo   05:17 setup 2 for double leg
+		todo   06:49 double leg setup 3
+		todo   08:43 double leg troubleshooting
+		      <missing several sections here i think>
+		todo   10:33 double leg finish 4 (lateral drop)
+		todo   11:24 double leg finish 5 (inside trip)
+		todo   12:51 double leg to guard pass
+
+	volume 3: upper body manhandling
+
+		empty 00:00 intro to upper body
+		< seem to be missing 2 sections on bear hug and slide by here,
+		  also missing how to get standing double unders in the first
+		  place >
+		todo  00:57 under-hook finish 3
+		todo  02:21 over under position
+		wip   03:48 step around throw
+		skip  07:17 back arch drill 1
+		skip  08:13 back arch drill 2
+		todo  09:03 inside trip from over-hook
+		todo  10:11 over under position
+		todo  12:55 knee pick over under position
+		todo  14:25 under-hook finish 1
+		todo  16:24 under-hook finish 2 knee pick
+		wip   18:47 under-hook finish 3
+		todo  20:18 under-hook finish 4
+		todo  22:09 over hook fundamentals
+		todo  25:11 over hook wizard kick
+		      28:41 over hook foot sweep
+		      31:28 seatbelt intro fundamentals
+		< seem to be missing a bunch of stuff on the seatbelt here? >
+
+	volume 5: manhandling matwork
+
+		empty 00:00 manhandling mindset
+		empty 01:24 read your opponent 2
+		todo  02:02 stopping your opponent's hip movement
+		skip  03:51 passing the guard
+
+	volume 6: head crusher
+
+		todo  00:00 intro to front headlock
+		todo  01:55 setups to the front headlock
+		todo  03:46 bringing your opponent down using front headlock
+		todo  06:09 go behind from front headlock 1
+		todo  08:03 go behind 2 front headlock position
+		todo  09:47 go behind 3 front headlock position
+		todo  13:38 front headlock guillotine
+		todo  15:08 failed guillotine attempt
+		todo  17:30 darce front headlock position
+		todo  19:23 anaconda front headlock position

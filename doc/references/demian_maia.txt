@@ -1,0 +1,236 @@
+science of jiu jitsu
+
+	VOLUME 1: Defending the Guard Pass
+
+		1. Straight Line Theory
+		2. Head control Theory
+		3. Single Underhook pass
+		4. Double underhook pass 1
+		5. Double underhook pass 2
+		6. Double underhook pass 3
+		7. Half Guard pass
+		8. Toreador variation defense
+		9. Toreador defense 1
+		10. Toreador defense 2
+		11. Toreador defense 3
+		12. Toreador defense 4
+		13. Toreador defense 5
+		14. spinning defense
+
+	VOLUME 2: The Triangle Choke
+
+		1. Intro and setup from spider guard
+		2. Setup from Guard pass
+		3. Setup from Half Guard
+		4. Straight arm Theory
+		5. Triangle from sweep
+		6. Triangle from kimura
+		7. Fake pass to triangle
+		8. Side control to Triangle
+		9. Side control to Triangle 2
+		10. Single leg to triangle counter
+		11. Triangle defense to arm lock 1
+		12. Triangle defense to arm lock 2
+		13. Head control to triangle
+		14. Flying triangle
+		15. Flying triangle 2
+
+	VOLUME 3: The Omoplata
+
+		1. Intro & setup from open guard
+		2. Setup from half guard
+		3. Setup from standing
+		4. Finishing Theory
+		5. Forward roll counter
+		6. Backwards roll counter
+		7. Standing counter
+		8. Chicken wing finish
+		9. Omoplata to kimura
+		10. Omoplata to back
+		11. Omoplata to foot lock
+		12. Reverse omoplata
+		13. Omoplata to armbar
+
+	VOLUME 4: Escaping Side Control
+
+		1. Arm position theory
+		2. Head control theory
+		3. Body theory 1
+		4. Body theory 2
+		5. Arm Position 1
+		6. Arm Position 2
+		7. Straight arm escape
+		8. Escape from half guard
+		9. Single leg escape 1
+		10. Single leg escape 2
+		11. Single let to back
+		12. Rolling escape
+		13. Inside escape
+		14. Elbow pivot escape
+		15. Leg pivot escape
+		16. Mount counter escape
+		17. Rocking leg escape
+
+	vol 5 attacking the back
+
+		todo  00:00  1. back control 1
+		todo  03:38  2. back control 2
+		skip  06:14  3. turtle choke
+		todo  10:13  4. hooks theory
+		todo  14:04  5. hip connection theory
+		skip  17:41  6. back choke 1
+		skip  21:37  7. back choke 2
+		todo  24:40  8. 4 against 3
+		todo  27:42  9. back triangle choke
+		later 30:47 10. armless triangle
+		      33:44 11. armbar from back
+		            12. Standing back control 1
+		            13. Standing back control 2
+		            14. Bicep Lock
+
+	VOLUME 6: Counter Attacks
+
+		1. Kimura Counter 1
+		2. Kimura Counter 2
+		3. Straight armbar counter
+		4. Cross body choke counter
+		5. Guard choke counter
+		6. Leg Lock Counter 1
+		7. Leg Lock Counter 2
+		8. Leg Lock Counter 3
+		9. Leg Lock Counter 4
+		10. Leg Lock Counter 5
+		11. Leg Lock Counter 6
+		12. Omoplata counter
+		13. Back hooks Counter
+
+science of jiu jitsu 2
+
+	vol 1 passing the guard
+
+		empty 00:00  00. series intro 
+		empty 00:59  01. the block theory
+		todo  03:26  02. creating the block
+		todo  05:42  03. maintaining the block
+		skip  08:10  04. defending chokes
+		hmm   10:38  05. perfect posture 01
+		hmm   13:03  06. perfect posture 02
+		skip  14:35  07. opening the guard 01 (better just use a no-gi source)
+		      17:18  08. opening the guard 02
+		todo  19:13  09. opening the guard 03
+		skip  21:35  10. stacking pass 01 (really need no-gi version)
+		      25:13  11. stacking pass 02
+		      28:46  12. stacking pass 03
+		todo  33:02  13. knee slide pass 01
+		      36:02  14. knee slide pass 02
+		      39:35  15. knee slide pass 03
+		todo  43:03  16. jump over pass (great ending for tornado)
+
+	vol 2 standing guard passes
+
+		skip  00:00  01. spider-guard pass 01
+		      03:58  02. spider-guard pass 02
+		      07:48  03. spider-guard pass 03
+		      11:41  04. spider-guard pass 04
+		todo  14:56  05. step outside pass (has great stand-up to single-leg)
+		TODO  19:07  06. step over pass
+		      23:03  07. cartwheel pass
+		      25:48  08. knee slide pass
+		      30:22  09. kick back pass 01
+		      33:24  10. kick back pass 02
+		      37:04  11. leg trap pass
+		      41:55  12. toreada variation
+		      44:59  13. cross step pass
+		todo  49:42  14. leg wrap pass
+
+	vol 3 attacking from the mount
+
+		      00:00  01. Mount theory
+		      04:23  02. Grapevining the legs
+		      07:41  03. Exposing the arms
+		todo  11:54  04. Controlling the neck
+		      16:17  05. Maintaining the position
+		06. Lapel control theory
+		07. Controlling the lapel
+		08. Cross choke theory
+		09. Cross choke application
+		10. Armbar theory
+		11. Finishing the armbar
+		12. Troubleshooting the armbar
+		13. Taking the back
+		14. Lapel Americana
+
+	vol 4 advanced sweeps
+
+		skip  00:00  01. 3 Steps of Sweeping
+		skip  02:32  02. Sweeping science
+		TODO  04:46  03. Sitting up transition
+		      09:11  04. Elevator sweep
+		             05. Getting top position
+		skip  16:12  06. Knee control elevator (gi grips)
+		skip  23:21  07. Knee push sweep (gi grips)
+		skip  28:10  08. Sit up tilt sweep
+		      32:57  09. Arm drag sweep (need no-gi version)
+		             10. Arm drag tilt sweep
+		             11. Sit up tilt sweep
+		             12. Head snap tilt sweep
+		      50:59  13. Leg trip sweep (need no-gi version)
+		14. Arm drag to back mount
+		15. Arm drag to sweep
+		16. Roll over sweep
+		17. De la Riva hook sweep
+		18. 3 Steps of Sweeping
+		19. Series Intro
+		20. Series Intro
+		21. Series Intro
+
+	vol 5 half guard attacks
+
+		01. Intro
+		02. Half-guard theory
+		03. Controlling the hips
+		04. Sideways posture
+		05. Stopping the hip escape
+		06. Wrap around cross choke
+		07. Wrap around gi brabo
+		08. Kimura
+		todo  26:45  09. Taking the back
+		todo  32:16  10. Monoplata
+		todo  36:40  11. Inverted half-guard
+		12. Inverted half-guard break
+		13. Taking the back
+
+	vol 6 stand up techniques
+
+		done  00:00  01. Intro
+		      00:43  02. The base
+		             03. Grip Theory
+		             04. High grip
+		             05. High grip kata guruma
+		skip  12:12  06. Pulling guard theory ("hips first" is good, but way too many gi grips)
+		      15:56  07. Whizzer guard pull
+		todo  19:14  08. Whizzer sweep
+		      22:37  09. Whizzer armbar
+		skip  25:52  10. Angled guard pull (gi grips)
+		      29:59  11. Stopping the guard pull
+		skip  33:29  12. Single leg set-up
+		done  36:48  13. Single leg finish
+		WIP   39:55  14. Single leg defense
+		skip  42:42  15. Wrist lock
+		skip  46:10  16. Loop guillotine 01
+		skip  49:18  17. Loop guillotine 02
+		skip  51:59  18. Sucuri choke
+
+	vol 7 the anaconda guard
+
+		todo  00:00  01. Intro
+		todo  03:45  02. Arm drag set-up
+		todo  06:55  03. Butterfly set-up 01
+		todo  11:00  04. Butterfly set-up 02
+		todo  13:58  05. Knee pressure sweep
+		skip  17:49  06. Rocking chair sweep (mostly legit but need no-gi grip on leg)
+		skip  20:43  07. Anaconda Kimura (lapel+sleeve grip..., need no-gi version)
+		later 24:08  08. Anaconda Knee bar
+		skip  27:40  09. X-sweep 01 (sleeve grips, need no-gi version)
+		skip  30:53  10. X-sweep 02 (lapel+sleeve grips)
+		skip  34:13  11. X-sweep 03 (sleeve grip)

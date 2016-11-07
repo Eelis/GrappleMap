@@ -1,0 +1,33 @@
+FreeStyle Revolution
+
+	volume 1: submission takedowns
+
+	volume 2: full guard sweeps from bottom
+
+	volume 3: half guard top and bottom
+
+	volume 4: passing the guard
+
+		todo  00:00   1. closed guard break
+		todo  05:38   2. closed guard + underhooks break
+		todo  08:39   3. closed guard overhook break
+		todo  10:57   4. closed guard defense
+		todo  13:21   5. stepping into butterfly guard
+		      18:15   6. entering butterfly when closed guard is voluntarily opened
+		todo  21:58   7. passing butterfly
+
+	volume 5: submissions
+
+	volume 6: escapes
+
+		todo  00:00   1. escape from standing double unders
+		done  04:02   2. takedown from kimura counter to bodylock from standing back
+		wip   06:36   3. escape from turtle w/ single
+		todo  09:08   4. escape from guillotine from knees
+		todo  13:14   5. more guillotine escape variations
+		todo  15:05   6. defense against guillotine from guard
+		todo  20:10   7. escape from arm-in guillotine from guard
+		todo  24:00   8. mount escape
+		TODO  27:55   9. back escape (slide down)
+		TODO  29:55  10. back escape (slide down)
+		      32:45  11. side control escape
