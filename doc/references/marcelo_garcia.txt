@@ -1,0 +1,254 @@
+Series I
+
+	volume 1: arm drag
+
+		       00:00  1.  arm drag against standing, only seems to be a demo??
+		done   00:42  2.  details: wrist control, footwork
+		later  03:22  3.  hand fighting, reversing wrist control
+		later  05:35  4.  more of [3]
+		wip    07:49  5.  countering arm drag by frame + recede
+		wip    10:01  6.  dragging past and taking the back
+		todo   12:55  7.  repeat of [6] but with nice details
+		wip    15:53  8.  inserting hooks when opponent stands up
+		wip    17:59  9.  counter to opponent blocking first hook
+		todo   20:43  10. same as [8] but already start working the choke
+		wip    23:41  11. alternative drag straight to ground
+		todo   24:25  12. details
+		       26:26  13. more details
+		       28:33  14. taking the back from [11-13]
+		       31:28  15. working the choke while doing [14]
+		       32:52  16. alternative back take when opponent recedes
+		       35:22  17. variation/details on [16]
+		todo   37:02  18. counter when opponent tries to roll away
+		todo   39:34  19. details/variations on [18]
+
+	volume 2: mastering the back
+
+		wip   00:00  1.  arm drag back take counter to kneeling opponent grabbing seated butterfly ankles + submission
+		      05:08  2.  
+
+	Volume 3: passing the guard
+
+		done  00:00  1  knee pin step around butterfly pass
+		todo  03:14  2  underhook interception of butterfly attacking leg
+		wip   05:57  3  backstep pass against butterfly attacking leg
+		      10:37  4  tornado pass
+		      16:02  5  
+
+	Volume 4: the x guard
+
+		todo  00:00  1   pulling standing opponent into butterfly
+		      01:08  2   butt-scoot following opponent
+		      02:23  3   ignoring head attacks while pulling opponent into butterfly...
+		todo  04:31  4   counter to opponent framing against shoulder
+		      07:52  5   defeating opponent trying to grab feet
+		todo  10:44  6   more standing butterfly framing stuff
+		      13:37  7   arm drag counter to opponent grabbing feet
+		todo  18:21  8   roll counter to opponent cartwheeling
+		todo  20:24  9   x guard entry when opponent recedes and unbalancing
+		wip   25:56  10  opponent drops knee
+		      30:10  11  two-leg variation against strong opponent
+		      33:14  12  disrupting balance
+		      35:11  13  disrupting opponent who grabs legs
+		      37:29  14  opponent posts on hands -> near hand sweep
+		      39:56  15  variation: far hand sweep
+		      42:04  16  opponent puts hands far away
+
+	Volume 5: The Guard (Sweeps)
+		todo  00:06  1   standing to butterfly entry
+		wip   00:51  2   butterfly double unders backtake, or opponent flattens
+		      03:55  3   same as previous? o_O
+		done  06:05  4   opponent squeezes knees to smash pass
+		      10:29  5   tricep+underhook butterfly sweep
+		      15:17  6   sweep variation if opponent bases
+		todo  18:01  7   another variation if opponent bases further
+		todo  21:09  8   another variation if opponent counters
+		todo  25:03  9   arm drag counter to opponent framing and receding
+		todo  29:36  10  arm drag countered by knee squeeze countered by arm trap sweep
+		todo  33:28  11  opponent pulls arm out -> double underhook sweep
+		todo  38:58  12  opponent stands up
+
+	Volume 6: Submissions
+
+Series II
+
+Series III
+
+	Volume 1: Takedowns
+
+	Volume 2: Passing
+
+		todo  00:00  1  guard break while maintaining wrist control
+		      04:04  2  
+
+	Volume 3: Sweeps and Turnovers
+
+		wip          1
+		wip          2
+		             3
+		wip          4
+		             5
+		wip          6
+		             7
+		      29:50  8  counter to top kneeling in x guard
+		      32:28  9  x guard entry and wrist control based trip sweep
+		TODO  35:12 10  defeated x guard into deep half sweep
+		TODO  39:23 11  waiter sweep
+		todo  42:44 12  seated single leg takedown
+		todo  45:46 13  sweep counter to flattened seated single-leg
+		wip   49:09 14  back step pass counter
+		wip   52:53 15  continuation of 14
+		todo  56:13 16  another back step pass counter
+
+	Volume 4: Taking the Back
+
+		wip   00:00  1  full guard arm trap to 100%
+		todo  05:00  2  wowzers backtake counter to guard pas
+		todo  09:13  3  butterfly arm trap
+		todo  12:48  4  continuation/variation of [3]
+		todo  17:09  5  opponent stands up in butterfly -> weirdo back take
+		todo  21:56  6  back take from omoplata
+		todo  25:07  7  back take from arm bar
+		wip   28:13  8  back take counter to full guard sweep attempt
+		      30:41  9  back take counter to successful hip bump sweep
+		      34:04  10 back take counter to butterfly arm drag
+		todo  37:22  11 smashing butterfly to half guard followed by twister roll (lol)
+		                 (interesting, he just assumes opponent will get to knees, but plans backtake)
+		todo  40:55  12 back step pass to butterfly, can't get leg free, opponent gets to knees, backtake
+		later 45:24  13
+
+	Volume 5: Submissions
+
+		todo  00:00  1  flying guillotine
+		      03:28  2  
+		later 07:13  3  knee bar after guard break (weird setup)
+		todo  10:16  4  bottom sits up after guard break (interesting)
+		todo  13:40  5  half guard twister roll to vaporizer(?)
+		todo  17:08  6  passing through half guard
+		todo  21:58  7  darce counter to half guard underhook
+		later 25:36  8  side control to knee on belly to vicelike grip to baseball-bat-like choke
+		todo  28:21  9  knee on belly to north-south choke
+		todo  31:15 10  knee on belly escape to turtle w/ single to alternative monoplata
+		todo  34:29 11  anaconda choke
+		todo  38:13 12  turtle backtake
+		later 41:49 13  variation into crucifix
+
+	Volume 6: Escapes 1
+
+		     00:00   1
+		done 05:19   2 side control bridge escape
+		todo 08:17   3 judo side control escape
+		todo 11:50   4 leg-over-head judo side control escape
+		todo 14:24   5 another judo side escape
+		wip  17:39   6 another judo side escape
+		todo 20:41   7 shrimp escape out of weak twister-side
+		wip  24:42   8 north/south escape
+		todo 28:19   9 knee-on-belly bridge escape
+		todo 32:13  10 double bridge and roll mount escape
+		todo 36:07  11 continuation of 10
+		TODO 39:10  12 bridging for underhooks in half guard
+		todo 48:38  13 more half guard escape techniques
+
+	Volume 6: Escapes 2
+
+		wip          1
+		wip          2
+		todo  07:01  3
+		wip          4
+		todo  12:17  5 turtle/back escape
+		later 15:51  6 omoplata escape (weird, why would top player hold on to hip that long? would like to see competition use)
+		todo  18:26  7 omoplata escape (bridge variation of dig-under? in any case nice)
+		todo  21:04  8 alternative roll omoplata escape
+		wip   23:26  9 triangle escape
+		todo  26:53 10 another triangle escape
+		wip   29:14 11 arm bar escape
+		todo  33:03 12 another arm bar escape
+		todo  35:22 13 standing kimura escape (doesn't end anywhere though)
+		todo  36:45 14 standing kimura hip throw escape
+
+Series IV
+
+	Volume 1: Advanced Omoplata 1
+
+		             1. The Omoplata: basic positioning
+		             2. The importance of underhooks
+		wip          3. Applying the Omoplata
+		             4. Troubleshooting the Omoplata
+		wip          5. Attacking with the back on the mat
+		done  22:39  6. Attacking from the closed guard
+		todo  27:12  7. Attacking with opponent passing
+		      30;41  8. Using the arm extension
+		wip   34:52  9. Omoplata from a triangle
+		            10. Correcting the arm position
+
+	Volume 2: Advanced Omoplata 2
+
+		wip 1. Countering the rolling escape I (rolling forward)
+		    2. Countering the rolling escape II (move to opposite side)
+		    3. Countering the rolling escape III (elbow slips out)
+		    4. Countering the rolling escape IV (elbow slips out)
+		wip 5. Countering the rolling escape IV (Monoplata)
+		    6. Countering the rolling escape V (Omoplata variation I)
+		    7. Countering the rolling escape VI (Omoplata variation II)
+		wip 8. Omoplata from a Guillotine choke
+		    9. Omoplata from a double leg
+		    10. Omoplata from a single leg
+		wip 11. Omoplata to Monoplata I
+		wip 12. Omoplata to Monoplata II
+
+	Volume 3: Advanced Omoplata 3
+
+		wip  00:00   1.  The Monoplata
+		wip  05:11   2.  Omoplata from side control escape I
+		wip  10:33   3.  Omoplata from side control escape II
+		wip  14:50   4.  Monoplata fom side control escape
+		     20:47   5.  Monoplata from the mount I
+		             6.  Monoplata from the mount II
+		             7.  Omoplata from the armbar
+		             8.  Monoplata from half-guard I
+		             9.  Monoplata from half-guard II
+		            10. Last second arm bar
+		     45:06  11. Omoplata counter to a sweep
+		            12. Omoplata counter to a guard pass
+
+	Volume 4: Advanced Omoplata 4
+
+		             1. Omoplata from arm bar I
+		             2. Omoplata from arm bar II
+		             3. Omoplata counter to ankle lock
+		             4. Omoplata counter to Omoplata
+		todo  16:48  5. Toe Hold from Omoplata
+		todo  20:16  6. Monoplata from Omoplata escape
+		             7. Wrist lock from Omoplata
+		             8. Choke from Omoplata
+		wip   31:10  9. Monoplata from half-guard
+
+	Volume 5: The Guillotine
+
+		             1. Guillotine
+		             2. Guillotine counter to single leg I
+		             3. Guillotine counter to single leg II
+		todo 14:36   4. Guillotine from guard I
+		             5. Guillotine from guard II
+		             6. Guillotine from guard III
+		wip          7. Guillotine from guard (top) I
+		             8. Guillotine from guard (top) II
+		todo 36:34   9. Guillotine from side control
+		            10. Inverted Guillotine (north-south)
+		todo 44:40  11. Guillotine to rear naked choke
+
+	Volume 6: The Crucifix
+
+		wip   1. Crucifix from the single leg
+		wip   2. Crucifix from a sprawl
+		wip   3. Crucifix from a sprawl (turtle)
+		wip   4. Crucifix from a sprawl (lifting)
+		      5. Attacking the turtle with a Crucifix
+		      6. Attacking the turtle with a Crucifix (arm bar)
+		wip   7. Crucifix from guard I
+		      8. Crucifix from guard II
+		wip   9. Crucifix from side control
+		wip  10. Crucifix when passing the guard I
+		wip  11. Crucifix when passing the guard II
+		     12. Countering the Crucifix escape
+		     13. Closing statement 
