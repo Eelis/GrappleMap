@@ -200,6 +200,14 @@ function node_link(node)
 	return link;
 }
 
+function tag_link(tag)
+{
+	var link = document.createElement("a");
+	link.href = "../?" + tag;
+	link.text = tag;
+	return link;
+}
+
 function pick_bullet()
 {
 	for (var i = 0; i != steps.length; ++i)
@@ -257,7 +265,22 @@ function refreshDrill()
 		var seq = steps[i].transition;
 		var desc = transitions[seq].description;
 		var seqLabel = document.createElement("a");
-		seqLabel.text = (i+1) + ". \u00a0" + desc[0] + " \u00a0";
+		seqLabel.text = (i+1) + ". \u00a0" + desc[0];
+
+		if (info_mode)
+		{
+			seqLabel.text += " (";
+
+			transitions[seq].properties.forEach(
+				function(p) { seqLabel.text += p + ", "; });
+
+			seqLabel.text += "t" + seq;
+			if (transitions[seq].line_nr)
+				seqLabel.text += "@" + transitions[seq].line_nr;
+			seqLabel.text += ")";
+		}
+
+		seqLabel.text += " \u00a0";
 
 		controls.appendChild(seqLabel);
 
@@ -293,14 +316,25 @@ function refreshDrill()
 			descdiv.style.marginLeft = "100px";
 			descdiv.style.marginTop = "0px";
 
-			descdiv.appendChild(document.createTextNode("transition " + seq));
-			if (transitions[seq].line_nr)
-				descdiv.appendChild(document.createTextNode(" @ line " + transitions[seq].line_nr));
-			descdiv.appendChild(document.createElement("br"));
+			if (transitions[seq].tags.length != 0)
+			{
+				descdiv.appendChild(document.createTextNode("tags:"));
+				transitions[seq].tags.forEach(function(t)
+					{
+						descdiv.appendChild(document.createTextNode(" "));
+						descdiv.appendChild(tag_link(t));
+					});
+				descdiv.appendChild(document.createElement("br"));
+			}
+
+			var first = true;
 
 			for (var j = 1; j <= desc.length - 1; ++j)
 			{
-				if (j != 1) descdiv.appendChild(document.createElement("br"));
+				if (desc[j].startsWith("tags:")) continue;
+				if (desc[j].startsWith("properties:")) continue;
+				if (!first) descdiv.appendChild(document.createElement("br"));
+				else first = false;
 				descdiv.appendChild(document.createTextNode(desc[j]));
 			}
 
