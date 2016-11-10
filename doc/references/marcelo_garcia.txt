@@ -24,16 +24,31 @@ Series I
 
 	volume 2: mastering the back
 
-		wip   00:00  1.  arm drag back take counter to kneeling opponent grabbing seated butterfly ankles + submission
-		      05:08  2.  
+		wip   00:00   1.  arm drag back take counter to kneeling opponent grabbing seated butterfly ankles + submission
+		todo  05:08   2.  rnc from arm dragged turtle
+		todo  08:11   3.  backtake from arm dragged turtle
+		      11:53   4.  hand fighting for rnc
+		wip   14:24   5.  arm trap rnc finish
+		todo  16:19   6.  recovery when opponent hip escapes before hooks are secured
+		todo  20:19   7.  backtake from butterfly sweep
+		      23:24   8.  details on [7]
+		later 26:41   9.  backtake from side control when opponent turns away (looks weird)
+		      29:31  10.  backtake from side control when opponent turns in
+		todo  33:15  11.  counter to low single with head outside
+		todo  36:10  12.  counter to low single with head inside
+		todo  39:26  13.  dragging down and getting seatbelt from back body lock
 
 	Volume 3: passing the guard
 
 		done  00:00  1  knee pin step around butterfly pass
 		todo  03:14  2  underhook interception of butterfly attacking leg
 		wip   05:57  3  backstep pass against butterfly attacking leg
-		      10:37  4  tornado pass
-		      16:02  5  
+		wip   10:37  4  tornado pass
+		todo  16:02  5  bottom frames -> leg smash pass hops
+		wip   19:09  6  bottom sits up to spider
+		wip   24:47  7  variation
+		todo  30:38  8  smash pass
+		todo  36:58  9  butterfly w/ double unders -> pass to mount
 
 	Volume 4: the x guard
 
@@ -55,6 +70,7 @@ Series I
 		      42:04  16  opponent puts hands far away
 
 	Volume 5: The Guard (Sweeps)
+
 		todo  00:06  1   standing to butterfly entry
 		wip   00:51  2   butterfly double unders backtake, or opponent flattens
 		      03:55  3   same as previous? o_O
@@ -72,14 +88,109 @@ Series I
 
 Series II
 
+	Volume 1: The X-Guard
+
+		wip   9
+
+	Volume 2: Arm Drags
+
+		wip   1
+		wip   2
+		wip   3
+		      4
+		wip   5
+		wip   6
+
+	Volume 3: Advanced Sweeps
+
+		skip  00:00   1  sleeve+belt grip butterfly sweep
+		skip  03:09   2  variation/details of [1]
+		skip  06:50   3  more variations/details
+		skip  09:43   4  more variations/details
+		skip  13:02   5  more variations/details
+		later 16:32   6  butterfly lift to fireman's carry (need no-gi version)
+		wip   19:09   7  butterfly sweep
+		skip  21:56   8  something with gi grips
+		skip  25:00   9  more stuff with gi grips
+		skip  27:29  10  more stuff with gi grips
+		skip  29:47  11  more stuff with gi grips
+		skip  31:39  12  more stuff with gi grips
+		skip  33:49  13  more stuff with gi grips
+		skip         14  more stuff with gi grips
+		skip         15  more stuff with gi grips
+		skip         16  more stuff with gi grips
+		skip         17  more stuff with gi grips
+		skip         18  more stuff with gi grips
+
+	Volume 4: Advanced Guard Passing
+
+		wip   1
+		wip   2
+		wip   9
+
+	Volume 5: Taking the back
+
+		wip   1
+		wip   2
+		wip   3
+
+	Volume 6: Advanced Submissions
+
+		       01:20   1  guillotine against seated single
+		later  05:30   2  reverse arm triangle?
+		todo   09:26   3  knee bar against dlr
+		       12:19   4  half guard back step to arm bar
+		later  16:59   5  dlr to calf slicer(?)
+		todo   19:59   6  arm bars from side control
+		todo   24:25   7  far arm belly down arm bar from side control
+		later  27:56   8  side control to north/south (gi grips)
+		skip   33:01   9  gi choke
+		todo   35:25  10  arm bar from butterfly
+		skip   37:50  11  something with gi grips
+		skip   40:54  12  gi choke
+		todo   44:17  13  arm drag escape to calf slicer
+		later  46:24  14  shoulder lock from back on side
+		skip   49:21  15  wrist lock off of collar grip
+		todo   53:25  16  jump onto back from back body lock
+		skip   56:22  17  gi choke
+
 Series III
 
 	Volume 1: Takedowns
 
+		done   00:00   1  single leg from collar tie
+		done   03:01   2  variation if opponent hides leg
+		wip    05:49   3  alternative finish
+		todo   08:27   4  distant shot and finishing takedown when opponent sprawls
+		todo   11:26   5  distant shot between legs
+		todo   14:38   6  alternative finish when opponent frees one leg
+		todo   18:51   7  alternative finish
+		TODO   22:00   8  turtle headlock escape
+		wip    27:38   9  duck under from standing headlock to back to supplex
+		todo   32:04  10  duck under to back to alternatieve drag down
+		TODO   35:19  11  supplex to side
+		wip    38:19  12  collar tie to russian two-on-one to fireman's carry
+		todo   42:10  13  hip throw
+		todo   44:23  14  another hip throw
+		TODO   47:04  15  uchi mata counter to standing double unders
+
 	Volume 2: Passing
 
-		todo  00:00  1  guard break while maintaining wrist control
-		      04:04  2  
+		todo   00:00   1  guard break while maintaining wrist control
+		todo   04:04   2  alternative guard break while maintaining wrist control
+		todo   07:45   3  breaking and passing when bottom overhooks
+		later  11:24   4  bottom hides arms (doesn't happen in mma)
+		todo   15:16   5  alternative break and pass
+		todo   18:46   6  bottom goes butterfly, top smashes
+		todo   22:44   7  countering butterfly sweep
+		todo   25:35   8  framing and standing up out of butterfly
+		todo   28:50   9  intercepting and smashing seated single leg
+		wip    32:52  10  back step vs seated single leg
+		later  35:58  11  variation of [10] when opponent holds on to leg
+		todo   38:38  12  flattening to and passing quarter guard
+		TODO   42:28  13  intercepting when bottom attempts to go to deep half
+		todo   46:36  14  alternative to [13]
+		todo   50:05  15  passing deep half
 
 	Volume 3: Sweeps and Turnovers
 
@@ -90,9 +201,9 @@ Series III
 		             5
 		wip          6
 		             7
-		      29:50  8  counter to top kneeling in x guard
-		      32:28  9  x guard entry and wrist control based trip sweep
-		TODO  35:12 10  defeated x guard into deep half sweep
+		wip   29:50  8  counter to top kneeling in x guard
+		wip   32:28  9  x guard entry and wrist control based trip sweep
+		TODO  35:12 10  defeated x guard into deep half sweep (unclear how bottom player loses control of the near leg)
 		TODO  39:23 11  waiter sweep
 		todo  42:44 12  seated single leg takedown
 		todo  45:46 13  sweep counter to flattened seated single-leg

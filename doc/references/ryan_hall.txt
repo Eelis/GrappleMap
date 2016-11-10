@@ -100,16 +100,16 @@ open elbow
 
 	VOLUME 2: The Kimura
 
-			   1. The Kimura Position
-			   2. Proper Kimura Grip
-			   3. Elbow Control
+		       1. The Kimura Position
+		       2. Proper Kimura Grip
+		       3. Elbow Control
 		wip    4. Breaking the Grip
-			   5. Finishing the Kimura
-			   6. Body Structure
-			   7. Side Control Kimura
+		       5. Finishing the Kimura
+		       6. Body Structure
+		       7. Side Control Kimura
 		wip    8. Half Guard Kimura
-			   9. Backside Half Guard Kimura
-			  10. Kimura Defense to Deep Half
+		       9. Backside Half Guard Kimura
+		      10. Kimura Defense to Deep Half
 		wip   11. Kimura to Ezekiel
 		done  12. Kimura to Arm Triangle
 		      13. Kimura to the Back
@@ -122,35 +122,35 @@ open elbow
 
 	VOLUME 3: The Omoplata
 
-		1. The Bottom Position Open Elbow
-		2. Strategy: Forcing a Post
-		3. Strategy: Laying a Trap
-		4. Strategy: Prying
-		5. The Omoplata Position
-		6. Leverage and the Omoplata
-		7. Omoplata Entry: The Thread
-		8. Omoplata Entry: The Slap
-		9. Sweeping: Forward, Backward, & Sideways
-		10. Finishing: Lock Far Shoulder & Double Roll
-		11. Finishing: Far Leg & Arm Hook
-		12. Seated Guard Duck to Back
+		      1. The Bottom Position Open Elbow
+		      2. Strategy: Forcing a Post
+		      3. Strategy: Laying a Trap
+		      4. Strategy: Prying
+		      5. The Omoplata Position
+		      6. Leverage and the Omoplata
+		      7. Omoplata Entry: The Thread
+		      8. Omoplata Entry: The Slap
+		      9. Sweeping: Forward, Backward, & Sideways
+		     10. Finishing: Lock Far Shoulder & Double Roll
+		     11. Finishing: Far Leg & Arm Hook
+		     12. Seated Guard Duck to Back
 		wip  13. The Brabo
 		wip  14. The Hippoplatamus
 		wip  15. The Hippoplatamus to Top of Turtle
-		16. The Open Guard Hippoplatamus
-		17. Turtle Duck to Back
-		18. Turtle Duck to Double Leg
-		19. Roll Under Single Leg
-		20. Drills: Omoplata and Kimura Connection
+		     16. The Open Guard Hippoplatamus
+		     17. Turtle Duck to Back
+		     18. Turtle Duck to Double Leg
+		     19. Roll Under Single Leg
+		     20. Drills: Omoplata and Kimura Connection
 
 back attacks
 
 	DVD 1: Principles of Back Control
 
-		1. Intro to Control
+		      1. Intro to Control
 		wip   2. The Chair Sit
-		3. Harness Attack
-		4. The Spin Behind
+		      3. Harness Attack
+		      4. The Spin Behind
 		5. The Spiral Ride
 		6. Crotch Lock and Roll
 		7. The Switch
@@ -171,56 +171,56 @@ back attacks
 
 	DVD 2: Finishes
 
-		1. Rear Naked Choke 1
-		2. Rear Naked Choke 2
-		3. Bow & Arrow Choke 1
-		4. Bow & Arrow Choke 2
-		5. Chair Sit to Bow & Arrow
-		6. Bow& Arrow to Clock Choke
-		7. Flip to Clock Choke
-		8. The Ezekiel Choke 1
-		9. Ezekiel Choke 2
-		10. Straight Armlock 1
-		11. Straight Armlock 2
-		12. Armlock to Triangle
-		13. Box Control Principle
-		14. Side Control Turns Away
-		15. Side Control Turns In
-		16. Side Control to Kimura Grip
-		17. Mount to Chair Sit
-		18. Turtle Attacks 1
-		19. Turtle Attacks 2
-		20. Inverted Guard
-		21. Passing Switch Intro
-		22. Over the Legs
-		23. Through the legs
+		      1. Rear Naked Choke 1
+		      2. Rear Naked Choke 2
+		      3. Bow & Arrow Choke 1
+		      4. Bow & Arrow Choke 2
+		      5. Chair Sit to Bow & Arrow
+		      6. Bow& Arrow to Clock Choke
+		      7. Flip to Clock Choke
+		      8. The Ezekiel Choke 1
+		      9. Ezekiel Choke 2
+		     10. Straight Armlock 1
+		     11. Straight Armlock 2
+		     12. Armlock to Triangle
+		     13. Box Control Principle
+		     14. Side Control Turns Away
+		     15. Side Control Turns In
+		     16. Side Control to Kimura Grip
+		     17. Mount to Chair Sit
+		     18. Turtle Attacks 1
+		     19. Turtle Attacks 2
+		     20. Inverted Guard
+		     21. Passing Switch Intro
+		     22. Over the Legs
+		     23. Through the legs
 		wip  24. Over Under to Double Under
-		25. Double Under Flip
+		     25. Double Under Flip
 
 	DVD 3: The Rolling Back Attack
 
-		1. Rolling Back Attack Intro
-		2. Rolling Back Attacks angles
-		3. Side Control Setup 1
-		wip  4. Side Control Setup2
-		5. Hand & Foot Position
-		6. Single Hook Control
-		7. Common Mistake
-		8. Changing Body Control
-		9. The Bail Out
-		10. Attacking from the Mount
-		11. Attacking from Side Control 1
-		12. Attacking from Side Control 2
-		13. Attacking from Half-Guard 1
-		14. Attacking from Half-Guard 2
-		15. Attacking the Turtle 1
-		16. Attacking the Turtle 2
-		17. Attacking the Guard 1
-		18. Attacking the Guard 2
-		19. Recovering the Back
-		20. Countering the Rolling Back Attack
-		21. Back Escape
-		22. Pass Switches
+		                1. Rolling Back Attack Intro
+		                2. Rolling Back Attacks angles
+		                3. Side Control Setup 1
+		wip             4. Side Control Setup2
+		                5. Hand & Foot Position
+		                6. Single Hook Control
+		                7. Common Mistake
+		                8. Changing Body Control
+		                9. The Bail Out
+		               10. Attacking from the Mount
+		      0:39:27  11. Attacking from Side Control 1
+		      0:41:39  12. Attacking from Side Control 2
+		wip   0:45:04  13. Attacking from Half-Guard 1
+		todo  0:47:59  14. Attacking from Half-Guard 2
+		      0:51:24  15. Attacking the Turtle 1
+		      0:55:38  16. Attacking the Turtle 2
+		      0:59:11  17. Attacking the Guard 1
+		      1:02:12  18. Attacking the Guard 2
+		      1:05:34  19. Recovering the Back
+		      1:08:55  20. Countering the Rolling Back Attack
+		      1:13:22  21. Back Escape
+		      1:18:09  22. Pass Switches
 
 passing the guard
 
@@ -300,28 +300,28 @@ arm triangles
 
 	VOLUME 1: Positions & Theory of Choking
 
-		1. Introduction
-		2. Principles of Choking
-		3. The Side Choke (Kata Gatame)
-		4. The NoGi Brabo
-		5. The Lapel Brabo
-		6. The Sleeve Brabo
-		7. The Anaconda
-		8. The Sleeve Ezekiel
-		9. The NoGi Ezekiel
-		10. The Guillotine
-		11. The Arm-In Guillotine
-		12. Arm-In Guillotine to Brabo
-		13. Kata Gatame to Ezekiel
-		14. Principals of Positional Control
-		15. Side Control
-		16. Knee-on-Stomach
-		17. Half Guard: Upper-body
-		18. Half Guard: Lower-body
-		19. Turtle Position
-		20. Front Headlock
-		21. Leg Drag
-		22. Knee-across Pass
+		                1. Introduction
+		                2. Principles of Choking
+		                3. The Side Choke (Kata Gatame)
+		                4. The NoGi Brabo
+		skip            5. The Lapel Brabo
+		skip            6. The Sleeve Brabo
+		                7. The Anaconda
+		skip  0:42:34   8. The Sleeve Ezekiel
+		      0:50:22   9. The NoGi Ezekiel
+		      0:56:44  10. The Guillotine
+		      1:04:42  11. The Arm-In Guillotine
+		      1:13:45  12. Arm-In Guillotine to Brabo
+		      1:19:40  13. Kata Gatame to Ezekiel
+		      1:23:39  14. Principals of Positional Control
+		      1:25:24  15. Side Control
+		      1:32:48  16. Knee-on-Stomach
+		      1:38:15  17. Half Guard: Upper-body
+		      1:44:25  18. Half Guard: Lower-body
+		      1:49:55  19. Turtle Position
+		      1:55:19  20. Front Headlock
+		wip   2:02:04  21. Leg Drag
+		      2:02:29  22. Knee-across Pass
 
 	VOLUME 2: Creating Openings & Finishing
 
@@ -340,7 +340,7 @@ arm triangles
 		     13. Leg Drag: Kata Gatame & Ezekiel
 		     14. Turtle: Near Side Kata Gatame
 		     15. Turtle: Far Side Kata Gatame
-		     16. Front Headlock: Brabo
+		wip  16. Front Headlock: Brabo
 		     17. Back Control: Kata Gatame & Ezekiel
 		     18. Kimuras to Kata Gatame – Armlocks to Brabo
 		     19. Inverted Guard to Kata Gatame
@@ -356,7 +356,7 @@ arm triangles
 		7. Rolling Back Attack to Choke
 		8. Leg Riding Attacks 1
 		9. Leg Riding Attacks 2
-		10. The Brabo Roll Under
+		wip  10. The Brabo Roll Under
 		11. Drill 1: Rolling Brabo
 		12. Drill 2: Rolling Kata Gatame
 		13. Drill 3: Turtle Position 1
