@@ -372,7 +372,7 @@ function update_transition_pics()
 }
 
 
-function prepare_graph(frugal)
+function prepare_graph(frugal, ignore_selected_transitions)
 {
 	var nn = [];
 	var G = { nodes: [], links: [] };
@@ -398,7 +398,7 @@ function prepare_graph(frugal)
 
 		function frugal_op(x, y) { return frugal ? (x && y) : (x || y); }
 
-		if (trans_is_selected(t)
+		if ((!ignore_selected_transitions && trans_is_selected(t))
 			|| frugal_op(node_is_selected(nodes[t.to.node]),
 			             node_is_selected(nodes[t.from.node])))
 			G.links.push(
@@ -428,19 +428,22 @@ function update_graph()
 		return
 	}
 
-	var G = prepare_graph(false);
+	var limit = 30;
 
-	if (G.nodes.length > 30)
-		G = prepare_graph(true);
+	var G = prepare_graph(false, false);
+	if (G.nodes.length > limit)
+		G = prepare_graph(true, false);
+	if (G.nodes.length > limit)
+		G = prepare_graph(true, true);
 
-	var toobig = G.nodes.length == 0 || (G.nodes.length > 30);
+	var toobig = G.nodes.length == 0 || (G.nodes.length > limit);
 
 	nb.style.display = (toobig ? 'none' : 'inline');
 	nn.style.display = (toobig ? 'inline' : 'none');
 
 	if (toobig)
 	{
-		nn.innerHTML = "Too many positions to display. (&gt; 30)<br><br>";
+		nn.innerHTML = "Too many positions to display. (&gt; " + limit + ")<br><br>";
 		return;
 	}
 
