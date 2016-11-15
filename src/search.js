@@ -304,6 +304,7 @@ function add_paged_elems(target, page_size)
 
 			target.appendChild(document.createElement("br"));
 		}
+		else page = 0;
 
 		for (var i = page * page_size; i < items.length && i < (page + 1) * page_size; ++i)
 		{
