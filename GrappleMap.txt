@@ -36,10 +36,10 @@ tags: top_seated bottom_seated back rear_naked_choke
     CMKGyevIGOVhFI1FqfqENKZjiJJFtgFEqKlkrJBFagUDbJTkZKFJ7dYIqJZjgLILqlyLy
 flanking after\nstanding drag
 tags: standing
-    pDbaUHByaCYwtfbaVqBxduV8sicbVdBtb2V0syi4UIAvbtPczahXWCBhgBTRwNoPSIBNp
-    sQqvvlVV7FFnmR7uMiVTkHOkJPnupiwR9IRkNOEvfh8RhJcjKNUA8kYUfzgpNRIyfrSQk
-    yeazFYuMaDVauzbdFVrCa3TevHb3GgsJbRTAzuhnIzwghPTnvumgLwuUm4O6CqqUJZCBr
-    DPhARmOIeFxpRSoCapdLmHtn7OVCRp5LWIynKOlCUqjNcIzmzNLxppRMYCUr7MxFetsMD
+    pEbaUIBzaCYxtfbaVrByduV8sjcbVeBtb2V1syi4UIAvbuPcy9hTWFBggBTRwToPSHBXp
+    pQuvwlVV7FumsQYuMiVTkCKljNPupiwSaBPk9MSvgh8RhB8keLYA8kVUjznpLRDygrQQl
+    x8aEFZuNaDVauBaMGYrCa3TfvGbMHasJbRTAzthnIAwghPTnvumfLwuUm4O6CqqUJ0CBr
+    DPhARmOIdFypRSoCapdLmHtn7OVCRp6LWIynKOlCUqjNcIzmzNLxppRMYCUr7MwFetsMD
 combat base\nvs freshly\nbroken guard
 tags: combat_base bottom_supine full_guard
     zhaABxEqaBFGBXc5BuAQa1E1BZbEA5BUbZFmIraYyHG0gtGVDieiBVALeqEGH3kiCgGgl
@@ -557,10 +557,10 @@ tags: standing two_on_one
     BLTNspXLDFyrCOoK8rNOAE4rCSLKKskPGE3rLT4JwsaP6EsqYUSMhrqHtLju9MaKVxbNT
 standing\narm drag on\nfront leg side
 tags: standing arm_drag two_on_one
-    SkaQMYCjaAE9ToefLOFXaEFVSddDMkEWbAFBLZgBM8DIijGFLAneK2I3mpIoFgtBNtD2t
-    kIjGPpfN6FLo1HwCGp8NaFsl4KxBwqpMIFtmGLIBsqVLuFrlWMNIYqvJXD2ulKZBVvVLf
-    DnazKvuIazVazJaFK2ryaNTiALbGK6szbKTyBTivLywEhiTMxInANRvAnwQVBCtxM5ARu
-    TRGDupVKSBYqnRyERlXL0FbrgOYFLk7LRGkrSOMFtjPLYG4rNNLwyruPnBLvtO4D0wWO8
+    SkaQMVCjaAE9ToefLNFWaEFVSddDMiEWbAFBLZgBM7DHijGFLAneK1I2mpIoFgtBNsD1t
+    kIjGQpfN6FKo1HwCMqeMRFsl4KxBDqDMmFtmGLHBDrhLdFrlWMNIYqvJVD3ulKZBVvVLf
+    DnazKvuJazVbzJaFK2rzaNTjALbGK7sAbKTzBTivLzwGhiTNxJnANRvBnwQVBCtxM5ARu
+    TRGDupVKSBYqnRyEQlYLZFcrgOXFMk6LRGlrSOMFtjPLXG4rNNLwzruPoBLvtO5D0wWO9
 symmetric\nstaggered\nstanding
 tags: standing
     KhaCPET1aKFnNJaSOrXfaGHeMIbVOKV5bBHaMbiTOHRzgSGXQ0nrMyRrnzISOrv8NKNDv
@@ -1741,10 +1741,10 @@ tags: pass_under bottom_supine top_kneeling
     UMaHucASMJMa8IZFbfqQMHFeMHYFngEQrHof2HXF2gPPiGegsHAG3bSNGM2cHO0Pgd2Pt
 smashed half\nabove knees
 tags: top_underhook crossface half_guard bottom_supine top_on_side
-    RuaDIkGlazBNRwcXLgJLaEDhQycwKlIsbdDJJ9a4IeD2eYHCKtd4OxI2gxMbDnfgUCAEf
-    bPGEQaTVfzFdMLiBdaDS5zdawOcAbbdSuyLa5PhzdauRYyNauQrGzfIPEBEfhSmzke4TG
-    KdgFFJGyl0BIGQfgGbEojoDdHvgsGOFPjKDrDMiNMcJXgQIfCIc2IxFMbCJ3y1csRyEob
-    NSfxuc0M8IiaZPHyYfBP0HzeMRLzugDQAG0fjSQAHgwQ6GkgoSGCmbMMGBBb7SIA2clVl
+    QZazGKIvazB5QYcQJHLdaJEFPZcaIWJSbdEzJraYG8EEe1G8J5cHNQJlfTL8DpfgUwAXf
+    bPAEQaTVfzEdMLgBdaDS5zdawOcAbbdSuyLa5PhzdauRYyNauQrGWe6PGBEfhSkzke4TG
+    JUhFEwGylZBJHJeKE1EpjoDdHQf4FIFPjJDsDkigKzJ2giHIDjbCIHGdbCK1yVcvRMErb
+    NSBxwcUNiH8aZPNyYfDP3HzeNRMzvgEQBG0fjSQAIgxQ7GjgpSGClbMMYBDb7SFA3clVh
 bottom starting\nto turn in
 tags: side_control bottom_turned_in bottom_underhook combat_base
     NfaOS5SOazJXNJbgPsQcc9JLNab6QsQcbGJyK8iBRxJxa4HTObhTLjLUhBImGpiXQnEmj
@@ -1813,10 +1813,10 @@ tags: side_control bottom_supine crossface cradle
     7SnrmcnN1C9fhTtrEf9PRzJhOSxrWhgQryFinR2tdhzQDxChDRHyCbMMww8cwSQvNcQU4
 side control\nhandfight
 tags: side_control bottom_supine crossface top_kneeling
-    P6azNwRhaAG8NfcZNKN8crHSNybGOfOxboG1Hia9Q7Ina5DWLmeXMWKqe1JjCkffPxBRh
-    GKwEublQSEUkaHUAxa5PrCvgBIvzgaQO9B3fLJkywbGOwBreIIXG9fwL6BxgeMYy6fuNS
-    zsdcvJDAhpxEAWcqy4EweYAlAxdBymEwgrAbAaiaDwHZiSFDCwbHEDGdcaEYAsbONrFzb
-    LOsxGa3JHInfrOKAseaI8EagtPvBseLJLDdhhPUCnfgIWBWg1PFD1bUIHCNb8O3BEb9Rt
+    PgaGNTQhaAHmOueiNaPfdAJjNLc6NpODcHIoIfaYQYIiaYF1LAftMRKQguJlCtfnPaBMh
+    HKjEqbqQPEVkdHVAwa5PrCvgCItzhaQO9B2fJJlyxbGOwBpeEIXHngeLUBvgTM2zkfCNN
+    zsdcvIDAhpxDAWcqy5EweYAkAxdBymEvgrAbAaiaDwHZiSFCCwbHEEGecaEYAsbONrFzb
+    LOtxFa3JHImfrOJAreaI8EagtPvBreLJLDdhhPUCnfgIWBXg1PFD1bUIHCOb8O3BEb9Rt
 north/south\ndarce
 tags: darce north_south top_kneeling
     U8azJMXxazDpT3drHCVnduDYTpckIcVbccDfMLbpJ1RebPxzPYfKFHSufRC2ITf9A6LPf
@@ -2011,10 +2011,10 @@ tags: butterfly_sweep engaged_butterfly
     aNgBWc5JuHEjGJPCrg5IhD2kmHpCGicHBCNjWHfC6jhH5CuiGHxJGeMNvDNfANTBbfLNp
 top lock\nclinch
 tags: top_double_unders lockdown bottom_supine top_underhook
-    qkaFujxraSw3riaExVxNaEAHqHbGw2xYbPzNqugEBVzsibChtecyGQwQc3F3uRb3P7zLb
-    6ONu3ehUfARgtP2yLgAUCAIeGTPzBhuUbAFdpT9y7iIT8AAdcVtvUb1KcxAbAQtyCcbSN
     o7bcwCspdxyrqyeDwZtvdlBWq1dfxfscc1BjwjboBipMaYHvuCgKFirehEGAx8e1NMtMe
     XPkB2cxM5tqa0RPz0bqQNxsaCS2zPauREyGauTazfaxSLzFazSmt9gCJBwbgsO9xjfnRh
+    qkaFujxraSw3riaExVxNaEAHqHbGw2xYbPzNqugEBVzsibChtecyGQwQc3F3uRb3P7zLb
+    6ONu3ehUfARgtP2yLgAUCAIeGTPzBhuUbAFdpT9y7iIT8AAdcVtvUb1KcxAbAQtyCcbSN
 electric\nchair sweep
 tags: bottom_supine lockdown
     vBhwCiyBfMveyZhTAWyHiVw6yjgIBwyshwxyBzaZDivJeDC6FbgRBMBMifCpFCiCLBA2k
@@ -2303,10 +2303,11 @@ escape from\njudo side
     RbdIxMFbazvhN4d0zJFZaEyROSe1y2GOaFxFKEj5A7NIaZx0I2eTFoJEbHDyN2c7MFQUc
     sHUKPfVOEQQftEnK1j1NEM7hlFGLvkvMCL5hNGiLxjYLpK3g8GFKYbMHFPXc2KxR6enLp
 rolling\ntoward hippo
-    NNaDzxxcaBCmNzdpB2yud4BKNLb0B3yVcTCnOqbHIVD9bHGIL4gOEOIIgYGqK9b1NoHSg
-    lNcHTaTKaHkiVJiDGaxKgHPeFIpCoaBKBIkdBI0BrauJIJzdvJjL5fXI3Jid3N4HzbYOd
+tags: combat_base
     0faLJAS1azzCYxbeGnSkdWA9YkbUHGR8czBtVifzMNP2bgHWUcgxFYRegADGOteTMuLpi
     0KBNda6JZHkgIKeJqcSKbIucvJTI8dRJtJEceJsJje6JHKGcXJrQvhTHKMHg6MeK5gYOn
+    NNaDzxxcaBCmNzdpB2yud4BKNLb0B3yVcTCnOqbHIVD9bHGIL4gOEOIIgYGqK9b1NoHSg
+    lNcHTaTKaHkiVJiDGaxKgHPeFIpCoaBKBIkdBI0BrauJIJzdvJjL5fXI3Jid3N4HzbYOd
 hippoplatamus
     F4gPmfyIbeokD3jfn8x1eeqkEYicoBySc5qBGSgQvbB9cjwKHIh1BYExf4B6KIb0vvFTb
     AvnOLbBs2FgfeyeL4equtHYe6uRKSeOuxI4e0vBKAfPvhJfdOwbHWdYAvImbDtWHTb4rk
@@ -2650,10 +2651,10 @@ tags: trip standing throw
     FFUEgpiEztvt4I4GAshGmxJulIeG5tsGIxDvCHUGNtQHVyAv2G5wdolIuyUsaEsA3tbDj
 high single\nw/ head\non chest
 tags: standing single_leg_takedown
-    ymaBUnEYaEO9BlaEWBGeaESAAzbBVUFRbNRGyYigUZElinQcBWorWfEHohTKwWtvTEztt
-    lO5xuo8ViAyoSP3yRozRkxlonSXzgovP4x4o1TJzNpsPqxOp4UqCIr7TZxetIQOvnuFO6
-    soazO3Gaj2SgqSaGSoDEiAUArkbMRvDIjLTJsnirPLAWp4SNqPoQR2tZqjTjrgxkNsuQx
-    RQ7rOs4LvxLvkTHvWtGL7BeutRhxdt4L2Ckt5QNx8tLMOCGsOQKq6tdRPtxylOIvpzXNN
+    yoaBUkEYaEO4BpaEWzGfaFSuACbBVQFTbKRByZieUWElihP1B4ohWgETn0TPwYtvTCzqt
+    lOYxxo8VgAzoTPZySozRhxnonSVzhovP1x6o1THzNpsPoxQp4UoCGrITIxftIQMvnuFO6
+    soazO3Gcj2SaqUaGSqDGiDUurlbMRwDGjSTEsoirPMAPp9StqQoQR4tZqjTkrgxkNtuRx
+    RQ7rNs4LxxNvkTFvVtGL6BgutRdxbt4L0Clt5QJx7tLMMCGsOQGq8tdRQtxylOJvpzXNN
 standing w/ one\nleg grabbed\nvs supine
 tags: standing bottom_supine
     M9azGBBoaJOdMVaJCUCgaGKEMEbGDYClbMLELUgeI8EhipK9KsmHG7GOmFGlLptPLAF4u
@@ -2699,10 +2700,10 @@ tags: standing collar_tie underhook
     TKEELmXOlFjopHMDiqpQiCmq6JzDmrIP6B3sgJRDNr7OTCasFK8MDoRNTHFrHNlFms5Nc
 shooting\nfor single
 tags: standing single_leg_takedown
-    AVaMUXUyazKuEuaQT7T0dSL6DwbXUeS8c1LeEziISUMHftKeK1kLRcMxlpNREsp3RrEYq
-    gL8CymfTuCimpMwyNj8SLz9jyOGxwjTSxyQjzOVw6iOR4ywjgQaJLotPgEqq7ONB2r4Oh
-    tmazLpFeaBSuqoaENGBxaNSGrrbwNjCBbLSwuOhxMXBOiERGvookN0xYokQIxtxjL5xVx
-    ARpzHtpKKy9s3RVDBrRLLCKqWRhEIspLXDrr2RgFFr5MHEFr3QQw0sdO4x8yjOFzQAnOR
+    AXaMUXUwazKmEwaQT5TYdSLZDybXUdS7c1K8ECiISSMFftJ9K2kLQ8MxlpNMEtp3RpEXq
+    gL7CAmfTtChmpMvyPj8SLz9jyOGxyjTSzyQjzOVw7iOR5yxjgQbJMotPcEqq7OMB2r4Oh
+    tfazLtFfaBSsqbaENEByaNSFrnboNvCCbLSvu8g7MKBRiBRFu8nUN1xOoaQCxAxcMCxux
+    aRMzEtuKMzcsQRXDzrRLLCOqURgEHspLVDsr2RfFFr5MFEGr3QOwhrZO7ycx8PdAgzRO1
 standing\nsingle w/\nhead outside
 tags: standing single_leg_takedown
     FDaBTRC0aYHZIFaERNGFaSH0HJbGR5FIb0IeFeibR1Cxh0JKH9nkOlGtnCK1BwtQRdzDr
@@ -2717,10 +2718,10 @@ tags: single_leg_takedown standing
     lJOKRsyCyE0sNLtL1qZGjIrp8KPMTq8HhJpqCLwMZqrIjKlp1L5FfrVGxINwUHlKqyVHU
 combat base\nw/ single
 tags: single_leg_takedown combat_base standing
-    uvaP1ZFcaBP5x3aE0MDXd4QjwYbz0GDgcOQovah8Zfw0a0SFAyioUPy4hyRvuNokXrsgn
-    pSKvGjJXZsjiSTNsihiXyrfgbW3q7gGXsrofzYbqXftW6szfeYCxPlmTgtCoJUTrVqIVr
-    pIazKluEaKZjmMaGMyq8aEYcnMbFMfr8bLYeqoh0NdsOirWjo0nZQppSokTZwZs1Pawbu
-    jTSuspdOcvTqSW5xknlQEyGooUUyrnBRbzBn2T7zemERBzKmTTBrLreRlxIusRxAgvbRn
+    uvaP1ZFbaCP5x3aE0NDXd4QjwZbz0FDhcNQovah8ZfwZa0SFAyioUPy4hyRvuNokXrshn
+    pSKvGjJXZsjiSTNshhiXyrggbW3q8gGXrrofzYbqXftW6szfeYCxQlmTftDoJUTrVqIVr
+    pIazKluDaKZjmMaGMzq9aEYdnMbFMfr8bLYeqoh0NdsOirWio0nZQppSokTZwZs1Pbwbu
+    iTTu3oJOJv0qLWZxql6Q4yynRUTyGmrQKzvnzT2zxmjRJzHmlTBrLreRlxIurRxAgvbRn
 incoming\nroundhouse
 tags: standing kick
     MxaFPWSXa9DsOebhMKTXeFEiNAcfNHSLdXD0Ngi8OONWiNFcPIoWLXOvoWItQdxnN7NSy
@@ -2986,7 +2987,7 @@ tags: kimura
     BVkzSMAyjONiBBhjReDlhzMpCOicRiCQiNLJJdiHOrHmjuGtG3ckMQFOdxJzO9eiKzOjd
     OF4LRhzKmOYhgCWNei6GKM6hPGOOqjsGgNMipHMOujvEWM3jdIxJQbMJuQmdIH3SrfiHL
 weak underhook\nvs head block
-tags: half_guard bottom_underhook top_kneeling bottom_turned_in bottom_post_elbow
+tags: half_guard bottom_underhook top_kneeling bottom_turned_in bottom_post_elbow knee_pin
     ywazvSsYazCzAObTysvDdaCEARaKxxvsbSDdGwa5Buzza1IGAOe5BhxCeQDcFTi5EyC4k
     bISD3fHBXAoh2L2DIcqEBCWhoPsEbbqFiDzhPQrDnavFLEQhvQCzZinD4FmjrHkHnjBI7
     q8cOCTsOcHBIsQa3FHuYcREMsVckE4u9cvDqwXhHGDBTbgEEzoezMnBLbOLBF2jjM1IOf
@@ -3323,10 +3324,10 @@ tags: back bottom_kneeling top_kneeling seatbelt turtle dogfight
 crotch\nrocket
 te guruma
 tags: standing te_waza
-    tTa5G2F9aBJrufbuKFDTaEMnuicuJzEebILnvChZFvFnhyHMxBlWKNBflWLhyirPDxB2t
-    5GsxGnzBIGptMEMAZl3D5H3wBCdB6mmEAIwxnBkB9nlFsHGycAIzMoWIvzQtTEFAsv4Dd
-    EmaKxBAoaEKPAJa3ydxQa4IbBOb2ymyTb0IGDxiFzFBgisHDAxoOALzNonEmF1wdB0C7w
-    HGGGErBBeDhsWJpHwsqFnFLrcGtHesUGxGBrlFwF4ttGJGzseEBCarTDlEKw4EoGvyJFB
+    tTa5G2F8aBJruebuKEDSaFMnuhctJzEdbHLov2hOFuFmhzHNxtlFK2BdlRLjxKrKDQBWt
+    SGBxJnyBJGitQEMAWl4D2HOwRB0B5mmEAHzxKBbB8nlFrGux1ACzpoVISzOtvEIAevHDl
+    ElaKxBAnaEKOAJa3ydxQa4IaBPb2ylyTb0IGDxiFzFBfisHDAxoOALzNonEmF1wdB0C7w
+    HGGGErBBgDesYJrHvsqFkFNraGrHesUGxGBrlFvF3ttGJGyseEBCarTDlEKw4EoGvyJFB
 north/south vs\nelbow frame
 tags: north_south bottom_supine top_kneeling
     5oazN44BazJj26drNp17dnJh2VcaN819b3INWBa4QQVQa5FZU6gTNoWxgNJWMvfpLFNzf
@@ -3353,10 +3354,10 @@ tags: bottom_supine standing
     VHmOCetLnDqhVHTNqinMaDzmdHvNFjAMsDpnuHMMPkwMrCVokGWHAeZNfJFejHdJIeNED
 flanking\nbody lock
 tags: standing body_lock
-    OvaWLAL0aJAtQLa0IEPDbfz3PVb4JgOyb9AdOxiTJrMgiuBLQyonFKPHowB7JKrvJJGRr
-    xFmHPnfJOCsqkEeDGnyJvBvpfInCun5JkCjoOJkCspfIJC0nII0MEp4ELHHsnHWFCtrI8
-    KzaDJtxXaRMyJmaOF0y3aHI0JubSG2yXbJJYIximJpADivJKGmneEYCDnkFaIyqGMeDvq
-    lNuLjnaKWzFqkKLG5mQK3DvonKsFRmLLeDEm7KLEYmiKoEmmjJ4EHqaHFGjqONTGSrGQn
+    OEa6LkL0aJAtQSaEIsPDbfz3QbbSIWOyb9AdNSisI3MgiuBLQon6FQPJovCbJJrvJKGRr
+    xFmHUnfJOCrqjEjDCnxJvBxpgIjCun5JkCjoOJjCrpgIJCZnJI0MEp4ELHHsnHWFCtrI8
+    KzaDJtxXaRMyJmaOF0y3aHI0JubSG2yXbJJYIximJpADivJKGmneEYCDnkFaIyqGMeDwq
+    lNuLnnaKWzHqjKLG4mQK3DtooKsFPmLLeDEm7KLEYmiKoEmmjJ4EHqaHFGiqONTGSrGQn
 butterfly\nelevation vs\nsqueezed knees
 tags: butterfly bottom_supine top_post_hand
     D8rLPUFxrCPHD0pgM7FoppMGEcpbOwFoo7N9DHjfR3F3jnR2CzeaNqGjeeNqB4ciVVG7b
@@ -3376,6 +3377,7 @@ tags: standing collar_tie wrist_control
     A7aNL3zVazYixIaYNDwbaEX8yLbRNixfbzYaAfitOSAmhmV3yToZQVzTn4UlC8vqODF8u
     3SLCOsWKEHuqySPGWtRKqKGoVQhH4s9KtLSpkPZIZtELiMPouPFA0r7S5FlwaQjHNw2Qb
 duck under
+tags: duck_under
     FBaAxEwnaLFyCkaPv1ufbhCAC8bRwFu9cdDjDhiAysxpiNDJACoWy9xSpoByHtrEDBEis
     QHJDXpeBJCctmLQFQl4DMGfrFLXG2lLDnHoq3LJHLk1EbHfpKLzBBrqCCGdsZFJIiszHi
     zwa6McOtazL2CNctNoM5dWLzBvc0MZMJcCKZzaikI9HvcpGqFvhtLJI1hHKHEkqEK6Exp
@@ -3392,6 +3394,29 @@ tags: bottom_supine bottom_turned_in top_kneeling knee_pin
     bHXFvgyDxy5jjJAEdcBEjB3iwMCFscQEgDeh9MNGqb1EpDWhDLQBIhqEnFalKHNFsmQKf
     xbfPE8xdaBz6zRexHhxCaJDLzufWGXyBaYCFDhkSJKFeaZDZBBeyMrBPbEKbIIfOPfKhc
     mLrEXgZMEIlcKG9FBiXI3GUf5EGGujVI2HwgVDRGFkuHRGJhLDeEJbMNsKedTNNMhfCNU
+duck under\nvs arm
+tags: duck_under standing
+    zwazICMPaACaCnaEK0NabxFGBIbCJ7MtcdEyA8ifH2IXh5DeEkoqIlHqn5GjAysxA9E7t
+    kzrwUpUChG1pOBLznm7AhFVnWxZzZl6zHFGoiwLzRkSAbEFn9v2EPrjE5CmtJzmBCtUwR
+    DwaAnXttaXDyBXdEpgvla5AnC1cMpQu0caBmF7dev4wCiSAuC1iAsSzwizuaDDnfAlzHp
+    OzaE9kADTvfonyNFOiBHAwcruBCF8ioIRwBrVCOF0hjJtwWq2DJBEmhuMBHo9A6AHpSDs
+half guard\nw/ hip control
+tags: half_guard bottom_supine
+    VaazRpPUaCIBTidkSWQqaNMfSYcmRSPgbdLpNHaZNxJjeQLNMjefTxNigRQ8DUdIS4Eff
+    aOdIvd4TADwaUMmGiauS9B2awQpFmaWTQBua8RnEAauUKBnawSwI1goRBDdfmQRAze3QA
+    H4a1EmOpc3D9GIa7HNLLbxGjHub3GZMTcoGuIxh7J5NWeIMTF7cwNrICbEP6zhcnUfDEc
+    aXiAsb4PIH5aUYhCuepStHCcJUkCQfpTfHzdVULD1fUTfHneVTZEtbORqA5cNWqzTeEXS
+top 3/4\nlockdown
+tags: three_quarter_mount bottom_supine lockdown
+    PtazBvOwc3zGN6aEEYNmbsCNPoaVEmOzb7CoQ7fGI8TAa3G7KydvIXNsbEKoFjbuQKKrc
+    pSIFAaVL6NIbdPxE1c9PDLCepNwD8cVQzL0fwN5DTdHRyLSgBNmJPbMMPHHcsRYGycvUq
+    LNdzEnRUbdCTN6fcGKR1ehE0NDdNGFQ3dlEyQoaYMkKibKFhMXgXLYJ9g8JBIlevTkDVe
+    KQvKKaUU2CBaVOaGDaRVCD8auSgFrbcVVEEa8TeErawVoELaxUoI1f6NDFHe2SEDKeSUw
+berimbolo\nstart
+    xbazyjoBaMGcy7dozIp0aQCJyEb7Alqta8D2CEczF1vEdZHDA5eTzExPfBBhGdhYFCBXh
+    lIpIdevDdAzcUIHIEd1HpBmawMdJbegIBBYbaNaIxdOJFCGauN1A6h9CwEBh4HSFBigKj
+    CMazrytTaFzBEhaFuYxxa2zvCXaEuswzbkABzxaYAwy4eLF8FebCEuF1e0FGEIbsOvHhf
+    ANiCcaTKEGffoIMESd4KPCEehKTECfiK7CXd4L8FdfPMaCodaMQGdbTIIGedIO5EZfcQX
 let head go
 properties: top
 ref: Eddie Bravo "Mastering the Twister", Section: Establishing Twister Side Control @ p48
@@ -7279,9 +7304,8 @@ ref: Eddie Bravo "Mastering the Twister" p193: Smashing Web
     g6aGFlnxaCAfjXaNHDpgaFDui8bTG6oNbMCBlihGJSqnhFFtoZbLLer0bNI7ucbDTcynb
     wPssvf1TzAiemMiv7gqRxwTftOHwLfFQFwRgAPpwGf4Pqv6gyQusObMNrwEbMRIynb1TL
 escape
-properties: bottom
-Stephan Kesting
-https://www.youtube.com/watch?v=4Dsk8LI-WO0
+properties: bottom detailed
+ref: Stephan Kesting https://www.youtube.com/watch?v=4Dsk8LI-WO0
     p3azVQpdc3WPtHaEUYsnbrVSsFbBU8rxcqVgygfaTzsBfsPgBjbCOdx6b6MmEvhoKFAUh
     lGUCOexNYx0dMHAyEd5NGx1eXLLxPeaMIx3fOMJxnfmMoxUfxNWBGcdJUCMivIGBWk0Ji
     g6aGFlnxaCAfjXaNHDpgaFDui8bTG6oNbMCBlihGJSqnhFFtoZbLLer0bNI7ucbDTcynb
@@ -7290,38 +7314,62 @@ https://www.youtube.com/watch?v=4Dsk8LI-WO0
     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
+    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
+    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
+    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
-    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
+    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
 retract one\nunderhook
 properties: bottom
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series I, Volume 5: The Guard (Sweeps), Technique ? @ 11:55
@@ -10680,40 +10728,60 @@ ref: Demian Maia "Science of Jiu Jitsu", Volume 2: "The Triangle Choke", Techniq
     BIazmHIAa4mLB2aFqoIfaFqsB1bIplIfbOpxCChptgHmhMsXDAccxNHgctxsDlbIGXIMb
     CGGAJa1DcKsaTCmDUdNDAIkeDBZDleEEiIvfMCBDwfXEhHAgCCOFObMBxF5bSHDGtcOJ7
 triangle
-properties: top
+properties: top detailed
 ref: Demian Maia "Science of Jiu Jitsu", Volume 2: "The Triangle Choke", Technique 8 @ 23:00
     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
+    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
+    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
-    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
+    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
 triangle
 properties: top
 ref: Demian Maia "Science of Jiu Jitsu", Volume 2: "The Triangle Choke", Technique 10 @ 29:56
@@ -11334,17 +11402,17 @@ todo: replace with actual setups
     1IPD4rvOFIXqXHwAssQM3F3qgKJzdsZMGFIrjLryVuaL8EXq6MuK0q7KRGKv2LtEIxGKM
     DoazKvuIazU9zKaFK2ryaNTiAMbJK7sBbNTyBViqLxwCheTMxHnCNQvBnFQTzXv7M5zNv
     PSaANr0KXCmrURGECqeLdFYtQQcFPqDKRGNuSQnGOpJKMHBvePowIrBPkAzwRPICgyPPm
-    SkaQMYCjaAE9ToefLOFXaEFVSddDMkEWbAFBLZgBM8DIijGFLAneK2I3mpIoFgtBNtD2t
-    kIjGPpfN6FLo1HwCGp8NaFsl4KxBwqpMIFtmGLIBsqVLuFrlWMNIYqvJXD2ulKZBVvVLf
-    DnazKvuIazVazJaFK2ryaNTiALbGK6szbKTyBTivLywEhiTMxInANRvAnwQVBCtxM5ARu
-    TRGDupVKSBYqnRyERlXL0FbrgOYFLk7LRGkrSOMFtjPLYG4rNNLwyruPnBLvtO4D0wWO8
+    SkaQMVCjaAE9ToefLNFWaEFVSddDMiEWbAFBLZgBM7DHijGFLAneK1I2mpIoFgtBNsD1t
+    kIjGQpfN6FKo1HwCMqeMRFsl4KxBDqDMmFtmGLHBDrhLdFrlWMNIYqvJVD3ulKZBVvVLf
+    DnazKvuJazVbzJaFK2rzaNTjALbGK7sAbKTzBTivLzwGhiTNxJnANRvBnwQVBCtxM5ARu
+    TRGDupVKSBYqnRyEQlYLZFcrgOXFMk6LRGlrSOMFtjPLXG4rNNLwzruPoBLvtO5D0wWO9
 to back
 tags: arm_drag
 ref: Marcelo Garcia "Winning Techniques of Brazilian Jiu-Jitsu", Series II, Volume 2: Arm Drags, Technique 1 @ 0:46
-    SkaQMYCjaAE9ToefLOFXaEFVSddDMkEWbAFBLZgBM8DIijGFLAneK2I3mpIoFgtBNtD2t
-    kIjGPpfN6FLo1HwCGp8NaFsl4KxBwqpMIFtmGLIBsqVLuFrlWMNIYqvJXD2ulKZBVvVLf
-    DnazKvuIazVazJaFK2ryaNTiALbGK6szbKTyBTivLywEhiTMxInANRvAnwQVBCtxM5ARu
-    TRGDupVKSBYqnRyERlXL0FbrgOYFLk7LRGkrSOMFtjPLYG4rNNLwyruPnBLvtO4D0wWO8
+    SkaQMVCjaAE9ToefLNFWaEFVSddDMiEWbAFBLZgBM7DHijGFLAneK1I2mpIoFgtBNsD1t
+    kIjGQpfN6FKo1HwCMqeMRFsl4KxBDqDMmFtmGLHBDrhLdFrlWMNIYqvJVD3ulKZBVvVLf
+    DnazKvuJazVbzJaFK2rzaNTjALbGK7sAbKTzBTivLzwGhiTNxJnANRvBnwQVBCtxM5ARu
+    TRGDupVKSBYqnRyEQlYLZFcrgOXFMk6LRGlrSOMFtjPLXG4rNNLwzruPoBLvtO5D0wWO9
     xMaXQbBWaNFgzAa3M0D4dMFnzYbyOkCBdDFyFTeGO9wRg9GEF2ilI0DQh8FZHiqlKMCdq
     3JrLmogLDB7mVLIHGmtMFFYlxNiGvmANfGXluN5FomhMMH0kON1EQmbHcELrvKzDKtqL8
     DoazKvuKaAVazKaFK2rCaWTiALbFK7sHbVTyB8igLrwohETuygnHNMw3onRaGmpUOcFNp
@@ -11404,20 +11472,25 @@ ref: Marcelo Garcia "Winning Techniques of Brazilian Jiu-Jitsu", Series II, Volu
     sIa9H2q0azA3uNaKE1uzaEzTuCbRFVttbyzZw3hXEktSigzGz6cEAIxGcwxUHCbsvaEAc
     YrEFla7zhz1c5suDuezAOAWfDvREgfAAFAYgVwaDVgPAUBdg9xsBSbMwOG9cUsMJeenrZ
 flank\noutside
+properties: detailed
 tags: single_leg_takedown arm_drag
 ref: Marcelo Garcia "Winning Techniques of Brazilian Jiu-Jitsu", Series II, Volume 2: Arm Drags, Technique 2 @ 4:23
     Eeaz1PFiaSQ3HEaL0tIscPRFGqbpZ7Hbc3Q6ATe0X5BefgOoGgg1T8HBgFQFFDpDTgIVp
     vPqD1lmSqH1nqLnFbmsOwFClLOzEXlNNsFhmZOTEEmdMiGenRPbIvksSDG7qSRbGmtoRN
     CqazKvtMaAVayMaFK2qNbbTgzNbGK7rGbQTyCuh2LMwGhbTdyknmNuxdnLQ1DnqMKCFNr
     VPmEAmWIbHgnHN2IdmyKcIhjWMbJincKnJhjcLPJTnwLrIYhWLxzTqUPtFdrzMDHJq1LP
-    xraD4dGCazRmAxbJ2AHccXT6zfcr2KFYcHTiyNisZKAJa8PiEQgEWxDygpS6A7oTT8Fnp
-    xRkyVnrXXIAmTPey8j8VmIGj1L1xQj8U8IRjpKTxgjwUcJpifKPEXkmUbCQqaSjBgsaRr
-    DuazKuuMaDVgzPaLK1rDaNTnATbKKHsJbOTwCSh9JPxzgzTcxNmOLzyLl9O3FEpEIQHko
-    NNyEvk7ItHNj7NbIsl4JCI0gKKGJjlzKoJkfVJHJtklKCJueGJOBqoQMVHApmKQJOokJK
-    pDbaUHByaCYwtfbaVqBxduV8sicbVdBtb2V0syi4UIAvbtPczahXWCBhgBTRwNoPSIBNp
-    sQqvvlVV7FFnmR7uMiVTkHOkJPnupiwR9IRkNOEvfh8RhJcjKNUA8kYUfzgpNRIyfrSQk
-    yeazFYuMaDVauzbdFVrCa3TevHb3GgsJbRTAzuhnIzwghPTnvumgLwuUm4O6CqqUJZCBr
-    DPhARmOIeFxpRSoCapdLmHtn7OVCRp5LWIynKOlCUqjNcIzmzNLxppRMYCUr7MxFetsMD
+    vLaGY8FkaTRezraEYpHWdqR8ytbzYRGBdtRDwxhAV3AddBOPDrhkViFrgtSjCEpDTFG1p
+    FQIAtl0VLLyouPGBKlhRNIdnEMlADkVRiHanCLlAgkRP6GEmFKMFRkCTKEpqBRCC3sYRz
+    CjaAKvtIazU9yFaMK1qxaXTbzHbOKVrCbLTAA7iCLewggRTvwkmMN9v2nyRMBHqxKgEGq
+    6OKDvmAIvFXmHNSHxmlJNHsjTKWIHmtKkIdjqJ3JelOLfH7icJFyOp3PvDxrrMcF0rqK9
+    nmbhWtFsa2Rrq4blWsHldZSzp3cjWAF0dPR9tlh5ULzHckPKz0hyWuCDg3TTyMqaT1DAp
+    NRIxFnzXLHQomQxxQj9VnG6kUN2wyj8U8F7klNvvYjwUcFYjcM2BSk9U1A1qNSkzEsCQT
+    CcaDKutDazU7yAaYKZqraPS9zBbZKJrvbHTyzHiYKKvKg9TBuKmkOjuznIRMzOqGJNCxq
+    ROrzDmmHUEQmONQCGnOKnGkksKtDLoiKOGIkdJgEfn4LXGWi6IIwBqdOPBHrtLND5rQKz
+    nkbaWszLaCXQq0baWszhduVvp2cbWrzbb2Vpqbi4VTwSbuOUw1hTWuyygBTkt2oPS3yyp
+    pPTtmlVWGB7msPFr5iVT5yOljM7ruiwS1xIk9Mnr9h8RZxPkeLqyvkVTNwgpLRwuUrQQt
+    sJaEGmssaDVTpsaMH1oYa3UDqzbMHZp8bRUKuzhnIDtyhPTQremfMhrnm4PVxJqUJryXr
+    DOzvQmOH0CspRQ2xKpdKODEn7Ngyyp6LfEBnKMtyQqjMtEvmzLUtppRNlyIr7LOA0tsLs
 the county
 properties: bottom
 ref: Eddie Bravo "Advanced Rubber Guard" p326
@@ -13490,6 +13563,7 @@ todo: find source
     MsaCFDzxazKLJEa1DjzNaEG6KcbYEizYbIH7LXgXIBCcgWLSI6m5KSFqneLrKBitSDFJh
     8SPMIehS2DfetRdNaawUVCDaYTON2a5VECAbjU5OsavWKDaauVVHNmbOXIbiOT7IxhyWt
 takedown
+properties: detailed
 tags: double_leg_takedown
 note: penn ends elsewhere and doesn't seem to drop to the knee
 ref: Marcelo Garcia "Winning Techniques of Brazilian Jiu-Jitsu", Series II, Volume 2: Arm Drags, Technique 2 @ 4:34
@@ -13498,22 +13572,34 @@ ref: BJ Penn "Mixed Martial Arts - The book of knowledge", Section: Double-Leg T
     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
-    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
+    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
 drive\nforward
 tags: double_leg_takedown
     IoaLOWRGcNIHIRd4NgPzeZKTH2cVM4PKeMJvEFa5HkLPgsD5EqhzENGrkJEVAOh0wVEvl
@@ -13602,10 +13688,10 @@ to double
 tags: double_leg_takedown arm_drag
 properties: detailed
 ref: Marcelo Garcia "Winning Techniques of Brazilian Jiu-Jitsu", Series II, Volume 2: Arm Drags, Technique 2 @ 4:23
-    pDbaUHByaCYwtfbaVqBxduV8sicbVdBtb2V0syi4UIAvbtPczahXWCBhgBTRwNoPSIBNp
-    sQqvvlVV7FFnmR7uMiVTkHOkJPnupiwR9IRkNOEvfh8RhJcjKNUA8kYUfzgpNRIyfrSQk
-    yeazFYuMaDVauzbdFVrCa3TevHb3GgsJbRTAzuhnIzwghPTnvumgLwuUm4O6CqqUJZCBr
-    DPhARmOIeFxpRSoCapdLmHtn7OVCRp5LWIynKOlCUqjNcIzmzNLxppRMYCUr7MxFetsMD
+    pEbaUIBzaCYxtfbaVrByduV8sjcbVeBtb2V1syi4UIAvbuPcy9hTWFBggBTRwToPSHBXp
+    pQuvwlVV7FumsQYuMiVTkCKljNPupiwSaBPk9MSvgh8RhB8keLYA8kVUjznpLRDygrQQl
+    x8aEFZuNaDVauBaMGYrCa3TfvGbMHasJbRTAzthnIAwghPTnvumfLwuUm4O6CqqUJ0CBr
+    DPhARmOIdFypRSoCapdLmHtn7OVCRp6LWIynKOlCUqjNcIzmzNLxppRMYCUr7MwFetsMD
     spaSW8BwaAYCv8a9XmA8dnV8u3bVWPA9bWV1rTh0V5AvbnO6yQhZWtzPgZS5unoLTsxLp
     aPntvk8WdB1nzQrsWiCSWCVklNHsTilRICXjGMCtZh9Q3COimMGzcleTCwqpERMuQrjQt
     sRaEICuMaDVapcaTIFrBa2TeqhbTIQsFbSTCvBf0KvuSipTmsYmnLysgnaO3zZrsLhyws
@@ -13621,18 +13707,18 @@ ref: Marcelo Garcia "Winning Techniques of Brazilian Jiu-Jitsu", Series II, Volu
 to single
 tags: single_leg_takedown
 ref: Marcelo Garcia "Winning Techniques of Brazilian Jiu-Jitsu", Series II, Volume 2: Arm Drags, Technique 3 @ 6:09
-    pDbaUHByaCYwtfbaVqBxduV8sicbVdBtb2V0syi4UIAvbtPczahXWCBhgBTRwNoPSIBNp
-    sQqvvlVV7FFnmR7uMiVTkHOkJPnupiwR9IRkNOEvfh8RhJcjKNUA8kYUfzgpNRIyfrSQk
-    yeazFYuMaDVauzbdFVrCa3TevHb3GgsJbRTAzuhnIzwghPTnvumgLwuUm4O6CqqUJZCBr
-    DPhARmOIeFxpRSoCapdLmHtn7OVCRp5LWIynKOlCUqjNcIzmzNLxppRMYCUr7MxFetsMD
-    pLa3UzpPaFY8qWeqTysacOXfp3doSWr4bkXlrMgaM3xza6Tps4i7TqwchSU4vknSM4Agl
-    1Nir7kwM3zDhqMSuriDJ4wfiUKuvqihJfvCjmJvwBiKJBusjWJuwNk2R6x7nNNnyVoTK7
-    A7bhxgscaLSSyIbTzZqibYPZzOcKzsrHcdQoAujeBauqhVNRvWmAFwwCmRJcEnlHDvFwn
-    OIaEMh0AAEEj5KVFJemyFFKfUKfGcdtxUFXeBKiGrcgx8GCdXJqzPodGxFxnzFjH4otFs
-    lbaHPkpaazX2nrdyOtpJdAV0nlb9NYqCcpWfsOa2JOwYa3TJrrgNNkt6f6PRwHloHxACj
-    8KXu7hfITAafxKnyLhGGMzNicG0zYhOGvzniHFRAEiQGYyMjQFMu2jaMRzblrITBDmhH9
-    A6azwQuMbFQRyvaMzttZenOvzobKyUu8drOBCohJxeyAhtJ7zymvBqz0l7E7HYj2zsIHj
-    CErHifzyeIZfhGfHKboybJIaWGbIZbxxKKUbvFYJwavw8LSaKFtDGmtCNJqkzBRL3kbBA
+    pEbaUIBzaCYxtfbaVrByduV8sjcbVeBtb2V1syi4UIAvbuPcy9hTWFBggBTRwToPSHBXp
+    pQuvwlVV7FumsQYuMiVTkCKljNPupiwSaBPk9MSvgh8RhB8keLYA8kVUjznpLRDygrQQl
+    x8aEFZuNaDVauBaMGYrCa3TfvGbMHasJbRTAzthnIAwghPTnvumfLwuUm4O6CqqUJ0CBr
+    DPhARmOIdFypRSoCapdLmHtn7OVCRp6LWIynKOlCUqjNcIzmzNLxppRMYCUr7MwFetsMD
+    o9a8UFw9aF0csqaWWjwDdBX3r4biUUxuctXTrje9O8Bba2SbuNiVTLxXg6TmuknSM5zhm
+    VLDrnknNQABiuMksQiDKgwOinKgtGilJgv6ioJeuTiIJluYiVI0xDkJQVw1onMAxqoTJX
+    qzaXw4uObfUPqmbqAHsfbVSiqZcizFtDcuSsuLh5AjvKhxN8s2mbFGuWl3ITAhlgAZCXn
+    JE1zYhox0CQj7H2zDdDvDDGfUG7zNdouoDTeCG6zBb4ubEhdXF4w2nNFqBUngCmElopBT
+    o1aHVrxsazZXqidyTowGdAX0pVb9S3xxcpXFrKa2MqA4a3ROsNgNP3wrf6QtttloIgyFj
+    8ICs2hfKjxWfxIquEhGGpvCicFYvshOFtuAiHFjwhiQFqt4jQFBvnjaNvwglrHQxLmhFL
+    qvazw5xAbFQQp1aMALvwenPsqobKzLwvdrOQrLhJwCwxhtJbr2mvBFuDl7Elxyj2u0A9j
+    CyxwhfzurCtfhzNwBbot8C0aWzjxkbxs2DPbvyqxnavseEiaKxrwamtAgAakzv3B5kbue
 stand up
 tags: single_leg_takedown
 ref: Marcelo Garcia "Winning Techniques of Brazilian Jiu-Jitsu", Series II, Volume 2: Arm Drags, Technique 3 @ 6:50
@@ -13694,10 +13780,10 @@ todo: need source
     vAeEGmcymJSmpCiH1kuAfG8lky7IQluAvFXlIyUIqmyA1FpmQy2FepsCPIMqUx2KBrTwi
     M6aDp2Ggh8IgJXaXobETgNE3KIbYoYFFhVFsMrh9rBGQnbA9IgnFqPHan5ujOvsQtVKJv
     LwuPdomvfHltcynMPm5yvIorrCeMymJzGIErvDwLtmsAeIZqAEgIQrEsxM7uQvlO5vGwR
-    G3aBvhLqaECuEsaExXHQaEDjFfbBxhIMbNC3GmigvOKrinBJEKoryAGSohBEHWtvtXL9t
-    lw2Gfo8uiK4oSxZJ0ozv9IAonurLcovwIHJo1u4LMpsxjG4p4uJGTr7zDKItIuBMEuFsX
-    M4azp0Ibj2DiJWaGn6GbiAAuKLbMoEG1jLAGMmirpUIip4x2KioQn5IDqjq5ONxko6KIx
-    RsbQEs4pSHNvkuMPxtGtTJLutywPtt4vaJ6t5zFOAtLvZJ7sOz1KttdooNgylrbNWzXta
+    G3aBveLoaECsEraExUHOaFDgFgbBxeIJbKC2GnievKKwihBIEEohyCGFn0BJHXtvtVMet
+    lwZGfo8ugK4oTxYJ0ozv7IAonupLcovwHHJo1u2LLpsxiG4p4uGG5rIzzKJtIuAMEuFsX
+    M6azp0H8j2DgJYaGn4GbiDAsKNbMoDG0jSAzMnirpUIzp9xUKkoQn3IEqjq0OOxko6KJx
+    RsaQFs4pTHNvkuJPytGtUJKutyvPtt4vaJ5t5zEOztLvZJ5sOzZKvtdonNhylrbNWzXta
 switch\nstance
 properties: bidirectional
     OuaCPJ0PaKINR8aSPB3maGLwQ5bVPA2hbBK7QAiTPoX1gSJAVPnrOLXknzLnS1v8O9TQv
@@ -14947,8 +15033,8 @@ ref: Rafael Mendes vs Cobrinha ADCC 2009 @ 1:11
     vKQRFmBMPMXpoHvPkjcNFJVnWKcOXifOnIJn8KJOxg7N5IsnhLJR2pIHvPJsXM0NStyOR
     LGazC2RzmVMgJDaKGaPOkSJLKmbEFkPRkLLfJvhZHYMCf4PgGpbRIEJGbXKsFCkfMyE8h
     nQ6JfmCKWD4dsTrLFp0LoFOauWbLrrbLQE7a1W8Mpr4LHFjauYlGyeoMbELjtPbFYlAQd
-    YzaKIfKdazIsZKaGEHM6aEF4Y2bAFxL9byGBVHgjJpLAhoKgTilKFKPIk1F6QxnRNyMpp
-    HLtPqjkMWKalQJ9Lmh6M9H1ioLCKciHNlGRiFMdJbhQNmGahCMBQUoTHEOopJNvNyp1P3
+    YzaKIfJUazHPZKaGEHNfaEF9Y2bAFxMmbEGIVHgkJoKsh2IsTvlRFNPTleFFQQoYNIMnp
+    ILqRdkmMQKalQJ8NRhTM7H0inLCMIhzNIGRiFMdLUgMMZGahCMBQZoTHIOcpRNwNyp1P4
     H4azG4OdaENBFlaEJEKRaQL7GtbqJiLlbdNtImh3JmJKefTyDhenMoD9cWPIFKmGQsF4i
     SUFIOmmMTEserUHMhoHNpFOaxV9MopVNRE6a1W9NaqKNcFjauYlDshgPBGakWSGH7mCTs
 stand up
@@ -15508,17 +15594,17 @@ ref: Ryan Hall "Arm Triangles", Volume 2: Creating Openings & Finishing, Techniq
     sS0HYbbVqzfdOPoDSavWgydavR2CIa2V8xLaYS9BBauWoxQauUiGKgVQhDrfCU9BZf0Xk
     IKkeB0HpfsBIGKhnC9EAfUD9HhiwDYF0fQEcE3jjKvK6gtIPCKcOJ0F4cwLBznbVThEkb
     0T3vUdRQJIyb0R6y9ftSNH1ggS4zFgoTyHThzS7AOgVTmGIh1SJCFchOmBFbVUSBlciXr
-    ROaDJWGFazDpRQcXMSJ5aEETQScwLXIMbdFlKta4JQEmeYJeKNd4P9JmgxNNDHfgWeAYf
-    bRiFaaTWRzZdMMUBxaDUHzxawPOAvbdT6y5a5QTzxauTAy7auR3GTfIRgBYfhTYzEe4Vi
-    KxgFHlGSl0DkHafgHNEIjoEPHPgsIqF9jKE3D6iNNOKhgQJRC2c2J9F6bCLFzlcsTaEIb
-    NTRxOc0OKICaZRjzifBRCHTeMTnzOgDScHkfjUsA1gwSIGEgoUiCGbMOiBVb7UkBmclWX
+    RjazImIPazDHRicQLjLxaJGhQjcaKyKcbdGbJLaYIKEYe1IKKpcHPsJFfTNKDJfgV8Bhf
+    bRcFaaTWRzYdMMSBxaDUHzxawPOAvbdT6y5a5QTzxauTAy7auR3Hge6RiBYfhTWzEe4Vi
+    KehFF8GSlZDlH3eKGDEJjoEPIaf4HkF9jJE4DEigMbKmgiJkDDbCKjGxbCMDzfcvToELb
+    NUdxQcUOUIsaZRpzifDRFHTeNTozPgESdHkfjUsA2gxSJGDgpUiCFbMOABXb7UhBnclWT
 top frees knee\nand threatens mount
 properties: top
 ref: Ryan Hall "Arm Triangles", Volume 2: Creating Openings & Finishing, Technique 10: Half Guard Top: Kata Gatame @ 1:05:47
-    RuaDIkGlazBNRwcXLgJLaEDhQycwKlIsbdDJJ9a4IeD2eYHCKtd4OxI2gxMbDnfgUCAEf
-    bPGEQaTVfzFdMLiBdaDS5zdawOcAbbdSuyLa5PhzdauRYyNauQrGzfIPEBEfhSmzke4TG
-    KdgFFJGyl0BIGQfgGbEojoDdHvgsGOFPjKDrDMiNMcJXgQIfCIc2IxFMbCJ3y1csRyEob
-    NSfxuc0M8IiaZPHyYfBP0HzeMRLzugDQAG0fjSQAHgwQ6GkgoSGCmbMMGBBb7SIA2clVl
+    QZazGKIvazB5QYcQJHLdaJEFPZcaIWJSbdEzJraYG8EEe1G8J5cHNQJlfTL8DpfgUwAXf
+    bPAEQaTVfzEdMLgBdaDS5zdawOcAbbdSuyLa5PhzdauRYyNauQrGWe6PGBEfhSkzke4TG
+    JUhFEwGylZBJHJeKE1EpjoDdHQf4FIFPjJDsDkigKzJ2giHIDjbCIHGdbCK1yVcvRMErb
+    NSBxwcUNiH8aZPNyYfDP3HzeNRMzvgEQBG0fjSQAIgxQ7GjgpSGClbMMYBDb7SFA3clVh
     Q0azFgDKaOBMReaEIYG6aEDqP4aEH3FVbwDyJiaYHpEIfMIIKEbCOkJ0faNrD5fFUUD6h
     zPTDIaZURHThQM5zSaYS8D1ghLPyDa1SGCIgpL3ymbGRzBYf2K1IudORlC8gPSuAYhJTM
     KQgqFWFhdYAwHZd0F5GJcgDwIffiGHGxdBC7DTiaK5I0hRHMCLbLIbF5bMJTy8clRmD5b
@@ -16014,10 +16100,10 @@ pin leg
 properties: top
 tags: crossface
 ref: Pablo Popovitch "NoGi Exposed", DVD 2: Guard Passing, Volume 10: Half Guard Series, Section 13: Knee Cross Pass @ 1:22:08
-    AeaDpTurazBrC9cXpFvHaExWCicwqHwfbdzdACa4xeApeYDmGTd4wuEDgxx4NqfgC9IGf
-    bGdNXaTBFEndMHuL2aDFqHiawHKLwbdGuIpa5H7K4auHuJzauH0IgfIAiLhfhE2MKe4Hg
-    x7gFxkull0BfyNfgAEvZjoDizngszXv7jKBRE0iNDkADgQxpBpc2ECCIbCBtKEcsHIKZb
-    NCiGlc0JxIcaZyAI6fBHRKieMzaJFgDHjLpfjzFJ6gwF4LigoAlFzbMEILEb7E3OjclFs
+    yPazqnuEazy7BLcQqdw5aJwfA4carfw3bdxBzDaYxTzVe1CFGicHwREDfTxGNmfgC8Izf
+    bFSNZaTBFEkdMHpL2aDFpHhawHGLvbdGtIna5H5K3auHtJxauHYIke6zTLgfhE1MKe4Hg
+    w0hFxzuplZA5xCeKzIv1joC8yjf4zzwajJBHDpigDNAbgixgBybCDUDIbCATKRcvHLLnb
+    NCeGtcUJqInaZyHI9fDHPKmeNy8JFgEHgLtfjzEJ6gxF1LmgpAlFSbMEDLBb7E1OfclFs
     B8gJttuoazBnFRgRtOvxaIxSEQfMtSwea7y8I0a2wQADeNC5HqhLwGEziFyUNeflDhINe
     YGvNTaXBREydiHuLXaBFyHSauHBLDa8GFITa1H7K6avHEJ5awHYHVgCAPLofcFnMUe1Hz
     x7gFxkull0BfyOfgAFvZjoDizngszYv7jKBREljcD2ADgQxpBpcYEDCKbDBsKKceHMLdb
@@ -16561,16 +16647,16 @@ properties: top
     VOtyGaTIXIKfgO6z8dZK6EEgnPOzSfdLADThmPyABf4KPCCg5PgEabVIDCIcpOXBzcnRo
     PYazNQQ9azIuM0cKN8NUckIENkbpOCOqbgHRG6aYReILaYEdLge9NjKMe6JACrfkPiBDg
     4KmEkbmQZDOiCGuArbjPvClf4Dezfa9O9BDfZCcyBbZOpBgeUBzHif9LUA3fMMPyHfmN5
-    zsdcvJDAhpxEAWcqy4EweYAlAxdBymEwgrAbAaiaDwHZiSFDCwbHEDGdcaEYAsbONrFzb
-    LOsxGa3JHInfrOKAseaI8EagtPvBseLJLDdhhPUCnfgIWBWg1PFD1bUIHCNb8O3BEb9Rt
-    P6azNwRhaAG8NfcZNKN8crHSNybGOfOxboG1Hia9Q7Ina5DWLmeXMWKqe1JjCkffPxBRh
-    GKwEublQSEUkaHUAxa5PrCvgBIvzgaQO9B3fLJkywbGOwBreIIXG9fwL6BxgeMYy6fuNS
+    zsdcvIDAhpxDAWcqy5EweYAkAxdBymEvgrAbAaiaDwHZiSFCCwbHEEGecaEYAsbONrFzb
+    LOtxFa3JHImfrOJAreaI8EagtPvBreLJLDdhhPUCnfgIWBXg1PFD1bUIHCOb8O3BEb9Rt
+    PgaGNTQhaAHmOueiNaPfdAJjNLc6NpODcHIoIfaYQYIiaYF1LAftMRKQguJlCtfnPaBMh
+    HKjEqbqQPEVkdHVAwa5PrCvgCItzhaQO9B2fJJlyxbGOwBpeEIXHngeLUBvgTM2zkfCNN
 top gets\nunderhook
 properties: top detailed
-    zsdcvJDAhpxEAWcqy4EweYAlAxdBymEwgrAbAaiaDwHZiSFDCwbHEDGdcaEYAsbONrFzb
-    LOsxGa3JHInfrOKAseaI8EagtPvBseLJLDdhhPUCnfgIWBWg1PFD1bUIHCNb8O3BEb9Rt
-    P6azNwRhaAG8NfcZNKN8crHSNybGOfOxboG1Hia9Q7Ina5DWLmeXMWKqe1JjCkffPxBRh
-    GKwEublQSEUkaHUAxa5PrCvgBIvzgaQO9B3fLJkywbGOwBreIIXG9fwL6BxgeMYy6fuNS
+    zsdcvIDAhpxDAWcqy5EweYAkAxdBymEvgrAbAaiaDwHZiSFCCwbHEEGecaEYAsbONrFzb
+    LOtxFa3JHImfrOJAreaI8EagtPvBreLJLDdhhPUCnfgIWBXg1PFD1bUIHCOb8O3BEb9Rt
+    PgaGNTQhaAHmOueiNaPfdAJjNLc6NpODcHIoIfaYQYIiaYF1LAftMRKQguJlCtfnPaBMh
+    HKjEqbqQPEVkdHVAwa5PrCvgCItzhaQO9B2fJJlyxbGOwBpeEIXHngeLUBvgTM2zkfCNN
     AjbSu5CbihyQA6byyGD7fKAMAUcDxMDMg7AWAIhYCaHRiKGgCabIEIFRcdESApbGNvFzb
     HOoxBaTJNIjftOBAsdRKiEcfVPQA9d6LmDrgSQcBVfbLjB9gNPZDQbUIGCNb1O3BGb4Rv
     P5aANrQ4aAGANlc4NBN3ctHwNzbLOaOjbqGBHma5Q9HXa3DVKUe6MMJ1e5JdCffaPYAXh
@@ -16585,10 +16671,10 @@ properties: top detailed
     nKLEAbdQKzPaVJnABaUPoySauNzznazPay5a9OGywblOFzoauPKGiffLWAxe9NAx1fdOB
 bottom gets\nunderhook
 properties: bottom
-    zsdcvJDAhpxEAWcqy4EweYAlAxdBymEwgrAbAaiaDwHZiSFDCwbHEDGdcaEYAsbONrFzb
-    LOsxGa3JHInfrOKAseaI8EagtPvBseLJLDdhhPUCnfgIWBWg1PFD1bUIHCNb8O3BEb9Rt
-    P6azNwRhaAG8NfcZNKN8crHSNybGOfOxboG1Hia9Q7Ina5DWLmeXMWKqe1JjCkffPxBRh
-    GKwEublQSEUkaHUAxa5PrCvgBIvzgaQO9B3fLJkywbGOwBreIIXG9fwL6BxgeMYy6fuNS
+    zsdcvIDAhpxDAWcqy5EweYAkAxdBymEvgrAbAaiaDwHZiSFCCwbHEEGecaEYAsbONrFzb
+    LOtxFa3JHImfrOJAreaI8EagtPvBreLJLDdhhPUCnfgIWBXg1PFD1bUIHCOb8O3BEb9Rt
+    PgaGNTQhaAHmOueiNaPfdAJjNLc6NpODcHIoIfaYQYIiaYF1LAftMRKQguJlCtfnPaBMh
+    HKjEqbqQPEVkdHVAwa5PrCvgCItzhaQO9B2fJJlyxbGOwBpeEIXHngeLUBvgTM2zkfCNN
     zpbLxoCVdDxWAGbSAVEYc5A3AkcNzVEfd9AqAjiVCHGGjsDPBJcdECFsctEqAvb2NrFkb
     BOazacWI3IHeDPrCrfxJvEWgKOVCzgNJCD2hCOKDehqKAC5hlNSDNbQIrCKb8O7BPcbRz
     QAaAMMRiaEHpNIcQMPNWceHgN2bDNwOwa5GAIka9Q6IraYDGLbfLMxJ0fmI5CPfhQxA2g
@@ -24614,10 +24700,10 @@ ref: Reilly Bodycomb: DYNAMIC ENTRY! DVD sample chapter - Inverted Shot to heel 
     EQsKjtBIpHAsZT6NZuUGOKTt3RqOFv3GILAuwQuPYv0GBMOurQfF8rcMwHFwOOjIHzdOX
 imanari\nroll
 ref: Garry Tonon "Polaris 2 Teaser - Tonon does the Imanari roll" https://www.youtube.com/watch?v=x5geNKcDdTw
-    Q1azGaKPj2STN6aGDWI6iAPUORbMEAJWjLQaQkirF0Lsp4NFOsoQDYMvqjGMSPxkFqOsx
-    RH5UBs4GoLivkKnS5tGKhMSutOiSTt4LxM6t5PtRVtLMgM4sOPPOBtdEiQ5ylHmRzzXJo
-    KvaBKNN7aESpHEaENcKuaESRIvbBMCLrbNSIJLigLgNeinRzHSorNRJGohQ7LwtvJzPot
-    lM4JOo8JKOeoSNUNmozLXL7onJ7OuovMELco1KFO0psNiKzp4KfJUr7O7OetIKuQiuFI3
+    Q2azF9KNj2SRN6aGDVI7iDPSOSbMEzJWjSP4QkirFZLKp9NzOtoQDXMwqjGISPxkFqOsx
+    RH5UBs4GpLivkKlS5tGKhMRutOhSSt4LwM5t5PsRUtLMgM3sOPNOCtdEiQ5ylHlRyzXJo
+    KvaBKMN6aESoHDaENbKsaFSQIwbBMzLpbKSHJMieLdNjihRyHMohNUJun0RcLwtvJyPtt
+    lM1JNo8JIOeoTNTNmozLWL6onJ6OuovMDLbo1KDOZpsNiKzp4KeJ6rIO5OdtIKuQiuFI3
     Q3aFGbHYjPTMN8a3DZIGhCQWOZb1EBIzi4Q1Q4ieGLKpm2LDOenvDjLro7E3SovqFcNjw
     kG5RQqKFgKIsUIWQNpFJdMYriMkQVpgKtNRq1NhP2oCK6N9pPNDN6rSC8P6wyGsQBxTIJ
     GhazOrMZaXNlFoaER5KWa1QnFKbzQ5Lsb9PyGNh5O6MziQOeHroKQ5KWojR6JIqsIkOMp
@@ -26247,18 +26333,18 @@ ref: Anderson Silva "Takedown Defense (Single Leg Counters)" (https://www.youtub
     wK2GHorSQGpovKPCDnJSkC3nmNiBpn2SrBWn1NoAvncRZBanKOqMWpnNRH9s4NJFOucNr
     s5azLTFcaBSup1aLN3BwaNSGq3bDNECybMSwu0heMLCjiERGvznZN5x2n0QUygwVMhyFw
     9RyAss8KKAEs0R8ECsUK5EOslReFttQLcFntwQ3GFtBLEGEttQGw3rTPdyZxOOQAQzGOO
-    AVaMUXUyazKuEuaQT7T0dSL6DwbXUeS8c1LeEziISUMHftKeK1kLRcMxlpNREsp3RrEYq
-    gL8CymfTuCimpMwyNj8SLz9jyOGxwjTSxyQjzOVw6iOR4ywjgQaJLotPgEqq7ONB2r4Oh
-    tmazLpFeaBSuqoaENGBxaNSGrrbwNjCBbLSwuOhxMXBOiERGvookN0xYokQIxtxjL5xVx
-    ARpzHtpKKy9s3RVDBrRLLCKqWRhEIspLXDrr2RgFFr5MHEFr3QQw0sdO4x8yjOFzQAnOR
+    AXaMUXUwazKmEwaQT5TYdSLZDybXUdS7c1K8ECiISSMFftJ9K2kLQ8MxlpNMEtp3RpEXq
+    gL7CAmfTtChmpMvyPj8SLz9jyOGxyjTSzyQjzOVw7iOR5yxjgQbJMotPcEqq7OMB2r4Oh
+    tfazLtFfaBSsqbaENEByaNSFrnboNvCCbLSvu8g7MKBRiBRFu8nUN1xOoaQCxAxcMCxux
+    aRMzEtuKMzcsQRXDzrRLLCOqURgEHspLVDsr2RfFFr5MFEGr3QOwhrZO7ycx8PdAgzRO1
 push head\nto side
 ref: Dan Gable "Wrestling Essentials", https://www.youtube.com/watch?v=WM1JtwB7Xu8 @ 22:08
 ref: Anderson Silva "Takedown Defense (Single Leg Counters)" (https://www.youtube.com/watch?v=wEtKhy9zHI8)
 ref: Marcelo Garcia "Winning Techniques of Submission Grappling", Series IV, Volume 6: The Crucifix, Technique 1 @ 1:40
-    E8aBTmJTaEMpIEaEUCL7aEPjHHbBUaLvbNOzFUigTMJBinNBI7orT6K0ohQSDztvS6EDt
-    lNZEzo8UvFWoSOAEHozQjDJonSjEIovOZEFo1SQE1psOdEDp4TAJar7RHC0tIQjAIuFPe
-    xQazP4LXj2O1xpaGTIKfiAR0xzbMSJJ3jLQ9x3irQLG8p4Q6xfoQToAEqjTFwixkOTAOx
-    RRjwfs4MREnvkSTAmtGMdGXutPyByt4LKHRt5OLCFtLMeIbsOOCxstdS6yQylPpAmzXNY
+    E9aBTkJRaEMmIGaEUAL6aFPgHIbBT8LvbKOwFTieTJJyihNsJeohT5Lcn0QWDztvS5Eyt
+    lNUEBo8UtFWoTOyEHozQhDKonSiEIovOXEGo1SOE1psOcEDp4TyI4rIRuC0tIQhAIuFPe
+    xQazP4LXj2OYxqaGTJKfiDRVxAbMSKJZjSQ8x4irQLGVp9QQxgoQTpADqjTGwixkOTAOx
+    RRjwes4MSEnvkSSAmtGMcGXutPwBwt4LKHRt5OJCEtLMdIasOOAxttdS6yQylPpAmzXNY
     E9aATnJTaEMpIFaEUEL7aGPlHHbDT9LwbNOAFeh6TOIyh2NWIMn4TXKDn1QHCzrFTLCLq
     UOwBJm5T6ErmFPFCnnPP2CAnKTsCwnGOKBHoeUcDGnsOgBgpqUjH0rqRfCssjQZz1sRPW
     zaazM9LNiLSixIaFQAIgioRlx8bGPCI5jCRCzch1M5FGpEQRwinIPEyPpyRBwkwLLxxsx
@@ -26627,10 +26713,10 @@ ref: Dan Gable "Wrestling Essentials", https://www.youtube.com/watch?v=WM1JtwB7X
     Dwhvrc1yyBtoQyfysauxcFdmCyvyZauv0GjlTyjzaauuPGukPy0y3h5BlzvicvCzrhss1
     H0rntGG0razoI1nZuNISnZzdHKoEuBHuohzECmkLsKCekrB1IahpuAG7hoyaA2b1szz4c
     XxmCAeTpgw5fpz0ARf3sXtZgHxcAffwtUsZhyw9AmfIu9r9hov9FGd4vLzmcTuFwUcbt7
-    z4azHlGkaAI2z4cZEuFQcrFPzxbGELGFboGixba9yhKda5ApA1eXCFEHe1B1y9fftsEbh
-    GtoxEblvvGykawDzna5rGF8gBuczLaQqrFmfLtGAsbGpKFMeIs6CbfwyxBLgesSA3fuqn
-    S7dcsaQShpv8PFcqtnN7eYwRQpdBs2OhgrwRLiiasgIziSzTJZbHuwJmcaybBnbOrLzXb
-    LwMFka3pizsfrzyFFear6y1gtviEYeLs3yHhhujFIfgt2y2g1s4FPbUvGzAb8tYxgb9sD
+    zLaGGuGcaAH1AyeiFMEkdAGQAmc6E2FicHGixfaYzgH9aYAaA5ftCTEEguCrzufntDEph
+    HtkxHbqvrGwkdwEzoa5rFGagCuczLaQqsFlfJtFArbGpKFLeEs4CmgeyMBHgTsPA7fCqC
+    S7dcsaQShpv8PFcqtnN8eYwQQpdBs2OhgrwQLiiasgIziSzTJZbHuwJmcaybBobOrLzXb
+    LwMFka3phzsfrzxFFear5y2gtviEYeLs2yHhhujFIfgt1y2g1s5FPbUvGzAb8tYxgb9sD
 foot block\nknee pick
 tags: knee_pick
 ref: Cary Kolat "Wrestling Moves KOLAT.COM Foot Block Knee Pick from 2 on 1" (https://www.youtube.com/watch?v=YHtyjGHQAd8)
@@ -26764,19 +26850,28 @@ ref: Dan Gable "Wrestling Essentials", https://www.youtube.com/watch?v=WM1JtwB7X
     JCaGArJOa8DsIxaIDXIkbvGTHZbnCNHXbPFyBcaYDUBEemEcBxbCKOBDfiK6sMbINst2f
     2QoubbMIXwwhKMQv7eFGAvQg1ICvDfLF3vlhBHCwpgvFjvyg3GqyudlNqsxdYO9qjfkOv
 head to\nchest
+properties: detailed
 tags: single_leg_takedown
 ref: Anderson Silva "Takedown Defense (Single Leg Counters)" (https://www.youtube.com/watch?v=wEtKhy9zHI8)
-    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
+    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
 roundhouse\nkick
 properties: detailed
@@ -26793,10 +26888,10 @@ head\noutside
 tags: single_leg_takedown
 properties: detailed
 todo: need source
-    AVaMUXUyazKuEuaQT7T0dSL6DwbXUeS8c1LeEziISUMHftKeK1kLRcMxlpNREsp3RrEYq
-    gL8CymfTuCimpMwyNj8SLz9jyOGxwjTSxyQjzOVw6iOR4ywjgQaJLotPgEqq7ONB2r4Oh
-    tmazLpFeaBSuqoaENGBxaNSGrrbwNjCBbLSwuOhxMXBOiERGvookN0xYokQIxtxjL5xVx
-    ARpzHtpKKy9s3RVDBrRLLCKqWRhEIspLXDrr2RgFFr5MHEFr3QQw0sdO4x8yjOFzQAnOR
+    AXaMUXUwazKmEwaQT5TYdSLZDybXUdS7c1K8ECiISSMFftJ9K2kLQ8MxlpNMEtp3RpEXq
+    gL7CAmfTtChmpMvyPj8SLz9jyOGxyjTSzyQjzOVw7iOR5yxjgQbJMotPcEqq7OMB2r4Oh
+    tfazLtFfaBSsqbaENEByaNSFrnboNvCCbLSvu8g7MKBRiBRFu8nUN1xOoaQCxAxcMCxux
+    aRMzEtuKMzcsQRXDzrRLLCOqURgEHspLVDsr2RfFFr5MFEGr3QOwhrZO7ycx8PdAgzRO1
     AUaMUXLXazJOExaOT7OGcvLwDvbMUfNlcIK7CtiATMHGgwJ5ItlnRQJBlBOkCaqtSwBXq
     ONqAZlZS0AHmzL0xHjRRyzbjMOWw4kxQBxUjYPaxukjPmxyj9QrG6oSPEBvrCP4yWsaQj
     tlazLmFSdlQzqraKNAClcjRarpbKM8C4dwQ4t3h6MtANj1QFtwoPNSvJoHQUwMxzL7xhx
@@ -26812,10 +26907,10 @@ todo: need source
 head\ninside
 tags: single_leg_takedown
 ref: Dan Gable "Wrestling Essentials", https://www.youtube.com/watch?v=WM1JtwB7Xu8 @ 20:11
-    LjaMUa7sazScOVaQUM6kdSTtNYbXUv5Sc1SlPtiITI0lftOTV4kLUEYMlpSaPVp3SiStq
-    gNDNnmfTsPRmpMWKcj8RjM2jyN5I7jTQCLKjzNNIUiOP1KYjgOOVFotSnQWq7PROWr4Os
-    H5azIqQeaBTzEsaEJmMKaNSjFzbwJqNNbLSAIOhxKpNpiERvIWokLBKfokO6LBxjKEJWx
-    APJOatpKiKRs3QGRmrRMLOqqWRuSkspNmO4r2RKSUr5OqQmr3RQJ0sdNdLcyjNhMHAnN8
+    LkaMUa7uazR5OXaQUM6ldSTmN1bXUv5Tc1SePwiITH0lftOPV6kLUBYNlpR6PXp3SiStq
+    gNBNpmfTsPRmpMVKej8RkM3jyN5I8jTQELKjzNOIViOP2KZjgOQVHotSkQWq7PQOWr4Os
+    HWazIrQgaBTyEhaEJfMMaNSjFrboJzNPbLSzJcg7KlNsiBRwIGnULvJ8oaOXLuxcLbJox
+    aPUN7tuKiKTsQQJRkrRMJOuqURvSjspNkO5r2RKSUr5OoQnr3RPJjrZMYK2x8NOM1zROr
     LrazUhTDbGKSO8aEUNUoedNqN5bCUzTdd2MAKUhGTgNEh1LOPUmwTaRcmEPEHZpcPWKgo
     QLEHfmfTsIlkCL0G1jwQkGukdPTHKjHPkFZkhQ6IKkuPcGclbRWNTpiQpIop5NjGXq7Lh
     yZaGIRPPbfTsv4a0K5MfbCSDw3b0KCNjcDSNBSg1KHKmiQRCDmnvMLFmnoPSGGwoLIGtw
@@ -26869,60 +26964,82 @@ ref: Dan Gable "Wrestling Essentials", https://www.youtube.com/watch?v=WM1JtwB7X
     mbazs6ned9wcovaEv2pDcQyHnaa3vKojdkyKj1c0BxkTg6DppnbDFMqNeYGqmgbsOho5f
     0OGmaaVJEqIgaKjkyd6LWmVelJfkrfdMzmxfoJXllf5MElnfhKvqecsJYnBdHPfl5ePQ8
 barzegar
+properties: detailed
+todo: wip
 ref: Dan Gable "Wrestling Essentials", https://www.youtube.com/watch?v=WM1JtwB7Xu8 @ 20:21
     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
-    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
+    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
-    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
+    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
+    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
 drop to\nknee
 ref: Dan Gable "Wrestling Essentials", https://www.youtube.com/watch?v=WM1JtwB7Xu8 @ 23:12
-    AVaMUXUyazKuEuaQT7T0dSL6DwbXUeS8c1LeEziISUMHftKeK1kLRcMxlpNREsp3RrEYq
-    gL8CymfTuCimpMwyNj8SLz9jyOGxwjTSxyQjzOVw6iOR4ywjgQaJLotPgEqq7ONB2r4Oh
-    tmazLpFeaBSuqoaENGBxaNSGrrbwNjCBbLSwuOhxMXBOiERGvookN0xYokQIxtxjL5xVx
-    ARpzHtpKKy9s3RVDBrRLLCKqWRhEIspLXDrr2RgFFr5MHEFr3QQw0sdO4x8yjOFzQAnOR
+    AXaMUXUwazKmEwaQT5TYdSLZDybXUdS7c1K8ECiISSMFftJ9K2kLQ8MxlpNMEtp3RpEXq
+    gL7CAmfTtChmpMvyPj8SLz9jyOGxyjTSzyQjzOVw7iOR5yxjgQbJMotPcEqq7OMB2r4Oh
+    tfazLtFfaBSsqbaENEByaNSFrnboNvCCbLSvu8g7MKBRiBRFu8nUN1xOoaQCxAxcMCxux
+    aRMzEtuKMzcsQRXDzrRLLCOqURgEHspLVDsr2RfFFr5MFEGr3QOwhrZO7ycx8PdAgzRO1
     A7azVFGeaAMPDJbSTkEPdxOECDcoT5EpceOjB7iNWDxObXQpFMhaQWCGgIOUAYouTYzgo
     KO5zckiU6w8kBPLv1hyVnuxilSuuKhJU3tJhwS1ufgSUatbhCUcDAkMP2zQpFRGxWraSI
     tjazLos2azXcqhaENApGb3XarpbsNlqZcDWNu1hjMNvYgRUptqnyPiuUnxSIwbwBOdwOv
     6TGwRsiMtxNr6VYz8quOoAQqsTjBoqwOQBCqJSmBFpCPLCapVRAuxrsQLwIw1QZyEyRQV
-    uvaP1ZFcaBP5x3aE0MDXd4QjwYbz0GDgcOQovah8Zfw0a0SFAyioUPy4hyRvuNokXrsgn
-    pSKvGjJXZsjiSTNsihiXyrfgbW3q7gGXsrofzYbqXftW6szfeYCxPlmTgtCoJUTrVqIVr
-    pIazKluEaKZjmMaGMyq8aEYcnMbFMfr8bLYeqoh0NdsOirWjo0nZQppSokTZwZs1Pawbu
-    jTSuspdOcvTqSW5xknlQEyGooUUyrnBRbzBn2T7zemERBzKmTTBrLreRlxIusRxAgvbRn
+    uvaP1ZFbaCP5x3aE0NDXd4QjwZbz0FDhcNQovah8ZfwZa0SFAyioUPy4hyRvuNokXrshn
+    pSKvGjJXZsjiSTNshhiXyrggbW3q8gGXrrofzYbqXftW6szfeYCxQlmTftDoJUTrVqIVr
+    pIazKluDaKZjmMaGMzq9aEYdnMbFMfr8bLYeqoh0NdsOirWio0nZQppSokTZwZs1Pbwbu
+    iTTu3oJOJv0qLWZxql6Q4yynRUTyGmrQKzvnzT2zxmjRJzHmlTBrLreRlxIurRxAgvbRn
 stand up
 properties: detailed
 ref: Randy Couture "Wrestling for Fighters", Section "High Crotch off Underhook" @ p95
-    zlaPWPJ2aBKVCTaEVCINd4K9BObzVwH6cOLez0h8T5BQa0NvFoioPFDUhyMlzDokShw6n
-    pNAAwjJSPw9iSODw8hiSov5gbRTvXgGSiwefzS1vNftRWxpfeTsCFlmN6ysoJPJwLqIQh
-    uyazFbzuaKT9rCaGHovYaES2sCbFG5wYbLS4veh0H3xEirQ9tQnZLfuIokOPBPs1J0A1u
-    jOIzipdI2AJqSRVCanlLuDwooPKDhnBL1Ern2OXD4mEMrEAmTOrwBreMbCyusMnE6vbMd
+    zlaPWPJ1aCKVCTaEVDINd4K9BPbzVvH7cNLez0h8T5BPa0NvFoioPFDUhyMlzDokShw7n
+    pNAAwjJSPw9iSODw7hiSov6gbRTvYgGShwefzS1vNftRWxpfeTsCGlmN5ytoJPJwLqIQh
+    uyazFbztaKT9rCaGHpvZaES3sCbFG5wYbLS4veh0H3xEirQ8tQnZLfuIokOPBPs1J1A1u
+    iOJzToJJzAQqLRPCgl6LUDonRPJDwmrLAElnzOSEnmjMzExmlOrwBreMbCyurMnE6vbMd
     zlaIWuJKaQK0CTaEVxJhemLTBVbGVzIidhLGzGh6UjBueuMAEVkYQSEckMNgx5q1SowVp
     yNgzimETBysk6NtxBj1QKxci6RbwDjyP3w8iISowEi9ORx6i2TfCgn1Ppxfq2PDvmsRPM
     vga0F6BLexThrHaYHeytdnR6sMbZHayVeySLuWisIjytk5QCtFo0KjtGpmN2AbuUJ1zkv
@@ -26933,22 +27050,22 @@ ref: Randy Couture "Wrestling for Fighters", Section "High Crotch off Underhook"
     1PozptvHUv8vETpwYshK3zEs2Tpwms6LQAMssTDvKsCMSBhrrS6uPtQLyzrxEM4B0yeNn
 to combat base
 todo: need source
-    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
+    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
 switch sweep
 todo: end elsewhere
 properties: bottom
@@ -27013,10 +27130,10 @@ ref: http://fightland.vice.com/blog/jack-slack-the-art-of-catching-the-kick
 cut corner
 todo: end elsewhere
 ref: Dan Gable "Wrestling Essentials", https://www.youtube.com/watch?v=WM1JtwB7Xu8 @ 22:55
-    wtaPOEIOaBEuz9aENZHyd4Ewy6bzNJGRcOEvxxh8L2Aka0FODvioItCyhyEYxqokKcvDn
-    pFbyejJKSvwiSGeuWhiJWtZgbJhtNgGJFtXfzKqtGftJiu3feK2A3lmGwwEoJHvuTqIHN
-    umazwuw0aKL1q8aGyftHaEKpsabFx5uGbLKAuCh0zqvEirIMsLnZCos5okF3AQs1Clzku
-    jGTytpdA0yzqSJ0AXnlDRBFooIhBYnBEyCGn2HDCGmEE6CTmTG9vlreDJBcusEODKvbE1
+    wsaPOEIOaCEuz9aEN0Hyd4Ewy7bzNIGScNEvxxh8L2Aka0FODvioItCyhyEYxqokKcvDn
+    pFbyejJKSvwiSGeuVhiJWtZgbJitOgGJFtXfzKqtGftJhu3feK1A4lmGwwEoJHvuTqIHN
+    umazwuw0aKL2q8aGyftIaEKqsabFx5uGbLKAuCh0zrvEirIMsLnZCns5okF3AQs1Cmzku
+    iGTyZoJBCyGqLJWAZl6EiBwnRIfChmrEaCBnzHyCYmjFgCQmlG8vlreDJBcurENDKvbE1
     CDaFS0GuddU0FMcxScGogfSVEocMRZFXeQSDxKdFQlDbbgNjCphYNBDbhpJ3upkWL3vSm
     pHgu7gjLNxAi0EwvAfTHDvpgXHEwmfoGHvPgOIPxwfZGywYgmI9AhkzKUuvmDJLskocJt
     xOazxZwmaEJUutaHzHsGaSJ2vDbvzAtGbPJHx5hYzGxUgTHFt6mLCNunmMGtzqu6DSxRt
@@ -27047,10 +27164,10 @@ ref: Dan Gable "Wrestling Essentials", https://www.youtube.com/watch?v=WM1JtwB7X
     GGXPidczDQbb0JQR7aux6UeavI4S2bfxFVgbcIzUbaIxhWlauIfLvggEkRJgrEmUhgsDz
 to sweep single
 ref: Dan Gable "Wrestling Essentials", https://www.youtube.com/watch?v=WM1JtwB7Xu8 @ 24:34
-    AVaMUXUyazKuEuaQT7T0dSL6DwbXUeS8c1LeEziISUMHftKeK1kLRcMxlpNREsp3RrEYq
-    gL8CymfTuCimpMwyNj8SLz9jyOGxwjTSxyQjzOVw6iOR4ywjgQaJLotPgEqq7ONB2r4Oh
-    tmazLpFeaBSuqoaENGBxaNSGrrbwNjCBbLSwuOhxMXBOiERGvookN0xYokQIxtxjL5xVx
-    ARpzHtpKKy9s3RVDBrRLLCKqWRhEIspLXDrr2RgFFr5MHEFr3QQw0sdO4x8yjOFzQAnOR
+    AXaMUXUwazKmEwaQT5TYdSLZDybXUdS7c1K8ECiISSMFftJ9K2kLQ8MxlpNMEtp3RpEXq
+    gL7CAmfTtChmpMvyPj8SLz9jyOGxyjTSzyQjzOVw7iOR5yxjgQbJMotPcEqq7OMB2r4Oh
+    tfazLtFfaBSsqbaENEByaNSFrnboNvCCbLSvu8g7MKBRiBRFu8nUN1xOoaQCxAxcMCxux
+    aRMzEtuKMzcsQRXDzrRLLCOqURgEHspLVDsr2RfFFr5MFEGr3QOwhrZO7ycx8PdAgzRO1
     IBbfVNJHaXFPHleFVhIpaMJfGIdmVaIjbJIdAFaYSOEThJH5CchIR5DziMOQvjoqRIwln
     MMyuykWUGuLjmMmtjiKRhuCh7QwtDhKQCtZhTRAuEg1QyuDhSSJz8k8Qgvro7OWtvqyNK
     tEaELqy3aFSvqFaKNGvjaESDrDbENbwkbJSwsmioLOvxiBREpPogOorGooRDtjvxLCulw
@@ -27464,10 +27581,10 @@ ref: Caio Terra "111 Half Guard Techniques", Volume 1, Part 1, Section 1: Sweep 
     mLyE0aTQhx5cTI7AQawPGycaXMYzAawPux2aCOay5auOgySawO5FqfSJcAZfWN8zFf7Qo
     GEb9uuH4aUsvEPbMxGGXaZv1FscXw3HUbOveFgiqBjJLe7AZB5cJDxFnbFE1zqbTM6Ewb
     FNewtbXJoHpa7JyxIeuMrGxe6KZxMd3NHGFgfLEyFeyOxFUhgLhB3bTHLBVbLOrBGbWQ7
-    Q3aDCZFBazwYRdcXFUI5aEyiQccwE2HNbdyOJHa4DeDzeYCTKkd4JvIMgxHeDxfgPVAzf
-    bK7E1aTQuzndMGNBiaDOuy3awJIAebdNXyFa5KOzfauNuyLauLYGufIKOBHfhNKzre4Pa
-    JEgFAJFOl0wTGjfgBlDIjoyuG0gsBVFajKyEDxiNHvJwgQDfCic2DSFqbCFfy2csM4Erb
-    NNvxic0IJIcaZKMyUfBLwHAeMMSzsgDL5G4fjNYAGgwMyGogoNQB8bMH2BFb7N7BdclQL
+    QAazBzHWazxeQGcQEvKKaJzIPGcaDNJpbdzFI4aYCfEhe1CqJXcHIVJafTHeDyfgPRAUf
+    bK0E0aTQwzsdMGKBjaDOvy7awJHAfbdNWyIa5KNzgauNsyMauLWGTe6KSBIfhNIzre4Pa
+    JrhFzBFYlZwWHheKAbDTjoywHpf4ATFkjJyHC5igFTJGgiCNC0bCD2FZbCGfyYcvNhEvb
+    NNTxocUIQH5aZKXyWfDLyHBeNMWzvgEL5G5fjN2AJgxMyGogpNUCcbMIlBHb7N4BeclQH
 ...
 todo: need source
     OOaCBlECaAw8Ood5CFGhcrzTNEcSCJE4bHzJHdaZErAybLE0GYhKFZDChYEmCUeONGyzf
@@ -27512,26 +27629,29 @@ ref: Rene Dreifuss "MMA Guard - The Rat Guard #1: The Rat Guard" https://www.you
 hip escape
 properties: bottom
 ref: Caio Terra "111 Half Guard Techniques", Volume 1, Part 1, Section 2: Sweep From Head Control @ 7:20
-    RuaDDaGlazwDRwcXF6JLaEx7QycwFbIsbdyzJ9a4C4D2eYCsKtd4JnI2gxG1DnfgPsAEf
-    bKwEQaTP5zFdMF8BdaDNVzdawI2AbbdNkyLa5J7zdauMOyNauLhGzfIKuBEfhNczke4Ow
-    KdgFAzGyl0wyGQfgA1Eojox3HvgsBEFPjKyhDMiNG2JXgQC5CIc2DnFMbCETy1csMoEob
-    NM5xuc0HYIiaZKxyYfBKQHzeMMBzugDLqG0fjNGAHgwLWGkgoNwCmbMHwBBb7NyA2clQb
-    RzaJC6HwaDwpOKaKFsJSbdzcOKaLDXIBbNyTIoaYA6EDgFBMJdb0HSJgfCGRDGfaO0Bag
-    4LCFcaTQbyGdEJzA0axPEycaWMYzHawPvx1aCOby9auOkyTawO6GaetJEBggnOky7ghPQ
-    HWeGupHIbkuoFPdixaFTbexyGteCwXG5bZxbDqjfBaJqf3CkA4deDxEpbEEbzwb0M5Enb
-    HMWvxcGKGGeaUIHyzesMTGJdKLTy6enN7GVeQMvAgeXOeF8fSMfBMbZHBB0bUOwBFbWRc
-    RmazEtIWaMwrNYbBFrKTbCzxOxa5D9JFb3yZIhaYA5Eee5B5Jbb0HRJdfBGSDte6OZBag
-    6LAE6aTP5yFdDJzAZaxPEycaWMYzGawPvx1aCOby8auOjyTawO6GaetJKAYfZOazDf7Qr
-    BZaYwgC8gCupASblzLDCeExzBAchyREifHwRC4izBuILeQB3zmc9DDCIbFDnAcbuNiEgb
-    CMwwKd1LwGnaVIrAbd7N0GJdHLPA1etORGUePMvBIfxOXF8fSMfA8bRHqCCbVOLBFbWRg
+    QZazBAIvazwVQYcQExLdaJzvPZcaDMJSbdzpJraYBYEEe1BYJ5cHIGJlfTGYDpfgPmAXf
+    bKqEQaTP5zEdMF6BdaDNVzdawI2AbbdNkyLa5J7zdauMOyNauLhGWe6KwBEfhNazke4Ow
+    JUhFzmGylZwzHJeKzREpjox3HQf4AyFPjJyiDkigFpJ2giCyDjbCDxGdbCFRyVcvMCErb
+    NNrxwcUH8H8aZKDyYfDKTHzeNMCzvgELrG0fjNGAIgxLXGjgpNwClbMHOBDb7NvA3clP7
+    QZazBAITazwRQ1cSEyLYaQyRP3b9DMKza1zcJta0B8EZdTB3KecEIQJzfMGWDyfhPdAWf
+    bKuEOaTP4zFdNGaBbaGNUzdawI2AbbjNkyLa5J7zfawMPyNauLhGWfaKjBDfhNbzke4Ow
+    FGaDwmHjfFu2DvaEzmE8dXxwEgbJyGF9eVxxDIh8BkLfeYCiDfbCDwGfbIFMyqbsLZDSb
+    LNuylaTHdHHaXKRxLdRJHHBeSMExYd9KYGZfkNGzcd5LtGigqNyCsb3HJA2bQNbA4ciPP
+    Q1aABDITazwRRhcUExLYaQyRQgcaDTKwa2zbJGaYCcGee0CZKQbXIXKVfBH4EMfdPVCcg
+    hLSF3aTQ4zIdGINBXayP5xIa8LKAHawPWxgaRMXz1auOQxTbeN1HNepKOCjf1OIAefHQm
+    FGaIwoGshdu9DxaPzoFzfcybEnbTyJGJfRxJFAieBoKLetDdBcdtDREubIEcyVbCMMD2b
+    xNsyXfpJ3HfaTJ3A3fuNJIcdMM6BoeCOBIieVNEBVe4PKHwfUNjB9b5HPBjbTOfAHcQQG
 sweep
-todo: wip
-properties: bottom
+properties: bottom detailed
 ref: Caio Terra "111 Half Guard Techniques", Volume 1, Part 1, Section 2: Sweep From Head Control @ 7:20
-    RmazEtIWaMwrNYbBFrKTbCzxOxa5D9JFb3yZIhaYA5Eee5B5Jbb0HRJdfBGSDte6OZBag
-    6LAE6aTP5yFdDJzAZaxPEycaWMYzGawPvx1aCOby8auOjyTawO6GaetJKAYfZOazDf7Qr
-    BZaYwgC8gCupASblzLDCeExzBAchyREifHwRC4izBuILeQB3zmc9DDCIbFDnAcbuNiEgb
-    CMwwKd1LwGnaVIrAbd7N0GJdHLPA1etORGUePMvBIfxOXF8fSMfA8bRHqCCbVOLBFbWRg
+    O1aAz7GGazvKPrcUCZJQaQxBOocaCpIqa2xZHJaYA2Eje0B0JebXHKJffBGQDwfdO0AKg
+    hK4EQaTP4x6dGH8AHayPiwfa8LbzrawPdvRaRMpyHauN9wxbeNrGhepJKA0f1NVyZfHPE
+    DraIvsD9hduaBsaPyxDqfcxfCgbTxREzfRwJDBieArIRetB0zldtC7CDbIDixvbCL9CEb
+    xMzxpfpJqFGaTI0zHfuM0GNdML0z4eCNQGVeVMyAEe4OXF7fUMfAub5G2zYbTNuzucQPX
+    PqazBkHeazv7OPbTEJJ8baykNZbuDFIKbkysHDaYAZD0eRB1JabZHII2fzGHDvfaO0AYg
+    GLkEYaTP5yodFIRAQayPtxea2L5zzawPmwWaKNiyVauOexIaSOhGdeqJLA0f0N2zifUP3
+    GDcPygF8frtDDCdCAkEwdDwvELeizRFHenwhDLjeEAIZeiClzAdODoCDbFDpySbsMRDtb
+    zMuwYeSKlF3aUIGzQeNNoGLdKLUAzeuOoGVeSMwBgfmO2F8fTMfAKcgHgBhbVObAzcoQE
     PIazCQHOazwvOaaKGbKqbty2NyaMEPI2bByTHJaYA0DGeHB2I7b0HGIQfwGyDte6O0Bbg
     5LAE6aTP5yFdDJzAZaxPEycaWMYzGawPvx1aCOby8auOjyTawO6F9erJLAYfZOazDf7Qr
     JofiBsH6dBtlFYgvB3FHb6vOHjg3CjGVcWvRDJiZHTIXd8CmAfexDNCBbDDwAfbsNlEab
@@ -27540,6 +27660,10 @@ ref: Caio Terra "111 Half Guard Techniques", Volume 1, Part 1, Section 2: Sweep 
     8LCE6aTP5yGdEJzAZaxPEycaWMYzGawPvx1aCOby8auOjyTawO6F1efJYAWfZOazDf7Qr
     HOaZzeM1bcu2FmbgBWKAaYxMGgcgBmLGbXxyGkiFD7JxeqDHAQeyDsDabDDAAhbuM8D5b
     EMmwLd2LwGpaWIoAad7NZGIdHLNA1etORGUeOMuBHfxOWF9fRMfA2cxHiCBbUOKBFbWRg
+    QIazBbGjaHvoPibqEuJea0xBOJa9DeHObmxOIdaYAKCVdxCcI0dEG5HGgVFSDwe9OUAwg
+    0LCE6aVP5yHddJzAZaxPEx8aLM6zGawPvx0aBOly8auOjyVawPbFLfjJoAWfYObzDf7Qs
+    HRb8y6M2a0uUFmcmBPLeaOycF0djA0LHbNxjDVjbD8IBf7BHBmcNDEEzbCE1AbbtNFEPb
+    yMZwOdZLyGfaTIDAbd7N0GtebLrA2etOSGLe1MkBHfxOWF7f9MoBEcCH1CHbSOMBHbWRd
     QQaAAJGjaHvoPMb9DWJea0xBO8bACNHPblxNIvaYAJCHdgBZIJeWGnGRhQE3DGfaOuz5g
     OLAE6aXP4yIcMJzAYaxPEx3aANdzGawPvxYazOuy8auOjyXavPgFqgpISAWfYOazCf7Qs
     HRdjy1MVaVuZFldrBHLUaSyxFJesAGLrbJxpBciwD0GNf6AcCNbOEcF8b1FOAbbwNOFub
@@ -27556,21 +27680,49 @@ ref: Caio Terra "111 Half Guard Techniques", Volume 1, Part 1, Section 2: Sweep 
     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
-    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
+    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
-    BYazwRN4aCBqBGaHAwKMaJC1BMbKzuLzbOCnBeh4CoIKhZDAC0bCD2GobIFwAkbzNxFxb
-    sNGwQdWLzF2aTI1Acd7N0GdeGK5A2etOSGBfeMaBHfxOWF6gpMvC8cuIkCTbPOJBJbWQ8
-    NnaSu4HddKwxPoa4yeJWeNySOgbJxFIye3yNJbcoCkEEiNDbJVgkH2Jrj1H6EhfZPWBAi
-    vM0E5bnP9zPesLsAZaxPEyraMNgzGawPvx2aBOsy8auOjyVauPrHbhNK2B0hEPCzWhdRb
-    BVa2w0NyaDAQBCbvAHKNaKDhBBcozyLtbPCvAfi8z6J9iDCFC1hhGdGegiHQz9bsNIFDb
-    sNzygfJNkKcaTN8BLfmPEGgaEP2CsfjQLFdaGQPCLgpRpEsbMQTCJfvKcCWbGOmCXbWQ2
+    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
 recover\nknee shield
 properties: bottom
 ref: Caio Terra "111 Half Guard Techniques", Volume 1, Part 1, Section 3: Recovering Knee Shield From Head Control @ 12:34
-    RmazEtIWaMwrNYbBFrKTbCzxOxa5D9JFb3yZIhaYA5Eee5B5Jbb0HRJdfBGSDte6OZBag
-    6LAE6aTP5yFdDJzAZaxPEycaWMYzGawPvx1aCOby8auOjyTawO6GaetJKAYfZOazDf7Qr
-    BZaYwgC8gCupASblzLDCeExzBAchyREifHwRC4izBuILeQB3zmc9DDCIbFDnAcbuNiEgb
-    CMwwKd1LwGnaVIrAbd7N0GJdHLPA1etORGUePMvBIfxOXF8fSMfA8bRHqCCbVOLBFbWRg
+    O1aAz7GGazvKPrcUCZJQaQxBOocaCpIqa2xZHJaYA2Eje0B0JebXHKJffBGQDwfdO0AKg
+    hK4EQaTP4x6dGH8AHayPiwfa8LbzrawPdvRaRMpyHauN9wxbeNrGhepJKA0f1NVyZfHPE
+    DraIvsD9hduaBsaPyxDqfcxfCgbTxREzfRwJDBieArIRetB0zldtC7CDbIDixvbCL9CEb
+    xMzxpfpJqFGaTI0zHfuM0GNdML0z4eCNQGVeVMyAEe4OXF7fUMfAub5G2zYbTNuzucQPX
     PIazCQKYaCwfOaaKGbL5aEzHNyaMEPKDa2zbHJaYA0EpcrB7I7bXHHIRfpGtDte6OZBbg
     5LAE6aTP5yFdDJzAZaxPEycaWMYzGawPvx1aCOby8auOjyTawO6GaesJKAYfZOazDf7Qr
     BZa4woMPf3AXApaEzGJBgWzsBdbMy8JWfUAtCVh9BnFXa9DEx2fbFey1bGEjzWbtOaEcb
@@ -28887,10 +29039,10 @@ finish
 tags: single_leg_takedown
 ref: Demian Maia "Science of Jiu Jitsu 2", Volume 6: "Stand Up Techniques", Technique 13: Single leg finish @ 39:07
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 1: Takedowns, Technique 1 @ 1:03
-    z0aBDXHGaEAsCnaEGQH4aED6BNbBFYHWbNC9AsigEHGOinBkC2orGDGkohERyOtvCUCmt
-    ly5yWo8EDDboSAhBdozA7zmonCkBVovzZzTo1DgCApszuztp4DSEkr7ECzLtIAeymuFx8
-    vtazxmH6j2DLtdaGAfE5iAFqtRbMzuFnjLEBvjirx3CTp4C2tfoQzTv1qjBTuMxkvyxmx
-    RzXvMs4tMzBvkC9zDtGvmDxutBDASt4vAEIt5BqBAtLwyE4sOBstztdzKwFylxjyIzXwR
+    z0aBDWHFaEArCnaEGQH4aFD5BNbBFXHWbKC8ArieEFGPihBdC6ohGIGqn0E2yNtvCUCkt
+    ly0yXo8EDDboTAgBdozA6zmonCkBVovzZzSo1DgCApszuztp4DREkrIEozLtIAeymuFx8
+    vtazxmH6j2DKtdaGAgE6iDFotRbMzvFijSEzviirx4CPp9CKteoQzUvYqjBTuLxkvyxnx
+    RzXvLs4tNzAvkC9zCtGvmDyutBCARt4vzEJt5BpBAtLwyE4sOBstztdzLwFylxjyIzXwS
     RmbFDbHraWAgQOfgDKKTaOBuPPd8DEJ5bYAZI1fuEpHdhLywLqlXEbLXmnAzDzqSC7FCq
     Lx4FVmXDZIJnmyUIvkCBGHRk3CwJtkwATGXkNDnKGkTBdGXkWECJkpkCsD6rtAoBprEAk
     vlaAxmMsgqC1tmbxAjIOgrCCuhckzuJLhxCUx7hSxJFVnlCrwIn6Aoy0nHDizpwvyiCmw
@@ -28946,10 +29098,10 @@ properties: bottom
     sQ8yWfbMxFnbGMvC1erL8GGfwKND8eqMQHCglKFFbeYMdHRgRJtBPbNLSCmc6RTC4ehT9
 sweep
 ref: Demian Maia "Science of Jiu Jitsu", Volume 6: Stand-up Techniques, Section 14: Single leg defense @ 42:16
-    E6aBUHHdaEMyIPaEUGKiaEOxHNbBUAJtbNN2FYigUPHminNLI5orT3JNohQnDxtvUZCOt
-    lPPEXo8VYEfoSPWDFozRZDqonUbDeovQJEuo1UmDgpsPUEHp4U5Ilr7RMB3tISyzxuFSj
-    w8azT4J3j2OixWaGXEJsiARGxLbMWFIZjLQXxyirUEGdp4RTxHoQXpAZqjWvvhxkTuAkx
-    RUfuxs4RBEevkUwyctGPAFxutQvy9t4OLF7t5PsAmtLOPGmsOPcxNtdW3xQylS7yMzXRf
+    E5aBUGHbaEMwIQaEUFKhaFOvHMbBUzJsbKN0FVieUOHgihNFJbohT1JZn0QoDwtvUYCHt
+    lPMEXo8VWEdoTPUDEozRXDqonUaDdovQHEto1UlDfpsPTEGp4U3IarIRCB3tISxzxuFSj
+    w7azT4J2j2OgxXaGXEJpiDRDxLbMWFIUjSQYxyirUEFVp9RJxGoQXpAXqjWwvgxkTuAkx
+    RUeuws4RBEdvkUvybtGPAFwutQty7t4OLF5t5PqAltLOOGksOPbxNtdW3xQylS7yMzXRf
     E6aBUHHPazMvIPaEUFKKa7OIHNbBUzJLb4N8FXigUOHUiMNGI4orT7JKoPQtBUsNUeCNt
     lOOEeoQU5EjoUO4DMoQQWEpoRTrC0oQPVEwpYT8CXpIOZEhq4TtHur3SiCEtwRCz8tYQN
     w8azT6MqkiPQx2bIXuJkjcRxxQcsWeJLkvQYxngVQYGsqzRgxonzS6AopjUixMwQPcz6x
@@ -29022,10 +29174,10 @@ properties: top
     eJkFabNQrHskFIDBlbjOUJAhDGiz9a5OyI3gLFzzubRNOJcfvFzIygpLSCAgFLxz8fYMs
     z2cWvHFqgGxMABbRzbGpdQz0Ajc7yyFOe6z8zihQDvFNizF6CpbGD1F8bUD8AYcmMWFMb
     ZNGxgbMKeI3fcOxAsekI7E3gROGBpe9JpD8hEO1CgfpIqCThmOED9bSHYDab3ODCdcpQ2
-    P6azNcRhaAGONfcZNqN8crHyNybGNVOxboGHHia9QNIna5DCLmeXMCKqe1IZCkffPdBRh
-    GKcEublQyEUkaHAAxa5O7CvgBIbzgaQOPB3fLI0ywbGOcBreIIDG9fwLMBxgeMEy6fuNy
-    zsdcvpDAhpxkAWcqyKEweYz1AxdBx2EwgrzRAaiaDcHZiSFjCwbHEjGdcaEEAsbOM7Fzb
-    LN8xGa3JnInfrOqAseaIOEagtPbBseLJrDdhhPACnfgICBWg1PlD1bUInCNb8OJBEb9Q9
+    PgaGNzQhaAG2OueiMQPfdAIZNLc6M5ODcHH4IfaYQEIiaYFHLAftMxKQguI1CtfnOQBMh
+    HJZEqbqQvEVkdHBAwa5O7CvgCH9zhaQOPB2fJI1yxbGOcBpeEIDHngeLABvgTMIzkfCNt
+    zsdcvoDAhpxjAWcqyLEweYz0AxdBx2EvgrzRAaiaDcHZiSFiCwbHEkGecaEEAsbOM7Fzb
+    LN9xFa3JnImfrOpAreaIOEagtPbBreLJrDdhhPACnfgICBXg1PlD1bUInCOb8OJBEb9Q9
 takedown
 properties: bottom
 ref: Pablo Popovitch "NoGi Guard Secrets", DVD 3: Bottom Escapes and Positions, Section 2: Side Escape Single Leg @ 7:10
@@ -29277,8 +29429,8 @@ properties: top
 bottom\nstands up
 properties: bottom
 ref: Rafael Mendes vs Cobrinha ADCC 2009 @ 1:11
-    YzaKIfKdazIsZKaGEHM6aEF4Y2bAFxL9byGBVHgjJpLAhoKgTilKFKPIk1F6QxnRNyMpp
-    HLtPqjkMWKalQJ9Lmh6M9H1ioLCKciHNlGRiFMdJbhQNmGahCMBQUoTHEOopJNvNyp1P3
+    YzaKIfJUazHPZKaGEHNfaEF9Y2bAFxMmbEGIVHgkJoKsh2IsTvlRFNPTleFFQQoYNIMnp
+    ILqRdkmMQKalQJ8NRhTM7H0inLCMIhzNIGRiFMdLUgMMZGahCMBQZoTHIOcpRNwNyp1P4
     H4azG4OdaENBFlaEJEKRaQL7GtbqJiLlbdNtImh3JmJKefTyDhenMoD9cWPIFKmGQsF4i
     SUFIOmmMTEserUHMhoHNpFOaxV9MopVNRE6a1W9NaqKNcFjauYlDshgPBGakWSGH7mCTs
     YzaMIcJVazJBZKaGEEMiaEGHY7bGFtLmbvHjVWguJhLzhGKoSUlKFZPjl4GzQSlLPYOCp
@@ -29294,27 +29446,44 @@ ref: Rafael Mendes vs Cobrinha ADCC 2009 @ 1:11
     DvaCOjAaaB1FA4aMQ2wGa42VBQbRQnxGbW2qCTizQoBRgAZSz7nxUAA2npYcAVvYSFEAv
     1WhCUtePtHOsQVcF5u0M7KFuVSYGYvUMQK5v4SyHXvFLZL0v0RBATrlWtC9wXT5EMyxSI
 to single
-    YzaKIfKdazIsZKaGEHM6aEF4Y2bAFxL9byGBVHgjJpLAhoKgTilKFKPIk1F6QxnRNyMpp
-    HLtPqjkMWKalQJ9Lmh6M9H1ioLCKciHNlGRiFMdJbhQNmGahCMBQUoTHEOopJNvNyp1P3
+properties: detailed
+    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
-    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
+    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
 to arm drag
-    G3aBIbLqaEPoEsaEKRHQaEQdFfbBKbIMbNPXGmigIIKrinODEKorLuGSohOyHWtvGRL9t
-    lJWGfo8HcK4oSKTJ0ozI3IAonHlLcovJCHJo1HYLMpsKdG4p4HDGTr7MxKItIHvMEuFFR
-    M4azCUIbj2QcJWaGA0GbiANoKLbMByG1jLNAMmirCOIip4KWKioQAZIDqjDZONxkB0KIx
-    RE5QEs4CMHNvkHGPxtGGNJLutLqPtt4H4J6t5MzOAtLITJ7sOMVKttdBiNgylD5NWzXF4
+    G3aBH8LoaEPmEraEKOHOaFQaFgbBJ8IJbKPWGnieIEKwihOCEEohLwGFn0ODHXtvGPMet
+    lJTGfo8HaK4oTKSJ0ozI1IAonHjLcovJBHJo1HWLLpsKcG4p4HAG5rIMtKJtIHuMEuFFR
+    M6azCUH8j2QaJYaGAYGbiDNmKNbMBxG0jSNtMnirCOIzp9KOKkoQAXIEqjDUOOxkB0KJx
+    RE4QFs4CNHNvkHDPytGGOJKutLpPtt4H4J5t5MyOztLITJ5sOMTKvtdBhNhylD5NWzXF4
     G2aCIfLvaGPnEraEKVHVaOQeFgbEKgIRbTPVGNh6IcKXicNMFDowKGHTonNFIss3FTMPt
     OIZGOoDFXLXpiJHKrowHZJcopGtLAoHIxIao1GPL3pNIXHIqaGxHIseLJKVt4GSNau9FO
     M0aFCSIJkeO9JPaMAWG5iTL5KGbIBAHQj3MqNFhTCsI9qpJZJ3nnAeICpgC8OGwjA0Kjx
@@ -29448,23 +29617,31 @@ properties: top
     vWbBroEbaKqjzcdcrVFCaFtIyecEsUEObGs1xBbjzGBShjvUD4bCB1GhdLzSIjbNJoMfe
     cHmD5a0HzJsgiEfEoeUFFGkiVFkDzfMGaGejLGjDbgOFpE7ksGqIccaDpKLc9JtK9euLJ
 ...
-properties: top
+properties: top detailed
     sdazy3rdaIJeuhdwz4t0cDHEuucjzltVbpItAYa6xiAJa8JNysfKBOxSfJFwHCd6CGHgg
     uGVE6aTAuFacFIwCtaUDIJrbLImBzboEvKCbIHVATcrEpK1b3GMB2fCEhIHfJEEK6f2FF
     EnazMZt3bQJIGJaEJ5xCcCIXGbbAK1wub5IcHLihKKAtcjCtJwcWGEHjb5DOPzgSBfMNe
     IxiNAekEBJibyxoJBeYDmFCaHztI0fWCNESbIzFHKgaC4Ehb1AJLvcKCLOlgByKNniXxQ
-    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
+    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
+    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
@@ -29677,10 +29854,10 @@ ref: Pablo Popovitch "NoGi Exposed", DVD 2: Guard Passing, Volume 10: Half Guard
     BKYAHeTUaANegHxyEbvSVykbnJBxIbTSaw9aUJCwWa1RzwxaKKKDFgkN2xsgsNBuRfTNi
     M4fMKqOjg2DxJJfaI1M5dYE9KlgmJBMOfpFrDJixJnKUhqLOFdb8HfGtb9KMwecnLdzhb
     1PtyndMHlCQbeSlw4gXJNCVffQAxkieJVDdguQYyeixKPCBhqQgB8bOKgwZcgNTuEcpO5
-    O2aDSIMKazFZMPcXUDNQaEJxMTcwTiMEbdIRKka4M4GPeYH1FLd4RpGBgxONwwfgPZyuf
-    bKHwZaTRvBbdMG6whaDNlyGawIEv3bdMbxza5I1vOauK7wIauJNCnfIPbw7fhNduBe4Mi
-    MhgFLuMWl0F6JJfgJeKojoFrJHgsJ8LajKGFDaiNKOKcgQMVFgc2HCF6bCKVv1csKGyZb
-    NPdync0GEDsaZQwxafBJDBqeMRjw3gDKpAefjRAxrgwLFzUgoQYBSbMJ2wOb7NpurclOG
+    PTazRoNXazHUNDcQTiNKaJLENzcaR3MXbdKzKIaYLTHBe1IeF1cHQIGQfTO3wBfgPXyMf
+    bKTwYaTRwBedMG6whaDNlyIawIFv4bdMbxBa5I1vPauK6wJauJNCze6Pvw8fhNbuBe4Mi
+    M1hFKyMYlZGbLeeKJdKrjoFwKLf4JKLbjJGLD9igJrKFgiMIFybCIeFEbCLWvNcvKLyJb
+    NPuyjcUGMDgaZQvw8fDJFBoeNRlw4gEKrAdfjRBxsgxLHzSgpQZBFbMKgwRb7NouvclOE
 mount\nlow
 properties: top
 ref: Firas Zahabi "BJJ Technique - Guard Pass vs Crazy Legs" @ https://www.youtube.com/watch?v=a7b11Y1P3Ww
@@ -30242,10 +30419,10 @@ ref: Ben Askren https://www.youtube.com/watch?v=EZ4hvirIZ3I
     qGpuIqoAhCipUGexVnDAiFhr5DYyHmEAnGvsqDAyclrAeGCsRClv9qYGYzBt8DXBvvSDh
     ElaGxAAoaDKPAFaFx7xRa4IcBIbHyjyTbZIGCLiBylBhirHEAloGAHzKomEjF5vWBiEIv
     6GuGmruz1CtsRIXEMqBDQEapMGlEXqOE8D7pDE7DZq1FUDGqpEdCcrMDaF5v3D4H3xKEy
-    tTa5G2F9aBJrufbuKFDTaEMnuicuJzEebILnvChZFvFnhyHMxBlWKNBflWLhyirPDxB2t
-    5GsxGnzBIGptMEMAZl3D5H3wBCdB6mmEAIwxnBkB9nlFsHGycAIzMoWIvzQtTEFAsv4Dd
-    EmaKxBAoaEKPAJa3ydxQa4IbBOb2ymyTb0IGDxiFzFBgisHDAxoOALzNonEmF1wdB0C7w
-    HGGGErBBeDhsWJpHwsqFnFLrcGtHesUGxGBrlFwF4ttGJGzseEBCarTDlEKw4EoGvyJFB
+    tTa5G2F8aBJruebuKEDSaFMnuhctJzEdbHLov2hOFuFmhzHNxtlFK2BdlRLjxKrKDQBWt
+    SGBxJnyBJGitQEMAWl4D2HOwRB0B5mmEAHzxKBbB8nlFrGux1ACzpoVISzOtvEIAevHDl
+    ElaKxBAnaEKOAJa3ydxQa4IaBPb2ylyTb0IGDxiFzFBfisHDAxoOALzNonEmF1wdB0C7w
+    HGGGErBBgDesYJrHvsqFkFNraGrHesUGxGBrlFvF3ttGJGyseEBCarTDlEKw4EoGvyJFB
 bottom keeps\nneck frame
     T9azEOKFaDtXQ2cwEULldawxRRbYF1KEbQwCSza5MTJCaYDsPMd5HkNRgfEWNYhmO4I1i
     ONdRHf1MwELhPLuQKcHOSCzd7MhRhbNPHBQc8MNQBaEPOCbbVMRM4gSJeK9hMOQKvhjRp
@@ -30268,10 +30445,10 @@ bottom wants\nunderhook
     8O8R6d1PPEFhZNVQbavQUGHeBPHPpa4RQHld5QKOeauRXHUcUQsM3fWKSLkgWQLKZf4Th
     wfazHnBPjfHGzpaGJmCYfSIQywbFILDzg9IFBAhHKhKlhvHrFectM3GMbZJLL5b9SyPlb
     DOzHEaTRBQoeXLtKqdYRNRifKPCLCeaRoRRgFQhLWeeP8RohbRkJzbQM8OAceRdQncqS8
-    TyazEsOpaAAvSscZG6NDcrDES3bGG3M3boCUSLa9NWHwa5GZQSeXIpNee1HBO6ffREKqh
-    GPMRhblQkJtkaLTOda5TcIVgBOiNnaQUcJrfLO4MtbGUzIQeIPsOefwLMMsgeRbMafuTL
-    v9dcLdzJhpIpzNcqLpCyeYINyZdBLrCpgrIJDpiaN7IQiSH6FtbHMwHscaJnMobOSmPCb
-    LOgHNa3S8Q9frLTIyeaQpPUgtPZJzeLPNPQhhQ1JffgOBO2g1R3JMbUM2OTb8Q0Qwb9S7
+    TuaGFmN7aABuSueiFIPodADiSnc6GtOicHDqS4aYM0JkaYH0QUftIaNrguHeOQfnRlKch
+    HPLRcbqQmJvkdLSOca5TcITgCOhNoaQUbJsfJO5MubGUzIPeEPtN9geLuMvgTRfMcfCTw
+    v8dcLezIhpIqzNcqLrCxeYINyYdBLtCogrIKDpiaN8IPiSH6FubHMxHscaJoMobOSmPCb
+    LOgHNa3S9Q7frLTIyeaQqPUgtPZJyeLPOPPhhQ1JffgOCO3g1R1JLbUM2OTb8QZQwb9S7
 parry to\nsingle
 ref: Ben Askren https://www.youtube.com/watch?v=lkBJVVy0PC0
     KhaCPET1aKFnNJaSOrXfaGHeMIbVOKV5bBHaMbiTOHRzgSGXQ0nrMyRrnzISOrv8NKNDv
@@ -30584,22 +30761,18 @@ ref: Cary Kolat "Wrestling Moves KOLAT.COM Clearing A Front Headlock" https://ww
     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
-    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
+    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
-    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
+    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
-    xwHKxqnwfEfpVyWIzrgzSFAlXz5IArSA2FCk7AZHJrNBWFFjPAGHrrurjH4vtwuIxwWyG
-    yoaAyNIVaQNazOaECeHZefOpzjbABjIhdDNaz8ijzTHYgBGTCNmpEQFQneGSBOtkzVG7t
-    BAdBlo1BLH0pfBDEgl4AVGlp8xJFpmGAJFHqpwFGtlWAvEuqVwOEiqvEvErulzsEkvVxk
+    xwHKxqnwfEfpVyWIzrgzSFAlYz4IArSA2FCk6A0HJrNBWFFjPAGHrrurjH4vtwuIxwWyG
+    yoaAyNIVaQNazOaECeHZefOpzjbABjIhdDNaz8ijzTHYgBGTCNmpEQFQneGSBOtkzVG6t
+    BAdBlo1BLH1pfBEEgl4AVF4qexTFpmGAJFmqDwQGtlWAvEfrhw3EiqvEvEsulzsEkvVxk
 bottom gets and\nuses two-on-one\nto get kimura
 properties: bottom
 tags: kimura
@@ -33483,10 +33656,10 @@ ref: Randy Couture "Wrestling for Fighters", Section "High Crotch off Underhook"
     gz2PKp1DJItrYwAL3oiCSHCqpAwK6oFDFHxqaBNJ4nRDNHJoZCfPBqTzNLEuUCCJOv5Eb
     BZbmwEGYaBJbCPcLzWHMd4IdDdddyzIfcOHHHcizwBLyaYBRF8hPDqJzg4EDIsoUyrNkn
     7AhImk6vMNwjrAlL9lGt8M6gVwNNklQtBMAgsvFOkleubLkgvvvIXk6C1K6ppy9LIq8xf
-    WuazDwI1aKvkXhaGzVMpaEtTWIbFAOLDbLuwT6h0BMMmirwqS5nZyrP6okwhNOs1EzLnu
-    jAsQnpdDFJwqSxPMAnlDFINooBiLpnBDYICn2CuKwmEEaIQmTCYQnrezwLIusDeJTvbE0
-    HoaPtcGYaBJbFtaEwpHMd4IdGmbzvNIfcOHHIFh8vILxa0BUHrioCzKIhyD8J7okwQO5n
-    pyMI5jJw0OniSx0LXhiu8M4gbuQMUgGusMefzt4NgftuCK3feuvKwlmB0MFoJx1NBqIwv
+    WuazDwI1aKvjXhaGzVMoaEtTWIbFAOLDbLuwT6h0BMMmirwqS5nZyrP6okwiNNs1EyLnu
+    iArPzoJDEJuqLxYMfl6DpIUnRBdLvmrEsIJnzCuKdmjEgISmlCWQnrezwLJurDeJTvbE0
+    HoaPtcGZaCJbFtaEwpHLd4IdGmbzvOIecNHIIFh8vILxa0BUHrioCzKIhyD8J7okwQO5n
+    pyMI5jJw0OniSx0LXhiu7M4gbuQMUgGusMefzt4NgftuCK3feuvKwlmB0MFoJx1NBqIwv
 ...
 properties: bidirectional detailed
     L1azPMVLaGHQPFaHQmXAa1K0OGbMP8WDbXKkObiAOYUhitKdRboRPzTZoIM8PfxOOqRSx
@@ -33554,10 +33727,10 @@ ref: Anderson Silva "Takedown Defense (Single Leg Counters)" (https://www.youtub
     DzmzHkfEmFGjyApyXhkBcCOg4yByChzzXCfhDxCyBgJy1Bjg2wWDUn2FgAUozzHzDodxl
 spladle
 properties: detailed
-    M3azLsB1aKAbOHaGIaFEaEzDNWbFISEKbLz3Lah0JaEZirB4K0nZFGIEokCREos1KkC2u
-    jFJG5pdJ5BTqSCJDqnlI9AkooFUCcnBI9zRn2G1BimEI7zXmTHyH7reF4CGusIvAtvbJM
-    AYaPxIwCaBM6yjaEAmxDd4MmzkbzzZydcOLZBAh8AtCPa0HbyHioGOBuhyI8CHokBVG2n
-    pE1BFjJBPGyiSD6EUhiAIF3gbAIF0gGAiFrfzzLGjftAxEbfezTBPlmG1EToJDHGaqICs
+    M2azLrB1aKAbOHaGIaFEaEzDNVbFISEKbLz3Lah0JaEZirB5K0nZFHIEokCREns1KjC2u
+    iFJGjoJJRBPqLCRC9l6IOAsnRFRCamrJDzYnzG3AYmjI8z0mlHxH7reF4CHurIwAtvbJM
+    AYaPxIwCaCM6yjaEAmxCd4MmzkbzzZyccNLZBzh8AtCQa0HbyHioGOBuhyI9CIokBVG2n
+    pE2BFjJBPGxiSD6EUhiAIF3gbAIFZgGAjFrfzzLGjftAxEcfezTBPlmG1ESoJDHGaqICs
     MLaCK9BAbPBnOGaOH1FfbVASNSbLIJEgcVBcK4h3I5EMjFCGLvobFUJcoXC4EFrALaCXt
     cGFHAovM1z5qODUFCmIJLxGohGtEpmyJow6nEHoDSlIIDxumpHFIErkGFCYsZJrAEtsKH
     AWazyIwzaAM5y2aEBVxDd7MnzDbAA3x5cOL4AYipA0DgcSHvyIkVG1B1jHH9EAppAXHPo
@@ -33965,10 +34138,10 @@ ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series I, Volu
     qLvHTpTRVC9qCMBECovPNAfqCPND0pBPkzdqFQxCZplOvzeqVRLJ1qzMDFFvdOdDFwKOX
     pfazLUBUaDSvnxaKPcyfaMSGohbGOpzebNSvrQg7L5AfitQJslnsOKvtnxQKwdvjLQyCu
     JP9xXq5KZA9q6RBBUstK4DcoROvCOtiKJEsoIORD2tcK0EUntOOtIrqPGx1v7NOz4xwMV
-    EdaAVrNDaQGjGTaESQO9efGJGdbATENTdDGUEBijTpIbgBJxIcmpO6IWneLwDZtkRQCit
-    BMOFSo1RADhpfLsD1l4PcAhp8OrDpmGOczxqpPrCOlWNiz7qVQwHjqvNPCAulPzAEvVQt
-    phazLTChazQknAaNO9yUaFROojbKOozKbGRcrEhiL2AsivQeshnwO1vHnAQuwkuTLAzpt
-    xO4xlqnK6CbpVPXBrrgLACJlXOhCvrSK8Dzk7NUDGrNLBDhjPNZtUruPPyuvtNjAlwWL4
+    EdaAVrNEaQGjGSaESQO9efGJGdbATENTdDGVEAijTpIbgBJxIcmpO6IXneLwDZtkRQCit
+    BMPFSo1RBDipfLrD1l4PcAwqeOEDpmGOczOqDPGCNlWNiAqrhQEHkqvNPCAulPyAEvVQt
+    phazLTChazQknBaNO9yUaFROojbKOozKbGRcrFhiL1AsivQdshnwO2vHnAQuwkuTLAzpt
+    xO4xlqnK6CbpVPWBrrgLACJlYOhCvrSK8DAk6NUDFrNLBDgjPNZtUruPOytvtNjAlwWL3
 stand up\nto arm drag
 tags: arm_drag
     T8azuPJMaAGcRjaMstJ9aECxRVbMtlKebJDyTChew0Luh8BAQvnDw2MXmRwsOTpxFRJMp
@@ -33983,18 +34156,18 @@ tags: arm_drag
     MIiLwn6MXHmolIZJimhPXHCmcMKITlKQ0H4lLNQH0mhRLHHkxOfL9pGEDKBs3J8KwuAMh
     IgazNvGqazVHIka0RdJJcgVRIlbQP4JgaRVVGqhYNwPRcDW3IUhTT2Kyg9XkLUouQ0P0l
     tSOHonEQbQihtVhHxk8MPRrdHXcHskHLER7cTXYH4jMK4SabEXTKXlfVVOwnERIPCpsP5
-    RgaQAODAaAMeQDefznFMaEJeQDdDAEE4bAJ1OPgBGFFxijLzMKneGbJimpHpMntBMWHat
-    kLXNBpfLMG9o1J3K3p8PbJMl4LzKaqpP3KRmGL2I1qVPBLQlWMvKGqvH7JCulM3IZvVO5
-    IUazNsO6azZIHUaFQ0L6aN1QInbGP5MKbK01JfivPeOChiXnJEnATZLAnwXbKxtxP7Oqu
-    TSGJipVNvOLqnRCKSlXMINIrgNDK7k7LPN0rSMvK6jPL8NorNLpKzruVFMpvtQNNowWOL
+    RcaQAMDzaAMgQAefzlFLaEJgQzdDADE3bAJ2ONgBGEFwijLBMIneGaJhmpHqMmtBMWG9t
+    kLYNBpfLLG8o1J4KOqeOXJMl4LzJTqDPNKQmGL2IQrhPkLPlWMvKEqvH6JCulM2IZvVO5
+    IUazNsO9azZHHUaFQ0L9aN1PIobGP5MNbK00JgivPeOFhiXmJGnATZLBnwXaKytxP7Oru
+    TSFJipVNvOLqnRBKRlYMINIrgNCK7k6LON0rSMuK5jPL8NorNLpKBruVFMqvtQMNowWOL
 drag past
 tags: arm_drag
 properties: detailed
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series I, Volume 1: Arm Drags, Technique 6 @ 10:51
-    SkaQMYCjaAE9ToefLOFXaEFVSddDMkEWbAFBLZgBM8DIijGFLAneK2I3mpIoFgtBNtD2t
-    kIjGPpfN6FLo1HwCGp8NaFsl4KxBwqpMIFtmGLIBsqVLuFrlWMNIYqvJXD2ulKZBVvVLf
-    DnazKvuIazVazJaFK2ryaNTiALbGK6szbKTyBTivLywEhiTMxInANRvAnwQVBCtxM5ARu
-    TRGDupVKSBYqnRyERlXL0FbrgOYFLk7LRGkrSOMFtjPLYG4rNNLwyruPnBLvtO4D0wWO8
+    SkaQMVCjaAE9ToefLNFWaEFVSddDMiEWbAFBLZgBM7DHijGFLAneK1I2mpIoFgtBNsD1t
+    kIjGQpfN6FKo1HwCMqeMRFsl4KxBDqDMmFtmGLHBDrhLdFrlWMNIYqvJVD3ulKZBVvVLf
+    DnazKvuJazVbzJaFK2rzaNTjALbGK7sAbKTzBTivLzwGhiTNxJnANRvBnwQVBCtxM5ARu
+    TRGDupVKSBYqnRyEQlYLZFcrgOXFMk6LRGlrSOMFtjPLXG4rNNLwzruPoBLvtO5D0wWO9
     VeazLkCiazE9UMcYIAFXaEFWT4cJJNEWbyFzOafsL8FjioGCM8l1KgLxlkG1GUszMoFGs
     tHnGDolOkGanTGNDrqbMnFZlHKxCDqCLuF4mxLyC5qWKjF4lWMKKio0IXFttaJ4DiuEKg
     DrazKuv4azU3zLaFK2tFcITdAPbDK5u3cITtCRidLjAdhhS9yQnzMZx2niQyDXttMADJt
@@ -34160,10 +34333,10 @@ ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series I, Volu
 neck frame\ndefense
 todo: wip
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series I, Volume 1: Arm Drags, Technique 5 @ 8:49
-    RgaQAODAaAMeQDefznFMaEJeQDdDAEE4bAJ1OPgBGFFxijLzMKneGbJimpHpMntBMWHat
-    kLXNBpfLMG9o1J3K3p8PbJMl4LzKaqpP3KRmGL2I1qVPBLQlWMvKGqvH7JCulM3IZvVO5
-    IUazNsO6azZIHUaFQ0L6aN1QInbGP5MKbK01JfivPeOChiXnJEnATZLAnwXbKxtxP7Oqu
-    TSGJipVNvOLqnRCKSlXMINIrgNDK7k7LPN0rSMvK6jPL8NorNLpKzruVFMpvtQNNowWOL
+    RcaQAMDzaAMgQAefzlFLaEJgQzdDADE3bAJ2ONgBGEFwijLBMIneGaJhmpHqMmtBMWG9t
+    kLYNBpfLLG8o1J4KOqeOXJMl4LzJTqDPNKQmGL2IQrhPkLPlWMvKEqvH6JCulM2IZvVO5
+    IUazNsO9azZHHUaFQ0L9aN1PIobGP5MNbK00JgivPeOFhiXmJGnATZLBnwXaKytxP7Oru
+    TSFJipVNvOLqnRBKRlYMINIrgNCK7k6LON0rSMuK5jPL8NorNLpKBruVFMqvtQMNowWOL
     RgaQAODzaAMfQDefznFMaEJeQDdDAEE5bAJ0OPgBGFFxijLzMJneGbJkmrHpLrt3M0Gxt
     hLyNmpZLPG6oWJXK2p6PiJPl0LBJ7qqP5KRmGL2IZqWPCLRlWMvKFqxIdICtVNoHPvlPx
     IWaINsOVazZTHXa2Q4LZaQ2cIqbTP2MAbG1eJOiCQHPjgDXfLwm4VFO8nuWAKDudQpNNw
@@ -34175,10 +34348,10 @@ ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series I, Volu
 pummel
 properties: bottom detailed
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series IV, Volume 4: Advanced Omoplata 4, Technique 9 @ 32:01
-    O2aDSIMKazFZMPcXUDNQaEJxMTcwTiMEbdIRKka4M4GPeYH1FLd4RpGBgxONwwfgPZyuf
-    bKHwZaTRvBbdMG6whaDNlyGawIEv3bdMbxza5I1vOauK7wIauJNCnfIPbw7fhNduBe4Mi
-    MhgFLuMWl0F6JJfgJeKojoFrJHgsJ8LajKGFDaiNKOKcgQMVFgc2HCF6bCKVv1csKGyZb
-    NPdync0GEDsaZQwxafBJDBqeMRjw3gDKpAefjRAxrgwLFzUgoQYBSbMJ2wOb7NpurclOG
+    PTazRoNXazHUNDcQTiNKaJLENzcaR3MXbdKzKIaYLTHBe1IeF1cHQIGQfTO3wBfgPXyMf
+    bKTwYaTRwBedMG6whaDNlyIawIFv4bdMbxBa5I1vPauK6wJauJNCze6Pvw8fhNbuBe4Mi
+    M1hFKyMYlZGbLeeKJdKrjoFwKLf4JKLbjJGLD9igJrKFgiMIFybCIeFEbCLWvNcvKLyJb
+    NPuyjcUGMDgaZQvw8fDJFBoeNRlw4gEKrAdfjRBxsgxLHzSgpQZBFbMKgwRb7NouvclOE
     O2aDSIMKazF0MPcXUDNMaGJwMTcwTiMAbgIQKka4M4GQe5H1FLd4RpGBgxONwwfgPZyuf
     bKHwZaTRvBbdMG6whaDNlyGawIEv3bdMbxza5I1vOauK7wIauJNCnfIPbw7fhNduBe4Mi
     MogmLvNplkGgJJe9JdKOiLFDJQgcKaLojhGSDzi4KwKfgBNdFhcZHAF4bCKVvVcaKpyQb
@@ -34264,10 +34437,10 @@ jump\nguard
 properties: detailed
 tags: guard_pull guard_jump
 ref: Elliott Bayev "Guard Pull Technique Straight Into an Armbar" https://www.youtube.com/watch?v=agv2nNVKd_8
-    SkaQMYCjaAE9ToefLOFXaEFVSddDMkEWbAFBLZgBM8DIijGFLAneK2I3mpIoFgtBNtD2t
-    kIjGPpfN6FLo1HwCGp8NaFsl4KxBwqpMIFtmGLIBsqVLuFrlWMNIYqvJXD2ulKZBVvVLf
-    DnazKvuIazVazJaFK2ryaNTiALbGK6szbKTyBTivLywEhiTMxInANRvAnwQVBCtxM5ARu
-    TRGDupVKSBYqnRyERlXL0FbrgOYFLk7LRGkrSOMFtjPLYG4rNNLwyruPnBLvtO4D0wWO8
+    SkaQMVCjaAE9ToefLNFWaEFVSddDMiEWbAFBLZgBM7DHijGFLAneK1I2mpIoFgtBNsD1t
+    kIjGQpfN6FKo1HwCMqeMRFsl4KxBDqDMmFtmGLHBDrhLdFrlWMNIYqvJVD3ulKZBVvVLf
+    DnazKvuJazVbzJaFK2rzaNTjALbGK7sAbKTzBTivLzwGhiTNxJnANRvBnwQVBCtxM5ARu
+    TRGDupVKSBYqnRyEQlYLZFcrgOXFMk6LRGlrSOMFtjPLXG4rNNLwzruPoBLvtO5D0wWO9
     DublSACgaBE9Gya7QBFVaNFHFJcjQYESbJFCEDjcQjCuh8GDInnjL9HemJIIEVuRNHD2v
     CIpF9qiNQCDrsGRB1qWNwBxq2K2ARrhNaBjrWLWAJrSLZBlruNcHjqUJWDNvvLbBYxnLB
     DraDKwuIazVazMaMK4rxaMTiAPbJK6szbJTyA8iALNwkhvTCxrnXN1vnnRQ7AJuTNezZv
@@ -35160,10 +35333,10 @@ ref: Eddie Bravo "Mastering the System" Episode 105 @ 30:36
     QKkKlbqG1AichJXIdayKyBIawNFHxbdLtBHaZOQHhaHMDCzavPJGZg7FKFHeFLeE1eDNO
     HKflDHMxa6t5Ehd5EoJKaFwwEXflElK1biwxz9i5HBIZeGCfC6cNIdGKczItCdbERIGVb
     BRMAcb7NsIpaYNpCvfrMhJqeSLDC9gxMpISf1LGDWg4LzILgJKzEEbUMeExcvS3D6dMVl
-    SdaDM7MxaDBDPhaNPjN2aFEYPraQNSMVbkEqJSbqJQIne3H5JEcJQGJEf0OSAefzPpDjj
-    7PCAga7NQHEiUQYCmaPKcG6h0MLBNaPI0G0iRLNCEaYH0G0ixKzFWeYQVA8ihPiy8juN0
-    OJgoFBOagoCxK9flFxKQe9DBL1f2GsL8fkEhH7hRLSKAdJKQCBeNIZErbDIkA1bMREGdb
-    uRPw4cyPdHVbqNryzglP6IKbhRFyVhAQeIXbRSMz1h5PRJoc1S1DVcDMuDAbYSOEccVVb
+    N7hLFZM9aJCZM4heJxPsc7EFMFgHIiN0c0EyJgaYGhHOfuGxKhbCM5KifiM3BdfHNXFai
+    hLLA1bdMHHXfnJqC7aHI3EngsHfDnaBHLC5gdHfEuaBHeCrgpIpGIdoOKCDhQMPBMiSKu
+    HNhrABM9cnBpFwfDCQKzaMDuGlgQC6LwbTDIEAlaIiMBeJJUDLejIBGnbJIYBkbNRSGBb
+    sRHzab8NIKPbaPPz0fZO1IeeDQoz4hgPrIafLPNA7hXO1HDf0OCDTcsMvD2bVSJEdcWVd
 mount
 properties: top detailed
 ref: Eddie Bravo "Mastering the System" Episode 105 @ 33:44
@@ -35577,16 +35750,16 @@ ref: Pablo Popovitch "NoGi Exposed", DVD 3: Taking the Back, Volume 14: Passing 
     sNcFok5KYvwnTJuBmlRJ0y6lvI4AwmOKazOlEKaznmWJFAHkRKyy4oyHnAEpyNwArqdP4
     H4aWLzFzaJAtKka1IDJgbaz2Jsb4JeH8b2z9HPiKJSEQg6DwKlmWE1IBmFBLEFqIKfAGq
     lGpGUmVIBwtpaEECImGInw5m5InBpmSIaxOmjI4AClTHQyZlWIGGdoqE0CgqYIIAqsiKa
-    D7aDJtrvaRMyCUaOF0sBaHI0C2bSG2svbJJYB5imJpubivJKzUneEYwbnkFaB6qGMew3q
-    lNuERnaKWtdqkKLADmQK3w3onKszpmLLexcm7KLywmiKoxUmjJ4yfqaHFzRqONTAqrGQn
-    H3aWLAFyaJAtKja0IEJbbfz3Jtb4JgH6b9AdH5iTJrFOiuBLJ6onFKJfowB7DirvJJApr
-    xFmBnnfJOv0qkEexenyJvu3pfInv2n5JkvRoOJkv0pfIJwynII0Gcp4ELBfsnHWzatrI8
+    D7aDJtrvaRMyCUaOF0sBaHI0C2bSG2svbJJYB5imJpubivJKzUneEYwbnkFaB6qGMew4q
+    lNuEVnaKWtfqjKLACmQK3w1ooKsznmLLexcm7KLywmiKoxUmjJ4yfqaHFzQqONTAqrGQn
+    Ica6LkFyaJAtKqaEIsJbbfz3JJbSIWH6b9AdHqisI3FOiuBLJWn6FQJhovCbDhrvJKApr
+    xFmBsnfJOvZqjEjxanxJvu5pgIjv2n5JkvRoOJjvZpgIJwxnJI0Gcp4ELBfsnHWzatrI8
 drag\ndown
 ref: Pablo Popovitch "NoGi Exposed", DVD 3: Taking the Back, Volume 14: Passing & Standing Back Series, Section 4: Two Legs Up Counter @ 1:40:52
-    D7aDJtrvaRMyCUaOF0sBaHI0C2bSG2svbJJYB5imJpubivJKzUneEYwbnkFaB6qGMew3q
-    lNuERnaKWtdqkKLADmQK3w3onKszpmLLexcm7KLywmiKoxUmjJ4yfqaHFzRqONTAqrGQn
-    H3aWLAFyaJAtKja0IEJbbfz3Jtb4JgH6b9AdH5iTJrFOiuBLJ6onFKJfowB7DirvJJApr
-    xFmBnnfJOv0qkEexenyJvu3pfInv2n5JkvRoOJkv0pfIJwynII0Gcp4ELBfsnHWzatrI8
+    D7aDJtrvaRMyCUaOF0sBaHI0C2bSG2svbJJYB5imJpubivJKzUneEYwbnkFaB6qGMew4q
+    lNuEVnaKWtfqjKLACmQK3w1ooKsznmLLexcm7KLywmiKoxUmjJ4yfqaHFzQqONTAqrGQn
+    Ica6LkFyaJAtKqaEIsJbbfz3JJbSIWH6b9AdHqisI3FOiuBLJWn6FQJhovCbDhrvJKApr
+    xFmBsnfJOvZqjEjxanxJvu5pgIjv2n5JkvRoOJjvZpgIJwxnJI0Gcp4ELBfsnHWzatrI8
     D7aDJtrhaUNaCUaOF0sSaXJQC2bSG2sFb2KPB5imJpueiKJNzRnnE8wbnrE8CnqVMaxlq
     ANWEKnjKktqquLjCdkjLOw0ofKtBRjtMLxdm2KMA8iqMlxVmgJ3x5pZH5AaqRNYAnrzQx
     xobcI9DOaHzuyndhGbFOdvAKyHddHyEldnABDlfNLZywgICoFtkeG9D2kFDMCErYKsz0r
@@ -35606,10 +35779,10 @@ ref: Pablo Popovitch "NoGi Exposed", DVD 3: Taking the Back, Volume 14: Passing 
 ...
 properties: bidirectional
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 1: Takedowns, Technique 9 @ 28:56
-    TFaWJkRaaJydVVa0GoUNbfxNU5b4G0TIb9xXTHiTHbRqiuzvVIonDuURowzROUrvHtL1r
-    xC6MZnfHyHCqkBYIQnyHfGFpfF7HEn5G4HtoOG4HCpfGtIanIGKROp4CvMRsnFGKMtrGS
-    PJaDHdC7aRKiOwaODKEdaHGKOEbSEMD7bJHINHimG9FNivHuLwneCIHNnkCUNIqGJYIFq
-    lLeQtnaIGEPqkIvMfmQINIFonIcK1mLIYIOm7IvJ8miH8JwmjHOJRqaFpLtqOLDL2rGN7
+    TOa6I4RaaJydV2aEGcUNbfxNVlbSGGTIb9xXS2isGNRqiuzvVyn6DAUTovzVOTrvHuL1r
+    xC6M4nfHyHBqjB3IMnxHfGHpgF3HEn5G4HtoOG3HBpgGtH9nJGKROp4CvMRsnFGKMtrGS
+    PJaDHdC7aRKiOwaODKEdaHGKOEbSEMD7bJHINHimG9FNivHuLwneCIHNnkCUNIqGJYIGq
+    lLeQxnaIGERqjIvMemQINIDooIcKZmLIYIOm7IvJ8miH8JwmjHOJRqaFpLsqOLDL2rGN7
     TEa1JiIbazxKVSbdGjLMaGw3UVb8GXKPbMxpRHh9FyI8ihzcQSnsBdNRnpy5Nzr5HMI5s
     xEONanwG4FxpuEyI6nBH0HNo5IcHTnWH2IVoxIcHuo4HwJznYHhN0qCBYLasYGGJ6upIH
     OkaEFqCUaVKTK5aHDBEuaZHBLMbIEqEhb3IANth9GvFTiPI9KznwDaG2nCEgN6rvKbI9r
@@ -35624,36 +35797,57 @@ ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Vo
     HM8PdpSG4F1pXM2L2oaJhJrn1K6LEm1JMKqndKIKmmSJWKUnaJyJwqDHwMysCMXOmr5OS
 launch
 te guruma
+properties: detailed
 tags: te_waza
 ref: Ben Askren https://www.youtube.com/watch?v=EZ4hvirIZ3I
-    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
+    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
-    tUa6G2GaaCJquhbzKFDTaNMjuicyJyEfbOLivqiFGuEwisJqxzn5J9A7odK7wMw0IcBQx
-    eIXtbwMFeFgt5Jlv8t4DRIGvQHdxgtsD8I7wuGdxXtYE9IlxkFBzgr4KjzeycIJzAACHK
-    oglBwunMn9DUnEpcwMmDrHDroNonxcnTq4DLuVptAluupFFwyhvgB3w6v6FuHbvGFoEOy
-    qJiFGruGVAzylLlEupEKyB4vhN0EypKLNCGuFOVDWo8MHDjtAOPBmwCEMGSxbHOIGwBJI
-    tUa6G1GaaCJquhbzKFDSaMMkt2cqJyEfbGLjvqiyGHEJigJgxFoaJ2A6nKLsAJw5HNE7u
-    HJ2wzwCFFHPqUKLyyuHCuLopAIyzstJCuMupJHSzVtqDHMzqxGPzXrNKpDpwkIrEMxsGr
-    pxv0wAoYwlDsqMzqw7pSzTDxrnx7xuqCyHDKv7tFz1uQthEYB8rMCRBEuDE7JZpcGZJnt
-    rJJKLkAHoFKwkKzL2gNILCOuuNfMggfJWB2tuNhMgeYJ9AWtlMAFJsXE4KXrwImMJq0Kj
-    uTaEFkDJaQOetlaHIEz4aEOTt5bJHVAWbAOcw3hoE7EIgILpxumTJlzpk8LWFgraGhHbm
-    ZIQCWsJCyISiRKbDNq2yNKwfZHoEtqkxUKDfRF9Eko6xGLjgvFkBxoqJZG3pmHpI6pOFL
-    qdxqv6p6zmBPtBw5xqtyz0CZssv9xxsTyMCwvZq7AOxxtBC3BsnfCGDxp8DCIahiFwJZl
-    NHyJQcWF9Ivp5ILJXbCJ5FdrtLjJAbLLgEAruMoJeaML0DrrRMJFGmlDvJXi1GTLQhKIm
-    uNaJFvDAaROftjbGILA6dxNrt0cuHJB6cNMMyFfPDSGUaYIbzYiFJ3CFgaJSGcloCZJbi
-    CGtDDlSy9KcezIEGtiPzqKSdxEvHFiGzLK4eaDrH6hsz2KFfiC5DGj4IdInkhElKGkdCX
-    oCp8EMpbnfzsqPndEksdlbzsq8oCEKrXmuz3xWm5EBySm5zBA8haCSB9g0zgI9cpFhKkg
-    NDnH8aTJyOyiPCVMiauJZNjmVD4Nea1KEM3nSEVN7bNJ1LYoAEREOe2B4KgeXFsMAfYF7
-    uOaIFtDBaBOfsVcjIfCjd3NvugcwHCC9c6MTzJdpDoHEaYH0BzhvIDEDgFKtGTe0ADKqe
-    6D3FwaWyMLsbfGqJvb5y8MeauCdJ2a3yyLJauA4LjaQyOKGa0ADE4gJF6Jef3BJKXf4zK
-    oRiaDypgbyv7qmeUCwsPaHwpqRf8C8r9b1woxAhXDvw1gYw6AIcdBhB2cfxMI0bVFlKUb
-    DAOK5eVIkH6dgxnMRhJFHK8gewsNuiMFkLShfwnNvi6D2LVilwYEZbNATKJcZDjNacHEs
+    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
@@ -35662,10 +35856,10 @@ crotch\nrocket
 te guruma
 tags: te_waza
 properties: detailed
-    OvaWLAL0aJAtQLa0IEPDbfz3PVb4JgOyb9AdOxiTJrMgiuBLQyonFKPHowB7JKrvJJGRr
-    xFmHPnfJOCsqkEeDGnyJvBvpfInCun5JkCjoOJkCspfIJC0nII0MEp4ELHHsnHWFCtrI8
-    KzaDJtxXaRMyJmaOF0y3aHI0JubSG2yXbJJYIximJpADivJKGmneEYCDnkFaIyqGMeDvq
-    lNuLjnaKWzFqkKLG5mQK3DvonKsFRmLLeDEm7KLEYmiKoEmmjJ4EHqaHFGjqONTGSrGQn
+    OEa6LkL0aJAtQSaEIsPDbfz3QbbSIWOyb9AdNSisI3MgiuBLQon6FQPJovCbJJrvJKGRr
+    xFmHUnfJOCrqjEjDCnxJvBxpgIjCun5JkCjoOJjCrpgIJCZnJI0MEp4ELHHsnHWFCtrI8
+    KzaDJtxXaRMyJmaOF0y3aHI0JubSG2yXbJJYIximJpADivJKGmneEYCDnkFaIyqGMeDwq
+    lNuLnnaKWzHqjKLG4mQK3DtooKsFPmLLeDEm7KLEYmiKoEmmjJ4EHqaHFGiqONTGSrGQn
     KiaBNEL0aJAtM1aELcPDbfz3L3bCLBOxb9AdMqiwKIKAhAB5OZnxGGOcnsC1IVs2JLFLr
     IFAIsouKvB3pzDEEioHKbzeo0GYC6oPKCyoo3HVB6otJOyloqI0LmpAFwGPsWHUESuoIW
     KPaDIYx5aPMDIYaVFMyUaMI2JibUGQy5bLJ7IqijJiAwiwKvFKnGFRB2nIGeIws0LUDus
@@ -35674,10 +35868,10 @@ properties: detailed
     KFSHWpCL4ByoXDQGrssOOzLleE4Gvs1PZzrkHGfFutQQhzIjoGjJ5pdGpFVtoHOEdvgIJ
     K1aDIpycaNMJIFa0FCyMaUI6I7bWGFyZbUKaIhilI8ApizLcFen4GLBxoeHqH3u3LsDgu
     KOiKhqVKSCSqhM4HJo7NCHfp8NNG0o5OEIBp6NTFLplOHI4pgMZDVrgJrFKu2M2GCwsO5
-    KhaBNFGUa5BEM1aELcKybuBIL3bILBJtcuBQIyhyM2FwhZDuLIlWIDKXlWE2GYt5JODLr
-    PGjFEtMOiBUnzFQDdwBP8Ewl3IXCmxnQGE7mmJ1BGycPSFZnlJ0IQoWHoE1tTHLDCv4Iu
-    LcaEHPykaKMOIma4FuyEa3JaIWb0GvyTb2KdH5isIWAkiFLQEIonHJBboOILHhwHKSCQw
-    dN8J1sWKOB8rBOOHhrcNwGksqPmGprlOrHssUOYFuseOtHzttNODSrTKbE8w4MFGtyJOk
+    KhaBNEGUa5BDM1aFLbKxbuBHL3bHLBJtctBQIzhzM1FxhODULKlRIBLblFEUG7tSJHD2r
+    KFJFDtQObBVnyFTCZwRPUEtl4IUB9xKPKE7mmJ0Bvx1OHFYnlJZJboVGZE4tvHJDJvHIg
+    LbaEHOykaKMOIla4FuyEa3I9IWb0GuySb2KfH5isIWAkiFLQEHonHJBboOILHhwHKRCQw
+    dN8J3sYKLCarBOPHfraNyGhsqPmGnrlOrHtsUOYFtseOsHyttNNDSrTKbE8w4MGGtyJOk
 drag\ndown
 ref: Pablo Popovitch "NoGi Exposed", DVD 3: Taking the Back, Volume 14: Passing & Standing Back Series, Section 4: One Leg Up Counter @ 1:34:09
     EzaCz1raazNbD6djCttAaEKjEybUCEs5bxLiFna2JtvqhZKFCUgYGQzzg2FaDOlCLpyNn
@@ -36248,30 +36442,26 @@ ref: Karo Parysian "Judo For MMA" Volume 4: Uchi-Mata, Section 9 @ 1:13:34
 ouchi gari
 properties: detailed
 ref: Karo Parysian "Judo For MMA" Volume 2: Ouchi-Gari, Section 1 @ 42:58
-    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
+    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
@@ -36645,10 +36835,10 @@ ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Vo
     4JSVfsdLTLptXIKR4qyN1JTsMMBReqjOXJhssNHQjpoOHI3rfN3RssPGLQSw5LvPUykNA
     EaazJZJIaFRpEieeJUGJaHPhFddeJjHxbMPNKZgmGXJ5idQuHilGJqGgmIMOM4qBHmM1r
     QMWL4l3GHL4nBOEM3mAKJO8m9LENwmNLSOKoqLLNcnIMEPypjLdHYpWKkNkrlJ7PFssKQ
-    T9azKnGXj2PwTvaGGLHJiAMaTDbMHKH9jLMVTKirJMKYp4L7TKoQG1QpqjHLVYxkK3QXx
-    RJ3WCs4MYM5vkJASStGONLAutNxRSt4PAKXt5OyQFtLPtKHsOONTDtdHmToylLiSmzXM7
-    MdaBJmJIaERpIuaEJcGJaEPhJwbBJlHxbNPOLmigJcJDinQbIcorJPHkohNsNNtvI9Oht
-    lOlMqo8H6MQoSOaNwozL9NRonJXNTovNqMOo1JJNPpsOfMDp4I0IQr7L8O9tILEREuFL1
+    T9azKnGYj2PATtaGGLHKiDMgTCbMHKIejSMWTJirJMLfp9MjTJoQG0QqqjHKVYxkK2QWx
+    RJ4WCs4MXM4vkJCSTtGOOLButNARUt4PAKYt5OCQGtLPtKIsOOQTBtdHmToylLiSmzXM7
+    MdaBJpJKaERsIsaEJgGKaFPlJwbBJpHybKPSLnieJfJJihQjH5ohJTG8n0NtNMtvJbOnt
+    lOpMoo8H9MRoTOdNwozMbNQonJZNUovNsMOo1JLNQpsOhMDp4I3I0rIMkO9tILGREuFL1
 stand up
 properties: detailed
 tags: single_leg_takedown
@@ -36762,6 +36952,7 @@ ref: Marcelo Garcia
     HEaEI7wGaTYJEtaUK4vbb1VzFwbMKHwccxWpHzijLLAhh5VMDnnbOhAHm0QSF4vsO1DIv
     rT4G6slLGD3qLUgKCrkJDHosuR4LxqSKmIetpSfL5rDLhIVt2RpCBqSQpEXvoRzGlxwSp
 duck\nunder
+tags: duck_under
 properties: detailed
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 1: Takedowns, Technique 9 @ 28:33
     EqaHuJuGaCDAAOa9uesraFAEBQb6uJthbJBhDriixuwqhOCAAqoxw9xKnZzFE7uQBiB4u
@@ -36812,23 +37003,32 @@ todo: need source
     xAaBMLDCazI1A1b2MUB5dEHFzPcmL5CocmG2ufd5IjBibaAky5izGcAihxCOs8orCZvCn
     Ex9r2jZD2zGmsv4teh6AuyWiGtXubh0zzxSh2tuvoigz2wShXulyflpCYujoPApsup3yS
 flank
+properties: detailed
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 1: Takedowns, Technique 9 @ 28:54
     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
-    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
+    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
 shrug and\nget two-on-one
 properties: detailed
 ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 1: Takedowns, Technique 12 @ 39:18
@@ -36935,10 +37135,10 @@ properties: detailed
     vHVFHlpEkLojWHVHZhUDRIGihEXI1ifEBHDhYEcI8hwFIGBiND8GLoeKqK1pOFLNbqEEw
 ...
 properties: detailed bottom
-    AVaMUXUyazKuEuaQT7T0dSL6DwbXUeS8c1LeEziISUMHftKeK1kLRcMxlpNREsp3RrEYq
-    gL8CymfTuCimpMwyNj8SLz9jyOGxwjTSxyQjzOVw6iOR4ywjgQaJLotPgEqq7ONB2r4Oh
-    tmazLpFeaBSuqoaENGBxaNSGrrbwNjCBbLSwuOhxMXBOiERGvookN0xYokQIxtxjL5xVx
-    ARpzHtpKKy9s3RVDBrRLLCKqWRhEIspLXDrr2RgFFr5MHEFr3QQw0sdO4x8yjOFzQAnOR
+    AXaMUXUwazKmEwaQT5TYdSLZDybXUdS7c1K8ECiISSMFftJ9K2kLQ8MxlpNMEtp3RpEXq
+    gL7CAmfTtChmpMvyPj8SLz9jyOGxyjTSzyQjzOVw7iOR5yxjgQbJMotPcEqq7OMB2r4Oh
+    tfazLtFfaBSsqbaENEByaNSFrnboNvCCbLSvu8g7MKBRiBRFu8nUN1xOoaQCxAxcMCxux
+    aRMzEtuKMzcsQRXDzrRLLCOqURgEHspLVDsr2RfFFr5MFEGr3QOwhrZO7ycx8PdAgzRO1
     xMaBQVTOa2KvANaETaSIcNNyz1bzSqR5cHMdzTisSzLRfPLMGqkLRTH0kWOvzVqkRbARq
     BMoyWmwTNzzl9Nby1ldPRylk4ReyvlqOJx1liSpyLmpNZx2mnS5FiofPzzPrPOKxIs4NC
     tsaBLrASd1PpqjaSNjxIfAQwrrbQNcy4f8Qmt1ihNhBEmxQIszoZN4vco0QIuMwZLHwEx
@@ -36982,3 +37182,403 @@ ref: Ryan Hall
     CO6QDblJ0GrdPRLMAauJEIsbeUyLqa6JnJIbvUQK0bUKiKtauVbGRejKeMWdiN4O6bXON
     x0edC6vCazAPzwcsFXvVaEExzfdSFJwQa0DsBoiIJ1DDbnCUA6cpNfCebCJPJnbtRdLpb
     sMhIPfjTUNMbpIcLifkQuNpfJIaMlfKPPMxgwIDMBe2OJLngDH9FsbXMNLjbrO8MybWRs
+...
+properties: detailed
+todo: replace with something real
+    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
+duck under
+tags: duck_under
+properties: detailed
+ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 1: Takedowns, Technique 12 @ 41:59
+    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
+...
+    zdaLKrK6bfA5CIbDLaLRbTECBzcvKLK5cFDDBzjbI2IOjfDKD5pEIhG3pAF0xZrGCOBvs
+    Oy7xVm8D2D5pmAVyTklA1B2lGz0zdkhzKBckJz0zri7zbASj1A1DIrYECy6sPAxxas4yI
+    HwaCxItpazDDG5d1y4wOaFCdGBcHzAvYbDCOCua0EUwniwCRFngsBFCdgzzLCRoFFUzWp
+    hBKE5k8H2xClYztCti9KBwCmhDKBdjnKQwFm7ELArjwJNxOnBFaC9keBZAxpCExzirxFX
+    A9bWINJHgcKYDAdmLaJ0jiMWCLd0J6Jzi5LvATjSGQIzkBEOCnqAFWFxqKD5waq9Ajzuq
+    Cwjwan3DQBSmzwAxil0AcyXkPy1xul0yYyij4zRylmIymyTjSA1BWrtBHw9rhxIvlqmv5
+    GgaLyUzqaNwdDYdlAmBbd5wCEsb3AIz1dqw8CpbOHjueblAhCBfBBuzxfMzrB5oFD2xXo
+    LADFbmQGYtwnDzMCDqcIcvlqLBTBVreH1wbrICjBCrKGPxsrmCmA2jDAWzOprCDyMrJDD
+finish
+properties: detailed
+ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 1: Takedowns, Technique 12 @ 42:03
+    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
+fireman's carry
+properties: detailed
+kata guruma
+tags: te_waza
+ref: Marcelo Garcia "Winning Techniques Of Submission Grappling", Series III, Volume 1: Takedowns, Technique 12 @ 39:18
+    zwazICMPaACaCnaEK0NabxFGBIbCJ7MtcdEyA8ifH2IXh5DeEkoqIlHqn5GjAysxA9E7t
+    kzrwUpUChG1pOBLznm7AhFVnWxZzZl6zHFGoiwLzRkSAbEFn9v2EPrjE5CmtJzmBCtUwR
+    DwaAnXttaXDyBXdEpgvla5AnC1cMpQu0caBmF7dev4wCiSAuC1iAsSzwizuaDDnfAlzHp
+    OzaE9kADTvfonyNFOiBHAwcruBCF8ioIRwBrVCOF0hjJtwWq2DJBEmhuMBHo9A6AHpSDs
+    zvaAIBMNaEB7CkaJKWMTbUFEBIbNJ5MncsEoBBixIlIYiuDwD4oYHZHboKF2zfskBADrs
+    3yPxjoqDnGmpFz4x4mTzyDynNxhy9mzyWCDnrwnzdlmyrB8mfwxEjrGEBAItgzozmtfw7
+    HKazwvtpazDDFLdAvOwOaECfFPcKw0vYbDCODhbDDow0isB8DThozvBphMwMDIozDdzGp
+    1zOEDkFFAwsmRyEFgi5JrwooOCyFcjBKEwtpzDAEbjjLqxppkEuC9luyaBjpwB4AMpXEF
+    zdaLKrK6bfA5CIbDLaLRbTECBzcvKLK5cFDDBzjbI2IOjfDKD5pEIhG3pAF0xZrGCOBvs
+    Oy7xVm8D2D5pmAVyTklA1B2lGz0zdkhzKBckJz0zri7zbASj1A1DIrYECy6sPAxxas4yI
+    HwaCxItpazDDG5d1y4wOaFCdGBcHzAvYbDCOCua0EUwniwCRFngsBFCdgzzLCRoFFUzWp
+    hBKE5k8H2xClYztCti9KBwCmhDKBdjnKQwFm7ELArjwJNxOnBFaC9keBZAxpCExzirxFX
+flank
+    OtaAxPEBazIQLcbxwxC6aEFrL5cdxvDMbCGkMoh5BgFBifHsI0n5BSGcoqEjOYtkFZL5s
+    xJUNgpODwJZpUM6QBnWFCMAm7LhRHoiGbNjl6KRR7n9HmMOkSKQJtrjEIOhtJIFQutUJ4
+    HOaXP3ZAaAKGLna5O8XSdELQKlcaPcXCcMKELCiSNSStdeFYSvizMPUHiAJONKpOLhNHn
+    fHaMSonPFKHkAEKKqruNYHkiBC5JorVNfGcioCqIBq2MFFzhjCnSvmhKBMro9IPJTpSI8
+    PmaFx4FOaJF0L1aNwxDJa8CZMQbNw8EAb6DIMziyyKGUiAEhJpoKy7GxoSBqPArAEsLEu
+    bHANrpRACHzv0IYNLmPDtFqslIcOQmcC2EwroIqO8k6DJDSqZHmJVrdCHNOsLGnQdskHx
+    B4azGPZCaBKDE2aEI5XicMMsEcbAIsW4bULiERiuIcQycHIXKrjmMdNUiNK3IyrmJYL9q
+    EFPGbntISNNmgFXFyqeFILBlwCiFhryFiK7mCBTF4rLEdJPmOBRMnmQKoJOqKHuInsVGS
+    PraLyvFzaGGrL3aKw3DyaZDoMRbLxCElbZD8Mciuy1GKirENIgocyIFxobBaOAqVD5KJt
+    kHkNdp3zFH4s5K6ManCCTGDpENdMYmDCHF5pjOcMCltDdFOnZOwIXqICeMVrSGcOUr1H1
+    BSazGQFkaFLJBcaOKvE2aSPoBqbMJqFkbTOmCEgDEBG6f7JbBJk1JVEslKMiEJrRD3Jcq
+    OGQDfruzEKNmxF4G1r4xXKKmeBJH8ssxsKKnnBbI0rvw8JGn4AZD8otIRGZr4FHHrt7D8
+    PxaRy1FiaDGZL5aHxFDkaODSMTbJycD3bSECLGivznGvimFlGQnkx5EnneATMOqlDXIHq
+    GG7M3qjzgFWnaIwKtooB2IHmQFdKBm7CmJCmLEmJCmjCuJumiDaHwqaBgLpqOGnMZrGIn
+    xlaJCvEda6LkuLbfE5AzaELhvyb9ElBnbSK2yciuDwCUisJkwnovGuyPn6JiEnrxBwF1r
+    vGvGiqjxpHdnfE7JZpgzbJDnxByKioOApKcn5AzJDnJALJKpgz9Ajp4FGFSsnDMH6trCT
+spladle
+    FBaAxEwnaLFyCkaPv1ufbhCAC8bRwFu9cdDjDhiAysxpiNDJACoWy9xSpoByHtrEDBEis
+    QHJDXpeBJCctmLQFQl4DMGfrFLXG2lLDnHoq3LJHLk1EbHfpKLzBBrqCCGdsZFJIiszHi
+    zwa6McOtazL2CNctNoM5dWLzBvc0MZMJcCKZzaikI9HvcpGqFvhtLJI1hHKHEkqEK6Exp
+    mF0C6rZPrGHliFiBat0MkCQldDlByuFLfBQlECIBYtZKfADlnCOGCliJSDlqdIsAZrxIi
+    xBaAtIwmaNFwt9bQtKuebhCzvrcwt4u7cdDgzlhMwuwIiXCMx2oAw6wcppAfFEpXzVDzr
+    QEsCUmczJGaqeH1C3knDyIJmLIiDzjVEBJRmdIIC3jpFCJUkTIGzXrAzGFjrwCeHyrjDz
+    xiazF1NCaSLlzQaEIMMceeKPzlbyHLLRcVKcyZiiGmGLewFJDUk3KlGmlbHwxYqBGMAJp
+    6CzwNl5GezUlvBWvCjfDqwViBALuOizCBvOh0AovmiqBouYhBBlDookHAyRrwEcwvsKDK
+    xzaKtFBKfdFFtUbatzy3fTDgu0b8tJzTgQD2xjiovwydnrCwvoo0vlukrcx6DHoGwDCxq
+    TA8AUlByIERoUEJz1j2CxCGk7EJAyjODDBpkZEwBpiQDNAZjND9yurFwMD9p1y1GGp4zM
+    xnazF1DhaCAkzXaEIJEHaGDLzvbuHHEgbDCPxThVFKB8h9BRAJnZHpCAoEEgtGriCXwUs
+    EzPupmNB3yYovz1x3m3zZyEklBcy2mLzaywlABCz6nyzixymlBpzgrmE8ups5AXsntNzj
+...
+    FBaAxEwnaLFyCkaPv1ufbhCAC8bRwFu9cdDjDhiAysxpiNDJACoWy9xSpoByHtrEDBEis
+    QHJDXpeBJCctmLQFQl4DMGfrFLXG2lLDnHoq3LJHLk1EbHfpKLzBBrqCCGdsZFJIiszHi
+    zwa6McOtazL2CNctNoM5dWLzBvc0MZMJcCKZzaikI9HvcpGqFvhtLJI1hHKHEkqEK6Exp
+    mF0C6rZPrGHliFiBat0MkCQldDlByuFLfBQlECIBYtZKfADlnCOGCliJSDlqdIsAZrxIi
+    FFaJxItyaFCUCmaKv3rFaXzMC8bQwGstbZAvCFiGx1vridBoyknOwavDoCyDEMsmz5Bgt
+    KDFCdo6xZyKr3HcDumuA5BTo1GGEql2BRC9oGGJEak8CNDwnqGBy2rkyHDFtMCdFGtSDU
+    rAaQEMOdazLVuZaFF7L8dkKCulbGFmL6bRKlwrifF6GSbkFLC9hXHGFVh9FazFqhFZAgo
+    yAOxdmoG5z5j2zNtNkpFEwaioy5s2k1EKu4h4yosEkpDEuahryZC7lvE5zmpqDmxprbDe
+    zoazoftwaKCSvIaGn4rzaEzMwGbFotsjbLArx4h0qTt4irzouXnZsrtjokvJBQs1wDycu
+    izIAFoJu3v3qLBYAYl6ymzmnRB1B8mryVADnzBYB9mjAeA4mlBLwsreuVASuryTCWvbAq
+    rHaPEPHxaCCBvbaEGcGsd4BZurbzFqFScNBCtYh8DazBa0zjAWioDfBWhyzKuQokBxvWn
+    pwkvbjJCxviiSw9sQhiz1sogbyYr2gGzbrLfzzUr8ftyOsofeA0zSlmAivBoJyQtWqIya
+...
+    zwazICMPaACaCnaEK0NabxFGBIbCJ7MtcdEyA8ifH2IXh5DeEkoqIlHqn5GjAysxA9E7t
+    kzrwUpUChG1pOBLznm7AhFVnWxZzZl6zHFGoiwLzRkSAbEFn9v2EPrjE5CmtJzmBCtUwR
+    DwaAnXttaXDyBXdEpgvla5AnC1cMpQu0caBmF7dev4wCiSAuC1iAsSzwizuaDDnfAlzHp
+    OzaE9kADTvfonyNFOiBHAwcruBCF8ioIRwBrVCOF0hjJtwWq2DJBEmhuMBHo9A6AHpSDs
+    ABaHMYMPazB8DzaEPgM9byFFCXbzOoMtcbEuCVhHK3JdikDYFYnXKNI3npIKCatoEUGls
+    9ClyZtfIjIBpEEpxAptHfFWnsBPxlotGqFin0ASxGngGTEknnAhGOq7HXDHt6CGCGuyAg
+    BXaByZtva0DwCvd3z8vma8AnCEcKALu0cfBkE0dlHdxOfRGzDBhcBzz9icAwFInPFCADo
+    UFhFUjxHywQmcFwENhzK7yzk5JoEDhZMnznkZKrDrhWMWzDjRK1CUluAWDho9GmCWq1If
+    ABaKMWPDazIeDwaEO8PxaGLUCWbLOlPdbFKUD6irMFMUh0JlHHokNHK7nZMkD7uiIxHts
+    1E8BHqLKuIXoJGrBUnRHbFGl6FSB3nzFUFcmrEFCjmlFvDUmjEyIKreKDE8urFUDMvbDK
+    BXaCyZyvaPOBCud4z7xpaEK1COcNAIx8bzLPEDa0G9Alh8MtEnhyEMAOioFwHjnpK2B2o
+    kLJGriSLCA4jJLjEpgbOnDohiNPDpfzOVEagGOICnfeOdEyftOEDFlmGOEMoJLbFkqIMT
+...
+    lTaHUqsgaz1znMdySWscdAZsnyb9Svs7cpZqrya2MTysa3U9rhgNQFuzf6SjuAloJAzlj
+    8LHtuhfLlyKfxLhwlhGIfxoicIaxqhOHDwEiHHcyciQHSv4jQHiuzjaPaxmlrJ9zumhII
+    vDazx4vvbFS3tWaMBlt3enQ2uCbKAyvbdrQNwZhJx3xahtLuvwmvCUw2l7GjCYj2yxE9j
+    CC5BYfzxzFXfhEJCoboxoGDaWErDrbxwBHHbvDTDMavvRIuaKC8zRmtCZE4kzApHvkbzm
+    lAazSvzXaVMbmNdUTGx1aZPkmRc7SvyhbYOgojcULJAmfYI2svimMivQicNPvjndFczWm
+    lHrtYjNH3BahSG7vgh4Euyih9DOv1hiDMxsibCPw9hMDlwah4C1vdlsKWxXnGFZzxo6Eq
+    vJaBwAucaDEGugbmzTrUa5BOu8cayZsNb2CyzugMv5whgXF5v7mjytwsmJCcEmnqwFESn
+    RBYC0jNuaFukyFaCXhRxQHphfC6DQiDxeIEhzCKE7ilxxJhgCB4zsoNzIEOoszeHpoRy9
+    pvbaCtznaCKasEbaEoAbduHVrPcbDSAab2HMsei4DuBBbuA2xKhTHzAIgBFGw0oPC5Cvp
+    pCLuxlVFPFFmsEquOiVCWEbljAxuRiwBJDDk9zkvXh8BcEfkeyzAqkVF3zIpLCWy6rQBl
+    CxaErAubaDEGyTaMrirRa3BMzQbMrQsNbRCuCUhnuuwbhPDvyamfvRwnm4y1FcqUwPDyr
+    DBQElmOuCFepRFMEtpdx0Ien7DbEWp6yNJsnKC0Eyqjz0JFmzCuzspRxTEMr7zmGVtsAg
+body lock
+properties: detailed
+    zbbaCtI3aCKaCkbaEoJRduHVBvcbDSJQb2HMBUi4DuLhbuA2HqhTHzKogBFGGGoPC5Mbp
+    pCLEdlVFPPlmsEqEuiVCWNRljAxExiwBJNjk9zkFDh8BcNVkeyzJ6kVF3JopLCWIMrQBl
+    MdaErADRaDEGIzaMriBxa3BMJwbMrQCtbRCuMAhnuuFRhPDvHQmfvRF3m4y1OSqUwPNer
+    DBQN1mOuCOUpRFMN9pdx0RUn7DbOCp6yNS8nKC0Oeqjz0TlmzCuI8pRxTOsr7zmQBtsAg
+    umazz8I4azJPw4aOCJIzdKLBwsbMBNIBdoKayFilCBIteKDkDfi0HPGQiIIJEhp5CsJhp
+    3DNB9lUCAMAm3E0DolpyDO3k9BZDJlJxsQalEBBEIlbwQQHlbAuFFmAG7GZqPCmHqsLAC
+    L6aDrZDDaDEgIya2qPBgaZBqJxbSrrCabRB7LrhLuuFmhUCZGumwvnEGm8yxNFqMxdLqr
+    DBYMSnwtTL7oYFJMaphxCOTnQCAMRpiyHP2nvB9MdpczQP8mqBnHNpZxAM7rPzLPas1AV
+    ueaMz7JJaAJHuFaTDLGLaELYu6bOCHHobwK4xCh8BtIgfRFMz0kBHtDvj3IACeqIA8G0q
+    2DGzXnEykItnnA6CcobuEHrm3wQCOoMtAH9nrvNDAoisLHqnAuGCPnIGiEOrBBUF0tkAc
+    LRaHsoDoaDDRIfaTroAXaWA4JebLrTBQbQBJKeh5usEQh1CqE9mMuSDmnbx4MqqExDJGr
+    AB5LEoqtyJmohFjKnpbxqLSnABMKYovyoMZncBdKcn6zmMXmhAfGtp6xkLKrvAdNIsABA
+    ufaOz4CVa0HtuJa2DLzja4IauLbYCDAfb6HFwwitAPDHhqEPwImMGgzQmbH7ByqEzgFmq
+    9CUAyoKu6G5nzApDYpvsRGInIv2EVqisvHjn2uUF7pNsjGwoFt2z7paETDGrRAJFqtozk
+    LCaMsMC8aDDrHXaMrXAEaSAIIWbJsoBxbRBlIWikuoEjibBODUm2uqB3ndxEK4qvx6HXq
+    9CjKnpotBGynDEYIDoRxkIRncBjI5nNxVJMm0AsIcm7yCJymjznFdp9w9KhraAIMdr8Ce
+    ueaJAdCHa6HvscbfDgy7aEIbsQb9CnzSbSHMvgiuA2A1isFNt3ovEjw1n6GzAUrxxQDwr
+    vCpBZqjtrEpnfAOFXpgurF5nxwQGuoOvAGqn5vKFVnJv3FUpgvrxKp4CJCPsnzLEQtrys
+    LmaRtbCTaDC1HHaHsyAmaOAnIBbJsTBdbSAXHEivuiDLimBbCEnktZANnexeJFqlyzGgq
+    GCtIYqjtVDQnaEoGZoow8FTmQACHbm7xrGCmLzAGfmjxLGfmiysDXqawYILqOBdKJrGCR
+crotch rocket
+properties: detailed
+    pEbaUIBzaCYxtfbaVrByduV8sjcbVeBtb2V1syi4UIAvbuPcy9hTWFBggBTRwToPSHBXp
+    pQuvwlVV7FumsQYuMiVTkCKljNPupiwSaBPk9MSvgh8RhB8keLYA8kVUjznpLRDygrQQl
+    x8aEFZuNaDVauBaMGYrCa3TfvGbMHasJbRTAzthnIAwghPTnvumfLwuUm4O6CqqUJ0CBr
+    DPhARmOIdFypRSoCapdLmHtn7OVCRp6LWIynKOlCUqjNcIzmzNLxppRMYCUr7MwFetsMD
+    nua9RmBAaEYApRa7UaAJdMWOpAcbS8A0cpWprJiPTbz8cKPzxMiTWBAkh2T1uWpxRiz3q
+    FQlsKl3TqDgnsRCtUjBQhBLnCNzuSjfPrBIoSNcv5jsPVBmo3LVy3mbT6xiq0Q0wytbPH
+    x8aEFZuUaEUZuzaHGYrGa2S8vDbCG8sPbRTqyjhNIEv0hWSRuumSLlubnnO0BjsbJXA9s
+    6PmzXn1IdDAqASqBRpNLsFEpmOQCMquLWGzphNVCJqXM9GvoeM6wuqnMTBstkMyDJuMMP
+    nqa5RjBMaDYipOa4T8zqdgY8ptbZS5z4cZXKqkisQPzHeuQVvikkVkyPkpUnsFqVP2xRs
+    APVpRm8P5BTqbPtsXk5OdBPs4Mgt5k8NGB7t5Lyu9lbOsBjuTKZwAn1Twu0swPFuEuzNY
+    x8aEFZu1aEUNuyaEGYrMa3S1vCbyG7sUbRTgw5h7IHvHh5SjtxnwLatxnHOSz9tvJYzEu
+    rPry5peIiBBrkSjBxqmLuDTqxOFCEqRLWEyqONzCxrzM4EmpZMAvFqSMRz2uzMDCcv5M1
+    nya5Rsz1aBR0orbuUZyeaFVeokctTUyqbHUdpshOPBy0hzQurHlFUSvrlRUAqTrKNJvst
+    SPPqznyLEzttQNnt4l4NrAywRKovimmNOAcxKJCvtnlOEy2x1JdthoVSss4tvOhtgvHMR
+    wtaKGzuwaEUdsZa3HIrDa4RZt6b2HGsKb0SlvZiFIJuVisQWtboOKgsZonNVyNwdKFwCw
+    HPJzjrBJQw9sYSrALsqNJzeraO5AFsUOYzTrlN2zxttPkzIseM9vbrTMzxTw4NdzOyJN9
+...
+properties: detailed
+    VyaQMVFxaAE9WCefLNJaaEFVVrdDMiIabAFBPdgBM7GVijGFOOneK1MgmpIoIutBNsHft
+    kIjJ4pfN6IYo1HwF0qeMRIGl4KxERqDMmIHmGLHERrhLdIFlWMNMcqvJVHhulKZE9vVLf
+    GBazKvxXazVbCXaFK2uNaNTjDZbGK7vObKTzE7ivLzzUhiTNAXnANRyPnwQVEQtxM5D5u
+    TRGGIpVKSFcqnRyH4lYLZIqrgOXI0k6LRJzrSOMIHjPLXKirNNLzNruPoEZvtO5HewWO9
+    NebfNRFrazE8NSbYKjI0a5FVMQcvLfHRb1FNIrgMOwCJgGGmKMkXJxIikLGRGQsvNbEbs
+    GIrHYooO2ETn8HkD4ozNuGjk4J6C7piM1GFlFLeDmpZLYHtkYL0IsozI1FetgK2DrvbK2
+    wUaEKvx9azUmujaMM6uCaITcvfbPMCvGbGThznhoLJznhvS1wFnuNCw1nKRjDes6MWCCt
+    ER4Ffo2LRDKpaSyGHljM2GZpHPKHskmNkH2qkPxHli8NcIEqnOqxYrmO6DqufPtFWu0Pq
+    AIbhLOFlazE6D8a6KsIcczGhDmcfK0GLcRGaAhhLNXz3eNGjFtiSJxD2kqGrE4rwM2Bwr
+    aIRFMnOPQBwmyJeCcm6NJBxloNnBwn9NmBpmfOkB4oZMwB1l0PtF1ndI4Dar5KZBPulKO
+    nJa4KGygazTwlZciNFuAaGS8nqcQMZvBbES1tmgzLXyNhISftUnlNCvdnuQ6BDswMYARs
+    fSdDGojMWCkn0TwE3kDOmFvn7QzF3jPOnGxoNQhFPizODGYoYO7v7q0OJBVsWPJEzs1PJ
+    zoaSLBvBazBsCicPKczgaLBTBcc3K4yabpCyv8fgPdtle0FVBIgFLnzxg1InDjpvMfy9p
+    DJnDtnqQoxOlmKBAllLNVzVmsN4zVmZNHzZlNPaAMnRNazZmdQmB5ksJfA7qSK0AetoKB
+    ncaAKzyiazSFkObbNauDaFS5lAbQMFvAbGSKqvhbLIx1h2RprAnLNHtznmQPAjrVM6zbq
+    MSjB4nHN0AYmWUmDwjWPxDYmyRtEAjcPDEXncQ2EmhWPZFgnwPQuzqUOvArrzPTC5q1P1
+...
+properties: top
+todo: stub
+ref: Eddie Bravo "Mastering the System" Episode 105 @ 30:36
+    N7hLFZM9aJCZM4heJxPsc7EFMFgHIiN0c0EyJgaYGhHOfuGxKhbCM5KifiM3BdfHNXFai
+    hLLA1bdMHHXfnJqC7aHI3EngsHfDnaBHLC5gdHfEuaBHeCrgpIpGIdoOKCDhQMPBMiSKu
+    HNhrABM9cnBpFwfDCQKzaMDuGlgQC6LwbTDIEAlaIiMBeJJUDLejIBGnbJIYBkbNRSGBb
+    sRHzab8NIKPbaPPz0fZO1IeeDQoz4hgPrIafLPNA7hXO1HDf0OCDTcsMvD2bVSJEdcWVd
+    SdaDM7MxaDBDPhaNPjN2aFEYPraQNSMVbkEqJSbqJQIne3H5JEcJQGJEf0OSAefzPpDjj
+    7PCAga7NQHEiUQYCmaPKcG6h0MLBNaPI0G0iRLNCEaYH0G0ixKzFWeYQVA8ihPiy8juN0
+    OJgoFBOagoCxK9flFxKQe9DBL1f2GsL8fkEhH7hRLSKAdJKQCBeNIZErbDIkA1bMREGdb
+    uRPw4cyPdHVbqNryzglP6IKbhRFyVhAQeIXbRSMz1h5PRJoc1S1DVcDMuDAbYSOEccVVb
+...
+properties: top detailed
+    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
+...
+    SfaCCWA3azxdO0aKBeBId0ytPIbLB3BhcMy2MBhPDuADcWFTGlhhAvCEgHAoG6lsHgCej
+    6H5JthGFNAlgwFMIvd2HFy9cxEAH5eIIHx9bLEFHNedJOx5azEfDPklCnEIliIPFfk4Ls
+    xrazwIEbnXxKA7aEv8FokDwwAgaExfFxlrxHzka7D4HSj6D3GfbFEvJydlEuEabRMOIne
+    xNIBVd4JiJyfGJjCKicI0HYjLIJCNjdJPHwkNJvCTkqJxGVlHIQIabUInFDdZNUDSfLOL
+    J0aBysz5aLyjGuaGxmBNd4xWHfbBybBfdiy0KCgJBnARbKFIDVhlztAMhfBtJeinGjE7h
+    fIOKSelECDbduGRJQb8HZF6avH9JEcWIZGCaYJdJecnJ7GLauKmD9jjDjHJimIJJbhIKV
+    BBbRuHF3lTvQD5a0xeGWikv0CDbhxoG0jpwYzpaYDzILjLDDGebSEmJKcWD1FjbNM6Ked
+    zNsBFcuKlLodFIVEtfCJ1JDhAHYEzgDKLJJiOIrE6hMKyIUjFHRIvbOH3HsdpNPGtfmPi
+    J1aEyovpa8CmGuaGxmwGeECjHebyybw0drCXJshmA9CycfGSCxhnApz5hDDeJDiiGJFOg
+    IJMKUehEBDodNG5JQb8HZF6avH9JEcWIZGCaYJdJecnJ7GLauKmEeinEiH4ibI3KbhcKp
+    BEbZuyH3jyucD6aFwYItf9vvCPboxbIshrwdzOdzC3IsjGCMGnbMEjJTc0D6FibNM4Kgd
+    ANwBwciKnLndFIWEtfhJVIPhaJcEqgfKIIih8JPE4hoKtHqiTJaICbOH5HsdpNPGtfmPi
+    DvaCuermazzcA7aNw4rZcTBYCva2wWsVbXBfHKetz0zCa8C0BAg0BQz1hME5KbgLFLG3f
+    kJELwczEdDudNG5KxbjH3F9auIdKrb2I7GDaZJgJYbsKdGMauKpEnh5E3I0gWIkLbgGJU
+    Eecvs5J3eMuJFXblv7JMddx6EFb4vYKNdHxgAFeHA3IFi6A5F3bPEnJCcLDLFMbXM8K3c
+    0NfBEbyK2MecNIJEvd0JcJgfPJrEle6JQIGgMJZEXgbJrHIhrJlIGbNHUIfc5NMHOe2Pu
+    DvaCueuqazyZA9aNw3vddkBgCBbdwXv3cmAxHteQAoCPaZzABhgRCRARefFqKvfaE7Igd
+    IJpL6aUDUD5d4HsLfawH7GcauIfLda8JfGDaWJkKIawKhGOauKvEFgoFvJ0fmHUMpe3I3
+    G6c3rdMpa1uHIfbxurLLa7ylHbcot0Lwb3xfCWeIyUI1h7zkFNbEErJkcwDsGgcaM9LAc
+    nMQBZaULGMYb4ImErcJIyJMepJEEgdVIXI5fpJ7EPeVIoH4fUJvIDbOHIIVcNNKJbeEPC
+lockdown
+properties: top
+todo: find better source
+ref: Joe Rogan https://www.youtube.com/watch?v=5aoEL3NdiU0
+    PWbCBFPZaDyPN9aJEMNJaEBPPdbIErO9aMBzQSgtI9ToaYG0KrdPIQNcbCJ1FhbtQJKrc
+    pSzFAaVL6NLbcPuE1c9PDLCepNwD8cVQzL0fwN5DTdHRyLSgBNmJHbOMGHEctRYGycvUq
+    OgcvE2MnazzMORe8HwMAdkChOXdEHDLKcdB5PWa5N2Gta1GrLLf1LAI0gNJiImexTeDke
+    zQYKKaUU2CBaVOaGDaRVCD8auSgFrbcVVEEa8TdErawVoELaxUpHQgbNuFCe2SADKeSUw
+    PJa6BCPrcmyFN8aNEVNKbCBTPdbGEoO7bUBtQZgdJjTlaZGSKxdHIVNjbCKeFibtQJKrc
+    pSDFAaVL6NKbdPvE1c9PDLCepNwD8cVQzL0fwN5DTdHRyLSgBNmJJbNMLHFctRYGycvUq
+    MtegDZQedeATOcfTGMO9d5EnNTesGxOAc8DnP5a7MfIibiFOMhgSLMJtg4JpImewThDBe
+    EQKKKaUU2CBaVOaGDaRVCD8auSgFrbcVVEEa8TdErawVoELaxUpIof9NzFEe2SCDKeSUw
+    PtazBvOwc3zGN6aEEYNmbsCNPoaVEmOzb7CoQ7fGI8TAa3G7KydvIXNsbEKoFjbuQKKrc
+    pSIFAaVL6NIbdPxE1c9PDLCepNwD8cVQzL0fwN5DTdHRyLSgBNmJPbMMPHHcsRYGycvUq
+    LNdzEnRUbdCTN6fcGKR1ehE0NDdNGFQ3dlEyQoaYMkKibKFhMXgXLYJ9g8JBIlevTkDVe
+    KQvKKaUU2CBaVOaGDaRVCD8auSgFrbcVVEEa8TeErawVoELaxUoI1f6NDFHe2SEDKeSUw
+...
+properties: top
+todo: find better source
+ref: Joe Rogan https://www.youtube.com/watch?v=5aoEL3NdiU0
+    LNdzEnRUbdCTN6fcGKR1ehE0NDdNGFQ3dlEyQoaYMkKibKFhMXgXLYJ9g8JBIlevTkDVe
+    KQvKKaUU2CBaVOaGDaRVCD8auSgFrbcVVEEa8TeErawVoELaxUoI1f6NDFHe2SEDKeSUw
+    PtazBvOwc3zGN6aEEYNmbsCNPoaVEmOzb7CoQ7fGI8TAa3G7KydvIXNsbEKoFjbuQKKrc
+    pSIFAaVL6NIbdPxE1c9PDLCepNwD8cVQzL0fwN5DTdHRyLSgBNmJPbMMPHHcsRYGycvUq
+    NNd3E0UjaUExPjftH8TzdxG7OLeeHHSVcYFYOVa0NNL5ceFgONhJL0NGidIsHUihQSFzg
+    gMVK1jWTZDqcLKKK2fNTwDnauOpJYfqUdDwbkPrJ5edUJDxaQQFKHi4LCFEhwPqDVgcQR
+    RbazCiORcszrOMblE3M4byCxQcbhESOpbYCiQ6foKlTla6G6KudYIVM8bDKaE8cuQuKbc
+    aSyEIbYLQNGa5PzFleAO0MneQNQEue0PQMRfTOsESfVQJMLg2NNJBbVMEHvcLRZG2diUv
+    OReiFtVsaOFoPTfyIPUcc8H4PiemIjTPcJGKN7aYOcM8cfFbPbhIM2OohAJoGAjLPoFYh
+    tKBKfibRLHedaJcHVfFPiEAaXL1GWfkOvDyaBMxGDeaN9CBauNpLpjzLPFzidNiC3hqND
+    RYazCMO0b8znPcbGE1MVbBCnQAbtE7OkbTCdQ3fdKVTda8G5KvedIXMZbDJ2E4cZQoJ2b
+    3SsEhczLMNDa4PzFpfiOJMMe1N2EJf4PtNhf4OFFngXQcNcheN0Jtb1MxHocUR1HidGUw
+    PWeyF3WAaJGgQtfCJwURcGIXPOepIYULcwHzNma0OsOcctFePhhFNyO2hwJTGviGNRG2i
+    kIMGAd0NiJteIHaE0avLwHSaSIxEfbkKNGPbaHWDtaGJUFMauHHLXjULKFEiJK9C1ikLi
+    SIazDmO8bOzlPFb0EZMObFCcQZbFFmOgbPB8QZeZLqS6a9G4KwerIZMObCJVE3dvQjJTb
+    WSnDSdgLLNAa6PxFpf2OsNcfdOfE0g5O3NIgeORFShTPBNDhoOdJlb7MrHic3R2Hxd3Uw
+    RDeSHaYCaIHAQBfnKIV8bNJ8P7eFJBWkb0IJMiaYN0Qsc9FhNUhLNQPrhzKtGmigJvJVh
+    2FrG4d4LuOjgmFWEYauLzOLdbC4EgbiKOOAc1BPDuaGJVOYb5A3LTj3KHHsh1GRF5gWEP
+    TMazEpOZbby9QCcyEDMmbMBERBb5FwNObGBJQNeqLXSqbeGSKseNI5MabCJMFtekQVJRb
+    FScFmeZMfNvbiPjItf0OPN7fvOuILg6PsOCgxO2J1hwPoOwhGOpIQcwMnHCdiSsIfeOUu
+    TbfjIg0vaLI2Qvf3KLXuaTLaQKe4JKXMbuJQL6aYMMSLekF2MhhSMSO9h3KzImfmFeMRh
+    gDfJEbzHAQVeVDHKAavDAPmbDBnKsaBCiOIaSABLzauBANtauASLli4IMJ9gVDLKDfPBn
+    UtazFAONazy0RQcXEoLZbTA3SictFFNlbwBmQAdMMdRKbiGFKte7JdLsbCJEF3e6RrJKb
+    sR0HCgZNpNpbGO5LpgsO1O1fIONMrgPPCPvgOPbNBgHOZPohVOCIkcWMmHZdxSQIWfxUp
+...
+ref: Caio Terra "111 Half Guard Techniques", Volume 1, Part 1, Section 2: Sweep From Head Control @ 7:20
+    ONazEmItazzyNldqGhIydKBqNybZGCHLcyBuLyaYNdCyaYFQKoeQHAHzfIFnFyftPjBQf
+    qMkH8c8SszFbgLPD3dORVyXbZP3DueTRnyFcFQ4CoeCQFyPdYQ7GYgFJBCTgoONAShbQo
+    Lch6CsLuiFDRJ6fIE6J0fIFuJvgXEzKog2F3DOjwHDJkiVMFFmcRIDIqcoKCzhdaPaC8b
+    BSAzQg6MNHpbtQHDghJO8HjfFPrEkh0PPG3gUPFFkhgP0FOheP0EEbSMMAYcRRnASeGTj
+    OPazB8IqazzCNscuE1IydLBrNMa8ELHKcABwLFa8LkCzaZFQLgeYFDHZeSDTHnhuNjC4h
+    bKrIzdwPrBDcNJYEkdEPyBCcMOmDDeHPVAQdvO0CqepQoASd3P8IbhvHqEMh3MsC8i6Oc
+    NjhtA9MsiOANLPfjDOKQf2CyLugxDbLohhC1E7iyEWK9ifJPFrcHIzIpbWKAzxcLPJDUb
+    0SFzmfsLSIrbkRGAvjqLlJze6PLA4kAK3JzglPjCgkBKFJogzN1ECbQMLBBdaRFBke9Tn
+    OPazB8JLazziNscuE1IxcSBTNMa8ELHXbHBdLFbgLkDda0GdLMegE1IxeaDaJmiYLiEui
+    YIDJwelL4DCemIhFAdHNwD1dLMBEQeDN4DkesNsDNegONCTdQOwJkhRFqGMjzKcFLljLZ
+    PngQzTNriYxKNxeVCvLGgkzBNof9BOMohxz4GzgTCDMEgOG0Fzc7IoICcfKmzScGPBEwc
+    vSqyyaTLvIXa2ROBVbRJeHPbaNCBXdbJaH9cnNYCYdNJBIadkM9ESbOMxBOcWREAUeNTi

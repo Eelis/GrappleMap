@@ -169,7 +169,7 @@ Series III
 		wip    27:38   9  duck under from standing headlock to back to supplex
 		todo   32:04  10  duck under to back to alternatieve drag down
 		TODO   35:19  11  supplex to side
-		wip    38:19  12  collar tie to russian two-on-one to fireman's carry
+		done   38:19  12  collar tie to russian two-on-one to fireman's carry
 		todo   42:10  13  hip throw
 		todo   44:23  14  another hip throw
 		TODO   47:04  15  uchi mata counter to standing double unders
