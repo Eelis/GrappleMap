@@ -96,8 +96,8 @@ Series II
 
 		wip   1
 		wip   2
-		wip   3
-		      4
+		wip   3  arm drag to single leg to back
+		      4  
 		wip   5
 		wip   6
 
@@ -204,7 +204,7 @@ Series III
 		wip   29:50  8  counter to top kneeling in x guard
 		wip   32:28  9  x guard entry and wrist control based trip sweep
 		TODO  35:12 10  defeated x guard into deep half sweep (unclear how bottom player loses control of the near leg)
-		TODO  39:23 11  waiter sweep
+		TODO  39:23 11  sweep
 		todo  42:44 12  seated single leg takedown
 		todo  45:46 13  sweep counter to flattened seated single-leg
 		wip   49:09 14  back step pass counter

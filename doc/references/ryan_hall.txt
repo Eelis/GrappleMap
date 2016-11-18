@@ -27,32 +27,32 @@ deep half
 
 	disc 2: Deep Half Attacks
 
-		               1. Overview of Entries and Control
-		wip            2. The Opponents Goals
-		wip            3. Maintaining the Deep Half
-		wip            4. The Over Unders Pass
-		wip            5. The Over Unders Switch
-		               6. The Double Unders Pass
-		               7. Over Unders to Double Unders
-		               8. The Leg Lever Principle
-		wip            9. The Leg Lever to Back Position
-		wip           10. The Off Balance Principle
-		              11. Cat & Yarn Principle
-		              12. Leg Lever to Back 1
-		              13. Leg Lever to Back 2
-		              14. Leg Lever to Back 3
-		     1:06:52  15. Leg Lever to Back 4
-		              16. Path of Least Resistance Drill
-		              17. Double Lapel Sweep
-		              18. Double Lapel Sweep to Back
-		todo 1:23:50  19. Waiter Sweep Theory 1
-			 1:26:34  20. Waiter Sweep Theory 2
-			 1:29:32  21. Waiter Sweep Pass to Left (hmm very much about sleeve grip..)
-			 1:33:51  22. Waiter Sweep Pass to Right (lot of gi grips)
-			 1:38:04  23. Waiter Sweep to Back (lot of gi grips)
-			 1:42:28  24. Waiter Sweep to the Front
-			 1:45:26  25. Waiter Sweep with Rolling Back Attack
-			 1:49:02  26. Arm Control Variation
+		                1. Overview of Entries and Control
+		wip             2. The Opponents Goals
+		wip             3. Maintaining the Deep Half
+		wip   0:14:37   4. The Over Unders Pass
+		wip   0:20:04   5. The Over Unders Switch
+		skip  0:24:01   6. The Double Unders Pass (belt and lapel grips)
+		todo  0:29:06   7. Over Unders to Double Unders
+		      0:33:35   8. The Leg Lever Principle
+		wip   0:36:28   9. The Leg Lever to Back Position
+		wip   0:41:06  10. The Off Balance Principle
+		      0:44:20  11. Cat & Yarn Principle
+		done  0:49:24  12. Leg Lever to Back 1
+		todo  0:55:13  13. Leg Lever to Back 2
+		      1:01:23  14. Leg Lever to Back 3
+		      1:06:52  15. Leg Lever to Back 4
+		      1:11:20  16. Path of Least Resistance Drill
+		skip  1:13:44  17. Double Lapel Sweep
+		skip  1:19:16  18. Double Lapel Sweep to Back
+		todo  1:23:50  19. Waiter Sweep Theory 1
+		      1:26:34  20. Waiter Sweep Theory 2 (lots of gi grips)
+		skip  1:29:32  21. Waiter Sweep Pass to Left (hmm very much about sleeve grip..)
+		skip  1:33:51  22. Waiter Sweep Pass to Right (lot of gi grips)
+		skip  1:38:04  23. Waiter Sweep to Back (lot of gi grips)
+		      1:42:28  24. Waiter Sweep to the Front
+		      1:45:26  25. Waiter Sweep with Rolling Back Attack
+		      1:49:02  26. Arm Control Variation
 
 		gonna need some no-gi waiter sweep stuff
 

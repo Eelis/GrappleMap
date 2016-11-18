@@ -2,15 +2,15 @@ science of jiu jitsu
 
 	VOLUME 1: Defending the Guard Pass
 
-		1. Straight Line Theory
-		2. Head control Theory
-		3. Single Underhook pass
-		4. Double underhook pass 1
-		5. Double underhook pass 2
-		6. Double underhook pass 3
-		7. Half Guard pass
-		8. Toreador variation defense
-		9. Toreador defense 1
+		            1. Straight Line Theory
+		            2. Head control Theory
+		wip         3. Single Underhook pass
+		wip         4. Double underhook pass 1
+		wip         5. Double underhook pass 2
+		            6. Double underhook pass 3
+		wip  16:39  7. Half Guard pass
+		     20:51  8. Toreador variation defense
+		     24:17  9. Toreador defense 1
 		10. Toreador defense 2
 		11. Toreador defense 3
 		12. Toreador defense 4
@@ -19,8 +19,8 @@ science of jiu jitsu
 
 	VOLUME 2: The Triangle Choke
 
-		1. Intro and setup from spider guard
-		2. Setup from Guard pass
+		skip  00:00  1. Intro and setup from spider guard
+		      03:36  2. Setup from Guard pass
 		3. Setup from Half Guard
 		4. Straight arm Theory
 		5. Triangle from sweep

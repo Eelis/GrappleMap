@@ -2,23 +2,23 @@ NoGi Guard Secrets
 
 	DVD 1: HALF GUARD
 
-		01:19  1. Half Guard Set Up
-		05:53  2. Half Guard With Underhook
-		08:28  3. Half Guard Underhook Variation
-		11:55  4. Half Guard Head Control Variation
-		14:33  5. Deep Half Sweep
-		6. Knee Bar From Deep Half
-		7. Toe Hold
-		8. Knee Bar From Half Guard
-		9. Roll Sweep
-		10. Roll Sweep Foot Lock
-		11. Knee Bar
-		12. Roll Sweep
-		13. Entering 50/50
-		14. Foot Lock From 50/50
-		15. Heel Hook From 50/50
-		16. Roll Sweep Lookout
-		17. Re-establishing Guard
+		      0:01:19   1. Half Guard Set Up
+		todo  0:05:53   2. Half Guard With Underhook
+		TODO  0:08:28   3. Half Guard Underhook Variation
+		todo  0:11:55   4. Half Guard Head Control Variation
+		      0:14:33   5. Deep Half Sweep
+		      0:22:17   6. Knee Bar From Deep Half
+		      0:25:33   7. Toe Hold
+		      0:28:56   8. Knee Bar From Half Guard
+		      0:31:11   9. Roll Sweep
+		      0:33:45  10. Roll Sweep Foot Lock
+		      0:37:15  11. Knee Bar
+		      0:40:00  12. Roll Sweep
+		      0:44:05  13. Entering 50/50
+		      0:48:18  14. Foot Lock From 50/50
+		      0:52:47  15. Heel Hook From 50/50
+		      0:56:59  16. Roll Sweep Lookout
+		      1:00:23  17. Re-establishing Guard
 
 	DVD 2: REVERSE HALF GUARD
 
