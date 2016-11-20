@@ -6,15 +6,15 @@ NoGi Guard Secrets
 		todo  0:05:53   2. Half Guard With Underhook
 		TODO  0:08:28   3. Half Guard Underhook Variation
 		todo  0:11:55   4. Half Guard Head Control Variation
-		      0:14:33   5. Deep Half Sweep
-		      0:22:17   6. Knee Bar From Deep Half
-		      0:25:33   7. Toe Hold
-		      0:28:56   8. Knee Bar From Half Guard
-		      0:31:11   9. Roll Sweep
-		      0:33:45  10. Roll Sweep Foot Lock
-		      0:37:15  11. Knee Bar
-		      0:40:00  12. Roll Sweep
-		      0:44:05  13. Entering 50/50
+		wip   0:14:33   5. Deep Half Sweep
+		todo  0:22:17   6. Knee Bar From Deep Half
+		todo  0:25:33   7. Toe Hold
+		todo  0:28:56   8. Knee Bar From Half Guard
+		wip   0:31:11   9. Roll Sweep
+		todo  0:33:45  10. Roll Sweep Foot Lock
+		todo  0:37:15  11. Knee Bar
+		TODO  0:40:00  12. Roll Sweep
+		TODO  0:44:05  13. Entering 50/50
 		      0:48:18  14. Foot Lock From 50/50
 		      0:52:47  15. Heel Hook From 50/50
 		      0:56:59  16. Roll Sweep Lookout
@@ -22,23 +22,23 @@ NoGi Guard Secrets
 
 	DVD 2: REVERSE HALF GUARD
 
-		1. Reverse Half Guard Set Up
-		2. Reverse Half Guard Control
-		3. Reverse Half Guard Spin Control
-		4. Reverse Half Guard Re-establishment
-		5. Reverse Half Guard Foot Sweep
-		6. Reverse Half Guard Sweep to Foot lock
-		7. Reverse Half to Inverted Back Take
-		8. Inverted to Foot Lock
-		9. Inverted to Single Leg
-		10. Push Stand up Sweep
-		11. Push Stand up Sweep Variation
-		12. Reverse Half Guard Sweep
-		13. Reverse Half to X Guard Sweep
-		14. Reverse Half to Foot Lock
-		15. Reverse Half to Heel Hook
-		16. Reverse Half to Knee Bar
-		17. Reverse Half to Calf Crusher
+		       00:00   1. Reverse Half Guard Set Up
+		       03:08   2. Reverse Half Guard Control
+		       05:06   3. Reverse Half Guard Spin Control
+		       07:46   4. Reverse Half Guard Re-establishment
+		todo   10:00   5. Reverse Half Guard Foot Sweep
+		later  12:51   6. Reverse Half Guard Sweep to Foot lock
+		wip    15:34   7. Reverse Half to Inverted Back Take
+		       18:56   8. Inverted to Foot Lock
+		wip    23:10   9. Inverted to Single Leg
+		TODO   26:50  10. Push Stand up Sweep
+		todo   29:24  11. Push Stand up Sweep Variation
+		todo   32:16  12. Reverse Half Guard Sweep
+		TODO   35:23  13. Reverse Half to X Guard Sweep
+		       38:49  14. Reverse Half to Foot Lock
+		       41:41  15. Reverse Half to Heel Hook
+		       44:30  16. Reverse Half to Knee Bar
+		       46:19  17. Reverse Half to Calf Crusher
 
 	DVD 3: BOTTOM ESCAPES AND POSITIONS
 
@@ -46,17 +46,17 @@ NoGi Guard Secrets
 		wip   03:48  2. Side Escape Single Leg
 		      08:27  3. Side Escape Front Head Lock
 		      11:43  4. Side Escape Take The Back
-		      15:40  5. Side Escape Single
-		             6. Side Escape To Open Guard
-		             7. Side escape to open guard # 2
-		      24:12  8. N/S defense
-		      27:33  9. Escape to turtle
+		todo  15:40  5. Side Escape Single (guillotine escape)
+		todo  19:11  6. Side Escape To Open Guard
+		      21:59  7. Side escape to open guard # 2
+		todo  24:12  8. N/S defense
+		TODO  27:33  9. Escape to turtle
 		      30:23 10. Escape to turtle replace guard
-		            11. Escape to turtle to sweep
-		      35:03 12. Side escape to kimura
-		            13. Side escape to armbar
+		      32:39 11. Escape to turtle to sweep
+		TODO  35:03 12. Side escape to kimura
+		todo  38:19 13. Side escape to armbar
 		      40:29 14. Side escape to armbar variation
-		15. Side escape to trapped leg
+		      43:39 15. Side escape to trapped leg
 		      46:49 16. Side escape to triangle
 		      48:51 17. Side escape to near side leg
 
@@ -84,7 +84,7 @@ NoGi Exposed
 		todo  0:27:36   3. Open Guard Control
 		      0:29:40   4. Choking Guard Break
 		      0:32:27   5. Choking Guard Break 2
-		      0:34:21   6. Sweep Defense Pass
+		todo  0:34:21   6. Sweep Defense Pass
 		      0:37:30   7. Sitting Guard Break
 		      0:40:15   8. Sitting Wrist Reversal
 
@@ -92,8 +92,8 @@ NoGi Exposed
 		      0:41:43   1. Standing Guard Control
 		done  0:43:52   2. Defeating the De La Riva
 		done  0:46:06   3. Hip Control Pass
-		todo  0:51:10   4. North South Pass
-		todo  0:54:50   5. Leg Mount Pass
+		TODO  0:51:10   4. North South Pass
+		TODO  0:54:50   5. Leg Mount Pass
 		todo  0:58:48   6. Leg Mount Pass Plus
 		      1:01:40   7. Leg Mount Pass Drill
 
@@ -184,7 +184,7 @@ NoGi Exposed
 		todo   16:12   9. Defeating the Roll 2
 		wip    18:12  10. Shoulder Lift to Hooks
 		todo   22:33  11. Shoulder Lift to Hooks 2
-		              12. Shoulder Lift Drill
+		       26:12  12. Shoulder Lift Drills
 
 		VOLUME 12: SUBMISSIONS
 		hmm   0:28:01  1. The Pablo Crush Choke  -- good stuff but shown from weird demo pos
@@ -194,20 +194,20 @@ NoGi Exposed
 		todo  0:40:42  5. Rolling Choke Finish
 
 		VOLUME 13: HIP LOCK & ARM TRAP SERIES
-		done 0:42:26   1. Single Hook Roll
-		todo 0:45:50   2. Single Hook Hip Lock Details
-		todo 0:49:49   3. Regaining the Hip Lock
-		done 0:52:32   4. Hip Lock Pablo Crush
-		done 0:54:38   5. Hip Lock to Double Hook
-		hmm  0:56:14   6. Alternating Attacks
+		done  0:42:26   1. Single Hook Roll
+		todo  0:45:50   2. Single Hook Hip Lock Details
+		todo  0:49:49   3. Regaining the Hip Lock
+		done  0:52:32   4. Hip Lock Pablo Crush
+		done  0:54:38   5. Hip Lock to Double Hook
+		hmm   0:56:14   6. Alternating Attacks
 		later 0:57:27   7. Opposite Side Roll
-		todo 1:01:12   8. Double Roll
-		todo 1:04:41   9. Arm Trap Counter
-		     1:07:42  10. Arm Trap to North South
-		              11. Arm Trap to Pablo Crush
-		     1:11:46  12. Arm Trap to Kimura
-		     1:14:53  13. Leg Trap Escape
-		     1:17:08  14. Single Arm Rear Choke
+		todo  1:01:12   8. Double Roll
+		todo  1:04:41   9. Arm Trap Counter
+		      1:07:42  10. Arm Trap to North South
+		      1:09:28  11. Arm Trap to Pablo Crush
+		      1:11:46  12. Arm Trap to Kimura
+		      1:14:53  13. Leg Trap Escape
+		      1:17:08  14. Single Arm Rear Choke
 
 		VOLUME 14: PASSING & STANDING BACK SERIES
 		todo  1:19:23   1. Passing to Back Position
@@ -222,15 +222,15 @@ NoGi Exposed
 		TODO  1:49:56  10. Weight Shift Takedown
 
 		VOLUME 15: SUBMISSIONS
-		empty  1:52:02  1. Overview
-		todo   1:53:20  2. Rotating your opponent
-		todo   1:56:39  3. Rotation Variation
-		       1:59:09  4. Rotation Drill
-		       2:00:31  5. Rotation to Rear Naked Choke
-		       2:02:05  6. Double Rotation
-		       2:05:40  7. Rotation to Arm Trap
-		       2:08:39  8. Arm Trap Details
-		       2:09:26  9. Armlock Setup
+		empty  1:52:02   1. Overview
+		todo   1:53:20   2. Rotating your opponent
+		todo   1:56:39   3. Rotation Variation
+		       1:59:09   4. Rotation Drill
+		       2:00:31   5. Rotation to Rear Naked Choke
+		       2:02:05   6. Double Rotation
+		       2:05:40   7. Rotation to Arm Trap
+		       2:08:39   8. Arm Trap Details
+		       2:09:26   9. Armlock Setup
 		todo   2:13:06  10. The Pablo Leg Position
 		todo   2:16:34  11. Finishing the Armlock 1
-		                12. Finishing the Armlock 2
+		       2:19:06  12. Finishing the Armlock 2
