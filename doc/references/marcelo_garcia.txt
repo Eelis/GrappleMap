@@ -24,8 +24,8 @@ Series I
 
 	volume 2: mastering the back
 
-		wip   00:00   1.  arm drag back take counter to kneeling opponent grabbing seated butterfly ankles + submission
-		todo  05:08   2.  rnc from arm dragged turtle
+		done  00:00   1.  arm drag back take counter to kneeling opponent grabbing seated butterfly ankles + submission
+		done  05:08   2.  rnc from arm dragged turtle
 		todo  08:11   3.  backtake from arm dragged turtle
 		      11:53   4.  hand fighting for rnc
 		wip   14:24   5.  arm trap rnc finish
