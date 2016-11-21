@@ -35,6 +35,7 @@ struct Graph
 	{
 		Position position;
 		vector<string> description;
+		optional<unsigned> line_nr;
 	};
 
 	struct Edge
@@ -57,7 +58,7 @@ private:
 		if (auto m = is_reoriented_node(p))
 			return *m;
 
-		nodes.push_back(Node{p, vector<string>()});
+		nodes.push_back(Node{p, vector<string>(), {}});
 		return ReorientedNode{NodeNum{uint16_t(nodes.size() - 1)}, PositionReorientation{}};
 	}
 

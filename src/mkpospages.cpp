@@ -304,7 +304,7 @@ namespace
 			r += replace_all(replace_all(l, "'", "&#39;"), "\\n", " ") + '\n';
 
 		r += "(t" + to_string(sn.index);
-		if (auto ln = g[sn].line_nr) r += " @ line " + to_string(*ln);
+		if (auto ln = g[sn].line_nr) r += '@' + to_string(*ln);
 		r += ')';
 
 		return r;
@@ -317,7 +317,11 @@ namespace
 		foreach (l : g[n].description)
 			r += replace_all(replace_all(l, "'", "&#39;"), "\\n", " ") + '\n';
 
-		return r + "(p" + to_string(n.index) + ")"; // todo: line nr
+		r += "(p" + to_string(n.index);
+		if (auto ln = g[n].line_nr) r += '@' + to_string(*ln);
+		r += ')';
+
+		return r;
 	}
 
 	ImageMaker::BgColor bg_color(bool const top, bool const bottom)

@@ -91,13 +91,13 @@ namespace
 
 				last_was_position = is_position;
 			}
-
-			return i;
 		}
 		catch (exception const & e)
 		{
 			error("at line " + to_string(line_nr) + ": " + e.what());
 		}
+
+		return i;
 	}
 
 	ostream & operator<<(ostream & o, Position const & p)
@@ -153,7 +153,7 @@ Graph loadGraph(string const filename)
 	{
 		if (i->positions.size() == 1)
 		{
-			nodes.push_back(Graph::Node{i->positions.front(), i->description});
+			nodes.push_back(Graph::Node{i->positions.front(), i->description, i->line_nr});
 			i = edges.erase(i);
 		}
 		else ++i;
@@ -369,6 +369,8 @@ void tojs(Graph const & graph, std::ostream & js)
 		tojs(tags(graph[n]), js);
 		js << ",discriminators:";
 		tojs(disc, js);
+		if (graph[n].line_nr)
+			js << ",line_nr:" << *graph[n].line_nr;
 		js << "},\n";
 	}
 	js << "];\n\n";
