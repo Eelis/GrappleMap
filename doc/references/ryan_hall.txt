@@ -300,13 +300,13 @@ arm triangles
 
 	VOLUME 1: Positions & Theory of Choking
 
-		                1. Introduction
-		                2. Principles of Choking
-		                3. The Side Choke (Kata Gatame)
-		                4. The NoGi Brabo
-		skip            5. The Lapel Brabo
-		skip            6. The Sleeve Brabo
-		                7. The Anaconda
+		      0:00:00   1. Introduction
+		      0:00:50   2. Principles of Choking
+		      0:05:39   3. The Side Choke (Kata Gatame)
+		      0:13:33   4. The NoGi Brabo
+		skip  0:21:41   5. The Lapel Brabo
+		skip  0:31:39   6. The Sleeve Brabo
+		      0:36:41   7. The Anaconda
 		skip  0:42:34   8. The Sleeve Ezekiel
 		      0:50:22   9. The NoGi Ezekiel
 		      0:56:44  10. The Guillotine
@@ -325,46 +325,46 @@ arm triangles
 
 	VOLUME 2: Creating Openings & Finishing
 
-		      1. Principals of Positional Pressure
-		      2. The Head Smash Method
-		      3. The Arm Frame Method
-		      4. The Guard Smash Method
-		      5. Side Control: Kata Gatame
-		      6. Side Control: Brabo
-		wip   7. Knee-on-Stomach: Brabo
-		      8. Knee-on-Stomach: Kata Gatame
-		wip   9. Half Guard Top: Brabo
-		wip  10. Half Guard Top: Kata Gatame
-		     11. Half Guard Bottom: Brabo
-		wip  12. Leg Drag: Brabo
-		     13. Leg Drag: Kata Gatame & Ezekiel
-		     14. Turtle: Near Side Kata Gatame
-		     15. Turtle: Far Side Kata Gatame
-		wip  16. Front Headlock: Brabo
-		     17. Back Control: Kata Gatame & Ezekiel
-		     18. Kimuras to Kata Gatame – Armlocks to Brabo
-		     19. Inverted Guard to Kata Gatame
+		      0:00:02   1. Principals of Positional Pressure
+		      0:06:51   2. The Head Smash Method
+		      0:13:45   3. The Arm Frame Method
+		      0:19:58   4. The Guard Smash Method
+		      0:29:05   5. Side Control: Kata Gatame
+		      0:34:19   6. Side Control: Brabo
+		wip   0:42:05   7. Knee-on-Stomach: Brabo
+		      0:47:50   8. Knee-on-Stomach: Kata Gatame
+		wip   0:53:02   9. Half Guard Top: Brabo
+		wip   1:03:46  10. Half Guard Top: Kata Gatame
+		      1:11:21  11. Half Guard Bottom: Brabo
+		wip   1:18:36  12. Leg Drag: Brabo
+		      1:24:43  13. Leg Drag: Kata Gatame & Ezekiel
+		      1:31:26  14. Turtle: Near Side Kata Gatame
+		      1:36:21  15. Turtle: Far Side Kata Gatame
+		wip   1:39:27  16. Front Headlock: Brabo
+		      1:46:14  17. Back Control: Kata Gatame & Ezekiel
+		      1:50:53  18. Kimuras to Kata Gatame – Armlocks to Brabo
+		      1:57:24  19. Inverted Guard to Kata Gatame
 
 	VOLUME 3: Troubleshooting, Transitions and Drills
 
-		1. Troubleshooting: Kata Gatame 1
-		2. Troubleshooting: Kata Gatame 2
-		3. Troubleshooting: Kata Gatame 3
-		4. Troubleshooting: Brabo
-		5. Half Guard Killer
-		6. Butterfly Hooks to Kata Gatame
-		7. Rolling Back Attack to Choke
-		8. Leg Riding Attacks 1
-		9. Leg Riding Attacks 2
-		wip  10. The Brabo Roll Under
-		11. Drill 1: Rolling Brabo
-		12. Drill 2: Rolling Kata Gatame
-		13. Drill 3: Turtle Position 1
-		14. Drill 4: Turtle Position 2
-		15. Drill 5: Knee-on-Stomach
-		16. Drill 6: Knee Through Pass
-		17. Drill 7: Butterfly Pass
-		18. Drill 8: Roll Reversal
+		      0:00:00   1. Troubleshooting: Kata Gatame 1
+		      0:03:58   2. Troubleshooting: Kata Gatame 2
+		      0:08:36   3. Troubleshooting: Kata Gatame 3
+		      0:12:03   4. Troubleshooting: Brabo
+		todo  0:20:00   5. Half Guard Killer
+		      0:26:00   6. Butterfly Hooks to Kata Gatame
+		      0:30:52   7. Rolling Back Attack to Choke
+		todo  0:36:15   8. Leg Riding Attacks 1
+		      0:40:26   9. Leg Riding Attacks 2
+		wip   0:44:05  10. The Brabo Roll Under
+		      0:47:33  11. Drill 1: Rolling Brabo
+		      0:49:25  12. Drill 2: Rolling Kata Gatame
+		      0:51:21  13. Drill 3: Turtle Position 1
+		      0:53:41  14. Drill 4: Turtle Position 2
+		      0:55:33  15. Drill 5: Knee-on-Stomach
+		      0:56:53  16. Drill 6: Knee Through Pass
+		      0:58:28  17. Drill 7: Butterfly Pass
+		      1:01:13  18. Drill 8: Roll Reversal
 
 50/50
 
@@ -393,73 +393,73 @@ arm triangles
 
 	VOLUME 2: Transitions, Skill Drills, and Entries
 
-		wip   1. Transition #1: Straight Ankle Lock To 50/50
-		wip   2. Transition #2: Reverse Heel Hook To 50/50
-		      3. Transition #3: Kneebar To 50/50
-		      4. Transition #4: Calf Slice To 50/50
-		      5. Skill Drill #1: Seated Straight Ankle Leg Switch
-		      6. Skill Drill #2: Standing Straight Ankle Leg Switch
-		      7. Skill Drill #3: Reverse Heel Hook to 50/50 Flow
-		wip   8. Deep Half Guard: Thread The Needle To 50/50
-		      9. Deep Half Guard: Backdoor Spin to 50/50
-		     10. Deep Half Guard: Waiter Sweep to 50/50
-		wip  11. X-Guard: Near Side
-		     12. X-Guard: Far Leg Scissor
-		     13. Sitting Guard: 360° Granby On Kneeling Opponent
-		     14. Sitting Guard: Armdrag to 360° Granby On Standing Opponent
-		     15. Standing Footlock to 50/50
-		     16. Knee Slice Pass: Kneebar Bypass To 50/50
-		     17. Knee Slice Pass: Reverse Heel Hook To 50/50
-		     18. Leg Drag Pass: Direct 50/50 Entry
-		     19. 50/50 Defense To Kneebar Attack
-		     20. Standing: Ashikan Judan
-		     21. Standing: Toquinho
-		wip  22. Situation #1: Defending The Bull Fighter Pass
-		     23. Situation #2: Defending The Knee Slice Pass
+		wip   0:00:01   1. Transition #1: Straight Ankle Lock To 50/50
+		wip   0:03:09   2. Transition #2: Reverse Heel Hook To 50/50
+		      0:07:12   3. Transition #3: Kneebar To 50/50
+		      0:09:44   4. Transition #4: Calf Slice To 50/50
+		      0:12:27   5. Skill Drill #1: Seated Straight Ankle Leg Switch
+		      0:14:17   6. Skill Drill #2: Standing Straight Ankle Leg Switch
+		      0:17:26   7. Skill Drill #3: Reverse Heel Hook to 50/50 Flow
+		wip   0:19:37   8. Deep Half Guard: Thread The Needle To 50/50
+		      0:23:47   9. Deep Half Guard: Backdoor Spin to 50/50
+		      0:26:44  10. Deep Half Guard: Waiter Sweep to 50/50
+		wip   0:29:56  11. X-Guard: Near Side
+		      0:35:06  12. X-Guard: Far Leg Scissor
+		      0:36:41  13. Sitting Guard: 360° Granby On Kneeling Opponent
+		      0:39:42  14. Sitting Guard: Armdrag to 360° Granby On Standing Opponent
+		      0:41:57  15. Standing Footlock to 50/50
+		      0:45:37  16. Knee Slice Pass: Kneebar Bypass To 50/50
+		      0:49:59  17. Knee Slice Pass: Reverse Heel Hook To 50/50
+		      0:52:48  18. Leg Drag Pass: Direct 50/50 Entry
+		      0:57:07  19. 50/50 Defense To Kneebar Attack
+		      1:00:15  20. Standing: Ashikan Judan
+		      1:03:51  21. Standing: Toquinho
+		wip   1:07:28  22. Situation #1: Defending The Bull Fighter Pass
+		      1:11:45  23. Situation #2: Defending The Knee Slice Pass
 
 	VOLUME 3: Volume 3: Progressing Position, In-Depth Entries, And Advanced Finishing
 
-		wip   1. Passing: Leg Retraction
-		wip   2. Passing: Step-Over
-		wip   3. Passing: Step-Over To Mount
-		      4. Passing: Step-Over To The Back
-		      5. Disentangling: Stand Out To Open Guard Top
-		      6. Disentangling: Stand Out To Pass
-		      7. De La Riva Guard: Granby To Far Leg 50/50
-		      8. Inverted Guard: Kneebar Bypass To 50/50
-		      9. Inverted Guard: Outside Leg Lasso
-		     10. Inverted Guard: Salvaging A Missed Attack
-		     11. Inverted Guard: Calf Slice To 50/50 Off Opponent's Defense
-		     12. Back Attack to 50/50
-		     13. X-Guard Top To 50/50
-		     14. Oma Plata To 50/50
-		wip  15. Sitting Guard: Leg Drag To 50/50
-		     16. Open Guard: Frazatto
-		     17. Advanced Heel Hook Finishing
+		wip   0:00:01   1. Passing: Leg Retraction
+		wip   0:06:07   2. Passing: Step-Over
+		wip   0:13:14   3. Passing: Step-Over To Mount
+		      0:22:13   4. Passing: Step-Over To The Back
+		      0:27:26   5. Disentangling: Stand Out To Open Guard Top
+		      0:32:41   6. Disentangling: Stand Out To Pass
+		      0:37:23   7. De La Riva Guard: Granby To Far Leg 50/50
+		      0:42:01   8. Inverted Guard: Kneebar Bypass To 50/50
+		      0:44:50   9. Inverted Guard: Outside Leg Lasso
+		      0:48:30  10. Inverted Guard: Salvaging A Missed Attack
+		      0:50:23  11. Inverted Guard: Calf Slice To 50/50 Off Opponent's Defense
+		      0:54:16  12. Back Attack to 50/50
+		      0:58:47  13. X-Guard Top To 50/50
+		      1:03:33  14. Oma Plata To 50/50
+		wip   1:07:07  15. Sitting Guard: Leg Drag To 50/50
+		todo  1:10:06  16. Open Guard: Frazatto
+		      1:13:59  17. Advanced Heel Hook Finishing
 
 the triangle
 
 	VOLUME 1: The Triangle As A Position
 
-		1. Introduction (Posture Is Everything)
-		2. Proper Locking Technique
-		3. Securing The Perpendicular Angle
-		4. Finishing The Choke: Stomp And Curl
-		5. Structure And Force Principles Explained
-		6. Managing Distance And Angle
-		7. Quick Review
-		8. Alternative Configuration #1: The Switch Figure.Four
-		9. Alternative Configuration #2: The Reverse Triangle
-		10. Alternative Reverse Triangle Attacks
-		11. Defeating the Roger Gracie Defense
-		12. Skill Drill #1: Hip Explosion Drill
-		13. Skill Drill #2: Standard/Switch/Reverse Triangle Flow Drill
-		14. Posture/Pressure/Rotation Recognition Drill
-		15. Alternative Finishes #1: Punch In Neck and Karate Chop
-		16. Alternative Finishes #2: Trapped Arm Keylock And Armlock
-		17. Alternative Finishes #3: Trapped Arm Wristlock
-		18. Alternative Finishes #4: Off-Arm Crush And Kimura
-		19. Alternative Finishes #5: The Oma Plata
+		0:00:00   1. Introduction (Posture Is Everything)
+		0:01:05   2. Proper Locking Technique
+		0:08:03   3. Securing The Perpendicular Angle
+		0:13:21   4. Finishing The Choke: Stomp And Curl
+		0:17:40   5. Structure And Force Principles Explained
+		0:22:47   6. Managing Distance And Angle
+		0:30:51   7. Quick Review
+		0:33:48   8. Alternative Configuration #1: The Switch Figure.Four
+		0:40:52   9. Alternative Configuration #2: The Reverse Triangle
+		0:47:02  10. Alternative Reverse Triangle Attacks
+		0:52:10  11. Defeating the Roger Gracie Defense
+		0:57:28  12. Skill Drill #1: Hip Explosion Drill
+		0:59:48  13. Skill Drill #2: Standard/Switch/Reverse Triangle Flow Drill
+		1:01:33  14. Posture/Pressure/Rotation Recognition Drill
+		1:03:15  15. Alternative Finishes #1: Punch In Neck and Karate Chop
+		1:07:16  16. Alternative Finishes #2: Trapped Arm Keylock And Armlock
+		1:10:42  17. Alternative Finishes #3: Trapped Arm Wristlock
+		1:14:31  18. Alternative Finishes #4: Off-Arm Crush And Kimura
+		1:19:18  19. Alternative Finishes #5: The Oma Plata
 
 	VOLUME 2: Angles, Mechanics, And Entries
 
