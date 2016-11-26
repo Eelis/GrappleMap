@@ -22,7 +22,7 @@ namespace
 
 		double s = 2 * pi() / faces;
 
-		glBegin(GL_TRIANGLES);
+		glBegin(GL_TRIANGLE_STRIP);
 
 		for (unsigned i = 0; i != faces; ++i)
 		{
@@ -51,46 +51,32 @@ namespace
 			up.x, up.y, up.z);
 	}
 
-	void grid(V3 const color, unsigned const size = 2, unsigned const line_width = 2)
+	void renderLimbs(Position const & pos, optional<PlayerNum> const first_person_player)
 	{
-		glNormal3d(0, 1, 0);
-		glColor3f(color.x, color.y, color.z);
-		glLineWidth(line_width);
-
-		glBegin(GL_LINES);
-			for (double i = size*-2.; i <= size*2.; ++i)
-			{
-				glVertex(V3{i/2, 0, size*-1.});
-				glVertex(V3{i/2, 0, size*1.});
-				glVertex(V3{size*-1., 0, i/2});
-				glVertex(V3{size*1., 0, i/2});
-			}
-		glEnd();
-	}
-
-	void render(Viables const * const viables, Position const & pos,
-		optional<PlayerJoint> const highlight_joint,
-		optional<PlayerNum> const first_person_player, bool const edit_mode)
-	{
-		// draw limbs:
-
 		for (PlayerNum p = 0; p != 2; ++p)
 		{
 			glColor(playerDefs[p].color);
 			Player const & player = pos[p];
 
-			foreach (s : segments())
-				if (s.visible)
+			foreach (l : limbs())
+				if (l.visible)
 				{
-					auto const a = s.ends[0], b = s.ends[1];
+					auto const a = l.ends[0], b = l.ends[1];
 
 					if (b == Head && p == first_person_player) continue;
 
 					auto mid = (player[a] + player[b]) / 2;
-					pillar(player[a], mid, jointDefs[a].radius, s.midpointRadius, 30);
-					pillar(mid, player[b], s.midpointRadius, jointDefs[b].radius, 30);
+					pillar(player[a], mid, jointDefs[a].radius, l.midpointRadius, 30);
+					pillar(mid, player[b], l.midpointRadius, jointDefs[b].radius, 30);
 				}
 		}
+	}
+
+	void render(bool const viables, Position const & pos,
+		vector<PlayerJoint> const & highlight_joints,
+		optional<PlayerNum> const first_person_player, bool const edit_mode)
+	{
+		renderLimbs(pos, first_person_player);
 
 		// draw joints:
 
@@ -99,12 +85,12 @@ namespace
 			if (pj.player == first_person_player && pj.joint == Head) continue;
 
 			auto color = playerDefs[pj.player].color;
-			bool highlight = pj == highlight_joint;
+			bool highlight = elem(pj, highlight_joints);
 			double extraBig = highlight ? 0.01 : 0.005;
 
 			if (edit_mode)
 				color = highlight ? yellow : white;
-			else if (!viables || (*viables)[pj].total_dist == 0)
+			else if (!viables)
 				extraBig = 0;
 			else
 				color = highlight
@@ -122,7 +108,7 @@ namespace
 	}
 
 	void drawViables(Graph const & graph, Viables const & viable, PlayerJoint const j, SeqNum const current_sequence,
-		Camera const & camera, Style const & style, bool const edit_mode)
+		Camera const * camera, Style const & style, bool const edit_mode)
 	{
 		foreach (v : viable[j].viables)
 		{
@@ -150,14 +136,14 @@ namespace
 					glVertex(apply(r, seq[i], j));
 			glEnd();
 
-			if (edit_mode)
+			if (edit_mode && camera)
 			{
 				#ifdef USE_FTGL
 					if (!style.font.Error() && v.second.seqNum == current_sequence)
 						for (PosNum i = v.second.begin + 1; i != v.second.end; ++i)
 							renderText(
 								style.font,
-								world2screen(camera, apply(r, seq[i], j)),
+								world2screen(*camera, apply(r, seq[i], j)),
 								to_string(i), white);
 				#else
 					glPointSize(10);
@@ -172,25 +158,77 @@ namespace
 			glEnable(GL_DEPTH_TEST);
 		}
 	}
+}
 
-	void setupLights()
+void setupLights()
+{
+	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHT1);
+	glEnable(GL_LIGHTING);
+
+	GLfloat light_diffuse[] = {0.65, 0.65, 0.65, 1.0};
+	GLfloat light_ambient[] = {0.03, 0.03, 0.03, 0.0};
+	GLfloat light_position0[] = {2.0, 2.0, 2.0, 0.0};
+	GLfloat light_position1[] = {-2.0, 2.0, -2.0, 0.0};
+
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
+
+	glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+}
+
+void grid(V3 const color, unsigned const size, unsigned const line_width)
+{
+	glNormal3d(0, 1, 0);
+	glColor3f(color.x, color.y, color.z);
+	glLineWidth(line_width);
+
+	glBegin(GL_LINES);
+		for (double i = size*-2.; i <= size*2.; ++i)
+		{
+			glVertex(V3{i/2, 0, size*-1.});
+			glVertex(V3{i/2, 0, size*1.});
+			glVertex(V3{size*-1., 0, i/2});
+			glVertex(V3{size*1., 0, i/2});
+		}
+	glEnd();
+}
+
+void render(Viables const * const viables, Position const & pos,
+	vector<PlayerJoint> const & highlight_joints,
+	optional<PlayerNum> const first_person_player, bool const edit_mode)
+{
+	renderLimbs(pos, first_person_player);
+
+	// draw joints:
+
+	foreach (pj : playerJoints)
 	{
-		glEnable(GL_LIGHT0);
-		glEnable(GL_LIGHT1);
-		glEnable(GL_LIGHTING);
+		if (pj.player == first_person_player && pj.joint == Head) continue;
 
-		GLfloat light_diffuse[] = {0.65, 0.65, 0.65, 1.0};
-		GLfloat light_ambient[] = {0.03, 0.03, 0.03, 0.0};
-		GLfloat light_position0[] = {2.0, 2.0, 2.0, 0.0};
-		GLfloat light_position1[] = {-2.0, 2.0, -2.0, 0.0};
+		auto color = playerDefs[pj.player].color;
+		bool highlight = elem(pj, highlight_joints);
+		double extraBig = highlight ? 0.01 : 0.005;
 
-		glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-		glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
+		if (edit_mode)
+			color = highlight ? yellow : white;
+		else if (!viables || (*viables)[pj].total_dist == 0)
+			extraBig = 0;
+		else
+			color = highlight
+				? white * 0.7 + color * 0.3
+				: white * 0.4 + color * 0.6;
 
-		glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
-		glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
-		glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+		glColor(color);
+
+		static GLUquadricObj * Sphere = gluNewQuadric(); // todo: evil
+		glPushMatrix();
+			glTranslate(pos[pj]);
+			gluSphere(Sphere, jointDefs[pj.joint].radius + extraBig, 20, 20);
+		glPopMatrix();
 	}
 }
 
@@ -247,7 +285,6 @@ void renderWindow(
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
 		glEnable(GL_COLOR_MATERIAL);
 
 		glMatrixMode(GL_PROJECTION);
@@ -271,7 +308,7 @@ void renderWindow(
 		glEnable(GL_DEPTH_TEST);
 
 		grid(style.grid_color, style.grid_size, style.grid_line_width);
-		render(viables, position, highlight_joint, v.first_person, edit_mode);
+		render(viables, position, opt_as_vec(highlight_joint), v.first_person, edit_mode);
 
 		if (viables && highlight_joint)
 		{
@@ -279,7 +316,7 @@ void renderWindow(
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glLineWidth(4);
 			glNormal3d(0, 1, 0);
-			drawViables(graph, *viables, *highlight_joint, current_sequence, camera, style, edit_mode);
+			drawViables(graph, *viables, *highlight_joint, current_sequence, &camera, style, edit_mode);
 
 			glDisable(GL_DEPTH_TEST);
 			glPointSize(20);
@@ -289,6 +326,74 @@ void renderWindow(
 			glVertex(position[*highlight_joint]);
 			glEnd();
 		}
+	}
+}
+
+void renderScene(
+	Graph const & graph,
+	Position const & position,
+	optional<pair<PlayerJoint, VrViablesForJoint>> const & browse_joint,
+	optional<PlayerJoint> edit_joint,
+	bool const edit_mode,
+	SeqNum const current_sequence,
+	Style const & style)
+{
+	glEnable(GL_COLOR_MATERIAL);
+
+	setupLights();
+
+	grid(style.grid_color, style.grid_size, style.grid_line_width);
+
+	vector<PlayerJoint> hl;
+	if (browse_joint) hl.push_back(browse_joint->first);
+	if (edit_joint) hl.push_back(*edit_joint);
+
+	render(browse_joint ? &browse_joint->second : nullptr, position, hl, {}, edit_mode);
+
+	if (browse_joint)
+	{
+		auto const j = browse_joint->first;
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glLineWidth(4);
+		glNormal3d(0, 1, 0);
+
+		foreach (v : browse_joint->second)
+		{
+			if (v.second.end - v.second.begin < 1) continue;
+
+			auto const r = v.second.reorientation;
+			auto & seq = graph[v.first].positions;
+
+			if (v.second.seqNum == current_sequence)
+				glColor4f(1, 1, 1, 0.6);
+			else
+				glColor4f(1, 1, 0, 0.3);
+
+			glDisable(GL_DEPTH_TEST);
+
+			glBegin(GL_LINE_STRIP);
+			for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i], j));
+			glEnd();
+
+			glPointSize(20);
+			glBegin(GL_POINTS);
+			for (PosNum i = v.second.begin; i != v.second.end; ++i)
+				if (i == 0 || i == seq.size() - 1)
+					glVertex(apply(r, seq[i], j));
+			glEnd();
+
+			glEnable(GL_DEPTH_TEST);
+		}
+
+		glDisable(GL_DEPTH_TEST);
+		glPointSize(20);
+		glColor(white);
+
+		glBegin(GL_POINTS);
+		glVertex(position[browse_joint->first]);
+		glEnd();
 	}
 }
 

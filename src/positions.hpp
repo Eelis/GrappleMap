@@ -130,16 +130,16 @@ struct PlayerDef { V3 color; };
 
 extern PerPlayer<PlayerDef> const playerDefs;
 
-struct Segment
+struct Limb
 {
 	array<Joint, 2> ends;
 	double length, midpointRadius; // in meters
 	bool visible;
 };
 
-inline auto & segments()
+inline auto & limbs()
 {
-	static const Segment segments[] =
+	static const Limb a[] =
 		{ {{LeftToe, LeftHeel}, 0.23, 0.025, true}
 		, {{LeftToe, LeftAnkle}, 0.18, 0.025, true}
 		, {{LeftHeel, LeftAnkle}, 0.09, 0.025, true}
@@ -177,7 +177,7 @@ inline auto & segments()
 
 		// TODO: replace with something less stupid once I upgrade to gcc that supports 14/17
 
-	return segments;
+	return a;
 }
 
 using Player = PerJoint<V3>;
@@ -220,6 +220,38 @@ struct PositionInSequence
 	SeqNum sequence;
 	PosNum position;
 };
+
+struct SegmentInSequence
+{
+	SeqNum sequence;
+	unsigned segment;
+};
+
+struct Location
+{
+	SegmentInSequence segment;
+	double howFar; // [0..1] how far along segment
+};
+
+struct NodeNum { uint16_t index; };
+
+inline NodeNum & operator++(NodeNum & n) { ++n.index; return n; }
+inline bool operator==(NodeNum const a, NodeNum const b) { return a.index == b.index; }
+inline bool operator!=(NodeNum const a, NodeNum const b) { return a.index != b.index; }
+inline bool operator<(NodeNum const a, NodeNum const b) { return a.index < b.index; }
+
+inline std::ostream & operator<<(std::ostream & o, NodeNum const n)
+{
+	return o << "node" << n.index;
+}
+
+inline PositionInSequence from(SegmentInSequence const s) { return {s.sequence, s.segment}; }
+inline PositionInSequence to(SegmentInSequence const s) { return {s.sequence, s.segment+1}; }
+
+inline bool operator<(SegmentInSequence const a, SegmentInSequence const b)
+{
+	return std::make_tuple(a.sequence, a.segment) < std::make_tuple(b.sequence, b.segment);
+}
 
 inline std::ostream & operator<<(std::ostream & o, PositionInSequence const pis)
 {
@@ -356,6 +388,8 @@ inline V3 cameraOffsetFor(Position const & p)
 	r.y = std::max(0., r.y - .5);
 	return r;
 }
+
+optional<PlayerJoint> closest_joint(Position const &, V3, double max_dist);
 
 }
 

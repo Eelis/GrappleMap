@@ -41,12 +41,24 @@ namespace GrappleMap
 	void renderText(FTGLPixmapFont const &, V2 where, string const &, V3 color);
 	#endif
 
+	void setupLights();
+	void grid(V3 color, unsigned size = 2, unsigned line_width = 2);
+
+	void render(Viables const *, Position const &,
+		vector<PlayerJoint> const & highlight_joints,
+		optional<PlayerNum> first_person_player, bool edit_mode);
+
 	void renderWindow(vector<View> const &,
 		Viables const *, Graph const &, Position const &,
 		Camera, optional<PlayerJoint> highlight_joint, bool edit_mode,
 		int left, int bottom, int width, int height,
 		SeqNum current_sequence,
 		Style const &);
+
+	void renderScene(Graph const &, Position const &,
+		optional<pair<PlayerJoint, VrViablesForJoint>> const & browse_joint,
+		optional<PlayerJoint> edit_joint,
+		bool const edit_mode, SeqNum current_sequence, Style const &);
 
 	inline vector<View> third_person_windows_in_corner(double w, double h, double hborder, double vborder)
 	{

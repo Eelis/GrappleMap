@@ -182,4 +182,111 @@ ViablesForJoint determineViables
 	return r;
 }
 
+namespace
+{
+	struct VrViableExtender
+	{
+		Graph const & graph;
+		VrViablesForJoint & vfj;
+		PlayerJoint const joint;
+
+		VrViable viableVrFront(SeqNum const seq, PositionReorientation const & r) const
+		{
+			auto const xyz = apply(r, graph[seq].positions.front(), joint);
+			return VrViable{seq, r, 0, 0, 1, xyz, xyz};
+		}
+
+		VrViable viableVrBack(SeqNum const seq, PositionReorientation const & r) const
+		{
+			auto const & sequence = graph[seq];
+			auto const xyz = apply(r, sequence.positions.back(), joint);
+			return VrViable{seq, r, 0, end(sequence) - 1, end(sequence), xyz, xyz};
+		}
+
+		void forward(int const depth, VrViable & via) const
+		{
+			auto const & sequence = graph[via.seqNum];
+			auto const & to = graph.to(via.seqNum);
+
+			for (; via.end != sequence.positions.size(); ++via.end)
+			{
+				V3 const v = apply(via.reorientation, sequence.positions[via.end], joint);
+
+				if (distanceSquared(v, via.endV3) < 0.003) break;
+				via.endV3 = v;
+			}
+
+			if (via.end == sequence.positions.size())
+				efrom(depth + 1, ReorientedNode{to.node, compose(to.reorientation, via.reorientation)});
+		}
+
+		void backward(int const depth, VrViable & via) const
+		{
+			auto & sequence = graph[via.seqNum];
+			auto const & from = graph.from(via.seqNum);
+
+			int pos = via.begin;
+			--pos;
+			for (; pos != -1; --pos)
+			{
+				V3 const v = apply(via.reorientation, sequence.positions[pos], joint);
+
+				if (distanceSquared(v, via.beginV3) < 0.003) break;
+
+				via.beginV3 = v;
+			}
+
+			via.begin = pos + 1;
+
+			if (via.begin == 0)
+				efrom(depth + 1, ReorientedNode{from.node, compose(from.reorientation, via.reorientation)});
+		}
+
+		void efrom(int const depth, ReorientedNode const rn) const
+		{
+			if (depth >= 2) return;
+
+			foreach(seqNum : seqnums(graph))
+			{
+				auto const from = graph.from(seqNum);
+				auto const to = graph.to(seqNum);
+
+				if (from.node == rn.node && !elem(seqNum, vfj))
+				{
+					auto seqReo = compose(inverse(from.reorientation), rn.reorientation);
+
+					forward(depth + 1, vfj[seqNum] = viableVrFront(seqNum, seqReo));
+				}
+				else if (to.node == rn.node && !elem(seqNum, vfj))
+				{
+					auto seqReo = compose(inverse(to.reorientation), rn.reorientation);
+
+					backward(depth + 1, vfj[seqNum] = viableVrBack(seqNum, seqReo));
+				}
+			}
+		}
+	};
+}
+
+VrViablesForJoint determineVrViables
+	( Graph const & graph, PositionInSequence const from, PlayerJoint const j
+	, bool const edit_mode, PositionReorientation const reo)
+{
+	VrViablesForJoint r;
+
+	if (!edit_mode && !jointDefs[j.joint].draggable) return r;
+
+	auto const jp = apply(reo, graph[from], j);
+
+	auto & v = r[from.sequence] =
+		VrViable{from.sequence, reo, 0, from.position, from.position + 1, jp, jp};
+
+	VrViableExtender e{graph, r, j};
+
+	e.forward(0, v);
+	e.backward(0, v);
+
+	return r;
+}
+
 }

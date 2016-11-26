@@ -232,6 +232,24 @@ inline Reorientation compose(Reorientation const a, Reorientation const b) // fo
 
 inline double angle(V2 const v) { return atan2(v.x, v.y); }
 
+inline double cosAngle(V3 a, V3 b)
+{
+	return inner_prod(a, b) / norm2(a) / norm2(b);
+}
+
+
+inline double scalarProject(V3 a, V3 b)
+{
+	return norm2(a) * cosAngle(a, b);
+}
+
+inline double closest(V3 rayOrigin, V3 rayDir, V3 point)
+	// returns c such that rayOrigin+rayDir*c-point is minimal
+{
+	auto pointDir = point - rayOrigin;
+	return scalarProject(pointDir, rayDir) / norm2(rayDir);
+}
+
 }
 
 #endif

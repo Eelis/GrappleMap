@@ -25,6 +25,8 @@ SeqNum insert(Graph &, Sequence const &);
 optional<SeqNum> erase_sequence(Graph &, SeqNum);
 void split_at(Graph &, PositionInSequence);
 
+// first/last/next/prev
+
 inline PosNum last_pos(Graph const & g, SeqNum const s)
 {
 	return g[s].positions.size() - 1;
@@ -40,62 +42,25 @@ inline PositionInSequence last_pos_in(Graph const & g, SeqNum const s)
 	return {s, last_pos(g, s)};
 }
 
-inline map<NodeNum, std::pair<
-	vector<SeqNum>, // sequences that end at the node
-	vector<SeqNum>>> // sequences that start at the node
-		nodes(Graph const & g)
+inline SegmentInSequence first_segment(SeqNum const s)
 {
-	map<NodeNum, std::pair<vector<SeqNum>, vector<SeqNum>>> m;
-
-	foreach(sn : seqnums(g))
-	{
-		m[g.to(sn).node].first.push_back(sn);
-		m[g.from(sn).node].second.push_back(sn);
-	}
-
-	return m;
+	return {s, 0};
 }
 
-inline vector<SeqNum> in(Graph const & g, NodeNum const n)
+inline SegmentInSequence last_segment(Graph const & g, SeqNum const s)
 {
-	vector<SeqNum> v;
-
-	foreach(sn : seqnums(g))
-		if (g.to(sn).node == n)
-			v.push_back(sn);
-
-	return v;
+	return {s, unsigned(g[s].positions.size() - 2)};
+		// e.g. 3 positions means 2 segments, so last segment index is 1
 }
 
-inline vector<SeqNum> out(Graph const & g, NodeNum const n)
+inline ReorientedSegment first_segment(ReorientedSequence const & s)
 {
-	vector<SeqNum> v;
-
-	foreach(sn : seqnums(g))
-		if (g.from(sn).node == n)
-			v.push_back(sn);
-
-	return v;
+	return {first_segment(s.sequence), s.reorientation};
 }
 
-inline bool operator==(Step const a, Step const b)
+inline ReorientedSegment last_segment(Graph const & g, ReorientedSequence const & s)
 {
-	return a.seq == b.seq && a.reverse == b.reverse;
-}
-
-inline bool operator<(Step const a, Step const b)
-{
-	return std::tie(a.seq, a.reverse) < std::tie(b.seq, b.reverse);
-}
-
-inline ReorientedNode const & from(Graph const & g, Step const s)
-{
-	return s.reverse ? g.to(s.seq) : g.from(s.seq);
-}
-
-inline ReorientedNode const & to(Graph const & g, Step const s)
-{
-	return s.reverse ? g.from(s.seq) : g.to(s.seq);
+	return {last_segment(g, s.sequence), s.reorientation};
 }
 
 inline optional<PositionInSequence> prev(PositionInSequence const pis)
@@ -109,6 +74,84 @@ inline optional<PositionInSequence> next(Graph const & g, PositionInSequence con
 	if (pis.position == last_pos(g, pis.sequence)) return none;
 	return PositionInSequence{pis.sequence, pis.position + 1};
 }
+
+inline SegmentInSequence prev(SegmentInSequence const s)
+{
+	assert(s.segment != 0);
+	return {s.sequence, s.segment - 1};
+}
+
+inline SegmentInSequence next(SegmentInSequence const s)
+{
+	return {s.sequence, s.segment + 1};
+}
+
+// in/out
+
+vector<SeqNum> in_sequences(Graph const &, NodeNum);
+vector<SeqNum> out_sequences(Graph const &, NodeNum);
+
+vector<ReorientedSegment> in_segments(Graph const &, ReorientedNode const &);
+vector<ReorientedSegment> out_segments(Graph const &, ReorientedNode const &);
+
+vector<ReorientedSequence> in_sequences(Graph const &, ReorientedNode const &);
+vector<ReorientedSequence> out_sequences(Graph const &, ReorientedNode const &);
+
+vector<Step> out_steps(Graph const &, NodeNum);
+vector<Step> in_steps(Graph const &, NodeNum);
+
+vector<Path> in_paths(Graph const &, NodeNum, unsigned size);
+vector<Path> out_paths(Graph const &, NodeNum, unsigned size);
+
+vector<std::pair<
+	vector<Step>, // sequences that end at the node
+	vector<Step>>> // sequences that start at the node
+		in_out(Graph const &);
+
+// comparison
+
+inline bool operator==(Step const a, Step const b)
+{
+	return a.seq == b.seq && a.reverse == b.reverse;
+}
+
+inline bool operator<(Step const a, Step const b)
+{
+	return std::tie(a.seq, a.reverse) < std::tie(b.seq, b.reverse);
+}
+
+// from/to
+
+inline ReorientedNode const & from(Graph const & g, Step const s)
+{
+	return s.reverse ? g.to(s.seq) : g.from(s.seq);
+}
+
+inline ReorientedNode const & to(Graph const & g, Step const s)
+{
+	return s.reverse ? g.from(s.seq) : g.to(s.seq);
+}
+
+inline ReorientedNode from(ReorientedSequence const & s, Graph const & g)
+{
+	ReorientedNode const & n = g.from(s.sequence);
+	return {n.node, compose(n.reorientation, s.reorientation)};
+}
+
+inline ReorientedNode to(ReorientedSequence const & s, Graph const & g)
+{
+	ReorientedNode const & n = g.to(s.sequence);
+	return {n.node, compose(n.reorientation, s.reorientation)};
+}
+
+// misc
+
+vector<ReorientedSegment> neighbours(ReorientedSegment const &, Graph const &, bool open);
+
+inline map<NodeNum, std::pair<
+	vector<SeqNum>, // sequences that end at the node
+	vector<SeqNum>>> // sequences that start at the node
+		nodes(Graph const &);
 
 inline optional<ReorientedNode> node(Graph const & g, PositionInSequence const pis)
 {
@@ -236,54 +279,24 @@ inline bool is_sweep(Graph const & g, SeqNum const s)
 	return g.from(s).reorientation.swap_players != g.to(s).reorientation.swap_players;
 }
 
-inline vector<Step> out_steps(Graph const & g, NodeNum const n)
+inline Position at(Location const & l, Graph const & g)
 {
-	vector<Step> v;
-
-	foreach(sn : seqnums(g))
-	{
-		if (g.from(sn).node == n)
-			v.push_back({sn, false});
-
-		if (is_bidirectional(g[sn]) && g.to(sn).node == n)
-			v.push_back({sn, true});
-	}
-
-	return v;
+	return between(g[from(l.segment)], g[to(l.segment)], l.howFar);
 }
 
-inline vector<Step> in_steps(Graph const & g, NodeNum const n)
+inline Position at(ReorientedLocation const & l, Graph const & g)
 {
-	vector<Step> v;
-
-	foreach(sn : seqnums(g))
-	{
-		if (g.to(sn).node == n)
-			v.push_back({sn, false});
-
-		if (is_bidirectional(g[sn]) && g.from(sn).node == n)
-			v.push_back({sn, true});
-	}
-
-	return v;
+	return l.reorientation(at(l.location, g));
 }
 
-vector<Path> in_paths(Graph const &, NodeNum, unsigned size);
-	// returns all possible paths of given size that end at given node
-vector<Path> out_paths(Graph const &, NodeNum, unsigned size);
-	// returns all possible paths of given size that start at given node
-
-inline vector<std::pair<
-	vector<Step>, // sequences that end at the node
-	vector<Step>>> // sequences that start at the node
-		in_out(Graph const & g)
+inline optional<PositionInSequence> position(Location const & l)
 {
-	vector<pair<vector<Step>, vector<Step>>> v;
+	if (l.howFar == 0)
+		return PositionInSequence{l.segment.sequence, l.segment.segment};
+	if (l.howFar == 1)
+		return PositionInSequence{l.segment.sequence, l.segment.segment+1};
 
-	foreach(n : nodenums(g))
-		v.emplace_back(in_steps(g, n), out_steps(g, n));
-
-	return v;
+	return boost::none;
 }
 
 }

@@ -1,33 +1,9 @@
 #ifndef GRAPPLEMAP_GRAPH_HPP
 #define GRAPPLEMAP_GRAPH_HPP
 
-#include "positions.hpp"
+#include "reoriented.hpp"
 
 namespace GrappleMap {
-
-struct NodeNum { uint16_t index; };
-
-inline NodeNum & operator++(NodeNum & n) { ++n.index; return n; }
-inline bool operator==(NodeNum const a, NodeNum const b) { return a.index == b.index; }
-inline bool operator!=(NodeNum const a, NodeNum const b) { return a.index != b.index; }
-inline bool operator<(NodeNum const a, NodeNum const b) { return a.index < b.index; }
-
-inline std::ostream & operator<<(std::ostream & o, NodeNum const n)
-{
-	return o << "node" << n.index;
-}
-
-struct ReorientedNode
-{
-	NodeNum node;
-	PositionReorientation reorientation;
-};
-
-struct ReorientedSequence
-{
-	SeqNum sequence;
-	PositionReorientation reorientation;
-};
 
 struct Graph
 {

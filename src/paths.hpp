@@ -18,6 +18,13 @@ namespace GrappleMap
 	vector<Path> paths_through(Graph const &, Step, unsigned in_size, unsigned out_size);
 
 	Frames demoFrames(Graph const &, Step, unsigned frames_per_pos);
+
+	inline vector<Position> no_titles(Frames const & f)
+	{
+		vector<Position> r;
+		foreach (x : f) r += x.second;
+		return r;
+	}
 }
 
 #endif

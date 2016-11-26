@@ -10,7 +10,6 @@ db
 editor
 - in edit mode, auto-hide limbs that obstruct the edited joint
 - make rotation commands rotate around center between players, not area center
-- vr headset support
 - editing selected joints as a group
 - add diagnostics for transitions or transition sequences that:
   * don't respect inertia
@@ -19,6 +18,11 @@ editor
   * move limbs through eachother
 - maybe visually indicate where a body's structural mechanics are weak, which directions it could be off-balanced, etc
 - more useful console output
+
+vr editor:
+- limb editing
+- figure out how to integrate in an environment that also has web browser, text editor, video player, ...
+- define tools properly
 
 playback:
 - make {pre,post}fix length for demo mode configurable

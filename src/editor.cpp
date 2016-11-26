@@ -111,7 +111,7 @@ struct Window
 		: filename(f), graph(loadGraph(filename))
 	{}
 
-	string filename;
+	string const filename;
 	Graph graph;
 	PositionInSequence location{{0}, 0};
 	PlayerJoint closest_joint = {0, LeftAnkle};
@@ -185,7 +185,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				{
 					NodeNum const n = w.graph.from(w.location.sequence).node;
 
-					vector<SeqNum> const v = out(w.graph, n);
+					vector<SeqNum> const v = out_sequences(w.graph, n);
 					if (v.empty()) return;
 					unsigned & an = w.anim_next[n];
 					an = (an == 0 ? v.size() - 1 : an - 1);
@@ -196,7 +196,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				{
 					NodeNum const n = w.graph.from(w.location.sequence).node;
 
-					vector<SeqNum> const v = out(w.graph, n);
+					vector<SeqNum> const v = out_sequences(w.graph, n);
 					if (!v.empty())
 						++w.anim_next[n] %= v.size();
 					return;
@@ -457,7 +457,7 @@ void forward(Window & w)
 			if (w.location == last_pos_in(w.graph, w.location.sequence))
 			{
 				auto const n = w.graph.to(w.location.sequence).node;
-				auto const v = out(w.graph, n);
+				auto const v = out_sequences(w.graph, n);
 
 				if (!v.empty())
 				{

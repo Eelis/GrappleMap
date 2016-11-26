@@ -170,13 +170,13 @@ namespace
 		html << "</ul><h2>Dead ends</h2><ul>";
 
 		foreach(n : nodenums(g))
-			if (out(g, n).empty())
+			if (out_sequences(g, n).empty())
 				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g[n])) << "</a></li>";
 
 		html << "</ul><h2>Dead starts</h2><ul>";
 
 		foreach(n : nodenums(g))
-			if (in(g, n).empty())
+			if (in_sequences(g, n).empty())
 				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g[n])) << "</a></li>";
 
 		html << "</ul><h2>Untagged positions</h2><ul>";
@@ -230,8 +230,8 @@ namespace
 			html
 				<< "<tr>"
 				<< "<td><a href='position/" << n.index << "n.html'>" << nlspace(desc(g[n])) << "</a></td>"
-				<< "<td>" << in(g, n).size() << "</td>"
-				<< "<td>" << out(g, n).size() << "</td>"
+				<< "<td>" << in_sequences(g, n).size() << "</td>"
+				<< "<td>" << out_sequences(g, n).size() << "</td>"
 				<< "<td>" << tags(g[n]).size() << "</td>"
 				<< "</tr>";
 

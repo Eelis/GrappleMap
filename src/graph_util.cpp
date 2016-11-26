@@ -386,4 +386,148 @@ vector<Path> out_paths(Graph const & g, NodeNum const node, unsigned size)
 	return r;
 }
 
+vector<SeqNum> in_sequences(Graph const & g, NodeNum const n) // todo: inefficient
+{
+	vector<SeqNum> v;
+
+	foreach(sn : seqnums(g))
+		if (g.to(sn).node == n)
+			v.push_back(sn);
+
+	return v;
+}
+
+vector<SeqNum> out_sequences(Graph const & g, NodeNum const n) // todo: inefficient
+{
+	vector<SeqNum> v;
+
+	foreach(sn : seqnums(g))
+		if (g.from(sn).node == n)
+			v.push_back(sn);
+
+	return v;
+}
+
+vector<Step> out_steps(Graph const & g, NodeNum const n)
+{
+	vector<Step> v;
+
+	foreach(sn : seqnums(g))
+	{
+		if (g.from(sn).node == n)
+			v.push_back({sn, false});
+
+		if (is_bidirectional(g[sn]) && g.to(sn).node == n)
+			v.push_back({sn, true});
+	}
+
+	return v;
+}
+
+vector<Step> in_steps(Graph const & g, NodeNum const n)
+{
+	vector<Step> v;
+
+	foreach(sn : seqnums(g))
+	{
+		if (g.to(sn).node == n)
+			v.push_back({sn, false});
+
+		if (is_bidirectional(g[sn]) && g.from(sn).node == n)
+			v.push_back({sn, true});
+	}
+
+	return v;
+}
+
+vector<std::pair<
+	vector<Step>, // sequences that end at the node
+	vector<Step>>> // sequences that start at the node
+		in_out(Graph const & g)
+{
+	vector<pair<vector<Step>, vector<Step>>> v;
+
+	foreach(n : nodenums(g))
+		v.emplace_back(in_steps(g, n), out_steps(g, n));
+
+	return v;
+}
+
+template<typename T, typename F>
+auto fmap(vector<T> const & v, F f) -> vector<typename std::result_of<F(T)>::type>
+{
+	vector<typename std::result_of<F(T)>::type> r;
+	r.reserve(v.size());
+	foreach (x : v) r.push_back(f(x));
+	return r;
+}
+
+vector<ReorientedSequence> in_sequences(Graph const & g, ReorientedNode const & n)
+{
+	return fmap(in_sequences(g, n.node), [&](SeqNum const s)
+		{ return ReorientedSequence
+			{s, compose(inverse(g.to(s).reorientation), n.reorientation)}; });
+}
+
+vector<ReorientedSegment> in_segments(Graph const & g, ReorientedNode const & n)
+{
+	return fmap(in_sequences(g, n), [&](ReorientedSequence const & s)
+		{ return last_segment(g, s); });
+}
+
+vector<ReorientedSequence> out_sequences(Graph const & g, ReorientedNode const & n)
+{
+	return fmap(out_sequences(g, n.node), [&](SeqNum const s)
+		{ return ReorientedSequence
+			{s, compose(inverse(g.from(s).reorientation), n.reorientation)}; });
+}
+
+vector<ReorientedSegment> out_segments(Graph const & g, ReorientedNode const & n)
+{
+	return fmap(out_sequences(g, n), [&](ReorientedSequence const & s)
+		{ return first_segment(s); });
+}
+
+vector<ReorientedSegment> segments_around(ReorientedNode const & n, Graph const & g)
+{
+	auto r = in_segments(g, n);
+	r += out_segments(g, n);
+	return r;
+}
+
+vector<ReorientedSegment> neighbours(
+	ReorientedSegment const & s, Graph const & g,
+	bool const open /* include segments in neighbouring segments */)
+{
+	vector<ReorientedSegment> n;
+
+	if (s.segment.segment != last_segment(g, s.segment.sequence).segment) // forward
+		n.push_back({next(s.segment), s.reorientation});
+	else if (open)
+		n += segments_around(to(sequence(s), g), g);
+
+	if (s.segment.segment != 0) // backward
+		n.push_back({prev(s.segment), s.reorientation});
+	else if (open)
+		n += segments_around(from(sequence(s), g), g);
+
+	return n;
+}
+
+map<NodeNum, std::pair<
+	vector<SeqNum>, // sequences that end at the node
+	vector<SeqNum>>> // sequences that start at the node
+		nodes(Graph const & g)
+{
+	map<NodeNum, std::pair<vector<SeqNum>, vector<SeqNum>>> m;
+
+	foreach(sn : seqnums(g))
+	{
+		m[g.to(sn).node].first.push_back(sn);
+		m[g.from(sn).node].second.push_back(sn);
+	}
+
+	return m;
+}
+
 }

@@ -147,6 +147,8 @@ public:
 	}
 };
 
+constexpr SeqNum PathFinder::begin_trans;
+
 /*
 Scene randomScene(Graph const & g, SeqNum const start, size_t const size)
 {

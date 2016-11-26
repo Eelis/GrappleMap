@@ -89,7 +89,7 @@ namespace
 	}
 
 	#ifndef NDEBUG
-	Position const testPos = decodePosition("QNaAvDERaAvTO1cNx2GIczysPQbDx6FJbyysRFaYEDEjaZE1MFdvAdI5dqAjMWl1CjHwlLBPOdhyCOFkhDByM8gPGOGegWFIMVhmHVGKg3GQNygSIZGkgwHTKGhkzmJ9mzCCJKoxEqHVazAXL7azAFIMaEEAMLaEEiIzbBDzMtbDDjEYfCHAOKfKH9HzbNMXK8bMMQGHkBMGL8kBMUFKf6LMOqgzMoEMgYHLNQg4H8EIhvGCOvhGHgFJh0FYN3hQF3JnfuOnJrloMrJznEKY");
+	//Position const testPos = decodePosition("QNaAvDERaAvTO1cNx2GIczysPQbDx6FJbyysRFaYEDEjaZE1MFdvAdI5dqAjMWl1CjHwlLBPOdhyCOFkhDByM8gPGOGegWFIMVhmHVGKg3GQNygSIZGkgwHTKGhkzmJ9mzCCJKoxEqHVazAXL7azAFIMaEEAMLaEEiIzbBDzMtbDDjEYfCHAOKfKH9HzbNMXK8bMMQGHkBMGL8kBMUFKf6LMOqgzMoEMgYHLNQg4H8EIhvGCOvhGHgFJh0FYN3hQF3JnfuOnJrloMrJznEKY");
 	#endif
 }
 
@@ -103,7 +103,7 @@ PositionReorientation inverse(PositionReorientation const x) // formalized
 		r.reorientation.offset.x = -r.reorientation.offset.x;
 	}
 
-	assert(basicallySame(r(x(testPos)), testPos));
+	//assert(basicallySame(r(x(testPos)), testPos));
 
 	return r;
 }
@@ -122,7 +122,7 @@ PositionReorientation compose(PositionReorientation const a, PositionReorientati
 
 	r = PositionReorientation{compose(a.reorientation, br), a.swap_players != b.swap_players, a.mirror != b.mirror};
 
-	assert(basicallySame(b(a(testPos)), r(testPos)));
+	//assert(basicallySame(b(a(testPos)), r(testPos)));
 
 	return r;
 }
@@ -152,7 +152,7 @@ Player spring(Player const & p, optional<Joint> fixed_joint)
 				return std::max(-.3, std::min(.3, distance / 3 + distance * distance * distance));
 			};
 
-		foreach (s : segments())
+		foreach (s : limbs())
 		{
 			if (s.ends[0] == j)
 			{
@@ -278,6 +278,20 @@ Position orient_canonically_without_mirror(Position const & p)
 Position orient_canonically_with_mirror(Position const & p)
 {
 	return canonical_reorientation_with_mirror(p)(p);
+}
+
+optional<PlayerJoint> closest_joint(Position const & p, V3 const v, double const max_dist)
+{
+	double d = max_dist * max_dist;
+	optional<PlayerJoint> r;
+
+	foreach(j : playerJoints)
+	{
+		double dd = distanceSquared(p[j], v);
+		if (dd < d) { r = j; d = dd; }
+	}
+
+	return r;
 }
 
 }

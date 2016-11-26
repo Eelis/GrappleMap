@@ -101,6 +101,32 @@ namespace GrappleMap
 		if (vm.count(name)) return vm[name].as<T>();
 		return optional<T>();
 	}
+
+	template<typename T>
+	bool elem(T const & x, vector<T> const & v)
+	{
+		return std::find(v.begin(), v.end(), x) != v.end();
+	}
+
+	template<typename K, typename V>
+	bool elem(K const & k, map<K, V> const & m)
+	{
+		return m.find(k) != m.end();
+	}
+
+	template<typename T>
+	vector<T> opt_as_vec(optional<T> const & o)
+	{
+		return o ? vector<T>{*o} : vector<T>{};
+	}
+
+	template<typename T>
+	vector<T> & operator+=(vector<T> & v, vector<T> const & w)
+	{
+		v.reserve(v.size() + w.size());
+		foreach (x : w) v.push_back(x);
+		return v;
+	}
 }
 
 #endif
