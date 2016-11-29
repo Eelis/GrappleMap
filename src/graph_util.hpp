@@ -291,11 +291,8 @@ inline Position at(ReorientedLocation const & l, Graph const & g)
 
 inline optional<PositionInSequence> position(Location const & l)
 {
-	if (l.howFar == 0)
-		return PositionInSequence{l.segment.sequence, l.segment.segment};
-	if (l.howFar == 1)
-		return PositionInSequence{l.segment.sequence, l.segment.segment+1};
-
+	if (l.howFar == 0) return from(l.segment);
+	if (l.howFar == 1) return to(l.segment);
 	return boost::none;
 }
 

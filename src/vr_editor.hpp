@@ -44,6 +44,7 @@ namespace GrappleMap
 		void on_mirror_button(Misc::CallbackData *);
 		void on_branch_button(Misc::CallbackData *);
 		void on_insert_keyframe_button(Misc::CallbackData *);
+		void on_delete_keyframe_button(Misc::CallbackData *);
 		void on_browse_toggle(GLMotif::ToggleButton::ValueChangedCallbackData *);
 
 		void push_undo() { undo.emplace(graph, location); }

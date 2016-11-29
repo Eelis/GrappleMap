@@ -67,6 +67,21 @@ namespace GrappleMap
 		calcViables();
 	}
 
+	void VrApp::on_delete_keyframe_button(Misc::CallbackData *)
+	{
+		if (optional<PositionInSequence> const p = position(location.location))
+		{
+			push_undo();
+
+			if (auto const new_pos = graph.erase(*p))
+			{
+				//todo: location.position = *new_pos;
+				calcViables();
+			}
+			else undo.pop();
+		}
+	}
+
 	void VrApp::on_undo_button(Misc::CallbackData *)
 	{
 		if (undo.empty()) return;
@@ -114,10 +129,7 @@ namespace GrappleMap
 	void VrApp::calcViables()
 	{
 		foreach (j : playerJoints)
-			viables[j] = determineViables(graph,
-				PositionInSequence{
-					location.location.segment.sequence,
-					location.location.segment.segment}, // todo: bad
+			viables[j] = determineViables(graph, from(location.location.segment), // todo: bad
 					j, !browseMode, nullptr, location.reorientation);
 	}
 
@@ -150,6 +162,7 @@ namespace GrappleMap
 		btn("Swap", &VrApp::on_swap_button);
 		btn("Save", &VrApp::on_save_button);
 		btn("Insert Keyframe", &VrApp::on_insert_keyframe_button);
+		btn("Delete Keyframe", &VrApp::on_delete_keyframe_button);
 
 		mainMenu->manageMenu();
 		Vrui::setMainMenu(mainMenu);
