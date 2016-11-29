@@ -79,6 +79,8 @@ public:
 	void clone(PositionInSequence);
 	optional<PosNum> erase(PositionInSequence); // invalidates posnums
 
+	void split_segment(Location);
+
 	void set(optional<SeqNum>, optional<Sequence>);
 		// no seqnum means insert
 		// no sequence means erase

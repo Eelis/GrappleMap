@@ -57,7 +57,14 @@ void Graph::replace(PositionInSequence const pis, Position const & p, bool const
 	std::cerr << "Replaced position " << pis << std::endl;
 }
 
-void Graph::clone(PositionInSequence const pis)
+void Graph::split_segment(Location const loc)
+{
+	auto & positions =  edges.at(loc.segment.sequence.index).sequence.positions;
+	Position const p = at(loc, *this);
+	positions.insert(positions.begin() + loc.segment.segment + 1, p);
+}
+
+void Graph::clone(PositionInSequence const pis) // todo: remove
 {
 	auto & positions =  edges.at(pis.sequence.index).sequence.positions;
 	Position const p = positions.at(pis.position);

@@ -58,7 +58,13 @@ namespace GrappleMap
 
 	void VrApp::on_insert_keyframe_button(Misc::CallbackData *)
 	{
-		
+		push_undo();
+
+		graph.split_segment(location.location);
+		location.location.segment.segment += 1;
+		location.location.howFar = 0;
+
+		calcViables();
 	}
 
 	void VrApp::on_undo_button(Misc::CallbackData *)
@@ -103,6 +109,16 @@ namespace GrappleMap
 	void VrApp::on_browse_toggle(GLMotif::ToggleButton::ValueChangedCallbackData * cb)
 	{
 		browseMode = cb->set;
+	}
+
+	void VrApp::calcViables()
+	{
+		foreach (j : playerJoints)
+			viables[j] = determineViables(graph,
+				PositionInSequence{
+					location.location.segment.sequence,
+					location.location.segment.segment}, // todo: bad
+					j, !browseMode, nullptr, location.reorientation);
 	}
 
 	VrApp::VrApp(int argc, char ** argv)

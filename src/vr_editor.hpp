@@ -47,6 +47,7 @@ namespace GrappleMap
 		void on_browse_toggle(GLMotif::ToggleButton::ValueChangedCallbackData *);
 
 		void push_undo() { undo.emplace(graph, location); }
+		void calcViables();
 
 		public:
 
@@ -78,14 +79,12 @@ namespace GrappleMap
 	{
 		VrApp & app;
 
-		void calcViables();
-
 		public:
 
 			BrowseTool(Vrui::DraggingTool & t, VrApp & a)
 				: Vrui::DraggingToolAdapter{&t}, app(a)
 			{
-				calcViables();
+				app.calcViables();
 			}
 		
 			void dragCallback(Vrui::DraggingTool::DragCallbackData *) override;

@@ -59,16 +59,6 @@ namespace GrappleMap
 				0.1);
 	}
 
-	void VrApp::BrowseTool::calcViables()
-	{
-		foreach (j : playerJoints)
-			app.viables[j] = determineViables(app.graph,
-				PositionInSequence{
-					app.location.location.segment.sequence,
-					app.location.location.segment.segment}, // todo: bad
-					j, !app.browseMode, nullptr, app.location.reorientation);
-	}
-
 	void VrApp::BrowseTool::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
 	{
 		if (app.browse_joint)
@@ -79,7 +69,7 @@ namespace GrappleMap
 					*app.browse_joint, app.browseMode))
 			{
 				if (l->location.segment != app.location.location.segment)
-					calcViables();
+					app.calcViables();
 
 				app.location = *l;
 			}
@@ -87,6 +77,10 @@ namespace GrappleMap
 
 	void VrApp::BrowseTool::dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *)
 	{
-		app.location.location.howFar = std::round(app.location.location.howFar);
+		double & c = app.location.location.howFar;
+
+		double const r = std::round(c);
+
+		if (std::abs(c - r) < 0.1) c = r;
 	}
 }
