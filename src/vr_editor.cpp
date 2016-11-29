@@ -185,14 +185,14 @@ namespace GrappleMap
 
 	void VrApp::display(GLContextData &) const
 	{
-		Position const reorientedPosition = at(location, graph);
-
-		Position posToDraw = reorientedPosition;
-
 		glEnable(GL_POINT_SMOOTH);
 
 		glPushMatrix();
-		renderScene(graph, posToDraw, viables, browse_joint, edit_joint, !browseMode, location.location.segment.sequence, style);
+		renderScene(
+			graph, at(location, graph),
+			viables, browse_joint, edit_joint,
+			!browseMode && position(location.location),
+			location.location.segment.sequence, style);
 		glPopMatrix();
 	}
 
