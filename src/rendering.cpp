@@ -72,47 +72,11 @@ namespace
 		}
 	}
 
-	void render(bool const viables, Position const & pos,
-		vector<PlayerJoint> const & highlight_joints,
-		optional<PlayerNum> const first_person_player, bool const edit_mode)
-	{
-		renderLimbs(pos, first_person_player);
-
-		// draw joints:
-
-		foreach (pj : playerJoints)
-		{
-			if (pj.player == first_person_player && pj.joint == Head) continue;
-
-			auto color = playerDefs[pj.player].color;
-			bool highlight = elem(pj, highlight_joints);
-			double extraBig = highlight ? 0.01 : 0.005;
-
-			if (edit_mode)
-				color = highlight ? yellow : white;
-			else if (!viables)
-				extraBig = 0;
-			else
-				color = highlight
-					? white * 0.7 + color * 0.3
-					: white * 0.4 + color * 0.6;
-
-			glColor(color);
-
-			static GLUquadricObj * Sphere = gluNewQuadric(); // todo: evil
-			glPushMatrix();
-				glTranslate(pos[pj]);
-				gluSphere(Sphere, jointDefs[pj.joint].radius + extraBig, 20, 20);
-			glPopMatrix();
-		}
-	}
-
 	void drawViables(Graph const & graph, Viables const & viable, PlayerJoint const j, SeqNum const current_sequence,
 		Camera const * camera, Style const & style, bool const edit_mode)
 	{
 		foreach (v : viable[j].viables)
 		{
-
 			if (v.second.end - v.second.begin < 1) continue;
 
 			auto const r = v.second.reorientation;
@@ -197,14 +161,10 @@ void grid(V3 const color, unsigned const size, unsigned const line_width)
 	glEnd();
 }
 
-void render(Viables const * const viables, Position const & pos,
+void renderJoints(Viables const * const viables, Position const & pos,
 	vector<PlayerJoint> const & highlight_joints,
 	optional<PlayerNum> const first_person_player, bool const edit_mode)
 {
-	renderLimbs(pos, first_person_player);
-
-	// draw joints:
-
 	foreach (pj : playerJoints)
 	{
 		if (pj.player == first_person_player && pj.joint == Head) continue;
@@ -230,6 +190,14 @@ void render(Viables const * const viables, Position const & pos,
 			gluSphere(Sphere, jointDefs[pj.joint].radius + extraBig, 20, 20);
 		glPopMatrix();
 	}
+}
+
+void render(Viables const * const viables, Position const & pos,
+	vector<PlayerJoint> const & highlight_joints,
+	optional<PlayerNum> const first_person_player, bool const edit_mode)
+{
+	renderLimbs(pos, first_person_player);
+	renderJoints(viables, pos, highlight_joints, first_person_player, edit_mode);
 }
 
 Style::Style()
@@ -332,8 +300,9 @@ void renderWindow(
 void renderScene(
 	Graph const & graph,
 	Position const & position,
-	optional<pair<PlayerJoint, VrViablesForJoint>> const & browse_joint,
-	optional<PlayerJoint> edit_joint,
+	PerPlayerJoint<ViablesForJoint> const & viables,
+	optional<PlayerJoint> const browse_joint,
+	optional<PlayerJoint> const edit_joint,
 	bool const edit_mode,
 	SeqNum const current_sequence,
 	Style const & style)
@@ -345,21 +314,21 @@ void renderScene(
 	grid(style.grid_color, style.grid_size, style.grid_line_width);
 
 	vector<PlayerJoint> hl;
-	if (browse_joint) hl.push_back(browse_joint->first);
+	if (browse_joint) hl.push_back(*browse_joint);
 	if (edit_joint) hl.push_back(*edit_joint);
 
-	render(browse_joint ? &browse_joint->second : nullptr, position, hl, {}, edit_mode);
+	render(&viables, position, hl, {}, edit_mode);
 
 	if (browse_joint)
 	{
-		auto const j = browse_joint->first;
+		auto const j = *browse_joint;
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glLineWidth(4);
 		glNormal3d(0, 1, 0);
 
-		foreach (v : browse_joint->second)
+		foreach (v : viables[j].viables)
 		{
 			if (v.second.end - v.second.begin < 1) continue;
 
@@ -392,7 +361,7 @@ void renderScene(
 		glColor(white);
 
 		glBegin(GL_POINTS);
-		glVertex(position[browse_joint->first]);
+		glVertex(position[j]);
 		glEnd();
 	}
 }

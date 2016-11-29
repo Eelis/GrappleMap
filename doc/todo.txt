@@ -23,11 +23,17 @@ vr editor:
 - limb editing
 - figure out how to integrate in an environment that also has web browser, text editor, video player, ...
 - define tools properly
+- don't snap joints to cursor when editing them
+- make viables completely match actually browseable paths
+- position-in-sequence labels
 
 playback:
 - make {pre,post}fix length for demo mode configurable
 - experiment with alternative ways to smooth animation, e.g. bezier curves. this should especially
   reduce the corner cutting of the current drag-based smoothing
+
+vr playback:
+- first person view
 
 position pages:
 - find a better tool/library for generating gifs (need more speed and compression) (Magick++ seems worth a try even though it's also ImageMagick..)

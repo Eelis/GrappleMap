@@ -245,6 +245,13 @@ inline std::ostream & operator<<(std::ostream & o, NodeNum const n)
 	return o << "node" << n.index;
 }
 
+inline bool operator==(SegmentInSequence const a, SegmentInSequence const b)
+{
+	return a.sequence == b.sequence && a.segment == b.segment;;
+}
+
+inline bool operator!=(SegmentInSequence const a, SegmentInSequence const b) { return !(a == b); }
+
 inline PositionInSequence from(SegmentInSequence const s) { return {s.sequence, s.segment}; }
 inline PositionInSequence to(SegmentInSequence const s) { return {s.sequence, s.segment+1}; }
 

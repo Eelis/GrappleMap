@@ -163,7 +163,7 @@ namespace GrappleMap
 		glEnable(GL_POINT_SMOOTH);
 
 		glPushMatrix();
-		renderScene(graph, posToDraw, browse_joint, edit_joint, true, location.location.segment.sequence, style);
+		renderScene(graph, posToDraw, viables, browse_joint, edit_joint, !browseMode, location.location.segment.sequence, style);
 		glPopMatrix();
 	}
 

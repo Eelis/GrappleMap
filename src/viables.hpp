@@ -13,7 +13,6 @@ namespace GrappleMap
 	{
 		SeqNum seqNum;
 		PositionReorientation reorientation;
-		double dist;
 		PosNum begin, end; // half-open range, never empty
 		V3 beginV3, endV3;
 		V2 beginxy, endxy;
@@ -30,22 +29,7 @@ namespace GrappleMap
 
 	ViablesForJoint determineViables(
 		Graph const &, PositionInSequence, PlayerJoint,
-		bool edit_mode, Camera const &, PositionReorientation);
-
-	struct VrViable
-	{
-		SeqNum seqNum;
-		PositionReorientation reorientation;
-		double dist;
-		PosNum begin, end; // half-open range, never empty
-		V3 beginV3, endV3;
-	};
-
-	using VrViablesForJoint = std::map<SeqNum, VrViable>;
-
-	VrViablesForJoint determineVrViables(
-		Graph const &, PositionInSequence, PlayerJoint,
-		bool edit_mode, PositionReorientation);
+		bool edit_mode, Camera const *, PositionReorientation);
 }
 
 #endif

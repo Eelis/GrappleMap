@@ -30,7 +30,8 @@ namespace GrappleMap
 		Style style;
 		optional<PlayerJoint> edit_joint;
 		ReorientedLocation location{{SegmentInSequence{{0}, 0}, 0}, {}};
-		optional<pair<PlayerJoint, VrViablesForJoint>> browse_joint;
+		Viables viables;
+		optional<PlayerJoint> browse_joint;
 		bool browseMode = false;
 		std::stack<std::pair<Graph, ReorientedLocation>> undo;
 
@@ -75,11 +76,15 @@ namespace GrappleMap
 	{
 		VrApp & app;
 
+		void calcViables();
+
 		public:
 
 			BrowseTool(Vrui::DraggingTool & t, VrApp & a)
 				: Vrui::DraggingToolAdapter{&t}, app(a)
-			{}
+			{
+				calcViables();
+			}
 		
 			void dragCallback(Vrui::DraggingTool::DragCallbackData *) override;
 			void dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *) override;

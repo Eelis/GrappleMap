@@ -52,23 +52,21 @@ namespace GrappleMap
 
 	void VrApp::BrowseTool::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
 	{
-		auto const cursor = v3(cbData->currentTransformation.getTranslation());
+		app.browse_joint =
+			closest_joint(
+				at(app.location, app.graph),
+				v3(cbData->currentTransformation.getTranslation()),
+				0.1);
+	}
 
-		Position const p = at(app.location, app.graph);
-
-		optional<PlayerJoint> const j = closest_joint(p, cursor, 0.1);
-
-		if (!j) { app.browse_joint = boost::none; return; }
-
-		if (app.browse_joint && app.browse_joint->first == j) return;
-
-		auto v = determineVrViables(app.graph,
-			PositionInSequence{
-				app.location.location.segment.sequence,
-				app.location.location.segment.segment}, // todo: bad
-				*j, true, app.location.reorientation);
-
-		app.browse_joint = std::make_pair(*j, v);
+	void VrApp::BrowseTool::calcViables()
+	{
+		foreach (j : playerJoints)
+			app.viables[j] = determineViables(app.graph,
+				PositionInSequence{
+					app.location.location.segment.sequence,
+					app.location.location.segment.segment}, // todo: bad
+					j, !app.browseMode, nullptr, app.location.reorientation);
 	}
 
 	void VrApp::BrowseTool::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
@@ -78,8 +76,13 @@ namespace GrappleMap
 					app.graph,
 					v3(cbData->currentTransformation.getTranslation()),
 					segment(app.location),
-				app.browse_joint->first, app.browseMode))
+					*app.browse_joint, app.browseMode))
+			{
+				if (l->location.segment != app.location.location.segment)
+					calcViables();
+
 				app.location = *l;
+			}
 	}
 
 	void VrApp::BrowseTool::dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *)

@@ -56,7 +56,8 @@ namespace GrappleMap
 		Style const &);
 
 	void renderScene(Graph const &, Position const &,
-		optional<pair<PlayerJoint, VrViablesForJoint>> const & browse_joint,
+		PerPlayerJoint<ViablesForJoint> const & viables,
+		optional<PlayerJoint> const browse_joint,
 		optional<PlayerJoint> edit_joint,
 		bool const edit_mode, SeqNum current_sequence, Style const &);
 
