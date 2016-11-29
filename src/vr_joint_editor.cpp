@@ -3,9 +3,14 @@
 
 namespace GrappleMap
 {
-	void VrApp::JointEditor::dragStartCallback(Vrui::DraggingTool::DragStartCallbackData *)
+	void VrApp::JointEditor::dragStartCallback(Vrui::DraggingTool::DragStartCallbackData * cb)
 	{
+		if (!app.edit_joint) return;
+
 		app.push_undo();
+
+		offset = v3(cb->startTransformation.getTranslation()) -
+			at(app.location, app.graph)[*app.edit_joint];
 	}
 
 	void VrApp::JointEditor::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
@@ -18,12 +23,12 @@ namespace GrappleMap
 
 	void VrApp::JointEditor::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
 	{
-		if (!app.edit_joint) return;
+		if (!app.edit_joint || !offset) return;
 		
-		if (auto const pp = position(app.location.location))
+		if (optional<PositionInSequence> const pp = position(app.location.location))
 		{
 			Position new_pos = at(app.location, app.graph);
-			auto cv = v3(cbData->currentTransformation.getTranslation());
+			auto cv = v3(cbData->currentTransformation.getTranslation()) - *offset;
 			cv.y = std::max(0., cv.y);
 			new_pos[*app.edit_joint] = cv;
 			spring(new_pos, *app.edit_joint);

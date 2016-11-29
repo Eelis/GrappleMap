@@ -61,6 +61,8 @@ namespace GrappleMap
 	{
 		VrApp & app;
 
+		optional<V3> offset;
+
 		public:
 
 			JointEditor(Vrui::DraggingTool & t, VrApp & a)

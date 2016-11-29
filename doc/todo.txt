@@ -23,7 +23,7 @@ vr editor:
 - limb editing
 - figure out how to integrate in an environment that also has web browser, text editor, video player, ...
 - define tools properly
-- don't snap joints to cursor when editing them
+- don't snap joints to cursor when browsing
 - make viables completely match actually browseable paths
 - position-in-sequence labels
 

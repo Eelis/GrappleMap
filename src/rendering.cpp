@@ -93,11 +93,15 @@ namespace
 			for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i], j));
 			glEnd();
 
-			glPointSize(20);
 			glBegin(GL_POINTS);
 			for (PosNum i = v.second.begin; i != v.second.end; ++i)
+			{
 				if (i == 0 || i == seq.size() - 1)
-					glVertex(apply(r, seq[i], j));
+					glPointSize(20);
+				else
+					glPointSize(10);
+				glVertex(apply(r, seq[i], j));
+			}
 			glEnd();
 
 			if (edit_mode && camera)
@@ -328,33 +332,7 @@ void renderScene(
 		glLineWidth(4);
 		glNormal3d(0, 1, 0);
 
-		foreach (v : viables[j].viables)
-		{
-			if (v.second.end - v.second.begin < 1) continue;
-
-			auto const r = v.second.reorientation;
-			auto & seq = graph[v.first].positions;
-
-			if (v.second.seqNum == current_sequence)
-				glColor4f(1, 1, 1, 0.6);
-			else
-				glColor4f(1, 1, 0, 0.3);
-
-			glDisable(GL_DEPTH_TEST);
-
-			glBegin(GL_LINE_STRIP);
-			for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i], j));
-			glEnd();
-
-			glPointSize(20);
-			glBegin(GL_POINTS);
-			for (PosNum i = v.second.begin; i != v.second.end; ++i)
-				if (i == 0 || i == seq.size() - 1)
-					glVertex(apply(r, seq[i], j));
-			glEnd();
-
-			glEnable(GL_DEPTH_TEST);
-		}
+		drawViables(graph, viables, j, current_sequence, nullptr, style, edit_mode);
 
 		glDisable(GL_DEPTH_TEST);
 		glPointSize(20);
