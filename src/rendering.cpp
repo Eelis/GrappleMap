@@ -73,8 +73,13 @@ namespace
 	}
 
 	void drawViables(Graph const & graph, Viables const & viable, PlayerJoint const j, SeqNum const current_sequence,
-		Camera const * camera, Style const & style, bool const edit_mode)
+		Camera const * camera, Style const & style)
 	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glLineWidth(4);
+		glNormal3d(0, 1, 0);
+
 		foreach (v : viable[j].viables)
 		{
 			if (v.second.end - v.second.begin < 1) continue;
@@ -93,34 +98,34 @@ namespace
 			for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i], j));
 			glEnd();
 
+			glPointSize(20);
 			glBegin(GL_POINTS);
 			for (PosNum i = v.second.begin; i != v.second.end; ++i)
-			{
 				if (i == 0 || i == seq.size() - 1)
-					glPointSize(20);
-				else
-					glPointSize(10);
-				glVertex(apply(r, seq[i], j));
-			}
+					glVertex(apply(r, seq[i], j));
 			glEnd();
 
-			if (edit_mode && camera)
+			if (v.second.seqNum == current_sequence)
 			{
 				#ifdef USE_FTGL
-					if (!style.font.Error() && v.second.seqNum == current_sequence)
-						for (PosNum i = v.second.begin + 1; i != v.second.end; ++i)
-							renderText(
-								style.font,
-								world2screen(*camera, apply(r, seq[i], j)),
-								to_string(i), white);
-				#else
+				if (camera && !style.font.Error())
+				{
+					for (PosNum i = v.second.begin + 1; i != v.second.end; ++i)
+						renderText(
+							style.font,
+							world2screen(*camera, apply(r, seq[i], j)),
+							to_string(i), white);
+				}
+				else
+				#endif
+				{
 					glPointSize(10);
 					glBegin(GL_POINTS);
 					for (PosNum i = v.second.begin; i != v.second.end; ++i)
 						if (i != 0 && i != seq.size() - 1)
 							glVertex(apply(r, seq[i], j));
 					glEnd();
-				#endif
+				}
 			}
 
 			glEnable(GL_DEPTH_TEST);
@@ -284,11 +289,7 @@ void renderWindow(
 
 		if (viables && highlight_joint)
 		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glLineWidth(4);
-			glNormal3d(0, 1, 0);
-			drawViables(graph, *viables, *highlight_joint, current_sequence, &camera, style, edit_mode);
+			drawViables(graph, *viables, *highlight_joint, current_sequence, &camera, style);
 
 			glDisable(GL_DEPTH_TEST);
 			glPointSize(20);
@@ -323,16 +324,26 @@ void renderScene(
 
 	render(&viables, position, hl, {}, edit_mode);
 
+	if (edit_joint)
+	{
+		auto const j = *edit_joint;
+
+		drawViables(graph, viables, j, current_sequence, nullptr, style);
+
+		glDisable(GL_DEPTH_TEST);
+		glPointSize(20);
+		glColor(white);
+
+		glBegin(GL_POINTS);
+		glVertex(position[j]);
+		glEnd();
+	}
+
 	if (browse_joint)
 	{
 		auto const j = *browse_joint;
 
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glLineWidth(4);
-		glNormal3d(0, 1, 0);
-
-		drawViables(graph, viables, j, current_sequence, nullptr, style, edit_mode);
+		drawViables(graph, viables, j, current_sequence, nullptr, style);
 
 		glDisable(GL_DEPTH_TEST);
 		glPointSize(20);
