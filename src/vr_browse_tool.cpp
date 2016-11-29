@@ -82,6 +82,6 @@ namespace GrappleMap
 
 		double const r = std::round(c);
 
-		if (std::abs(c - r) < 0.1) c = r;
+		if (std::abs(c - r) < 0.2) c = r;
 	}
 }
