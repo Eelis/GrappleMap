@@ -52,11 +52,12 @@ namespace GrappleMap
 
 	void VrApp::BrowseTool::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
 	{
-		app.browse_joint =
-			closest_joint(
+		if (auto cj = closest_joint(
 				at(app.location, app.graph),
 				v3(cbData->currentTransformation.getTranslation()),
-				0.1);
+				0.1))
+			if (jointDefs[cj->joint].draggable)
+				app.browse_joint = *cj;
 	}
 
 	void VrApp::BrowseTool::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
@@ -66,7 +67,7 @@ namespace GrappleMap
 					app.graph,
 					v3(cbData->currentTransformation.getTranslation()),
 					segment(app.location),
-					*app.browse_joint, app.browseMode))
+					*app.browse_joint, !app.lockToTransition))
 			{
 				if (l->location.segment != app.location.location.segment)
 					app.calcViables();

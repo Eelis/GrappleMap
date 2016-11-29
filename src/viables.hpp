@@ -29,7 +29,7 @@ namespace GrappleMap
 
 	ViablesForJoint determineViables(
 		Graph const &, PositionInSequence, PlayerJoint,
-		bool edit_mode, Camera const *, PositionReorientation);
+		Camera const *, PositionReorientation);
 }
 
 #endif

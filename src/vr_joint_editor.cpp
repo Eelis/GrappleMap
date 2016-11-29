@@ -23,7 +23,7 @@ namespace GrappleMap
 
 	void VrApp::JointEditor::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
 	{
-		if (!app.edit_joint || !offset || app.browseMode) return;
+		if (!app.edit_joint || !offset) return;
 		
 		if (optional<PositionInSequence> const pp = position(app.location.location))
 		{

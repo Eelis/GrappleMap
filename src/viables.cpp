@@ -158,14 +158,12 @@ namespace
 
 ViablesForJoint determineViables
 	( Graph const & graph, PositionInSequence const from, PlayerJoint const j
-	, bool const edit_mode, Camera const * const camera, PositionReorientation const reo)
+	, Camera const * const camera, PositionReorientation const reo)
 {
 	ViablesForJoint r
 		{ 0
 		, std::map<SeqNum, Viable>{}
 		, std::vector<LineSegment>{} };
-
-	if (!edit_mode && !jointDefs[j.joint].draggable) return r;
 
 	auto const jp = apply(reo, graph[from], j);
 	auto const jpxy = camera ? world2xy(*camera, jp) : V2{0, 0};

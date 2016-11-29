@@ -121,16 +121,16 @@ namespace GrappleMap
 		}
 	}
 
-	void VrApp::on_browse_toggle(GLMotif::ToggleButton::ValueChangedCallbackData * cb)
+	void VrApp::on_lock_toggle(GLMotif::ToggleButton::ValueChangedCallbackData * cb)
 	{
-		browseMode = cb->set;
+		lockToTransition = cb->set;
 	}
 
 	void VrApp::calcViables()
 	{
 		foreach (j : playerJoints)
 			viables[j] = determineViables(graph, from(location.location.segment), // todo: bad
-					j, !browseMode, nullptr, location.reorientation);
+					j, nullptr, location.reorientation);
 	}
 
 	VrApp::VrApp(int argc, char ** argv)
@@ -153,8 +153,9 @@ namespace GrappleMap
 				p->getSelectCallbacks().add(this, h);
 			};
 
-		auto browseToggle = new GLMotif::ToggleButton("BrowseToggle", mainMenu, "Browse Mode");
-		browseToggle->getValueChangedCallbacks().add(this, &VrApp::on_browse_toggle);
+		auto lockToggle = new GLMotif::ToggleButton("TransitionLockToggle", mainMenu, "Lock to transition");
+		lockToggle->setToggle(lockToTransition);
+		lockToggle->getValueChangedCallbacks().add(this, &VrApp::on_lock_toggle);
 
 		btn("Undo", &VrApp::on_undo_button);
 		btn("Mirror", &VrApp::on_mirror_button);
@@ -191,7 +192,7 @@ namespace GrappleMap
 		renderScene(
 			graph, at(location, graph),
 			viables, browse_joint, edit_joint,
-			!browseMode && position(location.location),
+			bool(position(location.location)),
 			location.location.segment.sequence, style);
 		glPopMatrix();
 	}

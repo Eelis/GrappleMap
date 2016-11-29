@@ -32,7 +32,7 @@ namespace GrappleMap
 		ReorientedLocation location{{SegmentInSequence{{0}, 0}, 0}, {}};
 		Viables viables;
 		optional<PlayerJoint> browse_joint;
-		bool browseMode = false;
+		bool lockToTransition = true;
 		std::stack<std::pair<Graph, ReorientedLocation>> undo;
 
 		class JointEditor;
@@ -45,7 +45,7 @@ namespace GrappleMap
 		void on_branch_button(Misc::CallbackData *);
 		void on_insert_keyframe_button(Misc::CallbackData *);
 		void on_delete_keyframe_button(Misc::CallbackData *);
-		void on_browse_toggle(GLMotif::ToggleButton::ValueChangedCallbackData *);
+		void on_lock_toggle(GLMotif::ToggleButton::ValueChangedCallbackData *);
 
 		void push_undo() { undo.emplace(graph, location); }
 		void calcViables();

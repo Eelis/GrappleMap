@@ -638,7 +638,7 @@ int main(int const argc, char const * const * const argv)
 				w.camera.setViewportSize(v->fov, v->w * width, v->h * height);
 
 				foreach (j : playerJoints)
-					w.viable[j] = determineViables(w.graph, w.location, j, w.edit_mode, &w.camera, w.reorientation);
+					w.viable[j] = determineViables(w.graph, w.location, j, &w.camera, w.reorientation);
 
 				double xpos, ypos;
 				glfwGetCursorPos(window, &xpos, &ypos);
