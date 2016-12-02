@@ -3,20 +3,20 @@ import os
 env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3 -DUSE_FTGL')
 # env = Environment(CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -g')
 
-common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp'])
+common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp'])
 rendering = env.Object(['rendering.cpp', 'playerdrawer.cpp'])
 images = env.Object('images.cpp')
 cmdlibs = ['boost_program_options']
 guilibs = ['GL', 'GLU', 'glfw', 'ftgl'] + cmdlibs
 vruilibs = ["GL", "GLU", "ftgl", "Vrui.g++-3", "Geometry.g++-3", "GLSupport.g++-3", "Threads.g++-3", "Misc.g++-3", "GLMotif.g++-3"] + cmdlibs
 
-editor     = env.Program('grapplemap-editor', ['editor.cpp', rendering, common], LIBS=guilibs)
-vr_editor  = env.Program('grapplemap-vr-editor', ['vr_editor.cpp', 'vr_joint_editor.cpp', 'vr_browse_tool.cpp', rendering, common], LIBS=vruilibs)
-vr_playback  = env.Program('grapplemap-vr-playback', ['vr_playback.cpp', rendering, common], LIBS=vruilibs)
-playback   = env.Program('grapplemap-playback', ['glfw_playback.cpp', rendering, common], LIBS=guilibs)
-todot      = env.Program('grapplemap-todot', ['todot.cpp', common], LIBS=cmdlibs)
-dbtojs     = env.Program('grapplemap-dbtojs', ['dbtojs.cpp', common], LIBS=cmdlibs)
-mkpospages = env.Program('grapplemap-mkpospages', ['mkpospages.cpp', images, rendering, common],
+glfw_editor   = env.Program('grapplemap-glfw-editor', ['glfw_editor.cpp', rendering, common], LIBS=guilibs)
+vr_editor     = env.Program('grapplemap-vr-editor', ['vr_editor.cpp', 'vr_joint_editor.cpp', 'vr_browse_tool.cpp', rendering, common], LIBS=vruilibs)
+glfw_playback = env.Program('grapplemap-glfw-playback', ['glfw_playback.cpp', rendering, common], LIBS=guilibs)
+vr_playback   = env.Program('grapplemap-vr-playback', ['vr_playback.cpp', rendering, common], LIBS=vruilibs)
+todot         = env.Program('grapplemap-todot', ['todot.cpp', common], LIBS=cmdlibs)
+dbtojs        = env.Program('grapplemap-dbtojs', ['dbtojs.cpp', common], LIBS=cmdlibs)
+mkpospages    = env.Program('grapplemap-mkpospages', ['mkpospages.cpp', images, rendering, common],
 				LIBS = ['OSMesa', 'GLU', 'ftgl', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system'])
 mkvid      =env.Program('grapplemap-mkvid', ['makevideo.cpp', images, rendering, common],
 				LIBS = ['OSMesa', 'GLU', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system', 'ftgl'])

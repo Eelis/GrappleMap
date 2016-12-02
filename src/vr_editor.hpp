@@ -14,10 +14,7 @@
 #include <Vrui/DraggingToolAdapter.h>
 #include <GLMotif/ToggleButton.h>
 #include <Misc/CallbackList.h>
-#include <stack>
-#include "persistence.hpp"
-#include "positions.hpp"
-#include "viables.hpp"
+#include "editor.hpp"
 #include "rendering.hpp"
 
 namespace GrappleMap
@@ -25,21 +22,9 @@ namespace GrappleMap
 	class VrApp: public Vrui::Application
 	{
 		boost::program_options::variables_map programOptions;
-		string const dbFile;
-		Graph graph;
+		Editor editor;
 		Style style;
-		optional<PlayerJoint> edit_joint;
-		ReorientedLocation location{{SegmentInSequence{{0}, 0}, 0}, {}};
-		Viables viables;
-		optional<PlayerJoint> browse_joint;
-		bool lockToTransition = true;
-		std::stack<std::pair<Graph, ReorientedLocation>> undo;
-		optional<ReorientedLocation> playbackLoc;
 		PlayerDrawer playerDrawer;
-		Selection selection;
-
-		class JointEditor;
-		class BrowseTool;
 
 		void on_save_button(Misc::CallbackData *);
 		void on_undo_button(Misc::CallbackData *);
@@ -52,9 +37,6 @@ namespace GrappleMap
 		void on_lock_toggle(GLMotif::ToggleButton::ValueChangedCallbackData *);
 		void on_playback_toggle(GLMotif::ToggleButton::ValueChangedCallbackData *);
 
-		void push_undo() { undo.emplace(graph, location); }
-		void calcViables();
-
 		public:
 
 			VrApp(int argc, char ** argv);
@@ -65,16 +47,15 @@ namespace GrappleMap
 			void toolCreationCallback(Vrui::ToolManager::ToolCreationCallbackData *) override;
 	};
 
-	class VrApp::JointEditor: public Vrui::DraggingToolAdapter
+	class JointEditor: public Vrui::DraggingToolAdapter
 	{
-		VrApp & app;
-
+		Editor & editor;
 		optional<V3> offset;
 
 		public:
 
-			JointEditor(Vrui::DraggingTool & t, VrApp & a)
-				: Vrui::DraggingToolAdapter{&t}, app(a)
+			JointEditor(Vrui::DraggingTool & t, Editor & e)
+				: Vrui::DraggingToolAdapter{&t}, editor(e)
 			{}
 		
 			void dragStartCallback(Vrui::DraggingTool::DragStartCallbackData *) override;
@@ -82,16 +63,16 @@ namespace GrappleMap
 			void idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData *) override;
 	};
 
-	class VrApp::BrowseTool: public Vrui::DraggingToolAdapter
+	class BrowseTool: public Vrui::DraggingToolAdapter
 	{
-		VrApp & app;
+		Editor & editor;
 
 		public:
 
-			BrowseTool(Vrui::DraggingTool & t, VrApp & a)
-				: Vrui::DraggingToolAdapter{&t}, app(a)
+			BrowseTool(Vrui::DraggingTool & t, Editor & e)
+				: Vrui::DraggingToolAdapter{&t}, editor(e)
 			{
-				app.calcViables();
+				editor.calcViables();
 			}
 		
 			void dragCallback(Vrui::DraggingTool::DragCallbackData *) override;

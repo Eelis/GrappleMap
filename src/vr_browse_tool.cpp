@@ -52,44 +52,44 @@ namespace GrappleMap
 		}
 	}
 
-	void VrApp::BrowseTool::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
+	void BrowseTool::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
 	{
 		auto cj = closest_joint(
-			at(app.location, app.graph),
+			editor.current_position(),
 			v3(cbData->currentTransformation.getTranslation()),
 			0.1);
 
-		if (cj && /*jointDefs[cj->joint].draggable &&*/ app.viables[*cj].total_dist != 0)
-			app.browse_joint = *cj;
+		if (cj && /*jointDefs[cj->joint].draggable &&*/ editor.getViables()[*cj].total_dist != 0)
+			editor.browse_joint = *cj;
 		else
-			app.browse_joint = boost::none;
+			editor.browse_joint = boost::none;
 	}
 
-	void VrApp::BrowseTool::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
+	void BrowseTool::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
 	{
-		if (!app.browse_joint) return;
+		if (!editor.browse_joint) return;
 
 		Selection const
-			tempSel{sequence(segment(app.location))},
-			& sel = app.selection.empty() ? tempSel : app.selection;
+			tempSel{sequence(segment(editor.getLocation()))},
+			& sel = editor.getSelection().empty() ? tempSel : editor.getSelection();
 
 		if (auto l = closerLocation(
-				app.graph,
+				editor.getGraph(),
 				v3(cbData->currentTransformation.getTranslation()),
-				segment(app.location),
-				*app.browse_joint,
-				app.lockToTransition ? &sel : nullptr))
+				segment(editor.getLocation()),
+				*editor.browse_joint,
+				editor.lockToTransition ? &sel : nullptr))
 		{
-			if (l->location.segment != app.location.location.segment)
-				app.calcViables();
+			if (l->location.segment != editor.getLocation().location.segment)
+				editor.calcViables();
 
-			app.location = *l;
+			editor.location = *l;
 		}
 	}
 
-	void VrApp::BrowseTool::dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *)
+	void BrowseTool::dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *)
 	{
-		double & c = app.location.location.howFar;
+		double & c = editor.location.location.howFar;
 
 		double const r = std::round(c);
 

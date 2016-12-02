@@ -39,17 +39,6 @@ namespace GrappleMap
 		Style();
 	};
 
-	using Selection = std::deque<ReorientedSequence>;
-
-	inline bool elem(SeqNum const & n, Selection const & s)
-	{
-		return std::any_of(s.begin(), s.end(),
-			[&](ReorientedSequence const & x)
-			{
-				return x.sequence == n;
-			});
-	}
-
 	#ifdef USE_FTGL
 	void renderText(FTGLPixmapFont const &, V2 where, string const &, V3 color);
 	#endif

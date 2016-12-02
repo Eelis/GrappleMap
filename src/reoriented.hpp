@@ -17,6 +17,17 @@ namespace GrappleMap
 		PositionReorientation reorientation;
 	};
 
+	using Selection = std::deque<ReorientedSequence>;
+
+	inline bool elem(SeqNum const & n, Selection const & s)
+	{
+		return std::any_of(s.begin(), s.end(),
+			[&](ReorientedSequence const & x)
+			{
+				return x.sequence == n;
+			});
+	}
+
 	struct ReorientedLocation
 	{
 		Location location;

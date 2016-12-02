@@ -50,115 +50,29 @@ namespace GrappleMap
 		}
 	}
 
-	void VrApp::on_select_button(Misc::CallbackData *)
-	{
-		SeqNum const curseq = location.location.segment.sequence;
-
-		if (selection.empty()) selection.push_back({curseq, location.reorientation});
-		else if (selection.front().sequence == curseq) selection.pop_front();
-		else if (selection.back().sequence == curseq) selection.pop_back();
-		else if (!elem(curseq, selection))
-		{
-			if (graph.to(curseq).node == graph.from(selection.front().sequence).node)
-			{
-				selection.push_front(sequence(segment(location)));
-			}
-			else if (graph.from(curseq).node == graph.to(selection.back().sequence).node)
-			{
-				selection.push_back(sequence(segment(location)));
-			}
-
-//			else if (it's after a known one) push_back();
-		}
-
-		// todo: redraw
-	}
-
-	void VrApp::on_save_button(Misc::CallbackData *)
-	{
-		save(graph, dbFile);
-		std::cout << "Saved.\n";
-	}
-
-	void VrApp::on_insert_keyframe_button(Misc::CallbackData *)
-	{
-		push_undo();
-
-		graph.split_segment(location.location);
-		++location.location.segment.segment;
-		location.location.howFar = 0;
-
-		calcViables();
-	}
-
-	void VrApp::on_delete_keyframe_button(Misc::CallbackData *)
-	{
-		if (optional<PositionInSequence> const p = position(location.location))
-		{
-			push_undo();
-
-			if (auto const new_pos = graph.erase(*p))
-			{
-				//todo: location.position = *new_pos;
-				calcViables();
-			}
-			else undo.pop();
-		}
-	}
-
-	void VrApp::on_undo_button(Misc::CallbackData *)
-	{
-		if (undo.empty()) return;
-
-		std::tie(graph, location) = undo.top();
-		undo.pop();
-	}
-
-	void VrApp::on_mirror_button(Misc::CallbackData *)
-	{
-		location.reorientation.mirror = !location.reorientation.mirror;
-	}
-
-	void VrApp::on_swap_button(Misc::CallbackData *)
-	{
-		if (auto const pp = position(location.location))
-		{
-			push_undo();
-
-			auto p = graph[*pp];
-			swap_players(p);
-			graph.replace(*pp, p, true);
-		}
-	}
-
-	void VrApp::on_branch_button(Misc::CallbackData *)
-	{
-		if (auto const pp = position(location.location))
-		{
-			push_undo();
-
-			try { split_at(graph, *pp); }
-			catch (exception const & e)
-			{
-				cerr << "could not branch: " << e.what() << '\n';
-			}
-		}
-	}
+	void VrApp::on_select_button(Misc::CallbackData *) { editor.toggle_selected(); }
+	void VrApp::on_save_button(Misc::CallbackData *) { editor.save(); }
+	void VrApp::on_insert_keyframe_button(Misc::CallbackData *) { editor.insert_keyframe(); }
+	void VrApp::on_delete_keyframe_button(Misc::CallbackData *) { editor.delete_keyframe(); }
+	void VrApp::on_undo_button(Misc::CallbackData *) { editor.undo(); }
+	void VrApp::on_mirror_button(Misc::CallbackData *) { editor.mirror(); }
+	void VrApp::on_swap_button(Misc::CallbackData *) { editor.swap_players(); }
+	void VrApp::on_branch_button(Misc::CallbackData *) { editor.branch(); }
 
 	void VrApp::frame()
 	{
-		if (playbackLoc)
+		if (editor.playbackLoc)
 		{
-			auto & hf = playbackLoc->location.howFar;
+			auto & hf = editor.playbackLoc->location.howFar;
 			
 			hf += 0.03; // todo
 			if (hf > 1)
 			{
 				hf -= 1;
 
-				auto & seg = playbackLoc->location.segment;
+				auto & seg = editor.playbackLoc->location.segment;
 
-				if (seg == last_segment(graph, seg.sequence))
+				if (seg == last_segment(editor.getGraph(), seg.sequence))
 					seg.segment.index = 0;
 				else
 					++seg.segment;
@@ -170,38 +84,19 @@ namespace GrappleMap
 
 	void VrApp::on_lock_toggle(GLMotif::ToggleButton::ValueChangedCallbackData * cb)
 	{
-		lockToTransition = cb->set;
+		editor.toggle_lock(cb->set);
 	}
 
 	void VrApp::on_playback_toggle(GLMotif::ToggleButton::ValueChangedCallbackData *)
 	{
-		if (playbackLoc) playbackLoc = boost::none;
-		else
-		{
-			if (selection.empty()) selection = {sequence(segment(location))};
-
-			playbackLoc = from(first_segment(selection.front()));
-		}
-	}
-
-	void VrApp::calcViables()
-	{
-		foreach (j : playerJoints)
-			viables[j] = determineViables(graph, from(location.location.segment), // todo: bad
-					j, nullptr, location.reorientation);
+		editor.toggle_playback();
 	}
 
 	VrApp::VrApp(int argc, char ** argv)
 		: Vrui::Application(argc, argv)
 		, programOptions(getopts(argc, argv))
-		, dbFile(programOptions["db"].as<std::string>())
-		, graph{loadGraph(dbFile)}
+		, editor(programOptions)
 	{
-		if (auto start = posinseq_by_desc(graph, programOptions["start"].as<string>()))
-			location.location.segment = segment_from(*start);
-		else
-			throw std::runtime_error("no such position/transition");
-
 		style.grid_size = 20;
 
 		GLMotif::PopupMenu * mainMenu = new GLMotif::PopupMenu("MainMenu", Vrui::getWidgetManager());
@@ -214,7 +109,7 @@ namespace GrappleMap
 			};
 
 		auto lockToggle = new GLMotif::ToggleButton("TransitionLockToggle", mainMenu, "Lock");
-		lockToggle->setToggle(lockToTransition);
+		lockToggle->setToggle(editor.lockToTransition);
 		lockToggle->getValueChangedCallbacks().add(this, &VrApp::on_lock_toggle);
 
 		auto playbackToggle = new GLMotif::ToggleButton("PlaybackToggle", mainMenu, "Playback");
@@ -241,8 +136,8 @@ namespace GrappleMap
 		{
 			switch (tools_created++)
 			{
-				case 0: new BrowseTool(*tool, *this); break;
-				case 1: new JointEditor(*tool, *this); break;
+				case 0: new BrowseTool(*tool, editor); break;
+				case 1: new JointEditor(*tool, editor); break;
 					// todo: don't leak
 			}
 		}
@@ -252,17 +147,17 @@ namespace GrappleMap
 	{
 		glEnable(GL_POINT_SMOOTH); // todo: move
 
-		if (!playbackLoc)
+		if (!editor.playbackLoc)
 			renderScene(
-				graph, at(location, graph),
-				viables, browse_joint, edit_joint,
-				selection, style, playerDrawer);
+				editor.getGraph(), editor.current_position(),
+				editor.getViables(), editor.browse_joint, editor.edit_joint,
+				editor.getSelection(), style, playerDrawer);
 		else
 		{
 			glEnable(GL_COLOR_MATERIAL);
 			setupLights();
 			grid(style.grid_color, style.grid_size, style.grid_line_width);
-			playerDrawer.drawPlayers(at(*playbackLoc, graph), {}, {});
+			playerDrawer.drawPlayers(at(*editor.playbackLoc, editor.getGraph()), {}, {});
 		}
 	}
 
