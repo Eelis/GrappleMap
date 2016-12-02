@@ -18,6 +18,7 @@ namespace GrappleMap
 		vector<Position>::const_iterator currentFrame = frames.begin();
 		Style style;
 		ReorientedLocation location{{SegmentInSequence{{0}, 0}, 0}, {}};
+		PlayerDrawer playerDrawer;
 
 		void frame() override;
 		void display(GLContextData &) const override;
@@ -64,7 +65,10 @@ namespace GrappleMap
 
 		glPushMatrix();
 		grid(style.grid_color, style.grid_size, style.grid_line_width);
-		render(nullptr, *currentFrame, {}, {}, false);
+
+		PerPlayerJoint<optional<V3>> colors;
+
+		playerDrawer.drawPlayers(*currentFrame, colors, {});
 		glPopMatrix();
 	}
 

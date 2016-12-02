@@ -13,7 +13,7 @@ void Graph::changed(PositionInSequence const pis)
 {
 	Edge & edge = edges.at(pis.sequence.index);
 
-	if (pis.position == 0)
+	if (pis.position.index == 0)
 	{
 		auto const new_from = find_or_add(edge.sequence.positions.front());
 
@@ -35,7 +35,7 @@ void Graph::changed(PositionInSequence const pis)
 
 void Graph::replace(PositionInSequence const pis, Position const & p, bool const local)
 {
-	edges.at(pis.sequence.index).sequence.positions.at(pis.position) = p;
+	edges.at(pis.sequence.index).sequence.positions.at(pis.position.index) = p;
 
 	optional<ReorientedNode> const rn = node(*this, pis);
 	if (!local && rn)
@@ -61,14 +61,14 @@ void Graph::split_segment(Location const loc)
 {
 	auto & positions =  edges.at(loc.segment.sequence.index).sequence.positions;
 	Position const p = at(loc, *this);
-	positions.insert(positions.begin() + loc.segment.segment + 1, p);
+	positions.insert(positions.begin() + loc.segment.segment.index + 1, p);
 }
 
 void Graph::clone(PositionInSequence const pis) // todo: remove
 {
 	auto & positions =  edges.at(pis.sequence.index).sequence.positions;
-	Position const p = positions.at(pis.position);
-	positions.insert(positions.begin() + pis.position, p);
+	Position const p = positions.at(pis.position.index);
+	positions.insert(positions.begin() + pis.position.index, p);
 }
 
 void Graph::set(optional<SeqNum> const num, optional<Sequence> const seq)
@@ -100,9 +100,9 @@ optional<PosNum> Graph::erase(PositionInSequence const pis)
 		return none;
 	}
 
-	positions.erase(positions.begin() + pis.position);
+	positions.erase(positions.begin() + pis.position.index);
 
-	auto const pos = std::min(pis.position, last_pos(*this, pis.sequence));
+	auto const pos = std::min(pis.position, last_pos((*this)[pis.sequence]));
 
 	changed({pis.sequence, pos});
 

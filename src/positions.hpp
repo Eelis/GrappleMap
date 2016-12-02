@@ -32,13 +32,63 @@ char const * to_string(Joint);
 
 constexpr uint32_t joint_count = sizeof(joints) / sizeof(Joint);
 
-using PlayerNum = unsigned;
 
-inline array<PlayerNum, 2> playerNums() { return {0, 1}; }
 
-inline char playerCode(PlayerNum const p){ return "tb"[p]; }
+enum class Indexed { sequence, segment, node, position, player };
 
-inline PlayerNum opponent(PlayerNum const p) { return 1 - p; }
+template <Indexed, typename T>
+struct Index
+{
+	using underlying_type = T;
+	T index;
+};
+
+template <Indexed i, typename T>
+bool operator==(Index<i, T> a, Index<i, T> b) { return a.index == b.index; }
+
+template <Indexed i, typename T>
+bool operator!=(Index<i, T> a, Index<i, T> b) { return a.index != b.index; }
+
+template <Indexed i, typename T>
+bool operator<(Index<i, T> a, Index<i, T> b) { return a.index < b.index; }
+
+template <Indexed i, typename T>
+Index<i, T> & operator++(Index<i, T> & x)
+{ ++x.index; return x; }
+
+template <Indexed i, typename T>
+optional<Index<i, T>> prev(Index<i, T> x)
+{
+	if (x.index == 0) return boost::none;
+	return Index<i, T>{T(x.index - 1)};
+}
+
+template <Indexed i, typename T>
+Index<i, T> next(Index<i, T> x)
+{
+	return Index<i, T>{T(x.index + 1)};
+}
+
+template <Indexed i, typename T>
+std::ostream & operator<<(std::ostream & o, Index<i, T> const x)
+{
+	return o << x.index;
+}
+
+using SeqNum = Index<Indexed::sequence, uint_fast32_t>;
+using SegmentNum = Index<Indexed::segment, uint_fast8_t>;
+using NodeNum = Index<Indexed::node, uint16_t>;
+using PosNum = Index<Indexed::position, uint_fast8_t>;
+using PlayerNum = Index<Indexed::player, uint_fast8_t>;
+
+constexpr PlayerNum player0 = PlayerNum{0};
+constexpr PlayerNum player1 = PlayerNum{1};
+
+inline array<PlayerNum, 2> playerNums() { return {player0, player1}; }
+
+inline char playerCode(PlayerNum const p){ return "tb"[p.index]; }
+
+inline PlayerNum opponent(PlayerNum const p) { return {PlayerNum::underlying_type(1 - p.index)}; }
 
 struct PlayerJoint { PlayerNum player; Joint joint; };
 
@@ -49,10 +99,18 @@ inline bool operator==(PlayerJoint a, PlayerJoint b)
 
 inline std::ostream & operator<<(std::ostream & o, PlayerJoint const pj)
 {
-	return o << "player " << pj.player << "'s " << to_string(pj.joint);
+	return o << "player " << pj.player.index << "'s " << to_string(pj.joint);
 }
 
-template<typename T> using PerPlayer = array<T, 2>;
+template<typename T>
+struct PerPlayer
+{
+	array<T, 2> values;
+
+	T & operator[](PlayerNum n) { return values[n.index]; }
+	T const & operator[](PlayerNum n) const { return values[n.index]; }
+};
+
 template<typename T> using PerJoint = array<T, joint_count>;
 
 struct JointDef { Joint joint; double radius; bool draggable; };
@@ -94,8 +152,8 @@ struct PerPlayerJoint: PerPlayer<PerJoint<T>>
 {
 	using PerPlayer<PerJoint<T>>::operator[];
 
-	T & operator[](PlayerJoint i) { return this->operator[](i.player)[i.joint]; }
-	T const & operator[](PlayerJoint i) const { return operator[](i.player)[i.joint]; }
+	T & operator[](PlayerJoint i) { return (*this)[i.player][i.joint]; }
+	T const & operator[](PlayerJoint i) const { return (*this)[i.player][i.joint]; }
 };
 
 using Position = PerPlayerJoint<V3>;
@@ -105,11 +163,9 @@ struct Sequence
 	vector<string> description;
 	vector<Position> positions; // invariant: .size()>=2
 	optional<unsigned> line_nr;
+
+	Position const & operator[](PosNum const n) const { return positions[n.index]; }
 };
-
-using PosNum = unsigned;
-
-inline PosNum end(Sequence const & seq) { return seq.positions.size(); }
 
 extern array<PlayerJoint, joint_count * 2> const playerJoints;
 
@@ -133,44 +189,45 @@ extern PerPlayer<PlayerDef> const playerDefs;
 struct Limb
 {
 	array<Joint, 2> ends;
-	double length, midpointRadius; // in meters
+	double length;
+	optional<double> midpointRadius; // in meters
 	bool visible;
 };
 
 inline auto & limbs()
 {
 	static const Limb a[] =
-		{ {{LeftToe, LeftHeel}, 0.23, 0.025, true}
-		, {{LeftToe, LeftAnkle}, 0.18, 0.025, true}
-		, {{LeftHeel, LeftAnkle}, 0.09, 0.025, true}
-		, {{LeftAnkle, LeftKnee}, 0.43, 0.055, true}
-		, {{LeftKnee, LeftHip}, 0.43, 0.085, true}
-		, {{LeftHip, Core}, 0.27, 0.1, true}
-		, {{Core, LeftShoulder}, 0.37, 0.075, true}
-		, {{LeftShoulder, LeftElbow}, 0.29, 0.06, true}
-		, {{LeftElbow, LeftWrist}, 0.26, 0.03, true}
-		, {{LeftWrist, LeftHand}, 0.08, 0.02, true}
-		, {{LeftHand, LeftFingers}, 0.08, 0.02, true}
-		, {{LeftWrist, LeftFingers}, 0.14, 0.02, false}
+		{ {{LeftToe,      LeftHeel    }, 0.23, {},    true }
+		, {{LeftToe,      LeftAnkle   }, 0.18, {},    false}
+		, {{LeftHeel,     LeftAnkle   }, 0.09, {},    false}
+		, {{LeftAnkle,    LeftKnee    }, 0.43, 0.055, true }
+		, {{LeftKnee,     LeftHip     }, 0.43, 0.085, true }
+		, {{LeftHip,      Core        }, 0.27, {},    false}
+		, {{Core,         LeftShoulder}, 0.37, {},    false}
+		, {{LeftShoulder, LeftElbow   }, 0.29, 0.06,  true }
+		, {{LeftElbow,    LeftWrist   }, 0.26, 0.03,  true }
+		, {{LeftWrist,    LeftHand    }, 0.08, {},    true }
+		, {{LeftHand,     LeftFingers }, 0.08, {},    true }
+		, {{LeftWrist,    LeftFingers }, 0.14, {},    false}
 
-		, {{RightToe, RightHeel}, 0.23, 0.025, true}
-		, {{RightToe, RightAnkle}, 0.18, 0.025, true}
-		, {{RightHeel, RightAnkle}, 0.09, 0.025, true}
-		, {{RightAnkle, RightKnee}, 0.43, 0.055, true}
-		, {{RightKnee, RightHip}, 0.43, 0.085, true}
-		, {{RightHip, Core}, 0.27, 0.1, true}
-		, {{Core, RightShoulder}, 0.37, 0.075, true}
-		, {{RightShoulder, RightElbow}, 0.29, 0.06, true}
-		, {{RightElbow, RightWrist}, 0.27, 0.03, true}
-		, {{RightWrist, RightHand}, 0.08, 0.02, true}
-		, {{RightHand, RightFingers}, 0.08, 0.02, true}
-		, {{RightWrist, RightFingers}, 0.14, 0.02, false}
+		, {{RightToe,      RightHeel    }, 0.23, {},    true }
+		, {{RightToe,      RightAnkle   }, 0.18, {},    false}
+		, {{RightHeel,     RightAnkle   }, 0.09, {},    false}
+		, {{RightAnkle,    RightKnee    }, 0.43, 0.055, true }
+		, {{RightKnee,     RightHip     }, 0.43, 0.085, true }
+		, {{RightHip,      Core         }, 0.27, {},    false}
+		, {{Core,          RightShoulder}, 0.37, {},    false}
+		, {{RightShoulder, RightElbow   }, 0.29, 0.06,  true }
+		, {{RightElbow,    RightWrist   }, 0.27, 0.03,  true }
+		, {{RightWrist,    RightHand    }, 0.08, {},    true }
+		, {{RightHand,     RightFingers }, 0.08, {},    true }
+		, {{RightWrist,    RightFingers }, 0.14, {},    false}
 
 		//, {{LeftShoulder, RightShoulder}, 0.34, 0.1, false}
-		, {{LeftHip, RightHip}, 0.23, 0.1,  false}
+		, {{LeftHip, RightHip}, 0.23, {},  false}
 
-		, {{LeftShoulder, Neck}, 0.175, 0.065, true}
-		, {{RightShoulder, Neck}, 0.175, 0.065, true}
+		, {{LeftShoulder, Neck}, 0.175, {}, false}
+		, {{RightShoulder, Neck}, 0.175, {}, false}
 		, {{Neck, Head}, 0.165, 0.05, true}
 
 		};
@@ -208,13 +265,6 @@ bool basicallySame(Position const & a, Position const & b, A const & ... more)
 	return basicallySame(a, b) && basicallySame(b, more...);
 }
 
-struct SeqNum { unsigned index; };
-
-inline SeqNum & operator++(SeqNum & s) { ++s.index; return s; }
-inline bool operator==(SeqNum const a, SeqNum const b) { return a.index == b.index; }
-inline bool operator!=(SeqNum const a, SeqNum const b) { return a.index != b.index; }
-inline bool operator<(SeqNum const a, SeqNum const b) { return a.index < b.index; }
-
 struct PositionInSequence
 {
 	SeqNum sequence;
@@ -224,7 +274,7 @@ struct PositionInSequence
 struct SegmentInSequence
 {
 	SeqNum sequence;
-	unsigned segment;
+	SegmentNum segment;
 };
 
 struct Location
@@ -233,13 +283,6 @@ struct Location
 	double howFar; // [0..1] how far along segment
 };
 
-struct NodeNum { uint16_t index; };
-
-inline NodeNum & operator++(NodeNum & n) { ++n.index; return n; }
-inline bool operator==(NodeNum const a, NodeNum const b) { return a.index == b.index; }
-inline bool operator!=(NodeNum const a, NodeNum const b) { return a.index != b.index; }
-inline bool operator<(NodeNum const a, NodeNum const b) { return a.index < b.index; }
-
 inline std::ostream & operator<<(std::ostream & o, NodeNum const n)
 {
 	return o << "node" << n.index;
@@ -247,13 +290,10 @@ inline std::ostream & operator<<(std::ostream & o, NodeNum const n)
 
 inline bool operator==(SegmentInSequence const a, SegmentInSequence const b)
 {
-	return a.sequence == b.sequence && a.segment == b.segment;;
+	return a.sequence == b.sequence && a.segment == b.segment;
 }
 
 inline bool operator!=(SegmentInSequence const a, SegmentInSequence const b) { return !(a == b); }
-
-inline PositionInSequence from(SegmentInSequence const s) { return {s.sequence, s.segment}; }
-inline PositionInSequence to(SegmentInSequence const s) { return {s.sequence, s.segment+1}; }
 
 inline bool operator<(SegmentInSequence const a, SegmentInSequence const b)
 {
@@ -262,7 +302,7 @@ inline bool operator<(SegmentInSequence const a, SegmentInSequence const b)
 
 inline std::ostream & operator<<(std::ostream & o, PositionInSequence const pis)
 {
-	return o << "{" << pis.sequence.index << ", " << pis.position << "}";
+	return o << "{" << pis.sequence.index << ", " << pis.position.index << "}";
 }
 
 inline bool operator==(PositionInSequence const & a, PositionInSequence const & b)
@@ -283,7 +323,7 @@ inline Position apply(Reorientation const & r, Position p)
 
 inline void swap_players(Position & p)
 {
-	std::swap(p[0], p[1]);
+	std::swap(p[player0], p[player1]);
 }
 
 struct PositionReorientation
@@ -346,7 +386,7 @@ inline bool operator==(PositionReorientation const & a, PositionReorientation co
 
 inline V2 heading(Position const & p) // formalized
 {
-	return xz(p[1][Core] - p[0][Core]);
+	return xz(p[player1][Core] - p[player0][Core]);
 }
 
 inline double normalRotation(Position const & p) // formalized
@@ -356,7 +396,7 @@ inline double normalRotation(Position const & p) // formalized
 
 inline V2 center(Position const & p) // formalized
 {
-	return xz(between(p[0][Core], p[1][Core]));
+	return xz(between(p[player0][Core], p[player1][Core]));
 }
 
 template<typename F>
@@ -391,7 +431,7 @@ Position orient_canonically_with_mirror(Position const &);
 
 inline V3 cameraOffsetFor(Position const & p)
 {
-	V3 r = between(p[0][Core], p[1][Core]);
+	V3 r = between(p[player0][Core], p[player1][Core]);
 	r.y = std::max(0., r.y - .5);
 	return r;
 }

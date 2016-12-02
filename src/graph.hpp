@@ -50,7 +50,7 @@ public:
 
 	Position const & operator[](PositionInSequence const i) const
 	{
-		return (*this)[i.sequence].positions[i.position];
+		return (*this)[i.sequence][i.position];
 	}
 
 	Position operator[](ReorientedNode const & n) const

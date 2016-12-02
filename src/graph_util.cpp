@@ -85,8 +85,8 @@ void split_at(Graph & g, PositionInSequence const pis)
 
 	Sequence a = g[pis.sequence], b = a;
 	
-	a.positions.erase(a.positions.begin() + pis.position + 1, a.positions.end());
-	b.positions.erase(b.positions.begin(), b.positions.begin() + pis.position);
+	a.positions.erase(a.positions.begin() + pis.position.index + 1, a.positions.end());
+	b.positions.erase(b.positions.begin(), b.positions.begin() + pis.position.index);
 
 	g.set(pis.sequence, a);
 	g.set(none, b);
@@ -506,8 +506,8 @@ vector<ReorientedSegment> neighbours(
 	else if (open)
 		n += segments_around(to(sequence(s), g), g);
 
-	if (s.segment.segment != 0) // backward
-		n.push_back({prev(s.segment), s.reorientation});
+	if (auto x = prev(s.segment)) // backward
+		n.push_back({*x, s.reorientation});
 	else if (open)
 		n += segments_around(from(sequence(s), g), g);
 

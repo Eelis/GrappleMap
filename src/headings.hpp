@@ -26,7 +26,7 @@ namespace GrappleMap
 	{
 		char r;
 		if (view.heading) r = GrappleMap::code(*view.heading);
-		else if (view.player) r = (*view.player == 0 ? 't' : 'b');
+		else if (view.player) r = (view.player->index == 0 ? 't' : 'b');
 		else abort();
 		return view.mirror ? std::toupper(r) : r;
 	}

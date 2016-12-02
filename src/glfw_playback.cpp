@@ -46,6 +46,8 @@ namespace GrappleMap
 			camera.zoom(1.2);
 			camera.hardSetOffset(cameraOffsetFor(fr.front().second.front()));
 
+			PlayerDrawer playerDrawer;
+
 			string const separator = "      ";
 
 			for (auto i = fr.begin(); i != fr.end(); ++i)
@@ -94,7 +96,7 @@ namespace GrappleMap
 						none, // no highlighted joint
 						false, // not edit mode
 						0, bottom,
-						width, height, {0} /* todo */, style);
+						width, height, {}, style, playerDrawer);
 
 					/*
 					#ifdef USE_FTGL
@@ -130,8 +132,8 @@ namespace GrappleMap
 			foreach (x : frames)
 			foreach (p : x.second)
 			{
-				dump(f, p[0]);
-				dump(f, p[1]);
+				dump(f, p[player0]);
+				dump(f, p[player1]);
 				++n;
 			}
 

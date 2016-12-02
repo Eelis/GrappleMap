@@ -78,7 +78,7 @@ optional<NextPosition> determineNextPos(
 		{
 			if (other.sequence == from.sequence)
 			{
-				if (std::abs(int(other.position) - int(from.position)) != 1)
+				if (std::abs(int(other.position.index) - int(from.position.index)) != 1)
 					continue;
 			}
 			else
@@ -89,9 +89,9 @@ optional<NextPosition> determineNextPos(
 					auto const & e_from = graph.from(other.sequence);
 
 					if (!(current_node->node == e_to.node
-							&& other.position == last_pos(graph, other.sequence) - 1) &&
+							&& other.position == *prev(last_pos(graph[other.sequence]))) &&
 						!(current_node->node == e_from.node
-							&& other.position == 1))
+							&& other.position == PosNum{1}))
 						continue;
 				}
 				else continue;
@@ -113,8 +113,8 @@ struct Window
 
 	string const filename;
 	Graph graph;
-	PositionInSequence location{{0}, 0};
-	PlayerJoint closest_joint = {0, LeftAnkle};
+	PositionInSequence location{{0}, {0}};
+	PlayerJoint closest_joint = {{0}, LeftAnkle};
 	optional<PlayerJoint> chosen_joint;
 	bool edit_mode = false;
 	optional<Position> clipboard;
@@ -127,6 +127,7 @@ struct Window
 	double last_cursor_x = 0, last_cursor_y = 0;
 	std::stack<std::pair<Graph, PositionInSequence>> undo;
 	Style style;
+	PlayerDrawer playerDrawer;
 
 	std::map<NodeNum, unsigned> anim_next;
 		// the unsigned is an index into out(graph, n)
@@ -137,7 +138,7 @@ void print_status(Window const & w)
 	auto && seq = w.graph[w.location.sequence];
 
 	std::cout
-		<< "\r[" << w.location.position + 1
+		<< "\r[" << next(w.location.position)
 		<< '/' << seq.positions.size() << "] "
 		<< seq.description.front() << string(30, ' ') << std::flush;
 }
@@ -213,10 +214,10 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					break;
 
 				case GLFW_KEY_PAGE_UP:
-					if (w.location.sequence.index != 0)
+					if (auto x = prev(w.location.sequence))
 					{
-						--w.location.sequence.index;
-						w.location.position = 0;
+						w.location.sequence = *x;
+						w.location.position.index = 0;
 						w.reorientation = PositionReorientation();
 						print_status(w);
 					}
@@ -225,8 +226,8 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				case GLFW_KEY_PAGE_DOWN:
 					if (int32_t(w.location.sequence.index) != w.graph.num_sequences() - 1)
 					{
-						++w.location.sequence.index;
-						w.location.position = 0;
+						++w.location.sequence;
+						w.location.position.index = 0;
 						w.reorientation = PositionReorientation();
 						print_status(w);
 					}
@@ -238,7 +239,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				{
 					push_undo(w);
 					auto p = w.graph[w.location];
-					swap(p[0], p[1]);
+					swap_players(p);
 					w.graph.replace(w.location, p, true);
 					break;
 				}
@@ -330,7 +331,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					push_undo(w);
 					auto const p = w.graph[w.location];
 					w.location.sequence = insert(w.graph, Sequence{{"new"}, {p, p}, none});
-					w.location.position = 0;
+					w.location.position.index = 0;
 					break;
 				}
 				case GLFW_KEY_V: w.edit_mode = !w.edit_mode; break;
@@ -400,9 +401,9 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 
 	if (yoffset == -1)
 	{
-		if (w.location.position != 0)
+		if (auto pp = prev(w.location.position))
 		{
-			--w.location.position;
+			w.location.position = *pp;
 			w.next_pos = none;
 		}
 	}
@@ -423,8 +424,8 @@ std::vector<View> const
 		{ {0, 0, 1, 1, none, 90} },
 	split_view
 		{ {0, 0, .5, 1, none, 90}
-		, {.5, .5, .5, .5, optional<unsigned>(0), 75}
-		, {.5, 0, .5, .5, optional<unsigned>(1), 75} };
+		, {.5, .5, .5, .5, player0, 75}
+		, {.5, 0, .5, .5, player1, 75} };
 
 View const * main_view(std::vector<View> const & vv)
 {
@@ -477,7 +478,7 @@ void forward(Window & w)
 					w.next_pos = NextPosition{{next_seq, 1}, hf, r};
 				}
 			}
-			else w.next_pos = NextPosition{{w.location.sequence, w.location.position+1}, hf, {}};
+			else w.next_pos = NextPosition{{w.location.sequence, next(w.location.position)}, hf, {}};
 
 			print_status(w);
 		}
@@ -731,7 +732,7 @@ int main(int const argc, char const * const * const argv)
 						[&](PlayerJoint j) { return norm2(world2xy(w.camera, posToDraw[j]) - *cursor); });
 			}
 
-			auto const center = xz(posToDraw[0][Core] + posToDraw[1][Core]) / 2;
+			auto const center = xz(posToDraw[player0][Core] + posToDraw[player1][Core]) / 2;
 
 			w.camera.setOffset(center);
 
@@ -740,7 +741,7 @@ int main(int const argc, char const * const * const argv)
 			glfwGetFramebufferSize(window, &width, &height);
 			renderWindow(
 				views, &w.viable, w.graph, posToDraw, w.camera, special_joint,
-				w.edit_mode, 0, 0, width, height, w.location.sequence, w.style);
+				w.edit_mode, 0, 0, width, height, {} /* TODO w.location.sequence*/, w.style, w.playerDrawer);
 
 			glfwSwapBuffers(window);
 

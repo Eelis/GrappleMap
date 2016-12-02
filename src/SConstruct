@@ -3,8 +3,8 @@ import os
 env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3 -DUSE_FTGL')
 # env = Environment(CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -g')
 
-common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp'])
-rendering = env.Object('rendering.cpp')
+common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp'])
+rendering = env.Object(['rendering.cpp', 'playerdrawer.cpp'])
 images = env.Object('images.cpp')
 cmdlibs = ['boost_program_options']
 guilibs = ['GL', 'GLU', 'glfw', 'ftgl'] + cmdlibs

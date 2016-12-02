@@ -34,6 +34,9 @@ namespace GrappleMap
 		optional<PlayerJoint> browse_joint;
 		bool lockToTransition = true;
 		std::stack<std::pair<Graph, ReorientedLocation>> undo;
+		optional<ReorientedLocation> playbackLoc;
+		PlayerDrawer playerDrawer;
+		Selection selection;
 
 		class JointEditor;
 		class BrowseTool;
@@ -45,7 +48,9 @@ namespace GrappleMap
 		void on_branch_button(Misc::CallbackData *);
 		void on_insert_keyframe_button(Misc::CallbackData *);
 		void on_delete_keyframe_button(Misc::CallbackData *);
+		void on_select_button(Misc::CallbackData *);
 		void on_lock_toggle(GLMotif::ToggleButton::ValueChangedCallbackData *);
+		void on_playback_toggle(GLMotif::ToggleButton::ValueChangedCallbackData *);
 
 		void push_undo() { undo.emplace(graph, location); }
 		void calcViables();
@@ -54,6 +59,7 @@ namespace GrappleMap
 
 			VrApp(int argc, char ** argv);
 		
+			void frame() override;
 			void display(GLContextData &) const override;
 			void resetNavigation() override;
 			void toolCreationCallback(Vrui::ToolManager::ToolCreationCallbackData *) override;

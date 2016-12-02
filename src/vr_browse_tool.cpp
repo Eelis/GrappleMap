@@ -10,9 +10,9 @@ namespace GrappleMap
 			V3 const cursor,
 			ReorientedSegment const root,
 			PlayerJoint const j,
-			bool const open)
+			Selection const * const selection)
 		{
-			vector<ReorientedSegment> candidates = neighbours(root, g, open);
+			vector<ReorientedSegment> candidates = neighbours(root, g, true);
 
 			candidates.push_back(root);
 
@@ -21,6 +21,8 @@ namespace GrappleMap
 
 			foreach (cand : candidates)
 			{
+				if (selection && !elem(cand.segment.sequence, *selection)) continue;
+
 				V3 const
 					rayOrigin = at(from(cand), g)[j],
 					rayTarget = at(to(cand), g)[j],
@@ -52,28 +54,37 @@ namespace GrappleMap
 
 	void VrApp::BrowseTool::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
 	{
-		if (auto cj = closest_joint(
-				at(app.location, app.graph),
-				v3(cbData->currentTransformation.getTranslation()),
-				0.1))
-			if (jointDefs[cj->joint].draggable)
-				app.browse_joint = *cj;
+		auto cj = closest_joint(
+			at(app.location, app.graph),
+			v3(cbData->currentTransformation.getTranslation()),
+			0.1);
+
+		if (cj && /*jointDefs[cj->joint].draggable &&*/ app.viables[*cj].total_dist != 0)
+			app.browse_joint = *cj;
+		else
+			app.browse_joint = boost::none;
 	}
 
 	void VrApp::BrowseTool::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
 	{
-		if (app.browse_joint)
-			if (auto l = closerLocation(
-					app.graph,
-					v3(cbData->currentTransformation.getTranslation()),
-					segment(app.location),
-					*app.browse_joint, !app.lockToTransition))
-			{
-				if (l->location.segment != app.location.location.segment)
-					app.calcViables();
+		if (!app.browse_joint) return;
 
-				app.location = *l;
-			}
+		Selection const
+			tempSel{sequence(segment(app.location))},
+			& sel = app.selection.empty() ? tempSel : app.selection;
+
+		if (auto l = closerLocation(
+				app.graph,
+				v3(cbData->currentTransformation.getTranslation()),
+				segment(app.location),
+				*app.browse_joint,
+				app.lockToTransition ? &sel : nullptr))
+		{
+			if (l->location.segment != app.location.location.segment)
+				app.calcViables();
+
+			app.location = *l;
+		}
 	}
 
 	void VrApp::BrowseTool::dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *)

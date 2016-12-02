@@ -296,13 +296,13 @@ void tojs(Position const & p, std::ostream & js)
 {
 	js << '[';
 
-	for (int player = 0; player != 2; ++player)
+	foreach (n : playerNums())
 	{
 		js << '[';
 
 		foreach (j : joints)
 		{
-			tojs(p[player][j], js);
+			tojs(p[n][j], js);
 			js << ',';
 		}
 

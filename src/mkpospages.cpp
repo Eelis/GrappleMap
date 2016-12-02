@@ -412,8 +412,8 @@ namespace
 			char const player_code[2] = {'t', 'b'};
 
 			html
-				<< link(base + player_code[1 - *view.player] + ".html",
-					string("<span style='color:") + (*view.player == 0 ? "blue" : "red") + "'>☻</span>")
+				<< link(base + player_code[1 - view.player->index] + ".html",
+					string("<span style='color:") + (view.player->index == 0 ? "blue" : "red") + "'>☻</span>")
 				<< ' '
 				<< link(base + code(ImageView{!view.mirror, {}, view.player}) + ".html", "⇄")
 				<< ' '
@@ -424,7 +424,7 @@ namespace
 
 	double range(Position const & p)
 	{
-		return distanceSquared(p[0][Core], p[1][Core]);
+		return distanceSquared(p[player0][Core], p[player1][Core]);
 	}
 
 	void write_transition_gifs(ImageMaker const & mkimg, Graph const & g, string const output_dir)
@@ -441,7 +441,7 @@ namespace
 			auto frames = frames_for_sequence(g, sn);
 
 			if (g.from(sn).reorientation.swap_players)
-				foreach (p : frames)  std::swap(p[0], p[1]);
+				foreach (p : frames) swap_players(p);
 
 			auto const reo = canonical_reorientation_with_mirror(frames.front());
 
@@ -593,7 +593,9 @@ namespace
 		{
 			auto const pos_to_show = orient_canonically_with_mirror(ctx.graph[ctx.n].position);
 
-			double const ymax = std::max(.8, std::max(pos_to_show[0][Head].y, pos_to_show[1][Head].y));
+			double const ymax = std::max(.8, std::max(
+				pos_to_show[player0][Head].y,
+				pos_to_show[player1][Head].y));
 
 			ctx.mkimg.png(ctx.output_dir + "/images/", pos_to_show, ymax, ctx.view,
 				480, 360, ctx.mkimg.WhiteBg, 'p' + to_string(ctx.n.index));

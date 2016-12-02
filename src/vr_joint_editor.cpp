@@ -15,6 +15,12 @@ namespace GrappleMap
 
 	void VrApp::JointEditor::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
 	{
+		if (!position(app.location.location))
+		{
+			app.edit_joint = boost::none;
+			return;
+		}
+
 		app.edit_joint = closest_joint(
 			at(app.location, app.graph),
 			v3(cbData->currentTransformation.getTranslation()),

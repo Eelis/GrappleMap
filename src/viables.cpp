@@ -22,7 +22,7 @@ namespace
 		auto const & sequence = graph[seq];
 		auto const xyz = apply(r, sequence.positions.back(), j);
 		auto const xy = camera ? world2xy(*camera, xyz) : V2{0, 0};
-		return Viable{seq, r, end(sequence) - 1, end(sequence), xyz, xyz, xy, xy};
+		return Viable{seq, r, last_pos(sequence), end(sequence), xyz, xyz, xy, xy};
 	}
 
 	void extend_from(int depth, Graph const &, ReorientedNode, PlayerJoint, Camera const *, ViablesForJoint &);
@@ -32,9 +32,9 @@ namespace
 	{
 		auto const & sequence = graph[via.seqNum];
 
-		for (; via.end != sequence.positions.size(); ++via.end)
+		for (; via.end.index != sequence.positions.size(); ++via.end)
 		{
-			V3 const v = apply(via.reorientation, sequence.positions[via.end], j);
+			V3 const v = apply(via.reorientation, sequence[via.end], j);
 
 			if (distanceSquared(v, via.endV3) < 0.003) break;
 
@@ -56,7 +56,7 @@ namespace
 			via.endV3 = v;
 		}
 
-		if (via.end == sequence.positions.size())
+		if (via.end == end(sequence))
 		{
 			auto const & to = graph.to(via.seqNum);
 			ReorientedNode const n{to.node, compose(to.reorientation, via.reorientation)};
@@ -72,7 +72,7 @@ namespace
 	{
 		auto & sequence = graph[via.seqNum];
 
-		int pos = via.begin;
+		int pos = via.begin.index;
 		--pos;
 		for (; pos != -1; --pos)
 		{
@@ -98,9 +98,9 @@ namespace
 			via.beginV3 = v;
 		}
 
-		via.begin = pos + 1;
+		via.begin.index = pos + 1;
 
-		if (via.begin == 0)
+		if (via.begin.index == 0)
 		{
 			auto const & from = graph.from(via.seqNum);
 			ReorientedNode const n{from.node, compose(from.reorientation, via.reorientation)};
@@ -169,7 +169,7 @@ ViablesForJoint determineViables
 	auto const jpxy = camera ? world2xy(*camera, jp) : V2{0, 0};
 
 	auto & v = r.viables[from.sequence] =
-		Viable{from.sequence, reo, from.position, from.position + 1, jp, jp, jpxy, jpxy};
+		Viable{from.sequence, reo, from.position, next(from.position), jp, jp, jpxy, jpxy};
 	extend_forward(0, graph, v, j, camera, r);
 	extend_backward(0, graph, v, j, camera, r);
 

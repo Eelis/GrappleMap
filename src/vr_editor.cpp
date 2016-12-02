@@ -50,6 +50,30 @@ namespace GrappleMap
 		}
 	}
 
+	void VrApp::on_select_button(Misc::CallbackData *)
+	{
+		SeqNum const curseq = location.location.segment.sequence;
+
+		if (selection.empty()) selection.push_back({curseq, location.reorientation});
+		else if (selection.front().sequence == curseq) selection.pop_front();
+		else if (selection.back().sequence == curseq) selection.pop_back();
+		else if (!elem(curseq, selection))
+		{
+			if (graph.to(curseq).node == graph.from(selection.front().sequence).node)
+			{
+				selection.push_front(sequence(segment(location)));
+			}
+			else if (graph.from(curseq).node == graph.to(selection.back().sequence).node)
+			{
+				selection.push_back(sequence(segment(location)));
+			}
+
+//			else if (it's after a known one) push_back();
+		}
+
+		// todo: redraw
+	}
+
 	void VrApp::on_save_button(Misc::CallbackData *)
 	{
 		save(graph, dbFile);
@@ -61,7 +85,7 @@ namespace GrappleMap
 		push_undo();
 
 		graph.split_segment(location.location);
-		location.location.segment.segment += 1;
+		++location.location.segment.segment;
 		location.location.howFar = 0;
 
 		calcViables();
@@ -102,7 +126,7 @@ namespace GrappleMap
 			push_undo();
 
 			auto p = graph[*pp];
-			swap(p[0], p[1]);
+			swap_players(p);
 			graph.replace(*pp, p, true);
 		}
 	}
@@ -121,9 +145,43 @@ namespace GrappleMap
 		}
 	}
 
+	void VrApp::frame()
+	{
+		if (playbackLoc)
+		{
+			auto & hf = playbackLoc->location.howFar;
+			
+			hf += 0.03; // todo
+			if (hf > 1)
+			{
+				hf -= 1;
+
+				auto & seg = playbackLoc->location.segment;
+
+				if (seg == last_segment(graph, seg.sequence))
+					seg.segment.index = 0;
+				else
+					++seg.segment;
+			}
+
+			// Vrui::scheduleUpdate(Vrui::getNextAnimationTime()); // todo: what is this?
+		}
+	}
+
 	void VrApp::on_lock_toggle(GLMotif::ToggleButton::ValueChangedCallbackData * cb)
 	{
 		lockToTransition = cb->set;
+	}
+
+	void VrApp::on_playback_toggle(GLMotif::ToggleButton::ValueChangedCallbackData *)
+	{
+		if (playbackLoc) playbackLoc = boost::none;
+		else
+		{
+			if (selection.empty()) selection = {sequence(segment(location))};
+
+			playbackLoc = from(first_segment(selection.front()));
+		}
 	}
 
 	void VrApp::calcViables()
@@ -140,9 +198,11 @@ namespace GrappleMap
 		, graph{loadGraph(dbFile)}
 	{
 		if (auto start = posinseq_by_desc(graph, programOptions["start"].as<string>()))
-			location.location.segment = SegmentInSequence{start->sequence, start->position}; // bad
+			location.location.segment = segment_from(*start);
 		else
 			throw std::runtime_error("no such position/transition");
+
+		style.grid_size = 20;
 
 		GLMotif::PopupMenu * mainMenu = new GLMotif::PopupMenu("MainMenu", Vrui::getWidgetManager());
 		mainMenu->setTitle("GrappleMap");
@@ -153,9 +213,12 @@ namespace GrappleMap
 				p->getSelectCallbacks().add(this, h);
 			};
 
-		auto lockToggle = new GLMotif::ToggleButton("TransitionLockToggle", mainMenu, "Lock to transition");
+		auto lockToggle = new GLMotif::ToggleButton("TransitionLockToggle", mainMenu, "Lock");
 		lockToggle->setToggle(lockToTransition);
 		lockToggle->getValueChangedCallbacks().add(this, &VrApp::on_lock_toggle);
+
+		auto playbackToggle = new GLMotif::ToggleButton("PlaybackToggle", mainMenu, "Playback");
+		playbackToggle->getValueChangedCallbacks().add(this, &VrApp::on_playback_toggle);
 
 		btn("Undo", &VrApp::on_undo_button);
 		btn("Mirror", &VrApp::on_mirror_button);
@@ -164,6 +227,7 @@ namespace GrappleMap
 		btn("Save", &VrApp::on_save_button);
 		btn("Insert Keyframe", &VrApp::on_insert_keyframe_button);
 		btn("Delete Keyframe", &VrApp::on_delete_keyframe_button);
+		btn("Select/Unselect Transition", &VrApp::on_select_button);
 
 		mainMenu->manageMenu();
 		Vrui::setMainMenu(mainMenu);
@@ -186,22 +250,27 @@ namespace GrappleMap
 
 	void VrApp::display(GLContextData &) const
 	{
-		glEnable(GL_POINT_SMOOTH);
+		glEnable(GL_POINT_SMOOTH); // todo: move
 
-		glPushMatrix();
-		renderScene(
-			graph, at(location, graph),
-			viables, browse_joint, edit_joint,
-			bool(position(location.location)),
-			location.location.segment.sequence, style);
-		glPopMatrix();
+		if (!playbackLoc)
+			renderScene(
+				graph, at(location, graph),
+				viables, browse_joint, edit_joint,
+				selection, style, playerDrawer);
+		else
+		{
+			glEnable(GL_COLOR_MATERIAL);
+			setupLights();
+			grid(style.grid_color, style.grid_size, style.grid_line_width);
+			playerDrawer.drawPlayers(at(*playbackLoc, graph), {}, {});
+		}
 	}
 
 	void VrApp::resetNavigation()
 	{
 		Vrui::NavTransform t=Vrui::NavTransform::identity;
 		t *= Vrui::NavTransform::translateFromOriginTo(Vrui::getDisplayCenter());
-		t *= Vrui::NavTransform::scale(Vrui::getMeterFactor() /* * 0.18 */);
+		t *= Vrui::NavTransform::scale(Vrui::getMeterFactor());
 		Vrui::setNavigationTransformation(t);
 	}
 }

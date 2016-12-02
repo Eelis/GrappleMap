@@ -29,8 +29,11 @@ namespace GrappleMap
 
 namespace GrappleMap {
 
+auto hash_value(Position const & p) { return boost::hash_value(p.values); }
+
 namespace
 {
+
 	void make_gif(
 		string const output_dir,
 		string const filename,
@@ -90,6 +93,8 @@ void ImageMaker::png(
 	style.grid_color = bg_color * .8;
 	style.background_color = bg_color;
 
+	PlayerDrawer playerDrawer;
+
 	renderWindow(
 		view,
 		nullptr, // no viables
@@ -97,8 +102,8 @@ void ImageMaker::png(
 		none, // no highlighted joint
 		false, // not edit mode
 		0, 0, width*2, height*2,
-		{0},
-		style);
+		{},
+		style, playerDrawer);
 
 	glFlush();
 	glFinish();
@@ -158,6 +163,8 @@ void ImageMaker::png(
 	glClearAccum(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_ACCUM_BUFFER_BIT);
 
+	PlayerDrawer playerDrawer;
+
 	for (pair<Position, Camera> const * p = pos_b; p != pos_e; ++p)
 	{
 		renderWindow(
@@ -167,8 +174,8 @@ void ImageMaker::png(
 			none, // no highlighted joint
 			false, // not edit mode
 			0, 0, width*2, height*2,
-			{0},
-			style);
+			{},
+			style, playerDrawer);
 
 		glFinish();
 		glAccum(GL_ACCUM, 1. / (pos_e - pos_b));
@@ -229,7 +236,7 @@ string ImageMaker::png(
 	string const attrs = code(view) + to_string(width) + 'x' + to_string(height);
 
 	string filename =
-		to_string(boost::hash_value(pos))
+		to_string(hash_value(pos))
 		+ attrs
 		+ '-' + to_string(bg_color) + ".png";
 
@@ -267,7 +274,7 @@ string ImageMaker::rotation_gif(
 {
 	if (view.mirror) p = mirror(p);
 
-	string const base_filename = to_string(boost::hash_value(p)) + "rot" + to_string(bg_color);
+	string const base_filename = to_string(hash_value(p)) + "rot" + to_string(bg_color);
 	string const gif_filename = "store/" + base_filename + ".gif";
 
 	string const linkname =
@@ -275,7 +282,7 @@ string ImageMaker::rotation_gif(
 		to_string(width) + 'x' + to_string(height) +
 		'c' + to_string(bg_color) + ".gif";
 
-	double const ymax = std::max(.8, std::max(p[0][Head].y, p[1][Head].y));
+	double const ymax = std::max(.8, std::max(p[player0][Head].y, p[player1][Head].y));
 
 	make_gif(output_dir, gif_filename, 8, [&](string const gif_frames_dir)
 		{
@@ -315,7 +322,7 @@ string ImageMaker::gif(
 		{
 			vector<double> ymaxes;
 			foreach (pos : frames)
-				ymaxes.push_back(std::max(.8, std::max(pos[0][Head].y, pos[1][Head].y)));
+				ymaxes.push_back(std::max(.8, std::max(pos[player0][Head].y, pos[player1][Head].y)));
 			for (int i = 0; i != 10; ++i)
 				ymaxes = smoothen_v(ymaxes);
 
@@ -367,7 +374,7 @@ string ImageMaker::gifs(
 
 				vector<double> ymaxes;
 				foreach (pos : frames)
-					ymaxes.push_back(std::max(.8, std::max(pos[0][Head].y, pos[1][Head].y)));
+					ymaxes.push_back(std::max(.8, std::max(pos[player0][Head].y, pos[player1][Head].y)));
 				for (int i = 0; i != 10; ++i)
 					ymaxes = smoothen_v(ymaxes);
 

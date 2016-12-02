@@ -39,19 +39,9 @@ namespace GrappleMap
 		return {l.location.segment, l.reorientation};
 	}
 
-	inline ReorientedLocation from(ReorientedSegment const & s)
-	{
-		return {{s.segment, 0}, s.reorientation};
-	}
-
-	inline ReorientedLocation to(ReorientedSegment const & s)
-	{
-		return {{s.segment, 1}, s.reorientation};
-	}
-
 	inline ReorientedLocation loc(ReorientedSegment const & s, double const c)
 	{
-		return {Location{s.segment, c}, s.reorientation};
+		return {{s.segment, c}, s.reorientation};
 	}
 }
 

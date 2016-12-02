@@ -15,34 +15,6 @@ namespace
 	void glTranslate(V3 const & v) { ::glTranslated(v.x, v.y, v.z); }
 	void glColor(V3 v) { ::glColor3d(v.x, v.y, v.z); }
 
-	void pillar(V3 from, V3 to, double from_radius, double to_radius, unsigned faces)
-	{
-		V3 a = normalize(cross(to - from, V3{1,1,1} - from));
-		V3 b = normalize(cross(to - from, a));
-
-		double s = 2 * pi() / faces;
-
-		glBegin(GL_TRIANGLE_STRIP);
-
-		for (unsigned i = 0; i != faces; ++i)
-		{
-			glNormal(a * sin(i * s) + b * cos(i * s));
-			glVertex(from + a * from_radius * std::sin( i    * s) + b * from_radius * std::cos( i    * s));
-			glVertex(to   + a *   to_radius * std::sin( i    * s) + b *   to_radius * std::cos( i    * s));
-
-			glNormal(a * sin((i + 1) * s) + b * cos((i + 1) * s));
-			glVertex(from + a * from_radius * std::sin((i+1) * s) + b * from_radius * std::cos((i+1) * s));
-
-			glVertex(from + a * from_radius * std::sin((i+1) * s) + b * from_radius * std::cos((i+1) * s));
-			glVertex(to   + a *   to_radius * std::sin((i+1) * s) + b *   to_radius * std::cos((i+1) * s));
-
-			glNormal(a * sin(i * s) + b * cos(i * s));
-			glVertex(to   + a *   to_radius * std::sin( i    * s) + b *   to_radius * std::cos( i    * s));
-		}
-
-		glEnd();
-	}
-
 	void gluLookAt(V3 eye, V3 center, V3 up)
 	{
 		::gluLookAt(
@@ -51,28 +23,9 @@ namespace
 			up.x, up.y, up.z);
 	}
 
-	void renderLimbs(Position const & pos, optional<PlayerNum> const first_person_player)
-	{
-		for (PlayerNum p = 0; p != 2; ++p)
-		{
-			glColor(playerDefs[p].color);
-			Player const & player = pos[p];
-
-			foreach (l : limbs())
-				if (l.visible)
-				{
-					auto const a = l.ends[0], b = l.ends[1];
-
-					if (b == Head && p == first_person_player) continue;
-
-					auto mid = (player[a] + player[b]) / 2;
-					pillar(player[a], mid, jointDefs[a].radius, l.midpointRadius, 30);
-					pillar(mid, player[b], l.midpointRadius, jointDefs[b].radius, 30);
-				}
-		}
-	}
-
-	void drawViables(Graph const & graph, Viables const & viable, PlayerJoint const j, SeqNum const current_sequence,
+	void drawViables(
+		Graph const & graph, Viables const & viable, PlayerJoint const j,
+		std::deque<ReorientedSequence> const & selection,
 		Camera const * camera, Style const & style)
 	{
 		glEnable(GL_BLEND);
@@ -82,12 +35,12 @@ namespace
 
 		foreach (v : viable[j].viables)
 		{
-			if (v.second.end - v.second.begin < 1) continue;
+			if (v.second.end.index - v.second.begin.index < 1) continue;
 
 			auto const r = v.second.reorientation;
-			auto & seq = graph[v.first].positions;
+			auto & seq = graph[v.first];
 
-			if (v.second.seqNum == current_sequence)
+			if (elem(v.second.seqNum, selection))
 				glColor4f(1, 1, 1, 0.6);
 			else
 				glColor4f(1, 1, 0, 0.3);
@@ -101,20 +54,21 @@ namespace
 			glPointSize(20);
 			glBegin(GL_POINTS);
 			for (PosNum i = v.second.begin; i != v.second.end; ++i)
-				if (i == 0 || i == seq.size() - 1)
+				if (i.index == 0 || i.index == seq.positions.size() - 1)
 					glVertex(apply(r, seq[i], j));
+					// todo: this is silly
 			glEnd();
 
-			if (v.second.seqNum == current_sequence)
+			if (elem(v.second.seqNum, selection))
 			{
 				#ifdef USE_FTGL
 				if (camera && !style.font.Error())
 				{
-					for (PosNum i = v.second.begin + 1; i != v.second.end; ++i)
+					for (PosNum i = next(v.second.begin); i != v.second.end; ++i)
 						renderText(
 							style.font,
 							world2screen(*camera, apply(r, seq[i], j)),
-							to_string(i), white);
+							to_string(i.index), white);
 				}
 				else
 				#endif
@@ -122,7 +76,7 @@ namespace
 					glPointSize(10);
 					glBegin(GL_POINTS);
 					for (PosNum i = v.second.begin; i != v.second.end; ++i)
-						if (i != 0 && i != seq.size() - 1)
+						if (i.index != 0 && i.index != seq.positions.size() - 1)
 							glVertex(apply(r, seq[i], j));
 					glEnd();
 				}
@@ -170,45 +124,6 @@ void grid(V3 const color, unsigned const size, unsigned const line_width)
 	glEnd();
 }
 
-void renderJoints(Viables const * const viables, Position const & pos,
-	vector<PlayerJoint> const & highlight_joints,
-	optional<PlayerNum> const first_person_player, bool const edit_mode)
-{
-	foreach (pj : playerJoints)
-	{
-		if (pj.player == first_person_player && pj.joint == Head) continue;
-
-		auto color = playerDefs[pj.player].color;
-		bool highlight = elem(pj, highlight_joints);
-		double extraBig = highlight ? 0.01 : 0.005;
-
-		if (edit_mode)
-			color = highlight ? yellow : white;
-		else if (!viables || (*viables)[pj].total_dist == 0)
-			extraBig = 0;
-		else
-			color = highlight
-				? white * 0.7 + color * 0.3
-				: white * 0.4 + color * 0.6;
-
-		glColor(color);
-
-		static GLUquadricObj * Sphere = gluNewQuadric(); // todo: evil
-		glPushMatrix();
-			glTranslate(pos[pj]);
-			gluSphere(Sphere, jointDefs[pj.joint].radius + extraBig, 20, 20);
-		glPopMatrix();
-	}
-}
-
-void render(Viables const * const viables, Position const & pos,
-	vector<PlayerJoint> const & highlight_joints,
-	optional<PlayerNum> const first_person_player, bool const edit_mode)
-{
-	renderLimbs(pos, first_person_player);
-	renderJoints(viables, pos, highlight_joints, first_person_player, edit_mode);
-}
-
 Style::Style()
 {
 	#ifdef USE_FTGL
@@ -239,8 +154,9 @@ void renderWindow(
 	bool const edit_mode,
 	int const left, int const bottom,
 	int const width, int const height,
-	SeqNum const current_sequence,
-	Style const & style)
+	Selection const & selection,
+	Style const & style,
+	PlayerDrawer const & playerDrawer)
 {
 	glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_POINT_SMOOTH);
@@ -285,11 +201,12 @@ void renderWindow(
 		glEnable(GL_DEPTH_TEST);
 
 		grid(style.grid_color, style.grid_size, style.grid_line_width);
-		render(viables, position, opt_as_vec(highlight_joint), v.first_person, edit_mode);
+
+		//playerDrawer.drawPlayers(viables, position, opt_as_vec(highlight_joint), v.first_person, edit_mode);
 
 		if (viables && highlight_joint)
 		{
-			drawViables(graph, *viables, *highlight_joint, current_sequence, &camera, style);
+			drawViables(graph, *viables, *highlight_joint, selection, &camera, style);
 
 			glDisable(GL_DEPTH_TEST);
 			glPointSize(20);
@@ -308,9 +225,9 @@ void renderScene(
 	PerPlayerJoint<ViablesForJoint> const & viables,
 	optional<PlayerJoint> const browse_joint,
 	optional<PlayerJoint> const edit_joint,
-	bool const edit_mode,
-	SeqNum const current_sequence,
-	Style const & style)
+	std::deque<ReorientedSequence> const & selection,
+	Style const & style,
+	PlayerDrawer const & playerDrawer)
 {
 	glEnable(GL_COLOR_MATERIAL);
 
@@ -318,17 +235,24 @@ void renderScene(
 
 	grid(style.grid_color, style.grid_size, style.grid_line_width);
 
-	vector<PlayerJoint> hl;
-	if (browse_joint) hl.push_back(*browse_joint);
-	if (edit_joint) hl.push_back(*edit_joint);
+	{
+		PerPlayerJoint<optional<V3>> colors;
 
-	render(&viables, position, hl, {}, edit_mode);
+		foreach (j : playerJoints)
+			if (viables[j].total_dist != 0)
+				colors[j] = white * 0.4 + playerDefs[j.player].color * 0.6;
+
+		if (browse_joint) colors[*browse_joint] = V3{1, 1, 0};
+		if (edit_joint) colors[*edit_joint] = V3{0, 1, 0};
+
+		playerDrawer.drawPlayers(position, colors, {});
+	}
 
 	if (edit_joint)
 	{
 		auto const j = *edit_joint;
 
-		drawViables(graph, viables, j, current_sequence, nullptr, style);
+		drawViables(graph, viables, j, selection, nullptr, style);
 
 		glDisable(GL_DEPTH_TEST);
 		glPointSize(20);
@@ -343,7 +267,7 @@ void renderScene(
 	{
 		auto const j = *browse_joint;
 
-		drawViables(graph, viables, j, current_sequence, nullptr, style);
+		drawViables(graph, viables, j, selection, nullptr, style);
 
 		glDisable(GL_DEPTH_TEST);
 		glPointSize(20);

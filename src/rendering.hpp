@@ -4,6 +4,8 @@
 #include "math.hpp"
 #include "util.hpp"
 #include "viables.hpp"
+#include "playerdrawer.hpp"
+#include "reoriented.hpp"
 
 #ifdef USE_FTGL
 #include <FTGL/ftgl.h>
@@ -37,6 +39,17 @@ namespace GrappleMap
 		Style();
 	};
 
+	using Selection = std::deque<ReorientedSequence>;
+
+	inline bool elem(SeqNum const & n, Selection const & s)
+	{
+		return std::any_of(s.begin(), s.end(),
+			[&](ReorientedSequence const & x)
+			{
+				return x.sequence == n;
+			});
+	}
+
 	#ifdef USE_FTGL
 	void renderText(FTGLPixmapFont const &, V2 where, string const &, V3 color);
 	#endif
@@ -44,29 +57,26 @@ namespace GrappleMap
 	void setupLights();
 	void grid(V3 color, unsigned size = 2, unsigned line_width = 2);
 
-	void render(Viables const *, Position const &,
-		vector<PlayerJoint> const & highlight_joints,
-		optional<PlayerNum> first_person_player, bool edit_mode);
-
 	void renderWindow(vector<View> const &,
 		Viables const *, Graph const &, Position const &,
 		Camera, optional<PlayerJoint> highlight_joint, bool edit_mode,
 		int left, int bottom, int width, int height,
-		SeqNum current_sequence,
-		Style const &);
+		Selection const &,
+		Style const &, PlayerDrawer const &);
 
 	void renderScene(Graph const &, Position const &,
 		PerPlayerJoint<ViablesForJoint> const & viables,
 		optional<PlayerJoint> const browse_joint,
 		optional<PlayerJoint> edit_joint,
-		bool const edit_mode, SeqNum current_sequence, Style const &);
+		Selection const &, Style const &,
+		PlayerDrawer const &);
 
 	inline vector<View> third_person_windows_in_corner(double w, double h, double hborder, double vborder)
 	{
 		return
 			{ {0, 0, 1, 1, none, 50}
-			, {1-w-hborder, vborder, w, h, optional<unsigned>(0), 80}
-			, {hborder, vborder, w, h, optional<unsigned>(1), 80}
+			, {1-w-hborder, vborder, w, h, player0, 80}
+			, {hborder, vborder, w, h, player1, 80}
 			};
 	}
 }

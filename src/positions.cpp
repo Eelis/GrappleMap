@@ -66,9 +66,9 @@ inline array<PlayerJoint, joint_count * 2> make_playerJoints()
 {
 	array<PlayerJoint, joint_count * 2> r;
 	unsigned i = 0;
-	for (unsigned player = 0; player != 2; ++player)
+	foreach (n : playerNums())
 		foreach (j : joints)
-			r[i++] = {player, j};
+			r[i++] = {n, j};
 	return r;
 }
 
@@ -130,14 +130,14 @@ PositionReorientation compose(PositionReorientation const a, PositionReorientati
 Position mirror(Position p) // formalized
 {
 	foreach (j : playerJoints) p[j] = mirror(p[j]);
-	swapLimbs(p[0]);
-	swapLimbs(p[1]);
+	swapLimbs(p[player0]);
+	swapLimbs(p[player1]);
 	return p;
 }
 
 extern array<PlayerJoint, joint_count * 2> const playerJoints = make_playerJoints();
 
-extern PerPlayer<PlayerDef> const playerDefs = {{ {red}, {V3{0.15,0.15,1}} }};
+extern PerPlayer<PlayerDef> const playerDefs = {{{ {red}, {V3{0.15,0.15,1}} }}};
 
 Player spring(Player const & p, optional<Joint> fixed_joint)
 {
@@ -182,7 +182,7 @@ Player spring(Player const & p, optional<Joint> fixed_joint)
 
 void spring(Position & pos, optional<PlayerJoint> j)
 {
-	for (unsigned player = 0; player != 2; ++player)
+	foreach (player : playerNums())
 	{
 		optional<Joint> fixed_joint;
 		if (j && j->player == player) fixed_joint = j->joint;
@@ -195,10 +195,10 @@ namespace
 {
 	optional<Reorientation> is_reoriented_without_mirror_and_swap(Position const & a, Position const & b)
 	{
-		auto const a0h = a[0][Head];
-		auto const a1h = a[1][Head];
-		auto const b0h = b[0][Head];
-		auto const b1h = b[1][Head];
+		auto const a0h = a[player0][Head];
+		auto const a1h = a[player1][Head];
+		auto const b0h = b[player0][Head];
+		auto const b1h = b[player1][Head];
 
 		double const angleOff = angle(xz(b1h - b0h)) - angle(xz(a1h - a0h));
 
@@ -238,7 +238,7 @@ optional<PositionReorientation> is_reoriented(Position const & a, Position b)
 
 	if (!r)
 	{
-		std::swap(b[0], b[1]);
+		std::swap(b[player0], b[player1]);
 		r = is_reoriented_without_swap(a, b);
 		if (r) r->swap_players = true;
 	}
@@ -254,7 +254,7 @@ PositionReorientation canonical_reorientation_with_mirror(Position const & p) //
 	reo.reorientation.angle = normalRotation(p);
 	reo.reorientation.offset = normalTranslation(rotate(reo.reorientation.angle, p));
 	reo.swap_players = false;
-	reo.mirror = apply(reo.reorientation, p)[1][Head].x >= 0;
+	reo.mirror = apply(reo.reorientation, p)[player1][Head].x >= 0;
 
 	return reo;
 }
