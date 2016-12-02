@@ -128,9 +128,6 @@ struct Window
 	std::stack<std::pair<Graph, PositionInSequence>> undo;
 	Style style;
 	PlayerDrawer playerDrawer;
-
-	std::map<NodeNum, unsigned> anim_next;
-		// the unsigned is an index into out(graph, n)
 };
 
 void print_status(Window const & w)
@@ -181,27 +178,6 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				case GLFW_KEY_V: // paste
 					if (w.clipboard) w.graph.replace(w.location, *w.clipboard, true);
 					return;
-
-				case GLFW_KEY_UP:
-				{
-					NodeNum const n = w.graph.from(w.location.sequence).node;
-
-					vector<SeqNum> const v = out_sequences(w.graph, n);
-					if (v.empty()) return;
-					unsigned & an = w.anim_next[n];
-					an = (an == 0 ? v.size() - 1 : an - 1);
-					return;
-				}
-
-				case GLFW_KEY_DOWN:
-				{
-					NodeNum const n = w.graph.from(w.location.sequence).node;
-
-					vector<SeqNum> const v = out_sequences(w.graph, n);
-					if (!v.empty())
-						++w.anim_next[n] %= v.size();
-					return;
-				}
 
 				default: return;
 			}
@@ -433,58 +409,6 @@ View const * main_view(std::vector<View> const & vv)
 	return nullptr;
 }
 
-void backward(Window &)
-{
-	// TODO
-}
-
-void forward(Window & w)
-{
-	if (w.next_pos)
-	{
-		// todo: what if we're going backwards?
-
-		w.next_pos->howfar += 0.08;
-
-		if (w.next_pos->howfar >= 1)
-		{
-			w.location = w.next_pos->pis;
-			w.reorientation = w.next_pos->reorientation;
-
-			double const hf = w.next_pos->howfar - 1;
-
-			w.next_pos = none;
-
-			if (w.location == last_pos_in(w.graph, w.location.sequence))
-			{
-				auto const n = w.graph.to(w.location.sequence).node;
-				auto const v = out_sequences(w.graph, n);
-
-				if (!v.empty())
-				{
-					PositionReorientation r;
-
-					SeqNum const next_seq = v[w.anim_next[n]];
-
-					#ifndef NDEBUG
-						Position const before = w.reorientation(w.graph[w.location]);
-						Position const after = r(w.graph[first_pos_in(next_seq)]);
-					#endif
-
-					assert(basicallySame(
-						w.reorientation(w.graph[w.location]),
-						r(w.graph[first_pos_in(next_seq)])));
-
-					w.next_pos = NextPosition{{next_seq, 1}, hf, r};
-				}
-			}
-			else w.next_pos = NextPosition{{w.location.sequence, next(w.location.position)}, hf, {}};
-
-			print_status(w);
-		}
-	}
-}
-
 void cursor_pos_callback(GLFWwindow * const window, double const xpos, double const ypos)
 {
 	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(window));
@@ -618,8 +542,6 @@ int main(int const argc, char const * const * const argv)
 			if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { w.camera.rotateHorizontal(-0.03); w.jiggle = 0; }
 			if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) w.camera.zoom(-0.05);
 			if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) w.camera.zoom(0.05);
-			if (glfwGetKey(window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS) forward(w);
-			if (glfwGetKey(window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS) backward(w);
 
 			if (!w.edit_mode && !w.chosen_joint)
 			{
