@@ -31,16 +31,30 @@ namespace GrappleMap
 		else if (!elem(*seq, selection)) // because we don't want to cut in the middle
 		{
 			if (*to(graph, *fs) == *from(graph, *selection.front()))
+			{
 				selection.push_front(fs);
+				return;
+			}
 			else if (*from(graph, *fs) == *to(graph, *selection.back()))
+			{
 				selection.push_back(fs);
+				return;
+			}
 			else if (is_bidirectional(graph[*seq]))
 			{
 				if (*to(graph, *bs) == *from(graph, *selection.front()))
+				{
 					selection.push_front(bs);
+					return;
+				}
 				else if (*from(graph, *bs) == *to(graph, *selection.back()))
+				{
 					selection.push_back(bs);
+					return;
+				}
 			}
+
+			selection = {forwardStep(sequence(segment(location)))};
 		}
 	}
 
