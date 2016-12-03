@@ -172,7 +172,9 @@ namespace GrappleMap
 
 				if (!seq->reverse)
 				{
-					hf += 0.03; // todo
+					hf += secondsElapsed * 5;
+						// 5 segments per second (= 12 frames per segment at 60 frames per second)
+						// todo: handle detailed transitions
 					if (hf < 1) return;
 
 					hf -= 1;
@@ -184,16 +186,14 @@ namespace GrappleMap
 					}
 
 					++playback->i;
-					if (playback->i != selection.end())
-					{
-						playback->segment.index = 0;
-						if ((*playback->i)->reverse) hf = 1 - hf;
-					}
-					else
+					if (playback->i == selection.end())
 					{
 						init_playback();
 						return;
 					}
+
+					playback->segment.index = 0;
+					if ((*playback->i)->reverse) hf = 1 - hf;
 				}
 				else
 				{

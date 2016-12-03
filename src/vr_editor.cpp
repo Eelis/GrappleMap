@@ -61,7 +61,7 @@ namespace GrappleMap
 
 	void VrApp::frame()
 	{
-		editor.frame(0.03); // todo: get actual time elapsed
+		editor.frame(Vrui::getCurrentFrameTime());
 
 		// Vrui::scheduleUpdate(Vrui::getNextAnimationTime()); // todo: what is this?
 	}

@@ -426,6 +426,8 @@ int main(int const argc, char const * const * const argv)
 		glfwMakeContextCurrent(window);
 		glfwSwapInterval(1);
 
+		double lastTime = glfwGetTime();
+
 		while (!glfwWindowShouldClose(window))
 		{
 			glfwPollEvents();
@@ -527,7 +529,7 @@ int main(int const argc, char const * const * const argv)
 					playerJoints.begin(), playerJoints.end(),
 					[&](PlayerJoint j) { return norm2(world2xy(w.camera, pos[j]) - *cursor); });
 
-			if (!w.edit_mode && !w.chosen_joint)
+			if (!w.edit_mode && !w.chosen_joint && !w.editor.playingBack())
 			{
 				auto const center = xz(pos[player0][Core] + pos[player1][Core]) / 2;
 				w.camera.setOffset(center);
@@ -555,7 +557,9 @@ int main(int const argc, char const * const * const argv)
 
 			glfwSwapBuffers(window);
 
-			w.editor.frame(0.1); // todo
+			double const now = glfwGetTime();
+			w.editor.frame(now - lastTime);
+			lastTime = now;
 		}
 
 		glfwTerminate();
