@@ -109,7 +109,7 @@ namespace
 
 	vector<Position> frames_for_sequence(Graph const & graph, SeqNum const seqNum)
 	{
-		unsigned const frames_per_pos = is_detailed(graph[seqNum]) ? 3 : 5;
+		unsigned const frames_per_pos = graph[seqNum].detailed ? 3 : 5;
 
 		PositionInSequence location{seqNum, 0};
 

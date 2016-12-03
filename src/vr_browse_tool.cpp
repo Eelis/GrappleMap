@@ -57,7 +57,7 @@ namespace GrappleMap
 	void JointBrowser::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
 	{
 		auto cj = closest_joint(
-			current_position(editor),
+			editor.current_position(),
 			v3(cbData->currentTransformation.getTranslation()),
 			0.1);
 

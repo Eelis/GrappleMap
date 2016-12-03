@@ -26,7 +26,8 @@ namespace GrappleMap
 			optdesc.add_options()
 				("help,h", "show this help")
 				("start", po::value<string>()->default_value("last-trans"), "see START below")
-				("db", po::value<string>()->default_value("GrappleMap.txt"), "database file");
+				("db", po::value<string>()->default_value("GrappleMap.txt"), "database file")
+				("scale", po::value<double>()->default_value(1.0));
 
 			po::positional_options_description posopts;
 			posopts.add("start", -1);
@@ -78,7 +79,9 @@ namespace GrappleMap
 
 	VrApp::VrApp(int argc, char ** argv)
 		: Vrui::Application(argc, argv)
-		, editor(getopts(argc, argv), nullptr)
+		, opts(getopts(argc, argv))
+		, editor(opts, nullptr)
+		, scale(opts["scale"].as<double>())
 	{
 		style.grid_size = 20;
 
@@ -136,7 +139,7 @@ namespace GrappleMap
 
 		if (!editor.playingBack())
 			renderScene(
-				editor.getGraph(), current_position(editor),
+				editor.getGraph(), editor.current_position(),
 				editor.getViables(), browse_joint, edit_joint,
 				editor.getSelection(), style, playerDrawer);
 		else
@@ -144,7 +147,7 @@ namespace GrappleMap
 			glEnable(GL_COLOR_MATERIAL);
 			setupLights();
 			grid(style.grid_color, style.grid_size, style.grid_line_width);
-			playerDrawer.drawPlayers(current_position(editor), {}, {});
+			playerDrawer.drawPlayers(editor.current_position(), {}, {});
 		}
 	}
 
@@ -152,7 +155,7 @@ namespace GrappleMap
 	{
 		Vrui::NavTransform t=Vrui::NavTransform::identity;
 		t *= Vrui::NavTransform::translateFromOriginTo(Vrui::getDisplayCenter());
-		t *= Vrui::NavTransform::scale(Vrui::getMeterFactor());
+		t *= Vrui::NavTransform::scale(Vrui::getMeterFactor() * scale);
 		Vrui::setNavigationTransformation(t);
 	}
 }

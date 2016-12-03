@@ -10,7 +10,7 @@ namespace GrappleMap
 		editor.push_undo();
 
 		offset = v3(cb->startTransformation.getTranslation()) -
-			current_position(editor)[*joint];
+			editor.current_position()[*joint];
 	}
 
 	void JointEditor::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
@@ -22,7 +22,7 @@ namespace GrappleMap
 		}
 
 		joint = closest_joint(
-			current_position(editor),
+			editor.current_position(),
 			v3(cbData->currentTransformation.getTranslation()),
 			0.1);
 	}
@@ -31,7 +31,7 @@ namespace GrappleMap
 	{
 		if (!joint || !offset) return;
 		
-		Position new_pos = current_position(editor);
+		Position new_pos = editor.current_position();
 		auto cv = v3(cbData->currentTransformation.getTranslation()) - *offset;
 		cv.y = std::max(0., cv.y);
 		new_pos[*joint] = cv;

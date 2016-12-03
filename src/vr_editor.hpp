@@ -52,9 +52,11 @@ namespace GrappleMap
 
 	class VrApp: public Vrui::Application
 	{
+		boost::program_options::variables_map opts;
 		Editor editor;
 		Style style;
 		PlayerDrawer playerDrawer;
+		double const scale;
 		unique_ptr<JointEditor> jointEditor;
 		unique_ptr<JointBrowser> jointBrowser;
 
