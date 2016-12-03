@@ -17,7 +17,7 @@ void Graph::changed(PositionInSequence const pis)
 	{
 		auto const new_from = find_or_add(edge.sequence.positions.front());
 
-		if (new_from.node != edge.from.node)
+		if (*new_from != *edge.from)
 			std::cerr << "Front of sequence is now a different node." << std::endl;
 
 		edge.from = new_from;
@@ -26,7 +26,7 @@ void Graph::changed(PositionInSequence const pis)
 	{
 		auto const new_to = find_or_add(edge.sequence.positions.back());
 
-		if (new_to.node != edge.to.node)
+		if (*new_to != *edge.to)
 			std::cerr << "Back of sequence is now a different node." << std::endl;
 
 		edge.to = new_to;
@@ -40,15 +40,15 @@ void Graph::replace(PositionInSequence const pis, Position const & p, bool const
 	optional<ReorientedNode> const rn = node(*this, pis);
 	if (!local && rn)
 	{
-		nodes[rn->node.index].position = inverse(rn->reorientation)(p);
+		nodes[(*rn)->index].position = inverse(rn->reorientation)(p);
 		assert(basicallySame((*this)[*rn], p));
 
 		foreach (e : edges)
 		{
-			if (e.from.node == rn->node)
+			if (*e.from == **rn)
 				e.sequence.positions.front() = (*this)[e.from];
 
-			if (e.to.node == rn->node)
+			if (*e.to == **rn)
 				e.sequence.positions.back() = (*this)[e.to];
 		}
 	}

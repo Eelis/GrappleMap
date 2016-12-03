@@ -55,7 +55,7 @@ public:
 
 	Position operator[](ReorientedNode const & n) const
 	{
-		return n.reorientation(nodes[n.node.index].position);
+		return n.reorientation(nodes[n->index].position);
 	}
 
 	Node const & operator[](NodeNum const n) const { return nodes[n.index]; }

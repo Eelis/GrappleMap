@@ -3,36 +3,45 @@
 
 namespace GrappleMap
 {
-	Editor::Editor(boost::program_options::variables_map const & programOptions)
+	Editor::Editor(boost::program_options::variables_map const & programOptions, Camera const * cam)
 		: dbFile(programOptions["db"].as<std::string>())
 		, graph{loadGraph(dbFile)}
+		, camera(cam)
 	{
 		if (auto start = posinseq_by_desc(graph, programOptions["start"].as<string>()))
-			location.location.segment = segment_from(*start);
+			location->segment = segment_from(*start);
 		else
 			throw std::runtime_error("no such position/transition");
 	}
 
 	void Editor::toggle_selected()
 	{
-		SeqNum const curseq = location.location.segment.sequence;
+		if (playback) return;
 
-		if (selection.empty()) selection.push_back({curseq, location.reorientation});
-		else if (selection.front().sequence == curseq) selection.pop_front();
-		else if (selection.back().sequence == curseq) selection.pop_back();
-		else if (!elem(curseq, selection))
+		Reoriented<SeqNum> const
+			seq = sequence(segment(location));
+
+		Reoriented<Step> const
+			fs = forwardStep(seq),
+			bs = backStep(seq);
+
+		if (selection.empty()) selection.push_back(fs);
+		else if (**selection.front() == *seq) selection.pop_front();
+		else if (**selection.back() == *seq) selection.pop_back();
+		else if (!elem(*seq, selection)) // because we don't want to cut in the middle
 		{
-			if (graph.to(curseq).node == graph.from(selection.front().sequence).node)
+			if (*to(graph, *fs) == *from(graph, *selection.front()))
+				selection.push_front(fs);
+			else if (*from(graph, *fs) == *to(graph, *selection.back()))
+				selection.push_back(fs);
+			else if (is_bidirectional(graph[*seq]))
 			{
-				selection.push_front(sequence(segment(location)));
-			}
-			else if (graph.from(curseq).node == graph.to(selection.back().sequence).node)
-			{
-				selection.push_back(sequence(segment(location)));
+				if (*to(graph, *bs) == *from(graph, *selection.front()))
+					selection.push_front(bs);
+				else if (*from(graph, *bs) == *to(graph, *selection.back()))
+					selection.push_back(bs);
 			}
 		}
-
-//			else if (it's after a known one) push_back();
 	}
 
 	void Editor::save()
@@ -44,18 +53,20 @@ namespace GrappleMap
 	void Editor::mirror()
 	{
 		location.reorientation.mirror = !location.reorientation.mirror;
+
+		// todo: recalc viables and selection?
 	}
 
 	void Editor::delete_keyframe()
 	{
-		if (optional<PositionInSequence> const p = position(location.location))
+		if (optional<PositionInSequence> const p = position(*location))
 		{
 			push_undo();
 
 			if (auto const new_pos = graph.erase(*p))
 			{
 				//todo: location.position = *new_pos;
-				calcViables();
+				recalcViables();
 			}
 			else undoStack.pop();
 		}
@@ -63,7 +74,7 @@ namespace GrappleMap
 
 	void Editor::swap_players()
 	{
-		if (auto const pp = position(location.location))
+		if (auto const pp = position(*location))
 		{
 			push_undo();
 
@@ -73,22 +84,22 @@ namespace GrappleMap
 		}
 	}
 
-	void Editor::calcViables()
+	void Editor::recalcViables()
 	{
 		foreach (j : playerJoints)
-			viables[j] = determineViables(graph, from(location.location.segment), // todo: bad
-					j, nullptr, location.reorientation);
+			viables[j] = determineViables(graph, from(location->segment), // todo: bad
+					j, camera, location.reorientation);
 	}
 	
 	void Editor::insert_keyframe()
 	{
 		push_undo();
 
-		graph.split_segment(location.location);
-		++location.location.segment.segment;
-		location.location.howFar = 0;
+		graph.split_segment(*location);
+		++location->segment.segment;
+		location->howFar = 0;
 
-		calcViables();
+		recalcViables();
 	}
 
 	void Editor::push_undo()
@@ -98,7 +109,7 @@ namespace GrappleMap
 
 	void Editor::branch()
 	{
-		if (auto const pp = position(location.location))
+		if (auto const pp = position(*location))
 		{
 			push_undo();
 
@@ -120,23 +131,109 @@ namespace GrappleMap
 
 	void Editor::replace(Position const new_pos)
 	{
-		if (optional<PositionInSequence> const pp = position(location.location))
+		if (optional<PositionInSequence> const pp = position(*location))
 			graph.replace(*pp, inverse(location.reorientation)(new_pos), false);
 	}
 
 	void Editor::toggle_lock(bool const b)
 	{
-		lockToTransition = b;
+		selectionLock = b;
 	}
 
 	void Editor::toggle_playback()
 	{
-		if (playbackLoc) playbackLoc = boost::none;
+		if (playback) playback = boost::none;
 		else
 		{
-			if (selection.empty()) selection = {sequence(segment(location))};
+			if (selection.empty())
+				selection = {forwardStep(sequence(segment(location)))};
 
-			playbackLoc = from(first_segment(selection.front()));
+			init_playback();
 		}
+	}
+
+	void Editor::init_playback()
+	{
+		Reoriented<Reversible<SegmentInSequence>> const
+			fs = first_segment(selection.front(), graph);
+
+		playback = Playback{selection.begin(), (*fs)->segment, from(fs)->howFar};
+	}
+
+	void Editor::frame(double const secondsElapsed)
+	{
+		if (playback)
+		{
+			if (playback->i != selection.end())
+			{
+				Reoriented<Reversible<SeqNum>> const & seq = *playback->i;
+
+				auto & hf = playback->howFar;
+
+				if (!seq->reverse)
+				{
+					hf += 0.03; // todo
+					if (hf < 1) return;
+
+					hf -= 1;
+
+					if (playback->segment != last_segment(graph[**seq]))
+					{
+						++playback->segment;
+						return;
+					}
+
+					++playback->i;
+					if (playback->i != selection.end())
+					{
+						playback->segment.index = 0;
+						if ((*playback->i)->reverse) hf = 1 - hf;
+					}
+					else
+					{
+						init_playback();
+						return;
+					}
+				}
+				else
+				{
+					// todo
+				}
+			}
+		}
+	}
+
+	Reoriented<Location> Editor::getLocation() const
+	{
+		if (playback)
+			return {
+				Location{{***playback->i, playback->segment}, playback->howFar},
+				playback->i->reorientation};
+		
+		return location;
+	}
+
+	void Editor::setLocation(Reoriented<Location> const l)
+	{
+		if (playback) return;
+
+		if (selectionLock && !elem(l->segment.sequence, selection)) return;
+
+		bool const differentSegment = (l->segment != location->segment);
+
+		location = l;
+
+		if (differentSegment) recalcViables();
+	}
+
+	void Editor::snapToPos()
+	{
+		if (playback) return;
+
+		double & c = location->howFar;
+
+		double const r = std::round(c);
+
+		if (std::abs(c - r) < 0.2) c = r;
 	}
 }

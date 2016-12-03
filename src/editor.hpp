@@ -10,21 +10,41 @@ namespace GrappleMap
 {
 	class Editor
 	{
+		struct Playback
+		{
+			Selection::const_iterator i;
+			SegmentNum segment;
+			double howFar;
+		};
+
 		string const dbFile;
 		Graph graph;
-		std::stack<std::pair<Graph, ReorientedLocation>> undoStack;
+		std::stack<std::pair<Graph, Reoriented<Location>>> undoStack;
 		Viables viables;
 		Selection selection;
+		Camera const * const camera; // needed because in 2d projection it affects viables
+		bool selectionLock = true;
+		optional<Playback> playback;
+		Reoriented<Location> location{{SegmentInSequence{{0}, 0}, 0}, {}};
+
+		void init_playback();
 
 	public:
-		ReorientedLocation location{{SegmentInSequence{{0}, 0}, 0}, {}}; // todo: hide
 
-		optional<PlayerJoint> edit_joint;
-		optional<PlayerJoint> browse_joint;
-		bool lockToTransition = true;
-		optional<ReorientedLocation> playbackLoc;
+		Editor(
+			boost::program_options::variables_map const & programOptions,
+			Camera const *);
 
-		explicit Editor(boost::program_options::variables_map const & programOptions);
+		// read
+
+		Graph const & getGraph() const { return graph; }
+		Viables const & getViables() const { return viables; }
+		Selection const & getSelection() const { return selection; }
+		bool lockedToSelection() const { return selectionLock; }
+		Reoriented<Location> getLocation() const;
+		bool playingBack() const { return bool(playback); }
+
+		// write
 
 		void save();
 		void toggle_selected();
@@ -37,15 +57,15 @@ namespace GrappleMap
 		void toggle_lock(bool);
 		void toggle_playback();
 		void push_undo();
-		void calcViables();
+		void recalcViables(); // called after camera change
 		void replace(Position);
-
-		inline Position current_position() const { return at(location, graph); }
-		Graph const & getGraph() const { return graph; }
-		Viables const & getViables() const { return viables; }
-		ReorientedLocation const & getLocation() const { return location; }
-		Selection const & getSelection() const { return selection; }
+		void frame(double secondsElapsed);
+		void setLocation(Reoriented<Location>);
+		void snapToPos();
 	};
+
+	inline Position current_position(Editor const & e)
+	{ return at(e.getLocation(), e.getGraph()); }
 }
 
 #endif

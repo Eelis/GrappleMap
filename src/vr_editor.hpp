@@ -19,12 +19,44 @@
 
 namespace GrappleMap
 {
+	struct JointEditor: Vrui::DraggingToolAdapter
+	{
+		Editor & editor;
+		optional<PlayerJoint> joint;
+		optional<V3> offset;
+
+		JointEditor(Vrui::DraggingTool & t, Editor & e)
+			: Vrui::DraggingToolAdapter{&t}, editor(e)
+		{}
+		
+		void dragStartCallback(Vrui::DraggingTool::DragStartCallbackData *) override;
+		void dragCallback(Vrui::DraggingTool::DragCallbackData *) override;
+		void idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData *) override;
+	};
+
+	struct JointBrowser: Vrui::DraggingToolAdapter
+	{
+		Editor & editor;
+		optional<PlayerJoint> joint;
+
+		JointBrowser(Vrui::DraggingTool & t, Editor & e)
+			: Vrui::DraggingToolAdapter{&t}, editor(e)
+		{
+//			editor.calcViables();
+		}
+	
+		void dragCallback(Vrui::DraggingTool::DragCallbackData *) override;
+		void dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *) override;
+		void idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData *) override;
+	};
+
 	class VrApp: public Vrui::Application
 	{
-		boost::program_options::variables_map programOptions;
 		Editor editor;
 		Style style;
 		PlayerDrawer playerDrawer;
+		unique_ptr<JointEditor> jointEditor;
+		unique_ptr<JointBrowser> jointBrowser;
 
 		void on_save_button(Misc::CallbackData *);
 		void on_undo_button(Misc::CallbackData *);
@@ -45,39 +77,6 @@ namespace GrappleMap
 			void display(GLContextData &) const override;
 			void resetNavigation() override;
 			void toolCreationCallback(Vrui::ToolManager::ToolCreationCallbackData *) override;
-	};
-
-	class JointEditor: public Vrui::DraggingToolAdapter
-	{
-		Editor & editor;
-		optional<V3> offset;
-
-		public:
-
-			JointEditor(Vrui::DraggingTool & t, Editor & e)
-				: Vrui::DraggingToolAdapter{&t}, editor(e)
-			{}
-		
-			void dragStartCallback(Vrui::DraggingTool::DragStartCallbackData *) override;
-			void dragCallback(Vrui::DraggingTool::DragCallbackData *) override;
-			void idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData *) override;
-	};
-
-	class BrowseTool: public Vrui::DraggingToolAdapter
-	{
-		Editor & editor;
-
-		public:
-
-			BrowseTool(Vrui::DraggingTool & t, Editor & e)
-				: Vrui::DraggingToolAdapter{&t}, editor(e)
-			{
-				editor.calcViables();
-			}
-		
-			void dragCallback(Vrui::DraggingTool::DragCallbackData *) override;
-			void dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *) override;
-			void idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData *) override;
 	};
 }
 

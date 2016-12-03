@@ -17,7 +17,7 @@ namespace GrappleMap
 		vector<Position> const frames;
 		vector<Position>::const_iterator currentFrame = frames.begin();
 		Style style;
-		ReorientedLocation location{{SegmentInSequence{{0}, 0}, 0}, {}};
+		Reoriented<Location> location{{SegmentInSequence{{0}, 0}, 0}, {}};
 		PlayerDrawer playerDrawer;
 
 		void frame() override;

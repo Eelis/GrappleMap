@@ -33,6 +33,7 @@ namespace GrappleMap
 	using std::runtime_error;
 	using std::swap;
 	using std::exception;
+	using std::unique_ptr;
 	using boost::optional;
 	using boost::none;
 

@@ -100,7 +100,7 @@ void ImageMaker::png(
 		nullptr, // no viables
 		graph, pos, camera,
 		none, // no highlighted joint
-		false, // not edit mode
+		{}, // default colors
 		0, 0, width*2, height*2,
 		{},
 		style, playerDrawer);
@@ -172,7 +172,7 @@ void ImageMaker::png(
 			nullptr, // no viables
 			graph, p->first, p->second,
 			none, // no highlighted joint
-			false, // not edit mode
+			{}, // default colors
 			0, 0, width*2, height*2,
 			{},
 			style, playerDrawer);

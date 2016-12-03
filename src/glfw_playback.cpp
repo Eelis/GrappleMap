@@ -94,7 +94,7 @@ namespace GrappleMap
 						nullptr, // no viables
 						graph, pos, camera,
 						none, // no highlighted joint
-						false, // not edit mode
+						{}, // default colors
 						0, bottom,
 						width, height, {}, style, playerDrawer);
 

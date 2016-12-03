@@ -27,7 +27,7 @@ Frames frames(Graph const & g, Path const & path, unsigned const frames_per_pos)
 		{
 			assert(!g[seq].description.empty());
 			string desc = g[seq].description.front();
-			if (desc == "..." && !g[g.to(seq).node].description.empty()) desc = g[g.to(seq).node].description.front();
+			if (desc == "..." && !g[*g.to(seq)].description.empty()) desc = g[*g.to(seq)].description.front();
 			desc = replace_all(desc, "\\n", " ");
 			return desc;
 		};
@@ -38,11 +38,11 @@ Frames frames(Graph const & g, Path const & path, unsigned const frames_per_pos)
 	foreach (step : path)
 	{
 		pair<vector<Position>, ReorientedNode> p =
-			follow(g, n, step.seq, frames_per_pos / (is_detailed(g[step.seq]) ? 2 : 1));
+			follow(g, n, *step, frames_per_pos / (is_detailed(g[*step]) ? 2 : 1));
 
 		p.first.pop_back();
 
-		r.emplace_back(d(step.seq), p.first);
+		r.emplace_back(d(*step), p.first);
 
 		n = p.second;
 	}
@@ -77,20 +77,20 @@ class PathFinder
 		if (double(unique_steps_taken) / scene.size() < 0.96)
 			return false;
 
-		if (io[n.node.index].second.size() > 32) abort();
+		if (io[n->index].second.size() > 32) abort();
 
 		std::array<std::pair<size_t, Step>, 32> choices;
 
 		auto * choices_end = choices.begin();
 
-		foreach (s : io[n.node.index].second)
+		foreach (s : io[n->index].second)
 		{
 			if (std::find(scene.end() - std::min(scene.size(), Path::size_type(15ul)), scene.end(), s) != scene.end()) continue;
 
-			if (!scene.empty() && from(graph, scene.back()).node == to(graph, s).node) continue;
+			if (!scene.empty() && *from(graph, scene.back()) == *to(graph, s)) continue;
 
 			*(choices_end++) = std::make_pair(
-				(s.reverse ? in_seq_counts : out_seq_counts)[s.seq.index] * 1000 + (rand()%1000),
+				(s.reverse ? in_seq_counts : out_seq_counts)[s->index] * 1000 + (rand()%1000),
 				s);
 
 			//norm2(follow(g, n, s.seq).reorientation.reorientation.offset);
@@ -102,11 +102,11 @@ class PathFinder
 		{
 			Step const s = i->second;
 
-			auto & c = (s.reverse ? in_seq_counts : out_seq_counts)[s.seq.index];
+			auto & c = (s.reverse ? in_seq_counts : out_seq_counts)[s->index];
 
 			bool const taken_before = (c != 0);
 
-			bool const count_as_unique = !taken_before || s.seq == begin_trans;
+			bool const count_as_unique = !taken_before || *s == begin_trans;
 
 			if (count_as_unique) ++unique_steps_taken;
 			++c;
@@ -118,7 +118,7 @@ class PathFinder
 				//std::cout << longest_ever << std::endl;
 			}
 
-			if (do_find(follow(graph, n, s.seq), size - 1))
+			if (do_find(follow(graph, n, *s), size - 1))
 				return true;
 
 			if (count_as_unique) --unique_steps_taken;
@@ -199,11 +199,11 @@ Path randomScene(Graph const & g, NodeNum const start, size_t const size)
 	map<SeqNum, int> ss;
 	foreach (x : s)
 	{
-		auto const c = ++ss[x.seq];
+		auto const c = ++ss[*x];
 		if (c > worst_count)
 		{
 			worst_count = c;
-			worst_seq = x.seq;
+			worst_seq = *x;
 		}
 	}
 	std::cout << ss.size() << " unique sequences\n";
@@ -232,8 +232,8 @@ vector<Path> paths_through(Graph const & g, Step s, unsigned in_size, unsigned o
 {
 	vector<Path> v;
 
-	foreach (pre : in_paths(g, from(g, s).node, in_size))
-	foreach (post : out_paths(g, to(g, s).node, out_size))
+	foreach (pre : in_paths(g, *from(g, s), in_size))
+	foreach (post : out_paths(g, *to(g, s), out_size))
 	{
 		Path path = pre;
 		path.push_back(s);

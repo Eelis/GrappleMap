@@ -14,6 +14,7 @@ namespace GrappleMap
 		SeqNum seqNum;
 		PositionReorientation reorientation;
 		PosNum begin, end; // half-open range, never empty
+
 		V3 beginV3, endV3;
 		V2 beginxy, endxy;
 	};

@@ -5,54 +5,63 @@
 
 namespace GrappleMap
 {
-	struct ReorientedNode
+	template<typename T>
+	struct Reoriented
 	{
-		NodeNum node;
+		T value;
 		PositionReorientation reorientation;
+
+		T * operator->() { return &value; }
+		T const * operator->() const { return &value; }
+
+		T & operator*() { return value; }
+		T const & operator*() const { return value; }
 	};
 
-	struct ReorientedSequence
-	{
-		SeqNum sequence;
-		PositionReorientation reorientation;
-	};
+	using ReorientedNode = Reoriented<NodeNum>;
+	using ReorientedSegment = Reoriented<SegmentInSequence>;
 
-	using Selection = std::deque<ReorientedSequence>;
+	using Selection = std::deque<Reoriented<Reversible<SeqNum>>>; // todo: move
 
 	inline bool elem(SeqNum const & n, Selection const & s)
 	{
 		return std::any_of(s.begin(), s.end(),
-			[&](ReorientedSequence const & x)
+			[&](Reoriented<Reversible<SeqNum>> const & x)
 			{
-				return x.sequence == n;
+				return **x == n;
 			});
 	}
 
-	struct ReorientedLocation
+	inline Reoriented<SeqNum> sequence(Reoriented<SegmentInSequence> const & s)
 	{
-		Location location;
-		PositionReorientation reorientation;
-	};
-
-	struct ReorientedSegment
-	{
-		SegmentInSequence segment;
-		PositionReorientation reorientation;
-	};
-
-	inline ReorientedSequence sequence(ReorientedSegment const & s)
-	{
-		return {s.segment.sequence, s.reorientation};
+		return {s->sequence, s.reorientation};
 	}
 
-	inline ReorientedSegment segment(ReorientedLocation const & l)
+	inline Reoriented<SegmentInSequence> segment(Reoriented<Location> const & l)
 	{
-		return {l.location.segment, l.reorientation};
+		return {l->segment, l.reorientation};
 	}
 
-	inline ReorientedLocation loc(ReorientedSegment const & s, double const c)
+	inline Reoriented<Location> loc(Reoriented<SegmentInSequence> const & s, double const c)
 	{
-		return {{s.segment, c}, s.reorientation};
+		return {{*s, c}, s.reorientation};
+	}
+
+	inline Reoriented<Location> loc(Reoriented<Reversible<SegmentInSequence>> const & s, double const c)
+	{
+		return loc(
+			Reoriented<SegmentInSequence>{**s, s.reorientation},
+			s->reverse ? (1-c) : c);
+	}
+
+	inline Reoriented<Step> forwardStep(Reoriented<SeqNum> const & s)
+	{
+		return {forwardStep(*s), s.reorientation};
+	}
+
+	inline Reoriented<Step> backStep(Reoriented<SeqNum> const & s)
+	{
+		return {backStep(*s), s.reorientation};
 	}
 }
 

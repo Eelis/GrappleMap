@@ -1,3 +1,5 @@
+// todo: rename
+
 #include "vr_editor.hpp"
 #include "vr_util.hpp"
 
@@ -5,7 +7,7 @@ namespace GrappleMap
 {
 	namespace
 	{
-		optional<ReorientedLocation> closerLocation(
+		optional<Reoriented<Location>> closerLocation(
 			Graph const & g,
 			V3 const cursor,
 			ReorientedSegment const root,
@@ -16,12 +18,12 @@ namespace GrappleMap
 
 			candidates.push_back(root);
 
-			struct Best { ReorientedLocation location; double dist; };
+			struct Best { Reoriented<Location> location; double dist; };
 			optional<Best> best;
 
 			foreach (cand : candidates)
 			{
-				if (selection && !elem(cand.segment.sequence, *selection)) continue;
+				if (selection && !elem(cand->sequence, *selection)) continue;
 
 				V3 const
 					rayOrigin = at(from(cand), g)[j],
@@ -52,47 +54,40 @@ namespace GrappleMap
 		}
 	}
 
-	void BrowseTool::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
+	void JointBrowser::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
 	{
 		auto cj = closest_joint(
-			editor.current_position(),
+			current_position(editor),
 			v3(cbData->currentTransformation.getTranslation()),
 			0.1);
 
 		if (cj && /*jointDefs[cj->joint].draggable &&*/ editor.getViables()[*cj].total_dist != 0)
-			editor.browse_joint = *cj;
+			joint = *cj;
 		else
-			editor.browse_joint = boost::none;
+			joint = boost::none;
 	}
 
-	void BrowseTool::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
+	void JointBrowser::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
 	{
-		if (!editor.browse_joint) return;
+		if (!joint) return;
 
 		Selection const
-			tempSel{sequence(segment(editor.getLocation()))},
+			tempSel{forwardStep(sequence(segment(editor.getLocation())))},
 			& sel = editor.getSelection().empty() ? tempSel : editor.getSelection();
 
 		if (auto l = closerLocation(
 				editor.getGraph(),
 				v3(cbData->currentTransformation.getTranslation()),
 				segment(editor.getLocation()),
-				*editor.browse_joint,
-				editor.lockToTransition ? &sel : nullptr))
+				*joint,
+				editor.lockedToSelection() ? &sel : nullptr))
 		{
-			if (l->location.segment != editor.getLocation().location.segment)
-				editor.calcViables();
-
-			editor.location = *l;
+			editor.setLocation(*l);
 		}
 	}
 
-	void BrowseTool::dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *)
+	void JointBrowser::dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *)
 	{
-		double & c = editor.location.location.howFar;
-
-		double const r = std::round(c);
-
-		if (std::abs(c - r) < 0.2) c = r;
+		editor.snapToPos();
 	}
 }

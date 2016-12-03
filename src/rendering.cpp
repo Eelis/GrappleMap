@@ -25,7 +25,7 @@ namespace
 
 	void drawViables(
 		Graph const & graph, Viables const & viable, PlayerJoint const j,
-		std::deque<ReorientedSequence> const & selection,
+		Selection const & selection,
 		Camera const * camera, Style const & style)
 	{
 		glEnable(GL_BLEND);
@@ -150,8 +150,8 @@ void renderWindow(
 	Graph const & graph,
 	Position const & position,
 	Camera camera,
-	optional<PlayerJoint> highlight_joint,
-	bool const edit_mode,
+	optional<PlayerJoint> const highlight_joint,
+	PerPlayerJoint<optional<V3>> colors,
 	int const left, int const bottom,
 	int const width, int const height,
 	Selection const & selection,
@@ -202,7 +202,7 @@ void renderWindow(
 
 		grid(style.grid_color, style.grid_size, style.grid_line_width);
 
-		//playerDrawer.drawPlayers(viables, position, opt_as_vec(highlight_joint), v.first_person, edit_mode);
+		playerDrawer.drawPlayers(position, colors, v.first_person);
 
 		if (viables && highlight_joint)
 		{
@@ -225,7 +225,7 @@ void renderScene(
 	PerPlayerJoint<ViablesForJoint> const & viables,
 	optional<PlayerJoint> const browse_joint,
 	optional<PlayerJoint> const edit_joint,
-	std::deque<ReorientedSequence> const & selection,
+	Selection const & selection,
 	Style const & style,
 	PlayerDrawer const & playerDrawer)
 {

@@ -48,7 +48,8 @@ namespace GrappleMap
 
 	void renderWindow(vector<View> const &,
 		Viables const *, Graph const &, Position const &,
-		Camera, optional<PlayerJoint> highlight_joint, bool edit_mode,
+		Camera, optional<PlayerJoint> highlight_joint,
+		PerPlayerJoint<optional<V3>> colors,
 		int left, int bottom, int width, int height,
 		Selection const &,
 		Style const &, PlayerDrawer const &);

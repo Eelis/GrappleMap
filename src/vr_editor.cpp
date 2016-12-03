@@ -61,25 +61,9 @@ namespace GrappleMap
 
 	void VrApp::frame()
 	{
-		if (editor.playbackLoc)
-		{
-			auto & hf = editor.playbackLoc->location.howFar;
-			
-			hf += 0.03; // todo
-			if (hf > 1)
-			{
-				hf -= 1;
+		editor.frame(0.03); // todo: get actual time elapsed
 
-				auto & seg = editor.playbackLoc->location.segment;
-
-				if (seg == last_segment(editor.getGraph(), seg.sequence))
-					seg.segment.index = 0;
-				else
-					++seg.segment;
-			}
-
-			// Vrui::scheduleUpdate(Vrui::getNextAnimationTime()); // todo: what is this?
-		}
+		// Vrui::scheduleUpdate(Vrui::getNextAnimationTime()); // todo: what is this?
 	}
 
 	void VrApp::on_lock_toggle(GLMotif::ToggleButton::ValueChangedCallbackData * cb)
@@ -94,8 +78,7 @@ namespace GrappleMap
 
 	VrApp::VrApp(int argc, char ** argv)
 		: Vrui::Application(argc, argv)
-		, programOptions(getopts(argc, argv))
-		, editor(programOptions)
+		, editor(getopts(argc, argv), nullptr)
 	{
 		style.grid_size = 20;
 
@@ -109,7 +92,7 @@ namespace GrappleMap
 			};
 
 		auto lockToggle = new GLMotif::ToggleButton("TransitionLockToggle", mainMenu, "Lock");
-		lockToggle->setToggle(editor.lockToTransition);
+		lockToggle->setToggle(editor.lockedToSelection());
 		lockToggle->getValueChangedCallbacks().add(this, &VrApp::on_lock_toggle);
 
 		auto playbackToggle = new GLMotif::ToggleButton("PlaybackToggle", mainMenu, "Playback");
@@ -136,9 +119,8 @@ namespace GrappleMap
 		{
 			switch (tools_created++)
 			{
-				case 0: new BrowseTool(*tool, editor); break;
-				case 1: new JointEditor(*tool, editor); break;
-					// todo: don't leak
+				case 0: jointBrowser.reset(new JointBrowser(*tool, editor)); break;
+				case 1: jointEditor.reset(new JointEditor(*tool, editor)); break;
 			}
 		}
 	}
@@ -147,17 +129,22 @@ namespace GrappleMap
 	{
 		glEnable(GL_POINT_SMOOTH); // todo: move
 
-		if (!editor.playbackLoc)
+		optional<PlayerJoint> browse_joint, edit_joint;
+
+		if (jointBrowser) browse_joint = jointBrowser->joint;
+		if (jointEditor) edit_joint = jointEditor->joint;
+
+		if (!editor.playingBack())
 			renderScene(
-				editor.getGraph(), editor.current_position(),
-				editor.getViables(), editor.browse_joint, editor.edit_joint,
+				editor.getGraph(), current_position(editor),
+				editor.getViables(), browse_joint, edit_joint,
 				editor.getSelection(), style, playerDrawer);
 		else
 		{
 			glEnable(GL_COLOR_MATERIAL);
 			setupLights();
 			grid(style.grid_color, style.grid_size, style.grid_line_width);
-			playerDrawer.drawPlayers(at(*editor.playbackLoc, editor.getGraph()), {}, {});
+			playerDrawer.drawPlayers(current_position(editor), {}, {});
 		}
 	}
 

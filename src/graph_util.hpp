@@ -14,10 +14,6 @@ using SeqNumIter = boost::counting_iterator<SeqNum, std::forward_iterator_tag, i
 using NodeNumRange = boost::iterator_range<NodeNumIter>;
 using SeqNumRange = boost::iterator_range<SeqNumIter>;
 
-struct Step { SeqNum seq; bool reverse; };
-
-using Path = vector<Step>;
-
 inline NodeNumRange nodenums(Graph const & g) { return {NodeNum{0}, NodeNum{g.num_nodes()}}; }
 inline SeqNumRange seqnums(Graph const & g) { return {SeqNum{0}, SeqNum{g.num_sequences()}}; }
 
@@ -27,8 +23,14 @@ void split_at(Graph &, PositionInSequence);
 
 // first/last/next/prev/end/from/to
 
-inline ReorientedLocation from(ReorientedSegment const & s) { return loc(s, 0); }
-inline ReorientedLocation to(ReorientedSegment const & s) { return loc(s, 1); }
+inline Reoriented<Location> from(Reoriented<SegmentInSequence> const & s) { return loc(s, 0); }
+inline Reoriented<Location> to(Reoriented<SegmentInSequence> const & s) { return loc(s, 1); }
+
+inline Reoriented<Location> from(Reoriented<Reversible<SegmentInSequence>> const & s)
+{ return loc(s, 0); }
+
+inline Reoriented<Location> to(Reoriented<Reversible<SegmentInSequence>> const & s)
+{ return loc(s, 1); }
 
 inline PosNum end(Sequence const & seq) { return {uint_fast8_t(seq.positions.size())}; }
 
@@ -63,14 +65,26 @@ inline SegmentInSequence last_segment(Graph const & g, SeqNum const s)
 	return {s, last_segment(g[s])};
 }
 
-inline ReorientedSegment first_segment(ReorientedSequence const & s)
+inline Reoriented<SegmentInSequence> first_segment(Reoriented<SeqNum> const & s)
 {
-	return {first_segment(s.sequence), s.reorientation};
+	return {first_segment(*s), s.reorientation};
 }
 
-inline ReorientedSegment last_segment(Graph const & g, ReorientedSequence const & s)
+inline Reversible<SegmentInSequence> first_segment(Reversible<SeqNum> const & s, Graph const & g)
 {
-	return {last_segment(g, s.sequence), s.reorientation};
+	return {s.reverse ? last_segment(g, *s) : first_segment(*s), s.reverse};
+}
+
+inline Reoriented<Reversible<SegmentInSequence>> first_segment(
+	Reoriented<Reversible<SeqNum>> const & s,
+	Graph const & g)
+{
+	return {first_segment(*s, g), s.reorientation};
+}
+
+inline Reoriented<SegmentInSequence> last_segment(Graph const & g, Reoriented<SeqNum> const & s)
+{
+	return {last_segment(g, *s), s.reorientation};
 }
 
 inline optional<PositionInSequence> prev(PositionInSequence const pis)
@@ -111,26 +125,26 @@ inline SegmentInSequence segment_to(PositionInSequence const n)
 inline PositionInSequence from(SegmentInSequence const s) { return {s.sequence, from(s.segment)}; }
 inline PositionInSequence to(SegmentInSequence const s) { return {s.sequence, to(s.segment)}; }
 
-inline ReorientedNode const & from(Graph const & g, Step const s)
+inline Reoriented<NodeNum> const & from(Graph const & g, Reversible<SeqNum> const s)
 {
-	return s.reverse ? g.to(s.seq) : g.from(s.seq);
+	return s.reverse ? g.to(*s) : g.from(*s);
 }
 
-inline ReorientedNode const & to(Graph const & g, Step const s)
+inline Reoriented<NodeNum> const & to(Graph const & g, Reversible<SeqNum> const s)
 {
-	return s.reverse ? g.from(s.seq) : g.to(s.seq);
+	return s.reverse ? g.from(*s) : g.to(*s);
 }
 
-inline ReorientedNode from(ReorientedSequence const & s, Graph const & g)
+inline Reoriented<NodeNum> from(Reoriented<SeqNum> const & s, Graph const & g)
 {
-	ReorientedNode const & n = g.from(s.sequence);
-	return {n.node, compose(n.reorientation, s.reorientation)};
+	ReorientedNode const & n = g.from(*s);
+	return {*n, compose(n.reorientation, s.reorientation)};
 }
 
-inline ReorientedNode to(ReorientedSequence const & s, Graph const & g)
+inline Reoriented<NodeNum> to(Reoriented<SeqNum> const & s, Graph const & g)
 {
-	ReorientedNode const & n = g.to(s.sequence);
-	return {n.node, compose(n.reorientation, s.reorientation)};
+	Reoriented<NodeNum> const & n = g.to(*s);
+	return {*n, compose(n.reorientation, s.reorientation)};
 }
 
 // in/out
@@ -141,8 +155,8 @@ vector<SeqNum> out_sequences(Graph const &, NodeNum);
 vector<ReorientedSegment> in_segments(Graph const &, ReorientedNode const &);
 vector<ReorientedSegment> out_segments(Graph const &, ReorientedNode const &);
 
-vector<ReorientedSequence> in_sequences(Graph const &, ReorientedNode const &);
-vector<ReorientedSequence> out_sequences(Graph const &, ReorientedNode const &);
+vector<Reoriented<SeqNum>> in_sequences(Graph const &, ReorientedNode const &);
+vector<Reoriented<SeqNum>> out_sequences(Graph const &, ReorientedNode const &);
 
 vector<Step> out_steps(Graph const &, NodeNum);
 vector<Step> in_steps(Graph const &, NodeNum);
@@ -159,12 +173,12 @@ vector<std::pair<
 
 inline bool operator==(Step const a, Step const b)
 {
-	return a.seq == b.seq && a.reverse == b.reverse;
+	return *a == *b && a.reverse == b.reverse;
 }
 
 inline bool operator<(Step const a, Step const b)
 {
-	return std::tie(a.seq, a.reverse) < std::tie(b.seq, b.reverse);
+	return std::tie(*a, a.reverse) < std::tie(*b, b.reverse);
 }
 
 // misc
@@ -205,8 +219,8 @@ bool connected(Graph const &, NodeNum, NodeNum);
 
 inline optional<NodeNum> node_at(Graph const & g, PositionInSequence const pis)
 {
-	if (pis == first_pos_in(pis.sequence)) return g.from(pis.sequence).node;
-	if (pis == last_pos_in(g, pis.sequence)) return g.to(pis.sequence).node;
+	if (pis == first_pos_in(pis.sequence)) return *g.from(pis.sequence);
+	if (pis == last_pos_in(g, pis.sequence)) return *g.to(pis.sequence);
 	return boost::none;
 }
 
@@ -257,8 +271,8 @@ inline bool is_tagged(Graph const & g, string const & tag, NodeNum const n)
 inline bool is_tagged(Graph const & g, string const & tag, SeqNum const sn)
 {
 	return tags(g[sn]).count(tag) != 0
-		|| (is_tagged(g, tag, g.from(sn).node)
-		&& is_tagged(g, tag, g.to(sn).node));
+		|| (is_tagged(g, tag, *g.from(sn))
+		&& is_tagged(g, tag, *g.to(sn)));
 }
 
 inline auto tagged_nodes(Graph const & g, string const & tag)
@@ -307,9 +321,9 @@ inline Position at(Location const & l, Graph const & g)
 	return between(g[from(l.segment)], g[to(l.segment)], l.howFar);
 }
 
-inline Position at(ReorientedLocation const & l, Graph const & g)
+inline Position at(Reoriented<Location> const & l, Graph const & g)
 {
-	return l.reorientation(at(l.location, g));
+	return l.reorientation(at(*l, g));
 }
 
 inline optional<PositionInSequence> position(Location const & l)

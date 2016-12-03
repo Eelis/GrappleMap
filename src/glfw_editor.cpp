@@ -1,4 +1,5 @@
 #include "camera.hpp"
+#include "editor.hpp"
 #include "persistence.hpp"
 #include "math.hpp"
 #include "positions.hpp"
@@ -17,138 +18,111 @@
 
 using namespace GrappleMap;
 
-struct NextPosition
+namespace
 {
-	PositionInSequence pis;
-	double howfar;
-	PositionReorientation reorientation;
-};
-
-double whereBetween(Position const & n, Position const & m, PlayerJoint const j, Camera const & camera, V2 const cursor)
-{
-	V2 v = world2xy(camera, n[j]);
-	V2 w = world2xy(camera, m[j]);
-
-	V2 a = cursor - v;
-	V2 b = w - v;
-
-	return std::max(0., /*std::min(1.,*/ inner_prod(a, b) / norm2(b) / norm2(b)/*)*/);
-}
-
-optional<NextPosition> determineNextPos(
-	PerPlayerJoint<ViablesForJoint> const & viables,
-	Graph const & graph, PlayerJoint const j,
-	PositionInSequence const from, PositionReorientation const reorientation,
-	Camera const & camera, V2 const cursor, bool const edit_mode)
-{
-	optional<NextPosition> np;
-
-	double best = 1000000;
-
-	Position const n = reorientation(graph[from]);
-	V2 const v = world2xy(camera, n[j]);
-
-	auto consider = [&](PositionInSequence const to, PositionReorientation const r)
-		{
-			Position const m = r(graph[to]);
-
-			double const howfar = whereBetween(n, m, j, camera, cursor);
-
-			V2 const w = world2xy(camera, m[j]);
-
-			V2 const ultimate = v + (w - v) * howfar;
-
-			double const d = distanceSquared(ultimate, cursor);
-
-			if (d < best)
-			{
-				np = NextPosition{to, howfar, r};
-				best = d;
-			}
-		};
-
-	foreach (p : viables[j].viables)
+	double whereBetween(Position const & n, Position const & m, PlayerJoint const j, Camera const & camera, V2 const cursor)
 	{
-		auto const & viable = p.second;
-		PositionInSequence other{p.first, viable.begin};
+		V2 v = world2xy(camera, n[j]);
+		V2 w = world2xy(camera, m[j]);
 
-		if (edit_mode && other.sequence != from.sequence) continue;
+		V2 a = cursor - v;
+		V2 b = w - v;
 
-		for (; other.position != viable.end; ++other.position)
-		{
-			if (other.sequence == from.sequence)
-			{
-				if (std::abs(int(other.position.index) - int(from.position.index)) != 1)
-					continue;
-			}
-			else
-			{
-				if (auto const current_node = node(graph, from))
-				{
-					auto const & e_to = graph.to(other.sequence);
-					auto const & e_from = graph.from(other.sequence);
-
-					if (!(current_node->node == e_to.node
-							&& other.position == *prev(last_pos(graph[other.sequence]))) &&
-						!(current_node->node == e_from.node
-							&& other.position == PosNum{1}))
-						continue;
-				}
-				else continue;
-			}
-				// todo: clean the above mess up
-
-			consider(other, viable.reorientation);
-		}
+		return std::max(0., std::min(1., inner_prod(a, b) / norm2(b) / norm2(b)));
 	}
 
-	return np;
+	optional<Reoriented<Location>> determineNextPos(
+		Viables const & viables,
+		Graph const & graph,
+		PlayerJoint const j,
+		Reoriented<SegmentInSequence> const & current,
+		Camera const & camera,
+		V2 const cursor,
+		Selection const * const selection)
+	{
+		optional<Reoriented<Location>> nl;
+
+		double best = 1000000;
+
+		vector<Reoriented<SegmentInSequence>>
+			candidates = neighbours(current, graph, true);
+
+		candidates.push_back(current);
+
+		foreach (candidate : candidates)
+		{
+			auto const & m = viables[j].viables;
+			auto const i = m.find(candidate->sequence);
+			if (i == m.end()) continue;
+
+			if (selection && !elem(candidate->sequence, *selection)) continue;
+
+			Viable const & v = i->second;
+
+			if (candidate->segment.index >= v.begin.index &&
+				candidate->segment.index < v.end.index)
+			{
+				Position const
+					n = at(from(candidate), graph),
+					  m = at(to(candidate), graph);
+
+				double const howfar = whereBetween(n, m, j, camera, cursor);
+
+				V2 const v = world2xy(camera, n[j]);
+				V2 const w = world2xy(camera, m[j]);
+
+				V2 const ultimate = v + (w - v) * howfar;
+
+				double const d = distanceSquared(ultimate, cursor);
+
+				if (d < best)
+				{
+					nl = {Location{*candidate, howfar}, candidate.reorientation};
+					best = d;
+				}
+			}
+		}
+
+		return nl;
+	}
 }
 
 struct Window
 {
-	explicit Window(string const f)
-		: filename(f), graph(loadGraph(filename))
+	explicit Window(boost::program_options::variables_map const & opts)
+		: editor(opts, &camera)
 	{}
 
-	string const filename;
-	Graph graph;
-	PositionInSequence location{{0}, {0}};
 	PlayerJoint closest_joint = {{0}, LeftAnkle};
 	optional<PlayerJoint> chosen_joint;
 	bool edit_mode = false;
 	optional<Position> clipboard;
-	Camera camera;
 	bool split_view = false;
+	Camera camera;
+	Editor editor;
 	double jiggle = 0;
-	Viables viable;
-	PositionReorientation reorientation{};
-	optional<NextPosition> next_pos;
 	double last_cursor_x = 0, last_cursor_y = 0;
-	std::stack<std::pair<Graph, PositionInSequence>> undo;
 	Style style;
 	PlayerDrawer playerDrawer;
 };
 
 void print_status(Window const & w)
 {
-	auto && seq = w.graph[w.location.sequence];
+	SegmentInSequence const s = w.editor.getLocation()->segment;
+	SeqNum const sn = s.sequence;
+
+	Sequence const & seq = w.editor.getGraph()[sn];
 
 	std::cout
-		<< "\r[" << next(w.location.position)
-		<< '/' << seq.positions.size() << "] "
+		<< "\r[" << s.segment.index + 1
+		<< '/' << seq.positions.size()-1 << "] "
 		<< seq.description.front() << string(30, ' ') << std::flush;
-}
-
-void push_undo(Window & w)
-{
-	w.undo.emplace(w.graph, w.location);
 }
 
 void translate(Window & w, V3 const v)
 {
-	push_undo(w);
-	w.graph.replace(w.location, w.graph[w.location] + v, true);
+	w.editor.push_undo();
+	w.editor.replace(current_position(w.editor) + v);
 }
 
 void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int action, int mods)
@@ -162,21 +136,14 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 		if (mods & GLFW_MOD_CONTROL)
 			switch (key)
 			{
-				case GLFW_KEY_Z:
-					if (!w.undo.empty())
-					{
-						std::tie(w.graph, w.location) = w.undo.top();
-						w.undo.pop();
-						w.next_pos = none;
-					}
-					return;
+				case GLFW_KEY_Z: w.editor.undo(); return;
 
 				case GLFW_KEY_C: // copy
-					w.clipboard = w.graph[w.location];
+					w.clipboard = current_position(w.editor); // todo: store non-reoriented position instead?
 					return;
 
 				case GLFW_KEY_V: // paste
-					if (w.clipboard) w.graph.replace(w.location, *w.clipboard, true);
+					if (w.clipboard) w.editor.replace(*w.clipboard);
 					return;
 
 				default: return;
@@ -184,53 +151,16 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 		else
 			switch (key)
 			{
-				case GLFW_KEY_INSERT:
-					push_undo(w);
-					w.graph.clone(w.location);
-					break;
-
-				case GLFW_KEY_PAGE_UP:
-					if (auto x = prev(w.location.sequence))
-					{
-						w.location.sequence = *x;
-						w.location.position.index = 0;
-						w.reorientation = PositionReorientation();
-						print_status(w);
-					}
-					break;
-
-				case GLFW_KEY_PAGE_DOWN:
-					if (int32_t(w.location.sequence.index) != w.graph.num_sequences() - 1)
-					{
-						++w.location.sequence;
-						w.location.position.index = 0;
-						w.reorientation = PositionReorientation();
-						print_status(w);
-					}
-					break;
-
-				// swap players
-
-				case GLFW_KEY_X:
-				{
-					push_undo(w);
-					auto p = w.graph[w.location];
-					swap_players(p);
-					w.graph.replace(w.location, p, true);
-					break;
-				}
-
-				// mirror
-
-				case GLFW_KEY_M:
-				{
-					push_undo(w);
-					w.graph.replace(w.location, mirror(w.graph[w.location]), true);
-					break;
-				}
+				case GLFW_KEY_X: { w.editor.swap_players(); break; }
+				case GLFW_KEY_M: { w.editor.mirror(); break; }
+				case GLFW_KEY_P: { w.editor.toggle_playback(); break; }
+				case GLFW_KEY_L: { w.editor.toggle_lock(!w.editor.lockedToSelection()); break; }
+				case GLFW_KEY_SPACE: { w.editor.toggle_selected(); break; }
+				case GLFW_KEY_INSERT: { w.editor.insert_keyframe(); break; }
+				case GLFW_KEY_DELETE: { w.editor.delete_keyframe(); break; }
 
 				// set position to center
-
+/*
 				case GLFW_KEY_U:
 					push_undo(w);
 					if (auto nextLoc = next(w.graph, w.location))
@@ -277,7 +207,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 						w.graph.replace(w.location, p, false);
 					}
 					break;
-
+*/
 				case GLFW_KEY_KP_4: translate(w, V3{-translation, 0, 0}); break;
 				case GLFW_KEY_KP_6: translate(w, V3{translation, 0, 0}); break;
 				case GLFW_KEY_KP_8: translate(w, V3{0, 0, -translation}); break;
@@ -285,23 +215,23 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 
 				case GLFW_KEY_KP_9:
 				{
-					push_undo(w);
-					auto p = w.graph[w.location];
+					w.editor.push_undo();
+					Position p = current_position(w.editor);
 					foreach (j : playerJoints) p[j] = yrot(-0.05) * p[j];
-					w.graph.replace(w.location, p, true);
+					w.editor.replace(p);
 					break;
 				}
 				case GLFW_KEY_KP_7:
 				{
-					push_undo(w);
-					auto p = w.graph[w.location];
+					w.editor.push_undo();
+					Position p = current_position(w.editor);
 					foreach (j : playerJoints) p[j] = yrot(0.05) * p[j];
-					w.graph.replace(w.location, p, true);
+					w.editor.replace(p);
 					break;
 				}
 
 				// new sequence
-
+/*
 				case GLFW_KEY_N:
 				{
 					push_undo(w);
@@ -310,48 +240,11 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					w.location.position.index = 0;
 					break;
 				}
+*/
 				case GLFW_KEY_V: w.edit_mode = !w.edit_mode; break;
-
-				case GLFW_KEY_S: save(w.graph, w.filename); break;
-
+				case GLFW_KEY_S: w.editor.save(); break;
 				case GLFW_KEY_1: w.split_view = !w.split_view; break;
-
-				case GLFW_KEY_B: // branch
-				{
-					push_undo(w);
-
-					try { split_at(w.graph, w.location); }
-					catch (std::exception const & e)
-					{
-						std::cerr << "split_at: " << e.what() << '\n';
-					}
-
-					break;
-				}
-
-				case GLFW_KEY_DELETE:
-				{
-					auto const before = make_pair(w.graph, w.location);
-
-					if (mods & GLFW_MOD_CONTROL)
-					{
-						push_undo(w);
-
-						if (auto const new_seq = erase_sequence(w.graph, w.location.sequence))
-							w.location = {*new_seq, 0};
-						else w.undo.pop();
-					}
-					else
-					{
-						push_undo(w);
-
-						if (auto const new_pos = w.graph.erase(w.location))
-							w.location.position = *new_pos;
-						else w.undo.pop();
-					}
-
-					break;
-				}
+				case GLFW_KEY_B: w.editor.branch(); break;
 			}
 	}
 }
@@ -363,16 +256,20 @@ void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int 
 	if (action == GLFW_PRESS)
 	{
 		if (button == GLFW_MOUSE_BUTTON_LEFT)
-			push_undo(w);
+			w.editor.push_undo();
 
 		w.chosen_joint = w.closest_joint;
 	}
 	else if (action == GLFW_RELEASE)
+	{
 		w.chosen_joint = none;
+		w.editor.snapToPos();
+	}
 }
 
 void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double yoffset)
 {
+/*
 	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(glfwWindow));
 
 	if (yoffset == -1)
@@ -393,6 +290,7 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 	}
 
 	print_status(w);
+	*/
 }
 
 std::vector<View> const
@@ -426,14 +324,8 @@ void cursor_pos_callback(GLFWwindow * const window, double const xpos, double co
 	w.last_cursor_y = ypos;
 }
 
-template <typename T>
-T maybe_mirror(bool b, T x)
-{
-	return b ? -x : x;
-}
-
 string const usage =
-	"Usage: grapplemap-editor [OPTIONS] [START]\n";
+	"Usage: grapplemap-glfw-editor [OPTIONS] [START]\n";
 
 string const start_desc =
 	"START can be:\n"
@@ -462,14 +354,14 @@ string const controls =
 	"  i          - mirror view\n"
 	"  n          - create new transition with start and end point identical to current frame\n"
 	"  b          - split current transition into two at current frame, where the latter becomes a new node\n"
+	"  l          - toggle browse lock\n"
+	"  p          - toggle playback\n"
+	"  space      - add/remove current transition to/from selection\n"
 	"  numpad 7/9  - rotate position\n"
 	"  numpad arrows - move position\n"
 	"  ctrl-c     - copy position to clipboard\n"
 	"  ctrl-v     - paste position from clipboard, overwriting current position\n"
 	"  ctrl-z     - undo\n"
-	"  page up    - go to previous transition\n"
-	"  page down  - go to next transition\n"
-	"  ctrl-del   - delete current transition\n"
 	"  ins        - duplicate current frame\n"
 	"  del        - delete current frame\n"
 	"\n"
@@ -479,42 +371,44 @@ string const controls =
 	"  middle click + move       - rotate camera\n"
 	"  left click + drag joint   - move joint (only in edit mode)\n";
 
+namespace po = boost::program_options;
+
+boost::optional<po::variables_map> readArgs(int const argc, char const * const * const argv)
+{
+	po::options_description optdesc("Options");
+	optdesc.add_options()
+		("help,h", "show this help")
+		("start", po::value<string>()->default_value("last-trans"), "see START below")
+		("db", po::value<string>()->default_value("GrappleMap.txt"), "database file");
+
+	po::positional_options_description posopts;
+	posopts.add("start", -1);
+
+	po::variables_map vm;
+	po::store(
+		po::command_line_parser(argc, argv)
+			.options(optdesc)
+			.positional(posopts)
+			.run(),
+		vm);
+	po::notify(vm);
+
+	if (vm.count("help"))
+	{
+		std::cout << usage << '\n' << optdesc << '\n' << start_desc << '\n' << controls;
+		return boost::none;
+	}
+
+	return vm;
+}
+
 int main(int const argc, char const * const * const argv)
 {
-	namespace po = boost::program_options;
-
 	try
 	{
-		po::options_description optdesc("Options");
-		optdesc.add_options()
-			("help,h", "show this help")
-			("start", po::value<string>()->default_value("last-trans"), "see START below")
-			("db", po::value<string>()->default_value("GrappleMap.txt"), "database file");
-
-		po::positional_options_description posopts;
-		posopts.add("start", -1);
-
-		po::variables_map vm;
-		po::store(
-			po::command_line_parser(argc, argv)
-				.options(optdesc)
-				.positional(posopts)
-				.run(),
-			vm);
-		po::notify(vm);
-
-		if (vm.count("help"))
-		{
-			std::cout << usage << '\n' << optdesc << '\n' << start_desc << '\n' << controls;
-			return 0;
-		}
-
-		Window w(vm["db"].as<std::string>());
-
-		if (auto start = posinseq_by_desc(w.graph, vm["start"].as<string>()))
-			w.location = *start;
-		else
-			throw runtime_error("no such position/transition");
+		auto const vm = readArgs(argc, argv);
+		if (!vm) return 0;
+		Window w(*vm);
 
 		if (!glfwInit()) return -1;
 
@@ -560,8 +454,7 @@ int main(int const argc, char const * const * const argv)
 			{
 				w.camera.setViewportSize(v->fov, v->w * width, v->h * height);
 
-				foreach (j : playerJoints)
-					w.viable[j] = determineViables(w.graph, w.location, j, &w.camera, w.reorientation);
+				w.editor.recalcViables();
 
 				double xpos, ypos;
 				glfwGetCursorPos(window, &xpos, &ypos);
@@ -576,46 +469,37 @@ int main(int const argc, char const * const * const argv)
 						(((y - v->y) / v->h) - 0.5) * 2};
 			}
 
-			if (cursor)
+			if (cursor && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+			{
+				Selection const
+					tempSel{forwardStep(sequence(segment(w.editor.getLocation())))},
+					& sel = w.editor.getSelection().empty() ? tempSel : w.editor.getSelection();
+
 				if (auto best_next_pos = determineNextPos(
-						w.viable, w.graph, w.chosen_joint ? *w.chosen_joint : w.closest_joint,
-						{w.location.sequence, w.location.position}, w.reorientation, w.camera, *cursor, w.edit_mode))
+						w.editor.getViables(), w.editor.getGraph(),
+						w.chosen_joint ? *w.chosen_joint : w.closest_joint,
+						segment(w.editor.getLocation()),
+						w.camera, *cursor,
+						w.editor.lockedToSelection() ? &sel : nullptr))
 				{
-					if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-					{
-						double const speed = 0.08;
-
-						if (w.next_pos)
-						{
-							if (w.next_pos->pis == best_next_pos->pis &&
-								w.next_pos->reorientation == best_next_pos->reorientation)
-								w.next_pos->howfar += std::max(-speed, std::min(speed, best_next_pos->howfar - w.next_pos->howfar));
-							else if (w.next_pos->howfar > 0.05)
-								w.next_pos->howfar = std::max(0., w.next_pos->howfar - speed);
-							else
-								w.next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
-						}
-						else
-							w.next_pos = NextPosition{best_next_pos->pis, 0, best_next_pos->reorientation};
-					}
+					w.editor.setLocation(*best_next_pos);
 				}
+			}
 
-			Position const reorientedPosition = w.reorientation(w.graph[w.location]);
-
-			Position posToDraw = reorientedPosition;
+			Position pos = current_position(w.editor);
 
 			// editing
 
 			if (cursor && w.chosen_joint && w.edit_mode && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 			{
-				Position new_pos = w.graph[w.location];
+				auto const reo = w.editor.getLocation().reorientation;
 
 				V3 dragger = [&]{
 						PositionReorientation r;
 						r.reorientation.angle = -w.camera.getHorizontalRotation();
-						return compose(w.reorientation, r)(V3{1,0,0});
+						return compose(reo, r)(V3{1,0,0});
 					}();
-				V3 const v = apply(w.reorientation, new_pos, *w.chosen_joint);
+				V3 const v = apply(reo, pos, *w.chosen_joint);
 				V2 const joint_xy = world2xy(w.camera, v);
 
 				double const
@@ -624,56 +508,54 @@ int main(int const argc, char const * const * const argv)
 					offy = (cursor->y - joint_xy.y)
 						* 0.01 / (world2xy(w.camera, v + V3{0,0.01,0}).y - joint_xy.y);
 
-				auto const rj = apply(w.reorientation, *w.chosen_joint);
+				auto const rj = apply(reo, *w.chosen_joint);
 
-				auto & joint = new_pos[rj];
+				auto & joint = pos[rj];
 
-				if (w.reorientation.mirror) dragger.x = -dragger.x;
+				if (reo.mirror) dragger.x = -dragger.x;
 
 				joint.x = std::max(-2., std::min(2., joint.x + dragger.x * offx));
 				joint.z = std::max(-2., std::min(2., joint.z + dragger.z * offx));
 				joint.y = std::max(jointDefs[w.chosen_joint->joint].radius, joint.y + offy);
 
-				spring(new_pos, rj);
+				spring(pos, rj);
 
-				w.graph.replace(w.location, new_pos, false);
-
-				posToDraw = w.reorientation(new_pos);
+				w.editor.replace(pos);
 			}
-			else
+			else if (cursor && !w.chosen_joint)
+				w.closest_joint = *minimal(
+					playerJoints.begin(), playerJoints.end(),
+					[&](PlayerJoint j) { return norm2(world2xy(w.camera, pos[j]) - *cursor); });
+
+			if (!w.edit_mode && !w.chosen_joint)
 			{
-				if (w.next_pos && (!w.edit_mode || glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS))
-					posToDraw = between(
-							reorientedPosition,
-							w.next_pos->reorientation(w.graph[w.next_pos->pis]),
-							w.next_pos->howfar);
-
-				if (cursor && !w.chosen_joint)
-					w.closest_joint = *minimal(
-						playerJoints.begin(), playerJoints.end(),
-						[&](PlayerJoint j) { return norm2(world2xy(w.camera, posToDraw[j]) - *cursor); });
+				auto const center = xz(pos[player0][Core] + pos[player1][Core]) / 2;
+				w.camera.setOffset(center);
 			}
-
-			auto const center = xz(posToDraw[player0][Core] + posToDraw[player1][Core]) / 2;
-
-			w.camera.setOffset(center);
 
 			auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
 
 			glfwGetFramebufferSize(window, &width, &height);
+
+			PerPlayerJoint<optional<V3>> colors;
+
+			if (w.edit_mode)
+				foreach (j : playerJoints)
+					colors[j] = white;
+			else
+				foreach (j : playerJoints)
+					if (w.editor.getViables()[j].total_dist != 0)
+						colors[j] = white * 0.4 + playerDefs[j.player].color * 0.6;
+
+			colors[special_joint] = yellow;
+
 			renderWindow(
-				views, &w.viable, w.graph, posToDraw, w.camera, special_joint,
-				w.edit_mode, 0, 0, width, height, {} /* TODO w.location.sequence*/, w.style, w.playerDrawer);
+				views, &w.editor.getViables(), w.editor.getGraph(), pos, w.camera, special_joint,
+				colors, 0, 0, width, height, w.editor.getSelection(), w.style, w.playerDrawer);
 
 			glfwSwapBuffers(window);
 
-			if (w.chosen_joint && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && w.next_pos && w.next_pos->howfar >= 1)
-			{
-				w.location = w.next_pos->pis;
-				w.reorientation = w.next_pos->reorientation;
-				w.next_pos = none;
-				print_status(w);
-			}
+			w.editor.frame(0.1); // todo
 		}
 
 		glfwTerminate();

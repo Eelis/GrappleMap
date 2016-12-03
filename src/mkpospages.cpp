@@ -129,7 +129,7 @@ namespace
 	
 	vector<Position> frames_for_step(Graph const & graph, Step const step)
 	{
-		vector<Position> v = frames_for_sequence(graph, step.seq);
+		vector<Position> v = frames_for_sequence(graph, *step);
 		if (step.reverse) std::reverse(v.begin(), v.end());
 		return v;
 	}
@@ -246,17 +246,17 @@ namespace
 			set<string> tt = tags(g[s]);
 
 			{
-				set<string> const from_tags = tags(g[g.from(s).node]);
-				foreach(t : tags(g[g.to(s).node]))
+				set<string> const from_tags = tags(g[*g.from(s)]);
+				foreach(t : tags(g[*g.to(s)]))
 					if (from_tags.find(t) != from_tags.end())
 						tt.insert(t);
 			}
 
 			html
 				<< "<tr>"
-				<< "<td><a href='p" << g.from(s).node.index << "n.html'>" << nlspace(desc(g[g.from(s).node])) << "</a></td>"
+				<< "<td><a href='p" << g.from(s)->index << "n.html'>" << nlspace(desc(g[*g.from(s)])) << "</a></td>"
 				<< "<td><b>" << nlspace(g[s].description.front()) << "</b></td>"
-				<< "<td><a href='p" << g.to(s).node.index << "n.html'>" << nlspace(desc(g[g.to(s).node])) << "</a></td>"
+				<< "<td><a href='p" << g.to(s)->index << "n.html'>" << nlspace(desc(g[*g.to(s)])) << "</a></td>"
 				<< "<td>" << g[s].positions.size() << "</td>"
 				<< "<td>" << tt.size() << "</td>"
 				<< "</tr>";
@@ -487,9 +487,9 @@ namespace
 		{
 			return "<em>via</em> "
 				+ link(
-					"../composer/index.html?" + to_string(trans.step.seq.index),
+					"../composer/index.html?" + to_string(trans.step->index),
 					img(
-						transition_image_title(ctx.graph, trans.step.seq),
+						transition_image_title(ctx.graph, *trans.step),
 						ctx.image_url + "/" + trans.base_filename + code(ctx.view) + ".gif", ""))
 				+ " <em>to</em>";
 		}
@@ -502,7 +502,7 @@ namespace
 
 			foreach (trans : ctx.incoming)
 			{
-				auto const v = is_sweep(ctx.graph, trans.step.seq) ? xmirror(ctx.view) : ctx.view;
+				auto const v = is_sweep(ctx.graph, *trans.step) ? xmirror(ctx.view) : ctx.view;
 
 				ctx.html
 					<< "<tr><td style='" << ImageMaker::css(bg_color(trans)) << "'>"
@@ -514,7 +514,7 @@ namespace
 									ctx.output_dir + "/images/", translateNormal(trans.frames.front()),
 									ctx.view, 200, 150, bg_color(trans),
 									"rot" + to_string(ctx.n.index)
-									+ "in" + to_string(trans.step.seq.index) + code(v)),
+									+ "in" + to_string(trans.step->index) + code(v)),
 								"")))
 					<< ' ' << transition_card(ctx, trans) << "</td></tr>";
 			}
@@ -530,7 +530,7 @@ namespace
 
 			foreach (trans : ctx.outgoing)
 			{
-				auto const v = is_sweep(ctx.graph, trans.step.seq) ? xmirror(ctx.view) : ctx.view;
+				auto const v = is_sweep(ctx.graph, *trans.step) ? xmirror(ctx.view) : ctx.view;
 
 				ctx.html
 					<< "<tr><td style='" << ImageMaker::css(bg_color(trans)) << "'>"
@@ -543,7 +543,7 @@ namespace
 								ctx.output_dir + "/images/", translateNormal(trans.frames.back()),
 								ctx.view, 200, 150, bg_color(trans),
 								"rot" + to_string(ctx.n.index)
-								+ "out" + to_string(trans.step.seq.index) + code(v)),
+								+ "out" + to_string(trans.step->index) + code(v)),
 							""))
 					<< "</a></div></td></tr>";
 			}
@@ -672,19 +672,19 @@ namespace
 				foreach (p : v) p = reo(inverse(this_side.reorientation)(p));
 				assert(basicallySame(v.back(), reo(pos)));
 
-				auto const props = properties(graph, step.seq);
+				auto const props = properties(graph, *step);
 
 				bool top = props.count("top")!=0;
 				bool bottom = props.count("bottom")!=0;
 
-				bool const sweep = is_sweep(graph, step.seq);
+				bool const sweep = is_sweep(graph, *step);
 
 				if (top && sweep)
 				{ top = false; bottom = true; }
 				else if (bottom && sweep)
 				{ bottom = false; top = true; }
 
-				incoming.push_back({step, top, bottom, v, {}, other_side.node});
+				incoming.push_back({step, top, bottom, v, {}, *other_side});
 
 				longest_in = std::max(longest_in, v.size());
 			}
@@ -695,7 +695,7 @@ namespace
 				trans.frames.insert(trans.frames.begin(), longest_in - trans.frames.size(), p);
 				trans.base_filename = transition_gifs(
 					mkimg, output_dir, trans.frames, bg_color(trans),
-					to_string(n.index) + "in" + to_string(trans.step.seq.index));
+					to_string(n.index) + "in" + to_string(trans.step->index));
 			}
 
 			foreach (step : out_steps(graph, n))
@@ -708,9 +708,9 @@ namespace
 				foreach (p : v) p = reo(inverse(this_side.reorientation)(p));
 				assert(basicallySame(v.front(), reo(pos)));
 
-				auto const props = properties(graph, step.seq);
+				auto const props = properties(graph, *step);
 
-				outgoing.push_back({step, props.count("top")!=0, props.count("bottom")!=0, v, {}, other_side.node});
+				outgoing.push_back({step, props.count("top")!=0, props.count("bottom")!=0, v, {}, *other_side});
 				longest_out = std::max(longest_out, v.size());
 			}
 
@@ -720,7 +720,7 @@ namespace
 				trans.frames.insert(trans.frames.end(), longest_out - trans.frames.size(), p);
 				trans.base_filename = transition_gifs(
 					mkimg, output_dir, trans.frames, bg_color(trans),
-					to_string(n.index) + "out" + to_string(trans.step.seq.index));
+					to_string(n.index) + "out" + to_string(trans.step->index));
 			}
 
 			auto order_transitions = [](vector<Trans> & v)

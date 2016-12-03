@@ -1,31 +1,47 @@
-documentation
+documentation:
 - readme
 - edit guidelines
 - database format
 
-db
+db:
 - cage/fence
 - understand that for left-right symmetric positions, outgoing transition can follow incoming transitions in either mirrored or non-mirrored form (alternatively, we could have zero-length mirror transitions in these positions)
 
-editor
-- in edit mode, auto-hide limbs that obstruct the edited joint
-- make rotation commands rotate around center between players, not area center
+editor:
+- test playback with reverse steps
+- more useful console output
 - editing selected joints as a group
+- draw torso with a single shape
+- neck sticks out of sides of head
+- smoothen playback and fix playback speed
 - add diagnostics for transitions or transition sequences that:
   * don't respect inertia
   * ice skate or hover
   * rotate joints in unnatural ways
   * move limbs through eachother
 - maybe visually indicate where a body's structural mechanics are weak, which directions it could be off-balanced, etc
-- more useful console output
 
-vr editor:
+glfw frontend:
+- in edit mode, auto-hide limbs that obstruct the edited joint
+- make rotation commands rotate around center between players, not area center
+- respect 'draggable' again(?)
+- test clipboard
+- don't show viables during playback
+- restore remaining disabled commands
+
+vrui frontend:
 - limb editing
 - figure out how to integrate in an environment that also has web browser, text editor, video player, ...
 - define tools properly
-- don't snap joints to cursor when browsing
 - make viables completely match actually browseable paths
 - position-in-sequence labels
+- show correct viable lines
+- rewind playback nicely
+- reorientation tool
+- interface for inserting new transitions
+- graph display
+- update menu entries (e.g. only show one of insert/remove keyframe, and 'enable/disable blabla' instead of 'toggle blabla')
+- write tutorial
 
 playback:
 - make {pre,post}fix length for demo mode configurable

@@ -195,7 +195,7 @@ Path readScene(Graph const & graph, string const filename)
 				if (prev_node)
 				{
 					foreach (step : out_steps(graph, *prev_node))
-						if (to(graph, step).node == *n)
+						if (*to(graph, step) == *n)
 						{
 							path.push_back(step);
 							goto found;
@@ -211,7 +211,7 @@ Path readScene(Graph const & graph, string const filename)
 			else if (auto const step = step_by_desc(graph, desc, prev_node))
 			{
 				path.push_back(*step);
-				prev_node = to(graph, *step).node;
+				prev_node = *to(graph, *step);
 			}
 			else error("unknown: \"" + desc + '"');
 		}
@@ -249,9 +249,9 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 
 	foreach(s : seqnums(graph))
 	{
-		auto const
-			from = graph.from(s).node,
-			to = graph.to(s).node;
+		NodeNum const
+			from = *graph.from(s),
+			to = *graph.to(s);
 
 		if (!nodes.count(from) || !nodes.count(to)) continue;
 
@@ -314,12 +314,12 @@ void tojs(Position const & p, std::ostream & js)
 
 void tojs(Step const s, std::ostream & js)
 {
-	js << "{transition:" << s.seq.index << ",reverse:" << s.reverse << '}';
+	js << "{transition:" << s->index << ",reverse:" << s.reverse << '}';
 }
 
 void tojs(ReorientedNode const & n, std::ostream & js)
 {
-	js << "{node:" << n.node.index;
+	js << "{node:" << n->index;
 	js << ",reo:";
 	tojs(n.reorientation, js);
 	js << '}';

@@ -35,9 +35,9 @@ optional<Step> step_by_desc(Graph const & g, string const & desc, optional<NodeN
 		if (replace_all(g[sn].description.front(), "\\n", " ") == desc
 			|| desc == "t" + std::to_string(sn.index))
 		{
-			if (!from || g.from(sn).node == *from)
+			if (!from || *g.from(sn) == *from)
 				return Step{sn, false};
-			if (is_bidirectional(g[sn]) && g.to(sn).node == *from)
+			if (is_bidirectional(g[sn]) && *g.to(sn) == *from)
 				return Step{sn, true};
 		}
 
@@ -63,7 +63,7 @@ optional<PositionInSequence> posinseq_by_desc(Graph const & g, string const & s)
 {
 	if (s == "last-trans") return first_pos_in({g.num_sequences() - 1u});
 
-	if (auto step = step_by_desc(g, s)) return first_pos_in(step->seq);
+	if (auto step = step_by_desc(g, s)) return first_pos_in(**step);
 
 	if (auto n = node_by_desc(g, s)) return node_as_posinseq(g, *n);
 
@@ -73,8 +73,8 @@ optional<PositionInSequence> posinseq_by_desc(Graph const & g, string const & s)
 optional<PositionInSequence> node_as_posinseq(Graph const & g, NodeNum const node)
 {
 	foreach(sn : seqnums(g))
-		if (g.from(sn).node == node) return first_pos_in(sn);
-		else if (g.to(sn).node == node) return last_pos_in(g, sn);
+		if (*g.from(sn) == node) return first_pos_in(sn);
+		else if (*g.to(sn) == node) return last_pos_in(g, sn);
 
 	return none;
 }
@@ -97,7 +97,7 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 	vector<Position> positions;
 	ReorientedNode m;
 
-	if (g.from(s).node == n.node)
+	if (*g.from(s) == *n)
 	{
 		PositionReorientation const r = compose(inverse(g.from(s).reorientation), n.reorientation);
 
@@ -128,7 +128,7 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 					r(g[*next(g, location)]),
 					howfar / double(frames_per_pos)));
 
-		m.node = g.to(s).node;
+		*m = *g.to(s);
 		m.reorientation = compose(g.to(s).reorientation, r);
 
 		assert(basicallySame(
@@ -143,7 +143,7 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 			g[m]
 			));
 	}
-	else if (g.to(s).node == n.node)
+	else if (*g.to(s) == *n)
 	{
 		assert(basicallySame(
 			g[s].positions.back(),
@@ -175,11 +175,11 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 					r(g[*prev(location)]),
 					howfar / double(frames_per_pos)));
 
-		m.node = g.from(s).node;
+		*m = *g.from(s);
 		m.reorientation = compose(g.from(s).reorientation, r);
 	}
 	else throw std::runtime_error(
-		"node " + std::to_string(n.node.index) + " is not connected to sequence " + std::to_string(s.index));
+		"node " + std::to_string(n->index) + " is not connected to sequence " + std::to_string(s.index));
 
 	assert(basicallySame(positions.front(), g[n]));
 	assert(basicallySame(positions.back(), g[m]));
@@ -189,25 +189,25 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 
 ReorientedNode follow(Graph const & g, ReorientedNode const & n, SeqNum const s)
 {
-	if (g.from(s).node == n.node)
+	if (*g.from(s) == *n)
 		return
-			{ g.to(s).node
+			{ *g.to(s)
 			, compose(g.to(s).reorientation,
 			  compose(inverse(g.from(s).reorientation),
 			  n.reorientation)) };
-	else if (g.to(s).node == n.node)
-		return { g.from(s).node
+	else if (*g.to(s) == *n)
+		return { *g.from(s)
 			, compose(g.from(s).reorientation,
 			  compose(inverse(g.to(s).reorientation),
 			  n.reorientation)) };
 	else throw std::runtime_error(
-		"node " + std::to_string(n.node.index) + " is not connected to sequence " + std::to_string(s.index));
+		"node " + std::to_string(n->index) + " is not connected to sequence " + std::to_string(s.index));
 }
 
 NodeNum follow(Graph const & g, NodeNum const n, SeqNum const s)
 {
-	if (g.from(s).node == n) return g.to(s).node;
-	if (g.to(s).node == n) return g.from(s).node;
+	if (*g.from(s) == n) return *g.to(s);
+	if (*g.to(s) == n) return *g.from(s);
 	throw std::runtime_error(
 		"node " + std::to_string(n.index) + " is not connected to sequence " + std::to_string(s.index));
 }
@@ -303,8 +303,8 @@ bool connected(Graph const & g, NodeNum const a, set<NodeNum> const & s)
 bool connected(Graph const & g, NodeNum const a, NodeNum const b)
 {
 	foreach(s : seqnums(g))
-		if ((g.from(s).node == a && g.to(s).node == b) ||
-		    (g.to(s).node == a && g.from(s).node == b))
+		if ((*g.from(s) == a && *g.to(s) == b) ||
+		    (*g.to(s) == a && *g.from(s) == b))
 			return true;
 
 	return false;
@@ -357,7 +357,7 @@ vector<Path> in_paths(Graph const & g, NodeNum const node, unsigned size)
 	vector<Path> r;
 
 	foreach (x : is)
-		foreach (e : in_paths(g, from(g, x).node, size - 1))
+		foreach (e : in_paths(g, *from(g, x), size - 1))
 		{
 			e.push_back(x);
 			r.push_back(e);
@@ -377,7 +377,7 @@ vector<Path> out_paths(Graph const & g, NodeNum const node, unsigned size)
 	vector<Path> r;
 
 	foreach (x : os)
-		foreach (e : out_paths(g, to(g, x).node, size - 1))
+		foreach (e : out_paths(g, *to(g, x), size - 1))
 		{
 			e.insert(e.begin(), x);
 			r.push_back(e);
@@ -391,7 +391,7 @@ vector<SeqNum> in_sequences(Graph const & g, NodeNum const n) // todo: inefficie
 	vector<SeqNum> v;
 
 	foreach(sn : seqnums(g))
-		if (g.to(sn).node == n)
+		if (*g.to(sn) == n)
 			v.push_back(sn);
 
 	return v;
@@ -402,7 +402,7 @@ vector<SeqNum> out_sequences(Graph const & g, NodeNum const n) // todo: ineffici
 	vector<SeqNum> v;
 
 	foreach(sn : seqnums(g))
-		if (g.from(sn).node == n)
+		if (*g.from(sn) == n)
 			v.push_back(sn);
 
 	return v;
@@ -414,10 +414,10 @@ vector<Step> out_steps(Graph const & g, NodeNum const n)
 
 	foreach(sn : seqnums(g))
 	{
-		if (g.from(sn).node == n)
+		if (*g.from(sn) == n)
 			v.push_back({sn, false});
 
-		if (is_bidirectional(g[sn]) && g.to(sn).node == n)
+		if (is_bidirectional(g[sn]) && *g.to(sn) == n)
 			v.push_back({sn, true});
 	}
 
@@ -430,10 +430,10 @@ vector<Step> in_steps(Graph const & g, NodeNum const n)
 
 	foreach(sn : seqnums(g))
 	{
-		if (g.to(sn).node == n)
+		if (*g.to(sn) == n)
 			v.push_back({sn, false});
 
-		if (is_bidirectional(g[sn]) && g.from(sn).node == n)
+		if (is_bidirectional(g[sn]) && *g.from(sn) == n)
 			v.push_back({sn, true});
 	}
 
@@ -462,29 +462,29 @@ auto fmap(vector<T> const & v, F f) -> vector<typename std::result_of<F(T)>::typ
 	return r;
 }
 
-vector<ReorientedSequence> in_sequences(Graph const & g, ReorientedNode const & n)
+vector<Reoriented<SeqNum>> in_sequences(Graph const & g, Reoriented<NodeNum> const & n)
 {
-	return fmap(in_sequences(g, n.node), [&](SeqNum const s)
-		{ return ReorientedSequence
+	return fmap(in_sequences(g, *n), [&](SeqNum const s)
+		{ return Reoriented<SeqNum>
 			{s, compose(inverse(g.to(s).reorientation), n.reorientation)}; });
 }
 
-vector<ReorientedSegment> in_segments(Graph const & g, ReorientedNode const & n)
+vector<ReorientedSegment> in_segments(Graph const & g, Reoriented<NodeNum> const & n)
 {
-	return fmap(in_sequences(g, n), [&](ReorientedSequence const & s)
+	return fmap(in_sequences(g, n), [&](Reoriented<SeqNum> const & s)
 		{ return last_segment(g, s); });
 }
 
-vector<ReorientedSequence> out_sequences(Graph const & g, ReorientedNode const & n)
+vector<Reoriented<SeqNum>> out_sequences(Graph const & g, ReorientedNode const & n)
 {
-	return fmap(out_sequences(g, n.node), [&](SeqNum const s)
-		{ return ReorientedSequence
+	return fmap(out_sequences(g, *n), [&](SeqNum const s)
+		{ return Reoriented<SeqNum>
 			{s, compose(inverse(g.from(s).reorientation), n.reorientation)}; });
 }
 
 vector<ReorientedSegment> out_segments(Graph const & g, ReorientedNode const & n)
 {
-	return fmap(out_sequences(g, n), [&](ReorientedSequence const & s)
+	return fmap(out_sequences(g, n), [&](Reoriented<SeqNum> const & s)
 		{ return first_segment(s); });
 }
 
@@ -497,16 +497,16 @@ vector<ReorientedSegment> segments_around(ReorientedNode const & n, Graph const 
 
 vector<ReorientedSegment> neighbours(
 	ReorientedSegment const & s, Graph const & g,
-	bool const open /* include segments in neighbouring segments */)
+	bool const open /* include segments in neighbouring sequences */)
 {
 	vector<ReorientedSegment> n;
 
-	if (s.segment.segment != last_segment(g, s.segment.sequence).segment) // forward
-		n.push_back({next(s.segment), s.reorientation});
+	if (s->segment != last_segment(g, s->sequence).segment) // forward
+		n.push_back({next(*s), s.reorientation});
 	else if (open)
 		n += segments_around(to(sequence(s), g), g);
 
-	if (auto x = prev(s.segment)) // backward
+	if (auto x = prev(*s)) // backward
 		n.push_back({*x, s.reorientation});
 	else if (open)
 		n += segments_around(from(sequence(s), g), g);
@@ -523,8 +523,8 @@ map<NodeNum, std::pair<
 
 	foreach(sn : seqnums(g))
 	{
-		m[g.to(sn).node].first.push_back(sn);
-		m[g.from(sn).node].second.push_back(sn);
+		m[*g.to(sn)].first.push_back(sn);
+		m[*g.from(sn)].second.push_back(sn);
 	}
 
 	return m;

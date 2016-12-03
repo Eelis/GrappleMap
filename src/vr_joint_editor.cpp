@@ -5,37 +5,37 @@ namespace GrappleMap
 {
 	void JointEditor::dragStartCallback(Vrui::DraggingTool::DragStartCallbackData * cb)
 	{
-		if (!editor.edit_joint) return;
+		if (!joint) return;
 
 		editor.push_undo();
 
 		offset = v3(cb->startTransformation.getTranslation()) -
-			editor.current_position()[*editor.edit_joint];
+			current_position(editor)[*joint];
 	}
 
 	void JointEditor::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
 	{
-		if (!position(editor.getLocation().location))
+		if (!position(*editor.getLocation()))
 		{
-			editor.edit_joint = boost::none;
+			joint = boost::none;
 			return;
 		}
 
-		editor.edit_joint = closest_joint(
-			editor.current_position(),
+		joint = closest_joint(
+			current_position(editor),
 			v3(cbData->currentTransformation.getTranslation()),
 			0.1);
 	}
 
 	void JointEditor::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
 	{
-		if (!editor.edit_joint || !offset) return;
+		if (!joint || !offset) return;
 		
-		Position new_pos = editor.current_position();
+		Position new_pos = current_position(editor);
 		auto cv = v3(cbData->currentTransformation.getTranslation()) - *offset;
 		cv.y = std::max(0., cv.y);
-		new_pos[*editor.edit_joint] = cv;
-		spring(new_pos, *editor.edit_joint);
+		new_pos[*joint] = cv;
+		spring(new_pos, *joint);
 
 		editor.replace(new_pos);
 	}

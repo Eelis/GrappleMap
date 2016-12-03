@@ -59,7 +59,7 @@ namespace
 		if (via.end == end(sequence))
 		{
 			auto const & to = graph.to(via.seqNum);
-			ReorientedNode const n{to.node, compose(to.reorientation, via.reorientation)};
+			ReorientedNode const n{*to, compose(to.reorientation, via.reorientation)};
 
 			assert(basicallySame(graph[n], via.reorientation(sequence.positions.back())));
 
@@ -103,7 +103,7 @@ namespace
 		if (via.begin.index == 0)
 		{
 			auto const & from = graph.from(via.seqNum);
-			ReorientedNode const n{from.node, compose(from.reorientation, via.reorientation)};
+			ReorientedNode const n{*from, compose(from.reorientation, via.reorientation)};
 
 			assert(basicallySame(graph[n], via.reorientation(sequence.positions.front())));
 
@@ -126,7 +126,7 @@ namespace
 			auto const from = graph.from(seqNum);
 			auto const to = graph.to(seqNum);
 
-			if (from.node == rn.node && vfj.viables.find(seqNum) == vfj.viables.end())
+			if (*from == *rn && vfj.viables.find(seqNum) == vfj.viables.end())
 			{
 				assert(basicallySame(graph[from], s.positions.front()));
 
@@ -139,7 +139,7 @@ namespace
 					vfj.viables[seqNum] = viableFront(graph, seqNum, j, camera, seqReo),
 					j, camera, vfj);
 			}
-			else if (to.node == rn.node && vfj.viables.find(seqNum) == vfj.viables.end())
+			else if (*to == *rn && vfj.viables.find(seqNum) == vfj.viables.end())
 			{
 				assert(basicallySame(graph[to], s.positions.back()));
 

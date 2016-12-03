@@ -204,7 +204,7 @@ inline auto & limbs()
 		, {{LeftKnee,     LeftHip     }, 0.43, 0.085, true }
 		, {{LeftHip,      Core        }, 0.27, {},    false}
 		, {{Core,         LeftShoulder}, 0.37, {},    false}
-		, {{LeftShoulder, LeftElbow   }, 0.29, 0.06,  true }
+		, {{LeftShoulder, LeftElbow   }, 0.29, {},    true }
 		, {{LeftElbow,    LeftWrist   }, 0.26, 0.03,  true }
 		, {{LeftWrist,    LeftHand    }, 0.08, {},    true }
 		, {{LeftHand,     LeftFingers }, 0.08, {},    true }
@@ -217,7 +217,7 @@ inline auto & limbs()
 		, {{RightKnee,     RightHip     }, 0.43, 0.085, true }
 		, {{RightHip,      Core         }, 0.27, {},    false}
 		, {{Core,          RightShoulder}, 0.37, {},    false}
-		, {{RightShoulder, RightElbow   }, 0.29, 0.06,  true }
+		, {{RightShoulder, RightElbow   }, 0.29, {},    true }
 		, {{RightElbow,    RightWrist   }, 0.27, 0.03,  true }
 		, {{RightWrist,    RightHand    }, 0.08, {},    true }
 		, {{RightHand,     RightFingers }, 0.08, {},    true }
@@ -270,6 +270,28 @@ struct PositionInSequence
 	SeqNum sequence;
 	PosNum position;
 };
+
+
+template<typename T>
+struct Reversible
+{
+	T value;
+
+	bool reverse;
+
+	T * operator->() { return &value; }
+	T const * operator->() const { return &value; }
+
+	T & operator*() { return value; }
+	T const & operator*() const { return value; }
+};
+
+using Step = Reversible<SeqNum>;
+
+inline Step forwardStep(SeqNum const s) { return {s, false}; }
+inline Step backStep(SeqNum const s) { return {s, true}; }
+
+using Path = vector<Reversible<SeqNum>>;
 
 struct SegmentInSequence
 {
