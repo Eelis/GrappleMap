@@ -15,6 +15,14 @@ namespace GrappleMap
 			Selection::const_iterator i;
 			SegmentNum segment;
 			double howFar;
+			Position chaser;
+
+			Reoriented<Location> location() const
+			{
+				return {
+					Location{{***i, segment}, howFar},
+					i->reorientation};
+			}
 		};
 
 		string const dbFile;
@@ -44,6 +52,11 @@ namespace GrappleMap
 		Reoriented<Location> getLocation() const;
 		bool playingBack() const { return bool(playback); }
 
+		Position current_position() const
+		{
+			return playback ? playback->chaser : at(location, graph);
+		}
+
 		// write
 
 		void save();
@@ -63,9 +76,6 @@ namespace GrappleMap
 		void setLocation(Reoriented<Location>);
 		void snapToPos();
 	};
-
-	inline Position current_position(Editor const & e)
-	{ return at(e.getLocation(), e.getGraph()); }
 }
 
 #endif

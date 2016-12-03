@@ -122,7 +122,7 @@ void print_status(Window const & w)
 void translate(Window & w, V3 const v)
 {
 	w.editor.push_undo();
-	w.editor.replace(current_position(w.editor) + v);
+	w.editor.replace(w.editor.current_position() + v);
 }
 
 void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int action, int mods)
@@ -139,7 +139,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				case GLFW_KEY_Z: w.editor.undo(); return;
 
 				case GLFW_KEY_C: // copy
-					w.clipboard = current_position(w.editor); // todo: store non-reoriented position instead?
+					w.clipboard = w.editor.current_position(); // todo: store non-reoriented position instead?
 					return;
 
 				case GLFW_KEY_V: // paste
@@ -215,16 +215,18 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 
 				case GLFW_KEY_KP_9:
 				{
+					if (w.editor.playingBack()) return;
 					w.editor.push_undo();
-					Position p = current_position(w.editor);
+					Position p = w.editor.current_position();
 					foreach (j : playerJoints) p[j] = yrot(-0.05) * p[j];
 					w.editor.replace(p);
 					break;
 				}
 				case GLFW_KEY_KP_7:
 				{
+					if (w.editor.playingBack()) return;
 					w.editor.push_undo();
-					Position p = current_position(w.editor);
+					Position p = w.editor.current_position();
 					foreach (j : playerJoints) p[j] = yrot(0.05) * p[j];
 					w.editor.replace(p);
 					break;
@@ -488,11 +490,11 @@ int main(int const argc, char const * const * const argv)
 				}
 			}
 
-			Position pos = current_position(w.editor);
+			Position pos = w.editor.current_position();
 
 			// editing
 
-			if (cursor && w.chosen_joint && w.edit_mode && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			if (!w.editor.playingBack() && cursor && w.chosen_joint && w.edit_mode && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 			{
 				auto const reo = w.editor.getLocation().reorientation;
 

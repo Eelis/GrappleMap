@@ -13,7 +13,6 @@ editor:
 - editing selected joints as a group
 - draw torso with a single shape
 - neck sticks out of sides of head
-- smoothen playback and fix playback speed
 - add diagnostics for transitions or transition sequences that:
   * don't respect inertia
   * ice skate or hover

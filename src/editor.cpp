@@ -172,12 +172,19 @@ namespace GrappleMap
 			fs = first_segment(selection.front(), graph);
 
 		playback = Playback{selection.begin(), (*fs)->segment, from(fs)->howFar};
+		playback->chaser = at(playback->location(), graph);
+
 	}
 
 	void Editor::frame(double const secondsElapsed)
 	{
 		if (playback)
 		{
+			playback->chaser = between(
+				playback->chaser,
+				at(playback->location(), graph),
+				0.2);
+
 			if (playback->i != selection.end())
 			{
 				Reoriented<Reversible<SeqNum>> const & seq = *playback->i;
@@ -219,12 +226,7 @@ namespace GrappleMap
 
 	Reoriented<Location> Editor::getLocation() const
 	{
-		if (playback)
-			return {
-				Location{{***playback->i, playback->segment}, playback->howFar},
-				playback->i->reorientation};
-		
-		return location;
+		return playback ? playback->location() : location;
 	}
 
 	void Editor::setLocation(Reoriented<Location> const l)
