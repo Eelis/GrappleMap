@@ -91,4 +91,82 @@ namespace GrappleMap
 		else
 			throw runtime_error("no such position/transition: " + config.start);
 	}
+
+	Playback::Playback(Graph const & g, Selection const & sel)
+		 : graph(g), selection(sel)
+	{
+		reset();
+	}
+
+	void Playback::reset()
+	{
+		Reoriented<Reversible<SegmentInSequence>> const
+			fs = first_segment(selection.front(), graph);
+
+		i = selection.begin();
+		segment = (*fs)->segment;
+		howFar = from(fs)->howFar;
+		chaser = at(location(), graph);
+	}
+
+	void Playback::progress(double seconds)
+	{
+		assert(i != selection.end());
+
+		Reoriented<Reversible<SeqNum>> const & sn = *i;
+
+		Sequence const & seq = graph[**sn];
+
+		auto & hf = howFar;
+
+		double const speed // in segments per second
+			= seq.detailed ? 10 : 5;
+				// 5 segments per second (= 12 frames per segment at 60 frames per second)
+
+		if (!sn->reverse)
+		{
+			hf += seconds * speed;
+			if (hf < 1) return;
+
+			seconds = (hf - 1) / speed;
+
+			if (segment != last_segment(seq))
+			{
+				++segment;
+				hf = 0;
+			}
+			else
+			{
+				++i;
+				if (i == selection.end()) { reset(); return; }
+
+				if ((*i)->reverse)
+				{
+					segment = last_segment(graph[***i]);
+					hf = 1;
+				}
+				else
+				{
+					segment.index = 0;
+					hf = 0;
+				}
+			}
+
+			progress(seconds);
+		}
+		else
+		{
+			// todo
+		}
+	}
+
+	void Playback::frame(double const secondsElapsed)
+	{
+		chaser = between(chaser, at(location(), graph), 0.2);
+			// todo: the 0.2 should depend on secondsElapsed
+
+		progress(secondsElapsed);
+	}
+
+
 }

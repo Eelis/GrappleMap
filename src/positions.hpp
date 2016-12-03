@@ -163,6 +163,7 @@ struct Sequence
 	vector<string> description;
 	vector<Position> positions; // invariant: .size()>=2
 	optional<unsigned> line_nr;
+	bool detailed;
 
 	Position const & operator[](PosNum const n) const { return positions[n.index]; }
 };

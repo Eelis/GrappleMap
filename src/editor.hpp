@@ -5,26 +5,12 @@
 #include "persistence.hpp"
 #include "reoriented.hpp"
 #include "viables.hpp"
+#include "playback.hpp"
 
 namespace GrappleMap
 {
 	class Editor
 	{
-		struct Playback
-		{
-			Selection::const_iterator i;
-			SegmentNum segment;
-			double howFar;
-			Position chaser;
-
-			Reoriented<Location> location() const
-			{
-				return {
-					Location{{***i, segment}, howFar},
-					i->reorientation};
-			}
-		};
-
 		string const dbFile;
 		Graph graph;
 		std::stack<std::pair<Graph, Reoriented<Location>>> undoStack;
@@ -32,10 +18,8 @@ namespace GrappleMap
 		Selection selection;
 		Camera const * const camera; // needed because in 2d projection it affects viables
 		bool selectionLock = true;
-		optional<Playback> playback;
+		unique_ptr<Playback> playback;
 		Reoriented<Location> location{{SegmentInSequence{{0}, 0}, 0}, {}};
-
-		void init_playback();
 
 	public:
 
@@ -54,7 +38,7 @@ namespace GrappleMap
 
 		Position current_position() const
 		{
-			return playback ? playback->chaser : at(location, graph);
+			return playback ? playback->getPosition() : at(location, graph);
 		}
 
 		// write

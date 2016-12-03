@@ -156,77 +156,24 @@ namespace GrappleMap
 
 	void Editor::toggle_playback()
 	{
-		if (playback) playback = boost::none;
+		if (playback) playback.reset();
 		else
 		{
 			if (selection.empty())
 				selection = {forwardStep(sequence(segment(location)))};
 
-			init_playback();
+			playback.reset(new Playback(graph, selection));
 		}
-	}
-
-	void Editor::init_playback()
-	{
-		Reoriented<Reversible<SegmentInSequence>> const
-			fs = first_segment(selection.front(), graph);
-
-		playback = Playback{selection.begin(), (*fs)->segment, from(fs)->howFar};
-		playback->chaser = at(playback->location(), graph);
-
 	}
 
 	void Editor::frame(double const secondsElapsed)
 	{
-		if (playback)
-		{
-			playback->chaser = between(
-				playback->chaser,
-				at(playback->location(), graph),
-				0.2);
-
-			if (playback->i != selection.end())
-			{
-				Reoriented<Reversible<SeqNum>> const & seq = *playback->i;
-
-				auto & hf = playback->howFar;
-
-				if (!seq->reverse)
-				{
-					hf += secondsElapsed * 5;
-						// 5 segments per second (= 12 frames per segment at 60 frames per second)
-						// todo: handle detailed transitions
-					if (hf < 1) return;
-
-					hf -= 1;
-
-					if (playback->segment != last_segment(graph[**seq]))
-					{
-						++playback->segment;
-						return;
-					}
-
-					++playback->i;
-					if (playback->i == selection.end())
-					{
-						init_playback();
-						return;
-					}
-
-					playback->segment.index = 0;
-					if ((*playback->i)->reverse) hf = 1 - hf;
-				}
-				else
-				{
-					// todo
-				}
-			}
-		}
+		if (playback) playback->frame(secondsElapsed);
 	}
 
 	Reoriented<Location> Editor::getLocation() const
 	{
-		return playback ? playback->location() : location;
+		return location;
 	}
 
 	void Editor::setLocation(Reoriented<Location> const l)

@@ -21,6 +21,33 @@ namespace GrappleMap
 	optional<PlaybackConfig> playbackConfig_from_args(int argc, char const * const * argv);
 
 	Frames prep_frames(PlaybackConfig const &, Graph const &);
+
+	class Playback // also used by Editor
+	{
+		Graph const & graph;
+		Selection const & selection;
+		Selection::const_iterator i = selection.begin();
+		SegmentNum segment;
+		double howFar;
+		Position chaser;
+
+		Reoriented<Location> location() const
+		{
+			return {
+				Location{{***i, segment}, howFar},
+				i->reorientation};
+		}
+
+	public:
+
+		Playback(Graph const &, Selection const &);
+
+		Position const & getPosition() const { return chaser; }
+
+		void reset();
+		void frame(double seconds);
+		void progress(double seconds);
+	};
 }
 
 #endif

@@ -38,7 +38,7 @@ Frames frames(Graph const & g, Path const & path, unsigned const frames_per_pos)
 	foreach (step : path)
 	{
 		pair<vector<Position>, ReorientedNode> p =
-			follow(g, n, *step, frames_per_pos / (is_detailed(g[*step]) ? 2 : 1));
+			follow(g, n, *step, frames_per_pos / (g[*step].detailed ? 2 : 1));
 
 		p.first.pop_back();
 
