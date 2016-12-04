@@ -151,19 +151,21 @@ Graph loadGraph(string const filename)
 
 	// nodes have been read as sequences of size 1
 
-	std::vector<Graph::Node> nodes;
+	Graph g;
 
 	for (auto i = edges.begin(); i != edges.end(); )
-	{
 		if (i->positions.size() == 1)
 		{
-			nodes.push_back(Graph::Node{i->positions.front(), i->description, i->line_nr});
+			g.insert_node(i->positions.front(), i->description, i->line_nr);
 			i = edges.erase(i);
 		}
 		else ++i;
-	}
 
-	return Graph(nodes, edges);
+	g.insert_sequences(std::move(edges));
+
+	std::cerr << "Loaded " << g.num_nodes() << " nodes and " << g.num_sequences() << " edges." << std::endl;
+
+	return g;
 }
 
 void save(Graph const & g, string const filename)
@@ -198,7 +200,7 @@ Path readScene(Graph const & graph, string const filename)
 			{
 				if (prev_node)
 				{
-					foreach (step : out_steps(graph, *prev_node))
+					foreach (step : graph[*prev_node].out)
 						if (*to(graph, step) == *n)
 						{
 							path.push_back(step);
@@ -363,9 +365,9 @@ void tojs(Graph const & graph, std::ostream & js)
 			if (!p.second) disc.insert(p.first);
 
 		js << "{id:" << n.index << ",incoming:[";
-		foreach (s : in_steps(graph, n)) { tojs(s, js); js << ','; }
+		foreach (s : graph[n].in) { tojs(s, js); js << ','; }
 		js << "],outgoing:[";
-		foreach (s : out_steps(graph, n)) { tojs(s, js); js << ','; }
+		foreach (s : graph[n].out) { tojs(s, js); js << ','; }
 		js << "],position:";
 		tojs(graph[n].position, js);
 		js << ",description:'" << replace_all(desc(graph[n]), "'", "\\'") << "'";

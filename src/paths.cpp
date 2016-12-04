@@ -60,7 +60,6 @@ Frames frames(Graph const & g, vector<Path> const & script, unsigned const frame
 class PathFinder
 {
 	Graph const & graph;
-	vector<pair<vector<Step>, vector<Step>>> const io = in_out(graph);
 	Path scene;
 	size_t unique_steps_taken = 0;
 	vector<unsigned> in_seq_counts = vector<unsigned>(graph.num_sequences(), 0);
@@ -77,13 +76,13 @@ class PathFinder
 		if (double(unique_steps_taken) / scene.size() < 0.96)
 			return false;
 
-		if (io[n->index].second.size() > 32) abort();
+		if (graph[*n].out.size() > 32) abort();
 
 		std::array<std::pair<size_t, Step>, 32> choices;
 
 		auto * choices_end = choices.begin();
 
-		foreach (s : io[n->index].second)
+		foreach (s : graph[*n].out)
 		{
 			if (std::find(scene.end() - std::min(scene.size(), Path::size_type(15ul)), scene.end(), s) != scene.end()) continue;
 
@@ -210,7 +209,6 @@ Path randomScene(Graph const & g, NodeNum const start, size_t const size)
 
 	if (!ss.empty())
 	{
-		auto & p = *ss.rbegin();
 		std::cout << "worst: " << worst_seq.index << " occurs " << worst_count << " times\n";
 	}
 

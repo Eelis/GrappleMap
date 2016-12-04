@@ -37,10 +37,10 @@ namespace
 		{
 			if (v.second.end.index - v.second.begin.index < 1) continue;
 
-			auto const r = v.second.reorientation;
+			auto const r = v.second.sequence.reorientation;
 			auto & seq = graph[v.first];
 
-			if (elem(v.second.seqNum, selection))
+			if (elem(*v.second.sequence, selection))
 				glColor4f(1, 1, 1, 0.6);
 			else
 				glColor4f(1, 1, 0, 0.3);
@@ -59,7 +59,7 @@ namespace
 					// todo: this is silly
 			glEnd();
 
-			if (elem(v.second.seqNum, selection))
+			if (elem(*v.second.sequence, selection))
 			{
 				#ifdef USE_FTGL
 				if (camera && !style.font.Error())

@@ -72,9 +72,9 @@ optional<PositionInSequence> posinseq_by_desc(Graph const & g, string const & s)
 
 optional<PositionInSequence> node_as_posinseq(Graph const & g, NodeNum const node)
 {
-	foreach(sn : seqnums(g))
+	foreach(sn : seqnums(g)) // todo: bad
 		if (*g.from(sn) == node) return first_pos_in(sn);
-		else if (*g.to(sn) == node) return last_pos_in(g, sn);
+		else if (*g.to(sn) == node) return last_pos_in(sn, g);
 
 	return none;
 }
@@ -164,7 +164,7 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 			g[n]
 			));
 
-		for (PositionInSequence location = last_pos_in(g, s);
+		for (PositionInSequence location = last_pos_in(s, g);
 			prev(location);
 			location = *prev(location))
 					// See GCC bug 68003 for the reason behind the DRY violation.
@@ -302,9 +302,12 @@ bool connected(Graph const & g, NodeNum const a, set<NodeNum> const & s)
 
 bool connected(Graph const & g, NodeNum const a, NodeNum const b)
 {
-	foreach(s : seqnums(g))
-		if ((*g.from(s) == a && *g.to(s) == b) ||
-		    (*g.to(s) == a && *g.from(s) == b))
+	foreach (s : g[a].in)
+		if (*from(g, s) == b)
+			return true;
+	
+	foreach (s : g[a].out)
+		if (*to(g, s) == b)
 			return true;
 
 	return false;
@@ -350,7 +353,7 @@ vector<Path> in_paths(Graph const & g, NodeNum const node, unsigned size)
 {
 	if (size == 0) return {Path()};
 
-	auto const is = in_steps(g, node);
+	auto const & is = g[node].in;
 
 	if (is.empty()) return {Path()};
 
@@ -370,7 +373,7 @@ vector<Path> out_paths(Graph const & g, NodeNum const node, unsigned size)
 {
 	if (size == 0) return {Path()};
 
-	auto const os = out_steps(g, node);
+	auto const & os = g[node].out;
 
 	if (os.empty()) return {Path()};
 
@@ -386,73 +389,6 @@ vector<Path> out_paths(Graph const & g, NodeNum const node, unsigned size)
 	return r;
 }
 
-vector<SeqNum> in_sequences(Graph const & g, NodeNum const n) // todo: inefficient
-{
-	vector<SeqNum> v;
-
-	foreach(sn : seqnums(g))
-		if (*g.to(sn) == n)
-			v.push_back(sn);
-
-	return v;
-}
-
-vector<SeqNum> out_sequences(Graph const & g, NodeNum const n) // todo: inefficient
-{
-	vector<SeqNum> v;
-
-	foreach(sn : seqnums(g))
-		if (*g.from(sn) == n)
-			v.push_back(sn);
-
-	return v;
-}
-
-vector<Step> out_steps(Graph const & g, NodeNum const n)
-{
-	vector<Step> v;
-
-	foreach(sn : seqnums(g))
-	{
-		if (*g.from(sn) == n)
-			v.push_back({sn, false});
-
-		if (is_bidirectional(g[sn]) && *g.to(sn) == n)
-			v.push_back({sn, true});
-	}
-
-	return v;
-}
-
-vector<Step> in_steps(Graph const & g, NodeNum const n)
-{
-	vector<Step> v;
-
-	foreach(sn : seqnums(g))
-	{
-		if (*g.to(sn) == n)
-			v.push_back({sn, false});
-
-		if (is_bidirectional(g[sn]) && *g.from(sn) == n)
-			v.push_back({sn, true});
-	}
-
-	return v;
-}
-
-vector<std::pair<
-	vector<Step>, // sequences that end at the node
-	vector<Step>>> // sequences that start at the node
-		in_out(Graph const & g)
-{
-	vector<pair<vector<Step>, vector<Step>>> v;
-
-	foreach(n : nodenums(g))
-		v.emplace_back(in_steps(g, n), out_steps(g, n));
-
-	return v;
-}
-
 template<typename T, typename F>
 auto fmap(vector<T> const & v, F f) -> vector<typename std::result_of<F(T)>::type>
 {
@@ -462,36 +398,46 @@ auto fmap(vector<T> const & v, F f) -> vector<typename std::result_of<F(T)>::typ
 	return r;
 }
 
-vector<Reoriented<SeqNum>> in_sequences(Graph const & g, Reoriented<NodeNum> const & n)
+vector<Reoriented<Reversible<SeqNum>>>
+	in_sequences(Reoriented<NodeNum> const & n, Graph const & g)
 {
-	return fmap(in_sequences(g, *n), [&](SeqNum const s)
-		{ return Reoriented<SeqNum>
-			{s, compose(inverse(g.to(s).reorientation), n.reorientation)}; });
+	return fmap(g[*n].in, [&](Reversible<SeqNum> const s)
+		{ return Reoriented<Reversible<SeqNum>>
+			{s, compose(inverse(to(g, s).reorientation), n.reorientation)}; });
 }
 
-vector<ReorientedSegment> in_segments(Graph const & g, Reoriented<NodeNum> const & n)
+vector<Reoriented<Reversible<SegmentInSequence>>>
+	in_segments(Reoriented<NodeNum> const & n, Graph const & g)
 {
-	return fmap(in_sequences(g, n), [&](Reoriented<SeqNum> const & s)
-		{ return last_segment(g, s); });
+	return fmap(in_sequences(n, g), [&](Reoriented<Reversible<SeqNum>> const & s)
+		{ return last_segment(s, g); });
 }
 
-vector<Reoriented<SeqNum>> out_sequences(Graph const & g, ReorientedNode const & n)
+vector<Reoriented<Reversible<SeqNum>>>
+	out_sequences(Reoriented<NodeNum> const & n, Graph const & g)
 {
-	return fmap(out_sequences(g, *n), [&](SeqNum const s)
-		{ return Reoriented<SeqNum>
-			{s, compose(inverse(g.from(s).reorientation), n.reorientation)}; });
+	return fmap(g[*n].out, [&](Reversible<SeqNum> const s)
+		{ return Reoriented<Reversible<SeqNum>>
+			{s, compose(inverse(from(g, s).reorientation), n.reorientation)}; });
 }
 
-vector<ReorientedSegment> out_segments(Graph const & g, ReorientedNode const & n)
+vector<Reoriented<Reversible<SegmentInSequence>>>
+	out_segments(ReorientedNode const & n, Graph const & g)
 {
-	return fmap(out_sequences(g, n), [&](Reoriented<SeqNum> const & s)
-		{ return first_segment(s); });
+	return fmap(out_sequences(n, g), [&](Reoriented<Reversible<SeqNum>> const & s)
+		{ return first_segment(s, g); });
 }
 
-vector<ReorientedSegment> segments_around(ReorientedNode const & n, Graph const & g)
+vector<Reoriented<SegmentInSequence>> segments_around(ReorientedNode const & n, Graph const & g)
 {
-	auto r = in_segments(g, n);
-	r += out_segments(g, n);
+	vector<Reoriented<SegmentInSequence>> r;
+
+	foreach (x : in_segments(n, g))
+		r.push_back(Reoriented<SegmentInSequence>{**x, x.reorientation});
+
+	foreach (x : out_segments(n, g))
+		r.push_back(Reoriented<SegmentInSequence>{**x, x.reorientation});
+		
 	return r;
 }
 
@@ -501,7 +447,7 @@ vector<ReorientedSegment> neighbours(
 {
 	vector<ReorientedSegment> n;
 
-	if (s->segment != last_segment(g, s->sequence).segment) // forward
+	if (s->segment != last_segment(s->sequence, g).segment) // forward
 		n.push_back({next(*s), s.reorientation});
 	else if (open)
 		n += segments_around(to(sequence(s), g), g);
@@ -512,22 +458,6 @@ vector<ReorientedSegment> neighbours(
 		n += segments_around(from(sequence(s), g), g);
 
 	return n;
-}
-
-map<NodeNum, std::pair<
-	vector<SeqNum>, // sequences that end at the node
-	vector<SeqNum>>> // sequences that start at the node
-		nodes(Graph const & g)
-{
-	map<NodeNum, std::pair<vector<SeqNum>, vector<SeqNum>>> m;
-
-	foreach(sn : seqnums(g))
-	{
-		m[*g.to(sn)].first.push_back(sn);
-		m[*g.from(sn)].second.push_back(sn);
-	}
-
-	return m;
 }
 
 }

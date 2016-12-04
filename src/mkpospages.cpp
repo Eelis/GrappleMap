@@ -170,13 +170,13 @@ namespace
 		html << "</ul><h2>Dead ends</h2><ul>";
 
 		foreach(n : nodenums(g))
-			if (out_sequences(g, n).empty())
+			if (g[n].out.empty())
 				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g[n])) << "</a></li>";
 
 		html << "</ul><h2>Dead starts</h2><ul>";
 
 		foreach(n : nodenums(g))
-			if (in_sequences(g, n).empty())
+			if (g[n].in.empty())
 				html << "<li><a href='p" << n.index << "n.html'>" << nlspace(desc(g[n])) << "</a></li>";
 
 		html << "</ul><h2>Untagged positions</h2><ul>";
@@ -230,8 +230,8 @@ namespace
 			html
 				<< "<tr>"
 				<< "<td><a href='position/" << n.index << "n.html'>" << nlspace(desc(g[n])) << "</a></td>"
-				<< "<td>" << in_sequences(g, n).size() << "</td>"
-				<< "<td>" << out_sequences(g, n).size() << "</td>"
+				<< "<td>" << g[n].in.size() << "</td>"
+				<< "<td>" << g[n].out.size() << "</td>"
 				<< "<td>" << tags(g[n]).size() << "</td>"
 				<< "</tr>";
 
@@ -662,7 +662,7 @@ namespace
 
 			size_t longest_in = 0, longest_out = 0;
 
-			foreach (step : in_steps(graph, n))
+			foreach (step : graph[n].in)
 			{
 				auto v = frames_for_step(graph, step);
 
@@ -698,7 +698,7 @@ namespace
 					to_string(n.index) + "in" + to_string(trans.step->index));
 			}
 
-			foreach (step : out_steps(graph, n))
+			foreach (step : graph[n].out)
 			{
 				auto v = frames_for_step(graph, step);
 

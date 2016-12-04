@@ -1,7 +1,7 @@
 #ifndef GRAPPLEMAP_VIABLES_HPP
 #define GRAPPLEMAP_VIABLES_HPP
 
-#include "positions.hpp"
+#include "reoriented.hpp"
 #include <map>
 
 namespace GrappleMap
@@ -11,8 +11,7 @@ namespace GrappleMap
 
 	struct Viable
 	{
-		SeqNum seqNum;
-		PositionReorientation reorientation;
+		Reoriented<SeqNum> sequence;
 		PosNum begin, end; // half-open range, never empty
 
 		V3 beginV3, endV3;

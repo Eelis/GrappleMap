@@ -7,22 +7,22 @@ namespace GrappleMap {
 namespace
 {
 	Viable viableFront(
-		Graph const & graph, SeqNum const seq, PlayerJoint const j,
-		Camera const * const camera, PositionReorientation const & r)
+		Graph const & graph, Reoriented<SeqNum> const seq,
+		PlayerJoint const j, Camera const * const camera)
 	{
-		auto const xyz = apply(r, graph[seq].positions.front(), j);
+		auto const xyz = apply(seq.reorientation, graph[*seq].positions.front(), j);
 		auto const xy = camera ? world2xy(*camera, xyz) : V2{0, 0};
-		return Viable{seq, r, 0, 1, xyz, xyz, xy, xy};
+		return Viable{seq, 0, 1, xyz, xyz, xy, xy};
 	}
 
 	Viable viableBack(
-		Graph const & graph, SeqNum const seq, PlayerJoint const j,
-		Camera const * const camera, PositionReorientation const & r)
+		Graph const & graph, Reoriented<SeqNum> const seq,
+		PlayerJoint const j, Camera const * const camera)
 	{
-		auto const & sequence = graph[seq];
-		auto const xyz = apply(r, sequence.positions.back(), j);
+		auto const & sequence = graph[*seq];
+		auto const xyz = apply(seq.reorientation, sequence.positions.back(), j);
 		auto const xy = camera ? world2xy(*camera, xyz) : V2{0, 0};
-		return Viable{seq, r, last_pos(sequence), end(sequence), xyz, xyz, xy, xy};
+		return Viable{seq, last_pos(sequence), end(sequence), xyz, xyz, xy, xy};
 	}
 
 	void extend_from(int depth, Graph const &, ReorientedNode, PlayerJoint, Camera const *, ViablesForJoint &);
@@ -30,11 +30,11 @@ namespace
 	void extend_forward(int const depth, Graph const & graph,
 		Viable & via, PlayerJoint const j, Camera const * const camera, ViablesForJoint & vfj)
 	{
-		auto const & sequence = graph[via.seqNum];
+		auto const & sequence = graph[*via.sequence];
 
 		for (; via.end.index != sequence.positions.size(); ++via.end)
 		{
-			V3 const v = apply(via.reorientation, sequence[via.end], j);
+			V3 const v = apply(via.sequence.reorientation, sequence[via.end], j);
 
 			if (distanceSquared(v, via.endV3) < 0.003) break;
 
@@ -57,26 +57,19 @@ namespace
 		}
 
 		if (via.end == end(sequence))
-		{
-			auto const & to = graph.to(via.seqNum);
-			ReorientedNode const n{*to, compose(to.reorientation, via.reorientation)};
-
-			assert(basicallySame(graph[n], via.reorientation(sequence.positions.back())));
-
-			extend_from(depth + 1, graph, n, j, camera, vfj);
-		}
+			extend_from(depth + 1, graph, to(via.sequence, graph), j, camera, vfj);
 	}
 
 	void extend_backward(int const depth, Graph const & graph,
 		Viable & via, PlayerJoint const j, Camera const * const camera, ViablesForJoint & vfj)
 	{
-		auto & sequence = graph[via.seqNum];
+		auto & sequence = graph[*via.sequence];
 
 		int pos = via.begin.index;
 		--pos;
 		for (; pos != -1; --pos)
 		{
-			V3 const v = apply(via.reorientation, sequence.positions[pos], j);
+			V3 const v = apply(via.sequence.reorientation, sequence.positions[pos], j);
 
 			if (distanceSquared(v, via.beginV3) < 0.003) break;
 
@@ -101,14 +94,12 @@ namespace
 		via.begin.index = pos + 1;
 
 		if (via.begin.index == 0)
-		{
-			auto const & from = graph.from(via.seqNum);
-			ReorientedNode const n{*from, compose(from.reorientation, via.reorientation)};
+			extend_from(depth+1, graph, from(via.sequence, graph), j, camera, vfj);
+	}
 
-			assert(basicallySame(graph[n], via.reorientation(sequence.positions.front())));
-
-			extend_from(depth+1, graph, n, j, camera, vfj);
-		}
+	Reoriented<SeqNum> forget_direction(Reoriented<Reversible<SeqNum>> const & s)
+	{
+		return {**s, s.reorientation};
 	}
 
 	void extend_from(int const depth, Graph const & graph, ReorientedNode const rn,
@@ -116,43 +107,27 @@ namespace
 	{
 		if (depth >= 2) return;
 
-		foreach(seqNum : seqnums(graph))
-		{
-			#ifndef NDEBUG
-				auto const & s = graph[seqNum];
-				auto const here = graph[rn];
-			#endif
-
-			auto const from = graph.from(seqNum);
-			auto const to = graph.to(seqNum);
-
-			if (*from == *rn && vfj.viables.find(seqNum) == vfj.viables.end())
+		for (Reoriented<Reversible<SeqNum>> const & seq : out_sequences(rn, graph))
+			if (!seq->reverse && vfj.viables.find(**seq) == vfj.viables.end())
 			{
-				assert(basicallySame(graph[from], s.positions.front()));
-
-				PositionReorientation const seqReo = compose(inverse(from.reorientation), rn.reorientation);
-
-				assert(basicallySame(here, seqReo(s.positions.front())));
+				Reoriented<SeqNum> const x = forget_direction(seq);
 
 				extend_forward(
 					depth + 1, graph,
-					vfj.viables[seqNum] = viableFront(graph, seqNum, j, camera, seqReo),
+					vfj.viables[*x] = viableFront(graph, x, j, camera),
 					j, camera, vfj);
 			}
-			else if (*to == *rn && vfj.viables.find(seqNum) == vfj.viables.end())
+
+		for (Reoriented<Reversible<SeqNum>> const & seq : in_sequences(rn, graph))
+			if (!seq->reverse && vfj.viables.find(**seq) == vfj.viables.end())
 			{
-				assert(basicallySame(graph[to], s.positions.back()));
-
-				PositionReorientation const seqReo = compose(inverse(to.reorientation), rn.reorientation);
-
-				assert(basicallySame(here, seqReo(s.positions.back())));
+				Reoriented<SeqNum> const x = forget_direction(seq);
 
 				extend_backward(
 					depth + 1, graph,
-					vfj.viables[seqNum] = viableBack(graph, seqNum, j, camera, seqReo),
+					vfj.viables[*x] = viableBack(graph, x, j, camera),
 					j, camera, vfj);
 			}
-		}
 	}
 }
 

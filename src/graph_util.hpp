@@ -44,7 +44,7 @@ inline PositionInSequence first_pos_in(SeqNum const s)
 	return {s, 0};
 }
 
-inline PositionInSequence last_pos_in(Graph const & g, SeqNum const s)
+inline PositionInSequence last_pos_in(SeqNum const s, Graph const & g)
 {
 	return {s, last_pos(g[s])};
 }
@@ -60,31 +60,33 @@ inline SegmentNum last_segment(Sequence const & s)
 		// e.g. 3 positions means 2 segments, so last segment index is 1
 }
 
-inline SegmentInSequence last_segment(Graph const & g, SeqNum const s)
+inline SegmentInSequence last_segment(SeqNum const s, Graph const & g)
 {
 	return {s, last_segment(g[s])};
 }
 
-inline Reoriented<SegmentInSequence> first_segment(Reoriented<SeqNum> const & s)
-{
-	return {first_segment(*s), s.reorientation};
-}
-
 inline Reversible<SegmentInSequence> first_segment(Reversible<SeqNum> const & s, Graph const & g)
 {
-	return {s.reverse ? last_segment(g, *s) : first_segment(*s), s.reverse};
+	return {s.reverse ? last_segment(*s, g) : first_segment(*s), s.reverse};
 }
 
-inline Reoriented<Reversible<SegmentInSequence>> first_segment(
-	Reoriented<Reversible<SeqNum>> const & s,
-	Graph const & g)
+inline Reversible<SegmentInSequence> last_segment(Reversible<SeqNum> const & s, Graph const & g)
+{
+	return {s.reverse ? first_segment(*s) : last_segment(*s, g), s.reverse};
+}
+
+template <typename T>
+inline auto last_segment(Reoriented<T> const & s, Graph const & g)
+	-> Reoriented<decltype(last_segment(*s, g))>
+{
+	return {last_segment(*s, g), s.reorientation};
+}
+
+template <typename T>
+inline auto first_segment(Reoriented<T> const & s, Graph const & g)
+	-> Reoriented<decltype(first_segment(*s, g))>
 {
 	return {first_segment(*s, g), s.reorientation};
-}
-
-inline Reoriented<SegmentInSequence> last_segment(Graph const & g, Reoriented<SeqNum> const & s)
-{
-	return {last_segment(g, *s), s.reorientation};
 }
 
 inline optional<PositionInSequence> prev(PositionInSequence const pis)
@@ -149,25 +151,16 @@ inline Reoriented<NodeNum> to(Reoriented<SeqNum> const & s, Graph const & g)
 
 // in/out
 
-vector<SeqNum> in_sequences(Graph const &, NodeNum);
-vector<SeqNum> out_sequences(Graph const &, NodeNum);
+vector<Reoriented<Reversible<SeqNum>>>
+	in_sequences(Reoriented<NodeNum> const &, Graph const &),
+	out_sequences(Reoriented<NodeNum> const &, Graph const &);
 
-vector<ReorientedSegment> in_segments(Graph const &, ReorientedNode const &);
-vector<ReorientedSegment> out_segments(Graph const &, ReorientedNode const &);
-
-vector<Reoriented<SeqNum>> in_sequences(Graph const &, ReorientedNode const &);
-vector<Reoriented<SeqNum>> out_sequences(Graph const &, ReorientedNode const &);
-
-vector<Step> out_steps(Graph const &, NodeNum);
-vector<Step> in_steps(Graph const &, NodeNum);
+vector<Reoriented<Reversible<SegmentInSequence>>>
+	in_segments(ReorientedNode const &, Graph const &),
+	out_segments(ReorientedNode const &, Graph const &);
 
 vector<Path> in_paths(Graph const &, NodeNum, unsigned size);
 vector<Path> out_paths(Graph const &, NodeNum, unsigned size);
-
-vector<std::pair<
-	vector<Step>, // sequences that end at the node
-	vector<Step>>> // sequences that start at the node
-		in_out(Graph const &);
 
 // comparison
 
@@ -184,11 +177,6 @@ inline bool operator<(Step const a, Step const b)
 // misc
 
 vector<ReorientedSegment> neighbours(ReorientedSegment const &, Graph const &, bool open);
-
-inline map<NodeNum, std::pair<
-	vector<SeqNum>, // sequences that end at the node
-	vector<SeqNum>>> // sequences that start at the node
-		nodes(Graph const &);
 
 inline optional<ReorientedNode> node(Graph const & g, PositionInSequence const pis)
 {
@@ -220,7 +208,7 @@ bool connected(Graph const &, NodeNum, NodeNum);
 inline optional<NodeNum> node_at(Graph const & g, PositionInSequence const pis)
 {
 	if (pis == first_pos_in(pis.sequence)) return *g.from(pis.sequence);
-	if (pis == last_pos_in(g, pis.sequence)) return *g.to(pis.sequence);
+	if (pis == last_pos_in(pis.sequence, g)) return *g.to(pis.sequence);
 	return boost::none;
 }
 

@@ -12,6 +12,7 @@ struct Graph
 		Position position;
 		vector<string> description;
 		optional<unsigned> line_nr;
+		vector<Reversible<SeqNum>> in, out; // bidirectional ones appear in both
 	};
 
 	struct Edge
@@ -29,22 +30,14 @@ private:
 
 	optional<ReorientedNode> is_reoriented_node(Position const &) const;
 
-	ReorientedNode find_or_add(Position const & p)
-	{
-		if (auto m = is_reoriented_node(p))
-			return *m;
-
-		nodes.push_back(Node{p, vector<string>(), {}});
-		return ReorientedNode{NodeNum{uint16_t(nodes.size() - 1)}, PositionReorientation{}};
-	}
+	ReorientedNode find_or_add(Position const &);
 
 	void changed(PositionInSequence);
+	void compute_in_out(NodeNum);
 
 public:
 
-	// construction
-
-	explicit Graph(vector<Node> const &, vector<Sequence> const &);
+	Graph() {}
 
 	// const access
 
@@ -70,7 +63,14 @@ public:
 
 	// mutation
 
-	void insert(Node n) { nodes.emplace_back(move(n)); }
+	void insert_node(Position pos, vector<string> desc, optional<unsigned> line)
+	{
+		nodes.emplace_back(Node{pos, desc, line, {}, {}});
+		compute_in_out(NodeNum{NodeNum::underlying_type(nodes.size() - 1)});
+	}
+
+	void insert_sequences(vector<Sequence> &&); // for bulk, more efficient than individually with set()
+
 	void replace(PositionInSequence, Position const &, bool local);
 		// The local flag only affects the case where the position denotes a node.
 		// In that case, if local is true, the existing node and connecting sequences
