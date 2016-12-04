@@ -28,8 +28,8 @@ namespace GrappleMap
 	using Viables = PerPlayerJoint<ViablesForJoint>;
 
 	ViablesForJoint determineViables(
-		Graph const &, PositionInSequence, PlayerJoint,
-		Camera const *, PositionReorientation);
+		Graph const &, Reoriented<PositionInSequence>,
+		PlayerJoint, Camera const *);
 }
 
 #endif

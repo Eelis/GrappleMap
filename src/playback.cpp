@@ -105,7 +105,7 @@ namespace GrappleMap
 
 		i = selection.begin();
 		segment = (*fs)->segment;
-		howFar = from(fs)->howFar;
+		howFar = from_loc(fs)->howFar;
 		chaser = at(location(), graph);
 	}
 

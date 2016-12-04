@@ -37,6 +37,11 @@ namespace GrappleMap
 		return {s->sequence, s.reorientation};
 	}
 
+	inline Reoriented<SeqNum> sequence(Reoriented<PositionInSequence> const & s)
+	{
+		return {s->sequence, s.reorientation};
+	}
+
 	inline Reoriented<SegmentInSequence> segment(Reoriented<Location> const & l)
 	{
 		return {l->segment, l.reorientation};

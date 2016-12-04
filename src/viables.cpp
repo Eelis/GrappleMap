@@ -132,19 +132,19 @@ namespace
 }
 
 ViablesForJoint determineViables
-	( Graph const & graph, PositionInSequence const from, PlayerJoint const j
-	, Camera const * const camera, PositionReorientation const reo)
+	( Graph const & graph, Reoriented<PositionInSequence> const from
+	, PlayerJoint const j, Camera const * const camera)
 {
 	ViablesForJoint r
 		{ 0
 		, std::map<SeqNum, Viable>{}
 		, std::vector<LineSegment>{} };
 
-	auto const jp = apply(reo, graph[from], j);
+	auto const jp = apply(from.reorientation, graph[*from], j);
 	auto const jpxy = camera ? world2xy(*camera, jp) : V2{0, 0};
 
-	auto & v = r.viables[from.sequence] =
-		Viable{from.sequence, reo, from.position, next(from.position), jp, jp, jpxy, jpxy};
+	auto & v = r.viables[from->sequence] =
+		Viable{sequence(from), from->position, next(from->position), jp, jp, jpxy, jpxy};
 	extend_forward(0, graph, v, j, camera, r);
 	extend_backward(0, graph, v, j, camera, r);
 

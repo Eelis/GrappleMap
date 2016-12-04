@@ -101,8 +101,8 @@ namespace GrappleMap
 	void Editor::recalcViables()
 	{
 		foreach (j : playerJoints)
-			viables[j] = determineViables(graph, from(location->segment), // todo: bad
-					j, camera, location.reorientation);
+			viables[j] = determineViables(graph, from_pos(segment(location)), // todo: bad
+					j, camera);
 	}
 	
 	void Editor::insert_keyframe()

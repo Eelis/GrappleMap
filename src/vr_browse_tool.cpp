@@ -26,8 +26,8 @@ namespace GrappleMap
 				if (selection && !elem(cand->sequence, *selection)) continue;
 
 				V3 const
-					rayOrigin = at(from(cand), g)[j],
-					rayTarget = at(to(cand), g)[j],
+					rayOrigin = at(from_pos(cand), g)[j],
+					rayTarget = at(to_pos(cand), g)[j],
 					rayDir = rayTarget - rayOrigin;
 
 				if (norm2(rayDir) < 0.05) continue; // tiny segments are not nice for browsing

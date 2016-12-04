@@ -23,13 +23,13 @@ void split_at(Graph &, PositionInSequence);
 
 // first/last/next/prev/end/from/to
 
-inline Reoriented<Location> from(Reoriented<SegmentInSequence> const & s) { return loc(s, 0); }
-inline Reoriented<Location> to(Reoriented<SegmentInSequence> const & s) { return loc(s, 1); }
+inline Reoriented<Location> from_loc(Reoriented<SegmentInSequence> const & s) { return loc(s, 0); }
+inline Reoriented<Location> to_loc(Reoriented<SegmentInSequence> const & s) { return loc(s, 1); }
 
-inline Reoriented<Location> from(Reoriented<Reversible<SegmentInSequence>> const & s)
+inline Reoriented<Location> from_loc(Reoriented<Reversible<SegmentInSequence>> const & s)
 { return loc(s, 0); }
 
-inline Reoriented<Location> to(Reoriented<Reversible<SegmentInSequence>> const & s)
+inline Reoriented<Location> to_loc(Reoriented<Reversible<SegmentInSequence>> const & s)
 { return loc(s, 1); }
 
 inline PosNum end(Sequence const & seq) { return {uint_fast8_t(seq.positions.size())}; }
@@ -147,6 +147,16 @@ inline Reoriented<NodeNum> to(Reoriented<SeqNum> const & s, Graph const & g)
 {
 	Reoriented<NodeNum> const & n = g.to(*s);
 	return {*n, compose(n.reorientation, s.reorientation)};
+}
+
+inline Reoriented<PositionInSequence> from_pos(Reoriented<SegmentInSequence> const & s)
+{
+	return {from(*s), s.reorientation};
+}
+
+inline Reoriented<PositionInSequence> to_pos(Reoriented<SegmentInSequence> const & s)
+{
+	return {to(*s), s.reorientation};
 }
 
 // in/out
@@ -307,6 +317,11 @@ inline Position at(Location const & l, Graph const & g)
 inline Position at(Reoriented<Location> const & l, Graph const & g)
 {
 	return l.reorientation(at(*l, g));
+}
+
+inline Position at(Reoriented<PositionInSequence> const & s, Graph const & g)
+{
+	return s.reorientation(g[*s]);
 }
 
 inline optional<PositionInSequence> position(Location const & l)

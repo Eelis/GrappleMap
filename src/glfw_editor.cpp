@@ -49,7 +49,7 @@ namespace
 
 		candidates.push_back(current);
 
-		foreach (candidate : candidates)
+		for (Reoriented<SegmentInSequence> const & candidate : candidates)
 		{
 			auto const & m = viables[j].viables;
 			auto const i = m.find(candidate->sequence);
@@ -63,8 +63,8 @@ namespace
 				candidate->segment.index < v.end.index)
 			{
 				Position const
-					n = at(from(candidate), graph),
-					  m = at(to(candidate), graph);
+					n = at(from_pos(candidate), graph),
+					  m = at(to_pos(candidate), graph);
 
 				double const howfar = whereBetween(n, m, j, camera, cursor);
 
