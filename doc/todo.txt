@@ -27,7 +27,6 @@ glfw frontend:
 - make rotation commands rotate around center between players, not area center
 - respect 'draggable' again(?)
 - test clipboard
-- don't show viables during playback
 - restore remaining disabled commands
 
 vrui frontend:

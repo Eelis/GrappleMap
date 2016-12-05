@@ -553,9 +553,14 @@ int main(int const argc, char const * const * const argv)
 
 			colors[special_joint] = yellow;
 
-			renderWindow(
-				views, &w.editor.getViables(), w.editor.getGraph(), pos, w.camera, special_joint,
-				colors, 0, 0, width, height, w.editor.getSelection(), w.style, w.playerDrawer);
+			if (w.editor.playingBack())
+				renderWindow(
+					views, nullptr, w.editor.getGraph(), pos, w.camera, {},
+					{}, 0, 0, width, height, {}, w.style, w.playerDrawer);
+			else
+				renderWindow(
+					views, &w.editor.getViables(), w.editor.getGraph(), pos, w.camera, special_joint,
+					colors, 0, 0, width, height, w.editor.getSelection(), w.style, w.playerDrawer);
 
 			glfwSwapBuffers(window);
 
