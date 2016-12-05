@@ -7,9 +7,6 @@ db:
 - cage/fence
 - understand that for left-right symmetric positions, outgoing transition can follow incoming transitions in either mirrored or non-mirrored form (alternatively, we could have zero-length mirror transitions in these positions)
 
-playback:
-- support reverse steps
-
 editor:
 - more useful console output
 - editing selected joints as a group

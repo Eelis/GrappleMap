@@ -129,6 +129,8 @@ namespace GrappleMap
 			= seq.detailed ? 10 : 5;
 				// 5 segments per second (= 12 frames per segment at 60 frames per second)
 
+		bool finished_sequence = false;
+
 		if (!sn->reverse)
 		{
 			hf += seconds * speed;
@@ -136,34 +138,33 @@ namespace GrappleMap
 
 			seconds = (hf - 1) / speed;
 
-			if (segment != last_segment(seq))
-			{
-				++segment;
-				hf = 0;
-			}
-			else
-			{
-				++i;
-				if (i == path.end()) { wait = pause_after; return; }
-
-				if ((*i)->reverse)
-				{
-					segment = last_segment(graph[***i]);
-					hf = 1;
-				}
-				else
-				{
-					segment.index = 0;
-					hf = 0;
-				}
-			}
-
-			progress(seconds);
+			if (segment != last_segment(seq)) { ++segment; hf = 0; }
+			else finished_sequence = true;
 		}
 		else
 		{
-			// todo
+			hf -= seconds * speed;
+			if (hf > 0) return;
+
+			seconds = (- hf) / speed;
+
+			if (segment.index != 0) { --segment.index; hf = 1; }
+			else finished_sequence = true;
 		}
+
+		if (finished_sequence)
+		{
+			if (++i == path.end()) { wait = pause_after; return; }
+
+			if ((*i)->reverse)
+			{
+				segment = last_segment(graph[***i]);
+				hf = 1;
+			}
+			else { segment.index = 0; hf = 0; }
+		}
+
+		progress(seconds);
 	}
 
 	void Playback::frame(double const secondsElapsed)
