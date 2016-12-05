@@ -104,16 +104,16 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 		assert(basicallySame( 
 			g[s].positions.front(),
 			g[g.from(s)],
-			g.from(s).reorientation(g[g.from(s).node].position),
-			g.from(s).reorientation(g[n.node].position),
+			g.from(s).reorientation(g[*g.from(s)].position),
+			g.from(s).reorientation(g[*n].position),
 			g[first_pos_in(s)] ));
 
 		assert(basicallySame(
 			r(g[first_pos_in(s)]),
-			r(g.from(s).reorientation(g[n.node].position)),
-			compose(inverse(g.from(s).reorientation), n.reorientation)(g.from(s).reorientation(g[n.node].position)),
-			n.reorientation(inverse(g.from(s).reorientation)(g.from(s).reorientation(g[n.node].position))),
-			n.reorientation(g[n.node].position),
+			r(g.from(s).reorientation(g[*n].position)),
+			compose(inverse(g.from(s).reorientation), n.reorientation)(g.from(s).reorientation(g[*n].position)),
+			n.reorientation(inverse(g.from(s).reorientation)(g.from(s).reorientation(g[*n].position))),
+			n.reorientation(g[*n].position),
 			g[n]
 			));
 
@@ -134,12 +134,12 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 		assert(basicallySame(
 			positions.back(),
 			r(g[g.to(s)]),
-			r(g.to(s).reorientation(g[g.to(s).node].position)),
-			r(g.to(s).reorientation(g[m.node].position)),
-			r(g.to(s).reorientation(g[m.node].position)),
-			compose(g.to(s).reorientation, r)(g[m.node].position),
-			m.reorientation(g[m.node].position),
-			m.reorientation(g[g.to(s).node].position),
+			r(g.to(s).reorientation(g[*g.to(s)].position)),
+			r(g.to(s).reorientation(g[*m].position)),
+			r(g.to(s).reorientation(g[*m].position)),
+			compose(g.to(s).reorientation, r)(g[*m].position),
+			m.reorientation(g[*m].position),
+			m.reorientation(g[*g.to(s)].position),
 			g[m]
 			));
 	}
@@ -148,19 +148,19 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 		assert(basicallySame(
 			g[s].positions.back(),
 			g[g.to(s)],
-			g.to(s).reorientation(g[g.to(s).node].position),
-			g.to(s).reorientation(g[n.node].position),
-			g[last_pos_in(g, s)]
+			g.to(s).reorientation(g[*g.to(s)].position),
+			g.to(s).reorientation(g[*n].position),
+			g[last_pos_in(s, g)]
 			));
 
 		PositionReorientation const r = compose(inverse(g.to(s).reorientation), n.reorientation);
 
 		assert(basicallySame(
-			r(g[last_pos_in(g, s)]),
-			r(g.to(s).reorientation(g[n.node].position)),
-			compose(inverse(g.to(s).reorientation), n.reorientation)(g.to(s).reorientation(g[n.node].position)),
-			n.reorientation(inverse(g.to(s).reorientation)(g.to(s).reorientation(g[n.node].position))),
-			n.reorientation(g[n.node].position),
+			r(g[last_pos_in(s, g)]),
+			r(g.to(s).reorientation(g[*n].position)),
+			compose(inverse(g.to(s).reorientation), n.reorientation)(g.to(s).reorientation(g[*n].position)),
+			n.reorientation(inverse(g.to(s).reorientation)(g.to(s).reorientation(g[*n].position))),
+			n.reorientation(g[*n].position),
 			g[n]
 			));
 
