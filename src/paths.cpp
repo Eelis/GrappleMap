@@ -265,4 +265,62 @@ Frames demoFrames(Graph const & g, Step const s, unsigned const frames_per_pos)
 	return f;
 }
 
+vector<Path> in_paths(Graph const & g, NodeNum const node, unsigned size)
+{
+	if (size == 0) return {Path()};
+
+	auto const & is = g[node].in;
+
+	if (is.empty()) return {Path()};
+
+	vector<Path> r;
+
+	foreach (x : is)
+		foreach (e : in_paths(g, *from(g, x), size - 1))
+		{
+			e.push_back(x);
+			r.push_back(e);
+		}
+
+	return r;
+}
+
+vector<Path> out_paths(Graph const & g, NodeNum const node, unsigned size)
+{
+	if (size == 0) return {Path()};
+
+	auto const & os = g[node].out;
+
+	if (os.empty()) return {Path()};
+
+	vector<Path> r;
+
+	foreach (x : os)
+		foreach (e : out_paths(g, *to(g, x), size - 1))
+		{
+			e.insert(e.begin(), x);
+			r.push_back(e);
+		}
+
+	return r;
+}
+
+OrientedPath orient(Path const & path, Graph const & g)
+{
+	if (path.empty()) return {};
+
+	OrientedPath r;
+
+	Reoriented<NodeNum> n = from(g, path.front());
+
+	for (Reversible<SeqNum> const & s : path)
+	{
+		Reoriented<Reversible<SeqNum>> rs = connect_out(n, s, g);
+		r.push_back(rs);
+		n = to(rs, g);
+	}
+
+	return r;
+}
+
 }

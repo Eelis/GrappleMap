@@ -3,12 +3,39 @@
 
 namespace GrappleMap
 {
+	namespace
+	{
+		Path path_from_desc(std::string const & desc)
+		{
+			Path p;
+
+			std::istringstream iss(desc);
+			int32_t i;
+			iss >> i; // todo: negative for reverse
+			char c;
+			do
+				p.push_back(i >= 0
+					? Reversible<SeqNum>{{SeqNum::underlying_type(i)}, false}
+					: Reversible<SeqNum>{{SeqNum::underlying_type(-i)}, true});
+			while (iss >> c >> i);
+
+			return p;
+		}
+	}
+
 	Editor::Editor(boost::program_options::variables_map const & programOptions, Camera const * cam)
-		: dbFile(programOptions["db"].as<std::string>())
+		: dbFile(programOptions["db"].as<string>())
 		, graph{loadGraph(dbFile)}
 		, camera(cam)
 	{
-		if (auto start = posinseq_by_desc(graph, programOptions["start"].as<string>()))
+		string const start_desc = programOptions["start"].as<string>();
+
+		if (start_desc.find(',') != string::npos)
+		{
+			selection = orient(path_from_desc(start_desc), graph);
+			location = from_loc(first_segment(selection.front(), graph));
+		}
+		else if (auto start = posinseq_by_desc(graph, programOptions["start"].as<string>()))
 			location->segment = segment_from(*start);
 		else
 			throw std::runtime_error("no such position/transition");

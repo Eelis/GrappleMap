@@ -1,11 +1,9 @@
 #ifndef GRAPPLEMAP_RENDERING_HPP
 #define GRAPPLEMAP_RENDERING_HPP
 
-#include "math.hpp"
-#include "util.hpp"
+#include "paths.hpp"
 #include "viables.hpp"
 #include "playerdrawer.hpp"
-#include "reoriented.hpp"
 
 #ifdef USE_FTGL
 #include <FTGL/ftgl.h>
@@ -51,14 +49,14 @@ namespace GrappleMap
 		Camera, optional<PlayerJoint> highlight_joint,
 		PerPlayerJoint<optional<V3>> colors,
 		int left, int bottom, int width, int height,
-		Selection const &,
+		OrientedPath const &,
 		Style const &, PlayerDrawer const &);
 
 	void renderScene(Graph const &, Position const &,
 		PerPlayerJoint<ViablesForJoint> const & viables,
 		optional<PlayerJoint> const browse_joint,
 		optional<PlayerJoint> edit_joint,
-		Selection const &, Style const &,
+		OrientedPath const &, Style const &,
 		PlayerDrawer const &);
 
 	inline vector<View> third_person_windows_in_corner(double w, double h, double hborder, double vborder)

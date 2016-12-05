@@ -21,17 +21,6 @@ namespace GrappleMap
 	using ReorientedNode = Reoriented<NodeNum>;
 	using ReorientedSegment = Reoriented<SegmentInSequence>;
 
-	using Selection = std::deque<Reoriented<Reversible<SeqNum>>>; // todo: move
-
-	inline bool elem(SeqNum const & n, Selection const & s)
-	{
-		return std::any_of(s.begin(), s.end(),
-			[&](Reoriented<Reversible<SeqNum>> const & x)
-			{
-				return **x == n;
-			});
-	}
-
 	inline Reoriented<SeqNum> sequence(Reoriented<SegmentInSequence> const & s)
 	{
 		return {s->sequence, s.reorientation};

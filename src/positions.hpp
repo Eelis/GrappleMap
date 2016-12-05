@@ -292,8 +292,6 @@ using Step = Reversible<SeqNum>;
 inline Step forwardStep(SeqNum const s) { return {s, false}; }
 inline Step backStep(SeqNum const s) { return {s, true}; }
 
-using Path = vector<Reversible<SeqNum>>;
-
 struct SegmentInSequence
 {
 	SeqNum sequence;

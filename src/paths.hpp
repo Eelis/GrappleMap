@@ -5,9 +5,22 @@
 
 namespace GrappleMap
 {
-	using Frames = vector<pair<string, vector<Position>>>;
+	using Path = vector<Reversible<SeqNum>>;
+	using Frames = vector<pair<string /* caption */, vector<Position>>>;
+	using OrientedPath = std::deque<Reoriented<Reversible<SeqNum>>>;
+
+	inline bool elem(SeqNum const & n, OrientedPath const & s)
+	{
+		return std::any_of(s.begin(), s.end(),
+			[&](Reoriented<Reversible<SeqNum>> const & x)
+			{
+				return **x == n;
+			});
+	}
 
 	Frames smoothen(Frames);
+
+	OrientedPath orient(Path const &, Graph const &);
 
 	Frames frames(Graph const &, Path const &, unsigned frames_per_pos);
 
@@ -25,6 +38,9 @@ namespace GrappleMap
 		foreach (x : f) r += x.second;
 		return r;
 	}
+
+	vector<Path> in_paths(Graph const &, NodeNum, unsigned size);
+	vector<Path> out_paths(Graph const &, NodeNum, unsigned size);
 }
 
 #endif

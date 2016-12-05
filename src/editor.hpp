@@ -15,7 +15,7 @@ namespace GrappleMap
 		Graph graph;
 		std::stack<std::pair<Graph, Reoriented<Location>>> undoStack;
 		Viables viables;
-		Selection selection;
+		OrientedPath selection;
 		Camera const * const camera; // needed because in 2d projection it affects viables
 		bool selectionLock = true;
 		unique_ptr<Playback> playback;
@@ -31,7 +31,7 @@ namespace GrappleMap
 
 		Graph const & getGraph() const { return graph; }
 		Viables const & getViables() const { return viables; }
-		Selection const & getSelection() const { return selection; }
+		OrientedPath const & getSelection() const { return selection; }
 		bool lockedToSelection() const { return selectionLock; }
 		Reoriented<Location> getLocation() const;
 		bool playingBack() const { return bool(playback); }

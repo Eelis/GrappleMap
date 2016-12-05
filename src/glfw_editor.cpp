@@ -38,7 +38,7 @@ namespace
 		Reoriented<SegmentInSequence> const & current,
 		Camera const & camera,
 		V2 const cursor,
-		Selection const * const selection)
+		OrientedPath const * const selection)
 	{
 		optional<Reoriented<Location>> nl;
 
@@ -475,7 +475,7 @@ int main(int const argc, char const * const * const argv)
 
 			if (cursor && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 			{
-				Selection const
+				OrientedPath const
 					tempSel{forwardStep(sequence(segment(w.editor.getLocation())))},
 					& sel = w.editor.getSelection().empty() ? tempSel : w.editor.getSelection();
 

@@ -1,7 +1,7 @@
 #ifndef GRAPPLEMAP_PERSISTENCE_HPP
 #define GRAPPLEMAP_PERSISTENCE_HPP
 
-#include "graph_util.hpp"
+#include "paths.hpp"
 
 namespace GrappleMap
 {

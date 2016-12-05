@@ -30,15 +30,15 @@ namespace GrappleMap
 
 		double wait = 0;
 		Graph const & graph;
-		Selection const & selection;
-		Selection::const_iterator i = selection.begin();
+		OrientedPath const & path;
+		OrientedPath::const_iterator i = path.begin();
 		SegmentNum segment;
 		double howFar;
 		Position chaser;
 
 		Reoriented<Location> location() const
 		{
-			assert (i != selection.end());
+			assert (i != path.end());
 
 			return {
 				Location{{***i, segment}, howFar},
@@ -47,7 +47,7 @@ namespace GrappleMap
 
 	public:
 
-		Playback(Graph const &, Selection const &);
+		Playback(Graph const &, OrientedPath const &);
 
 		Position const & getPosition() const { return chaser; }
 

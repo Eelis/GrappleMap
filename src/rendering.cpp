@@ -25,7 +25,7 @@ namespace
 
 	void drawViables(
 		Graph const & graph, Viables const & viable, PlayerJoint const j,
-		Selection const & selection,
+		OrientedPath const & selection,
 		Camera const * camera, Style const & style)
 	{
 		glEnable(GL_BLEND);
@@ -154,7 +154,7 @@ void renderWindow(
 	PerPlayerJoint<optional<V3>> colors,
 	int const left, int const bottom,
 	int const width, int const height,
-	Selection const & selection,
+	OrientedPath const & selection,
 	Style const & style,
 	PlayerDrawer const & playerDrawer)
 {
@@ -225,7 +225,7 @@ void renderScene(
 	PerPlayerJoint<ViablesForJoint> const & viables,
 	optional<PlayerJoint> const browse_joint,
 	optional<PlayerJoint> const edit_joint,
-	Selection const & selection,
+	OrientedPath const & selection,
 	Style const & style,
 	PlayerDrawer const & playerDrawer)
 {

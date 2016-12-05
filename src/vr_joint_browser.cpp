@@ -12,7 +12,7 @@ namespace GrappleMap
 			V3 const cursor,
 			ReorientedSegment const root,
 			PlayerJoint const j,
-			Selection const * const selection)
+			OrientedPath const * const selection)
 		{
 			vector<ReorientedSegment> candidates = neighbours(root, g, true);
 
@@ -71,7 +71,7 @@ namespace GrappleMap
 	{
 		if (!joint) return;
 
-		Selection const
+		OrientedPath const
 			tempSel{forwardStep(sequence(segment(editor.getLocation())))},
 			& sel = editor.getSelection().empty() ? tempSel : editor.getSelection();
 

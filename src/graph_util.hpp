@@ -173,7 +173,23 @@ inline Reoriented<PositionInSequence> to_pos(Reoriented<SegmentInSequence> const
 	return {to(*s), s.reorientation};
 }
 
+inline Reoriented<NodeNum> from(Reoriented<Reversible<SeqNum>> const & s, Graph const & g)
+{
+	Reoriented<SeqNum> ding = {**s, s.reorientation};
+	return s->reverse ? to(ding, g) : from(ding, g);
+}
+
+inline Reoriented<NodeNum> to(Reoriented<Reversible<SeqNum>> const & s, Graph const & g)
+{
+	Reoriented<SeqNum> ding = {**s, s.reorientation};
+	return s->reverse ? from(ding, g) : to(ding, g);
+}
+
 // in/out
+
+Reoriented<Reversible<SeqNum>>
+	connect_in(Reoriented<NodeNum> const &, Reversible<SeqNum>, Graph const &),
+	connect_out(Reoriented<NodeNum> const &, Reversible<SeqNum>, Graph const &);
 
 vector<Reoriented<Reversible<SeqNum>>>
 	in_sequences(Reoriented<NodeNum> const &, Graph const &),
@@ -182,9 +198,6 @@ vector<Reoriented<Reversible<SeqNum>>>
 vector<Reoriented<Reversible<SegmentInSequence>>>
 	in_segments(ReorientedNode const &, Graph const &),
 	out_segments(ReorientedNode const &, Graph const &);
-
-vector<Path> in_paths(Graph const &, NodeNum, unsigned size);
-vector<Path> out_paths(Graph const &, NodeNum, unsigned size);
 
 // comparison
 

@@ -92,8 +92,8 @@ namespace GrappleMap
 			throw runtime_error("no such position/transition: " + config.start);
 	}
 
-	Playback::Playback(Graph const & g, Selection const & sel)
-		 : graph(g), selection(sel)
+	Playback::Playback(Graph const & g, OrientedPath const & p)
+		 : graph(g), path(p)
 	{
 		reset();
 		chaser = at(location(), graph);
@@ -102,12 +102,12 @@ namespace GrappleMap
 	void Playback::reset()
 	{
 		Reoriented<Reversible<SegmentInSequence>> const
-			fs = first_segment(selection.front(), graph);
+			fs = first_segment(path.front(), graph);
 
-		i = selection.begin();
+		i = path.begin();
 		segment = (*fs)->segment;
 		howFar = from_loc(fs)->howFar;
-		wait = pause_before;
+		wait = 0;
 	}
 
 	void Playback::progress(double seconds)
@@ -117,7 +117,7 @@ namespace GrappleMap
 		seconds -= wait;
 		wait = 0;
 
-		if (i == selection.end()) { reset(); return; }
+		if (i == path.end()) { reset(); wait = pause_before; return; }
 
 		Reoriented<Reversible<SeqNum>> const & sn = *i;
 
@@ -144,7 +144,7 @@ namespace GrappleMap
 			else
 			{
 				++i;
-				if (i == selection.end()) { wait = pause_after; return; }
+				if (i == path.end()) { wait = pause_after; return; }
 
 				if ((*i)->reverse)
 				{
@@ -168,9 +168,9 @@ namespace GrappleMap
 
 	void Playback::frame(double const secondsElapsed)
 	{
-		if (i != selection.end())
+		if (i != path.end())
 			chaser = between(chaser, at(location(), graph), 0.2);
-			// todo: the 0.2 should depend on secondsElapsed
+				// todo: the 0.2 should depend on secondsElapsed
 
 		progress(secondsElapsed);
 	}
