@@ -37,7 +37,6 @@ vrui frontend:
 - make viables completely match actually browseable paths
 - position-in-sequence labels
 - show correct viable lines
-- rewind playback nicely
 - reorientation tool
 - interface for inserting new transitions
 - graph display
@@ -45,6 +44,7 @@ vrui frontend:
 - write tutorial
 - menu button for resetting navigation matrix
 - allow dynamically unmapping tools
+- support desktop mode where cursor is a ray
 
 playback:
 - make {pre,post}fix length for demo mode configurable

@@ -96,6 +96,7 @@ namespace GrappleMap
 		 : graph(g), selection(sel)
 	{
 		reset();
+		chaser = at(location(), graph);
 	}
 
 	void Playback::reset()
@@ -106,12 +107,17 @@ namespace GrappleMap
 		i = selection.begin();
 		segment = (*fs)->segment;
 		howFar = from_loc(fs)->howFar;
-		chaser = at(location(), graph);
+		wait = pause_before;
 	}
 
 	void Playback::progress(double seconds)
 	{
-		assert(i != selection.end());
+		if (wait > seconds) { wait -= seconds; return; }
+
+		seconds -= wait;
+		wait = 0;
+
+		if (i == selection.end()) { reset(); return; }
 
 		Reoriented<Reversible<SeqNum>> const & sn = *i;
 
@@ -138,7 +144,7 @@ namespace GrappleMap
 			else
 			{
 				++i;
-				if (i == selection.end()) { reset(); return; }
+				if (i == selection.end()) { wait = pause_after; return; }
 
 				if ((*i)->reverse)
 				{
@@ -162,7 +168,8 @@ namespace GrappleMap
 
 	void Playback::frame(double const secondsElapsed)
 	{
-		chaser = between(chaser, at(location(), graph), 0.2);
+		if (i != selection.end())
+			chaser = between(chaser, at(location(), graph), 0.2);
 			// todo: the 0.2 should depend on secondsElapsed
 
 		progress(secondsElapsed);

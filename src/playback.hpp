@@ -24,6 +24,11 @@ namespace GrappleMap
 
 	class Playback // also used by Editor
 	{
+		static constexpr double
+			pause_before = 0.8,
+			pause_after = 0.8;
+
+		double wait = 0;
 		Graph const & graph;
 		Selection const & selection;
 		Selection::const_iterator i = selection.begin();
@@ -33,6 +38,8 @@ namespace GrappleMap
 
 		Reoriented<Location> location() const
 		{
+			assert (i != selection.end());
+
 			return {
 				Location{{***i, segment}, howFar},
 				i->reorientation};
