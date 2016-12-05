@@ -230,6 +230,14 @@ namespace
 
 optional<PositionReorientation> is_reoriented(Position const & a, Position b)
 {
+	auto head2head = [](Position const & p)
+		{ return distanceSquared(p[player0][Head], p[player1][Head]); };
+
+	if (std::abs(head2head(a) - head2head(b)) > 0.05)
+		return boost::none;
+			// valid because the head-to-head distance is not
+			// affected by position reorientations at all
+
 	optional<PositionReorientation> r = is_reoriented_without_swap(a, b);
 
 	#ifndef NDEBUG
