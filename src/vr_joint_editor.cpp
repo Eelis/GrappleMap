@@ -29,13 +29,34 @@ namespace GrappleMap
 
 	void JointEditor::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
 	{
-		if (!joint || !offset) return;
-		
+		optional<Reoriented<PositionInSequence>> const
+			pp = position(editor.getLocation());
+
+		if (!joint || !offset || !pp) return;
+
+		PlayerJoint const j = *joint;
+
+		Graph const & g = editor.getGraph();
+
 		Position new_pos = editor.current_position();
-		auto cv = v3(cbData->currentTransformation.getTranslation()) - *offset;
-		cv.y = std::max(0., cv.y);
-		new_pos[*joint] = cv;
-		spring(new_pos, *joint);
+		auto cursor = v3(cbData->currentTransformation.getTranslation()) - *offset;
+		cursor.y = std::max(0., cursor.y);
+
+		if (confined)
+		{
+			if (auto pr = prev(*pp))
+			if (auto ne = next(*pp, g))
+			{
+				Position const prev_p = at(*pr, g);
+				Position const next_p = at(*ne, g);
+				V3 const dir = next_p[j] - prev_p[j];
+
+				new_pos[j] = prev_p[j] + dir * std::max(0., std::min(1., closest(prev_p[j], dir, cursor)));
+			}
+		}
+		else new_pos[j] = cursor;
+
+		spring(new_pos, j);
 
 		editor.replace(new_pos);
 	}

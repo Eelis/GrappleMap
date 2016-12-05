@@ -51,6 +51,8 @@ namespace GrappleMap
 		}
 	}
 
+	void VrApp::on_lock_toggle(ToggleEvent * cb) { editor.toggle_lock(cb->set); }
+	void VrApp::on_playback_toggle(ToggleEvent *) { editor.toggle_playback(); }
 	void VrApp::on_select_button(Misc::CallbackData *) { editor.toggle_selected(); }
 	void VrApp::on_save_button(Misc::CallbackData *) { editor.save(); }
 	void VrApp::on_insert_keyframe_button(Misc::CallbackData *) { editor.insert_keyframe(); }
@@ -67,14 +69,10 @@ namespace GrappleMap
 		// Vrui::scheduleUpdate(Vrui::getNextAnimationTime()); // todo: what is this?
 	}
 
-	void VrApp::on_lock_toggle(GLMotif::ToggleButton::ValueChangedCallbackData * cb)
+	void VrApp::on_confine_edits_toggle(ToggleEvent * e)
 	{
-		editor.toggle_lock(cb->set);
-	}
-
-	void VrApp::on_playback_toggle(GLMotif::ToggleButton::ValueChangedCallbackData *)
-	{
-		editor.toggle_playback();
+		confineEdits = e->set;
+		if (jointEditor) jointEditor->confined = confineEdits;
 	}
 
 	VrApp::VrApp(int argc, char ** argv)
@@ -94,12 +92,16 @@ namespace GrappleMap
 				p->getSelectCallbacks().add(this, h);
 			};
 
-		auto lockToggle = new GLMotif::ToggleButton("TransitionLockToggle", mainMenu, "Lock");
-		lockToggle->setToggle(editor.lockedToSelection());
-		lockToggle->getValueChangedCallbacks().add(this, &VrApp::on_lock_toggle);
+		auto toggle = [&](char const * n, decltype(&VrApp::on_lock_toggle) h, bool b)
+			{
+				auto t = new GLMotif::ToggleButton(n, mainMenu, n);
+				t->setToggle(b);
+				t->getValueChangedCallbacks().add(this, h);
+			};
 
-		auto playbackToggle = new GLMotif::ToggleButton("PlaybackToggle", mainMenu, "Playback");
-		playbackToggle->getValueChangedCallbacks().add(this, &VrApp::on_playback_toggle);
+		toggle("Lock", &VrApp::on_lock_toggle, editor.lockedToSelection());
+		toggle("Playback", &VrApp::on_playback_toggle, editor.playingBack());
+		toggle("Confine Edits", &VrApp::on_confine_edits_toggle, confineEdits);
 
 		btn("Undo", &VrApp::on_undo_button);
 		btn("Mirror", &VrApp::on_mirror_button);
@@ -123,7 +125,7 @@ namespace GrappleMap
 			switch (tools_created++)
 			{
 				case 0: jointBrowser.reset(new JointBrowser(*tool, editor)); break;
-				case 1: jointEditor.reset(new JointEditor(*tool, editor)); break;
+				case 1: jointEditor.reset(new JointEditor(*tool, editor, confineEdits)); break;
 			}
 		}
 	}

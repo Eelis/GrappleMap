@@ -11,7 +11,7 @@ guilibs = ['GL', 'GLU', 'glfw', 'ftgl'] + cmdlibs
 vruilibs = ["GL", "GLU", "ftgl", "Vrui.g++-3", "Geometry.g++-3", "GLSupport.g++-3", "Threads.g++-3", "Misc.g++-3", "GLMotif.g++-3"] + cmdlibs
 
 glfw_editor   = env.Program('grapplemap-glfw-editor', ['glfw_editor.cpp', rendering, common], LIBS=guilibs)
-vr_editor     = env.Program('grapplemap-vr-editor', ['vr_editor.cpp', 'vr_joint_editor.cpp', 'vr_browse_tool.cpp', rendering, common], LIBS=vruilibs)
+vr_editor     = env.Program('grapplemap-vr-editor', ['vr_editor.cpp', 'vr_joint_editor.cpp', 'vr_joint_browser.cpp', rendering, common], LIBS=vruilibs)
 glfw_playback = env.Program('grapplemap-glfw-playback', ['glfw_playback.cpp', rendering, common], LIBS=guilibs)
 vr_playback   = env.Program('grapplemap-vr-playback', ['vr_playback.cpp', rendering, common], LIBS=vruilibs)
 todot         = env.Program('grapplemap-todot', ['todot.cpp', common], LIBS=cmdlibs)

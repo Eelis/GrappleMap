@@ -21,7 +21,7 @@ void Graph::changed(PositionInSequence const pis)
 			compute_in_out(*new_from);
 		}
 	}
-	else if (!next(*this, pis))
+	else if (!next(pis, *this))
 	{
 		Reoriented<NodeNum> const new_to = find_or_add(edge.sequence.positions.back());
 		NodeNum const old_to = *edge.to;

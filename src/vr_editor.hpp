@@ -24,9 +24,10 @@ namespace GrappleMap
 		Editor & editor;
 		optional<PlayerJoint> joint;
 		optional<V3> offset;
+		bool confined = false;
 
-		JointEditor(Vrui::DraggingTool & t, Editor & e)
-			: Vrui::DraggingToolAdapter{&t}, editor(e)
+		JointEditor(Vrui::DraggingTool & t, Editor & e, bool confined)
+			: Vrui::DraggingToolAdapter{&t}, editor(e), confined(confined)
 		{}
 		
 		void dragStartCallback(Vrui::DraggingTool::DragStartCallbackData *) override;
@@ -41,14 +42,14 @@ namespace GrappleMap
 
 		JointBrowser(Vrui::DraggingTool & t, Editor & e)
 			: Vrui::DraggingToolAdapter{&t}, editor(e)
-		{
-//			editor.calcViables();
-		}
+		{}
 	
 		void dragCallback(Vrui::DraggingTool::DragCallbackData *) override;
 		void dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *) override;
 		void idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData *) override;
 	};
+
+	using ToggleEvent = GLMotif::ToggleButton::ValueChangedCallbackData;
 
 	class VrApp: public Vrui::Application
 	{
@@ -58,7 +59,10 @@ namespace GrappleMap
 		PlayerDrawer playerDrawer;
 		double const scale;
 		unique_ptr<JointEditor> jointEditor;
+		bool confineEdits = false;
+
 		unique_ptr<JointBrowser> jointBrowser;
+
 
 		void on_save_button(Misc::CallbackData *);
 		void on_undo_button(Misc::CallbackData *);
@@ -68,8 +72,9 @@ namespace GrappleMap
 		void on_insert_keyframe_button(Misc::CallbackData *);
 		void on_delete_keyframe_button(Misc::CallbackData *);
 		void on_select_button(Misc::CallbackData *);
-		void on_lock_toggle(GLMotif::ToggleButton::ValueChangedCallbackData *);
-		void on_playback_toggle(GLMotif::ToggleButton::ValueChangedCallbackData *);
+		void on_lock_toggle(ToggleEvent *);
+		void on_playback_toggle(ToggleEvent *);
+		void on_confine_edits_toggle(ToggleEvent *);
 
 		public:
 

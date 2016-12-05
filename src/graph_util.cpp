@@ -118,14 +118,14 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 			));
 
 		for (PositionInSequence location = first_pos_in(s);
-			next(g, location);
-			location = *next(g, location))
+			next(location, g);
+			location = *next(location, g))
 					// See GCC bug 68003 for the reason behind the DRY violation.
 
 			for (unsigned howfar = 0; howfar <= frames_per_pos; ++howfar)
 				positions.push_back(between(
 					r(g[location]),
-					r(g[*next(g, location)]),
+					r(g[*next(location, g)]),
 					howfar / double(frames_per_pos)));
 
 		*m = *g.to(s);

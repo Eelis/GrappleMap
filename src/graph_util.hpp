@@ -76,17 +76,31 @@ inline Reversible<SegmentInSequence> last_segment(Reversible<SeqNum> const & s, 
 }
 
 template <typename T>
-inline auto last_segment(Reoriented<T> const & s, Graph const & g)
+auto last_segment(Reoriented<T> const & s, Graph const & g)
 	-> Reoriented<decltype(last_segment(*s, g))>
 {
 	return {last_segment(*s, g), s.reorientation};
 }
 
 template <typename T>
-inline auto first_segment(Reoriented<T> const & s, Graph const & g)
+auto first_segment(Reoriented<T> const & s, Graph const & g)
 	-> Reoriented<decltype(first_segment(*s, g))>
 {
 	return {first_segment(*s, g), s.reorientation};
+}
+
+template <typename T>
+optional<Reoriented<T>> prev(Reoriented<T> const & s)
+{
+	if (auto x = prev(*s)) return Reoriented<T>{*x, s.reorientation};
+	return boost::none;
+}
+
+template <typename T>
+optional<Reoriented<T>> next(Reoriented<T> const & s, Graph const & g)
+{
+	if (auto x = next(*s, g)) return Reoriented<T>{*x, s.reorientation};
+	return boost::none;
 }
 
 inline optional<PositionInSequence> prev(PositionInSequence const pis)
@@ -95,7 +109,7 @@ inline optional<PositionInSequence> prev(PositionInSequence const pis)
 	return boost::none;
 }
 
-inline optional<PositionInSequence> next(Graph const & g, PositionInSequence const pis)
+inline optional<PositionInSequence> next(PositionInSequence const pis, Graph const & g)
 {
 	if (pis.position == last_pos(g[pis.sequence])) return none;
 	return PositionInSequence{pis.sequence, next(pis.position)};
@@ -191,7 +205,7 @@ vector<ReorientedSegment> neighbours(ReorientedSegment const &, Graph const &, b
 inline optional<ReorientedNode> node(Graph const & g, PositionInSequence const pis)
 {
 	if (pis.position.index == 0) return g.from(pis.sequence);
-	if (!next(g, pis)) return g.to(pis.sequence);
+	if (!next(pis, g)) return g.to(pis.sequence);
 	return none;
 }
 
@@ -328,6 +342,14 @@ inline optional<PositionInSequence> position(Location const & l)
 {
 	if (l.howFar == 0) return from(l.segment);
 	if (l.howFar == 1) return to(l.segment);
+	return boost::none;
+}
+
+inline optional<Reoriented<PositionInSequence>> position(Reoriented<Location> const & l)
+{
+	if (auto x = position(*l))
+		return Reoriented<PositionInSequence>{*x, l.reorientation};
+
 	return boost::none;
 }
 

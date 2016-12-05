@@ -115,11 +115,11 @@ namespace
 
 		vector<Position> r(10, graph[location]);
 
-		for (; next(graph, location); location = *next(graph, location))
+		for (; next(location, graph); location = *next(location, graph))
 			for (unsigned howfar = 0; howfar != frames_per_pos; ++howfar)
 				r.push_back(between(
 					graph[location],
-					graph[*next(graph, location)],
+					graph[*next(location, graph)],
 					howfar / double(frames_per_pos)));
 
 		r.resize(r.size() + 10, graph[seqNum].positions.back());

@@ -237,7 +237,6 @@ inline double cosAngle(V3 a, V3 b)
 	return inner_prod(a, b) / norm2(a) / norm2(b);
 }
 
-
 inline double scalarProject(V3 a, V3 b)
 {
 	return norm2(a) * cosAngle(a, b);

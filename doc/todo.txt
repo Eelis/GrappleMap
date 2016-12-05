@@ -43,6 +43,8 @@ vrui frontend:
 - graph display
 - update menu entries (e.g. only show one of insert/remove keyframe, and 'enable/disable blabla' instead of 'toggle blabla')
 - write tutorial
+- menu button for resetting navigation matrix
+- allow dynamically unmapping tools
 
 playback:
 - make {pre,post}fix length for demo mode configurable
