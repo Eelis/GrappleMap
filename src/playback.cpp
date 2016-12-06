@@ -108,6 +108,7 @@ namespace GrappleMap
 		segment = (*fs)->segment;
 		howFar = from_loc(fs)->howFar;
 		wait = 0;
+		atEnd = false;
 	}
 
 	void Playback::progress(double seconds)
@@ -117,7 +118,7 @@ namespace GrappleMap
 		seconds -= wait;
 		wait = 0;
 
-		if (i == path.end()) { reset(); wait = pause_before; return; }
+		if (atEnd) { reset(); wait = pause_before; return; }
 
 		Reoriented<Reversible<SeqNum>> const & sn = *i;
 
@@ -139,7 +140,7 @@ namespace GrappleMap
 			seconds = (hf - 1) / speed;
 
 			if (segment != last_segment(seq)) { ++segment; hf = 0; }
-			else finished_sequence = true;
+			else { hf = 1; finished_sequence = true; }
 		}
 		else
 		{
@@ -149,12 +150,19 @@ namespace GrappleMap
 			seconds = (- hf) / speed;
 
 			if (segment.index != 0) { --segment.index; hf = 1; }
-			else finished_sequence = true;
+			else { hf = 0; finished_sequence = true; }
 		}
 
 		if (finished_sequence)
 		{
-			if (++i == path.end()) { wait = pause_after; return; }
+			if (std::next(i) == path.end())
+			{
+				atEnd = true;
+				wait = pause_after;
+				return;
+			}
+
+			++i;
 
 			if ((*i)->reverse)
 			{
@@ -169,9 +177,8 @@ namespace GrappleMap
 
 	void Playback::frame(double const secondsElapsed)
 	{
-		if (i != path.end())
-			chaser = between(chaser, at(location(), graph), 0.2);
-				// todo: the 0.2 should depend on secondsElapsed
+		chaser = between(chaser, at(location(), graph), 0.2);
+			// todo: the 0.2 should depend on secondsElapsed
 
 		progress(secondsElapsed);
 	}

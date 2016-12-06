@@ -29,6 +29,7 @@ namespace GrappleMap
 			pause_after = 0.8;
 
 		double wait = 0;
+		bool atEnd = false;
 		Graph const & graph;
 		OrientedPath const & path;
 		OrientedPath::const_iterator i = path.begin();
