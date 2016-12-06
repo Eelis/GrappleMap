@@ -151,13 +151,14 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 		else
 			switch (key)
 			{
-				case GLFW_KEY_X: { w.editor.swap_players(); break; }
-				case GLFW_KEY_M: { w.editor.mirror(); break; }
+				case GLFW_KEY_X: { swap_players(w.editor); break; }
+				case GLFW_KEY_M: { mirror_position(w.editor); break; }
 				case GLFW_KEY_P: { w.editor.toggle_playback(); break; }
 				case GLFW_KEY_L: { w.editor.toggle_lock(!w.editor.lockedToSelection()); break; }
 				case GLFW_KEY_SPACE: { w.editor.toggle_selected(); break; }
 				case GLFW_KEY_INSERT: { w.editor.insert_keyframe(); break; }
 				case GLFW_KEY_DELETE: { w.editor.delete_keyframe(); break; }
+				case GLFW_KEY_I: w.editor.mirror(); break;
 
 				// set position to center
 /*
@@ -170,11 +171,6 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 						for(int i = 0; i != 30; ++i) spring(p);
 						w.graph.replace(w.location, p, true);
 					}
-					break;
-
-
-				case GLFW_KEY_I:
-					w.reorientation.mirror = !w.reorientation.mirror;
 					break;
 
 				// set joint to prev/next/center

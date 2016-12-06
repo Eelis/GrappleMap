@@ -48,8 +48,7 @@ namespace GrappleMap
 		void insert_keyframe();
 		void delete_keyframe();
 		void undo();
-		void mirror();
-		void swap_players();
+		void mirror(); // changes editor perspective, does not change current position
 		void branch();
 		void toggle_lock(bool);
 		void toggle_playback();
@@ -60,6 +59,9 @@ namespace GrappleMap
 		void setLocation(Reoriented<Location>);
 		void snapToPos();
 	};
+
+	void swap_players(Editor &);
+	void mirror_position(Editor &);
 }
 
 #endif

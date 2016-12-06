@@ -113,16 +113,23 @@ namespace GrappleMap
 		}
 	}
 
-	void Editor::swap_players()
+	void swap_players(Editor & e)
 	{
-		if (auto const pp = position(*location))
-		{
-			push_undo();
+		if (!position(*e.getLocation())) return;
 
-			auto p = graph[*pp];
-			GrappleMap::swap_players(p);
-			graph.replace(*pp, p, true);
-		}
+		e.push_undo();
+		auto p = e.current_position();
+		GrappleMap::swap_players(p);
+		e.replace(p);
+	}
+
+	void mirror_position(Editor & e)
+	{
+		if (!position(*e.getLocation())) return;
+
+		e.push_undo();
+		auto p = e.current_position();
+		e.replace(mirror(p));
 	}
 
 	void Editor::recalcViables()

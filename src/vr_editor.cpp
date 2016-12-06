@@ -59,7 +59,7 @@ namespace GrappleMap
 	void VrApp::on_delete_keyframe_button(Misc::CallbackData *) { editor.delete_keyframe(); }
 	void VrApp::on_undo_button(Misc::CallbackData *) { editor.undo(); }
 	void VrApp::on_mirror_button(Misc::CallbackData *) { editor.mirror(); }
-	void VrApp::on_swap_button(Misc::CallbackData *) { editor.swap_players(); }
+	void VrApp::on_swap_button(Misc::CallbackData *) { swap_players(editor); }
 	void VrApp::on_branch_button(Misc::CallbackData *) { editor.branch(); }
 
 	void VrApp::frame()
