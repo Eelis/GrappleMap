@@ -40,7 +40,6 @@ namespace GrappleMap
 
 		Position new_pos = editor.current_position();
 		auto cursor = v3(cbData->currentTransformation.getTranslation()) - *offset;
-		cursor.y = std::max(0., cursor.y);
 
 		if (confined)
 		{
@@ -55,6 +54,8 @@ namespace GrappleMap
 			}
 		}
 		else new_pos[j] = cursor;
+
+		new_pos[j].y = std::max(jointDefs[j.joint].radius, new_pos[j].y);
 
 		spring(new_pos, j);
 
