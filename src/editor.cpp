@@ -93,9 +93,11 @@ namespace GrappleMap
 
 	void Editor::mirror()
 	{
-		location.reorientation.mirror = !location.reorientation.mirror;
+		flip(location.reorientation.mirror);
 
-		// todo: recalc viables and selection?
+		foreach (t : selection) flip(t.reorientation.mirror);
+
+		recalcViables();
 	}
 
 	void Editor::delete_keyframe()

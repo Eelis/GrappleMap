@@ -239,9 +239,9 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					break;
 				}
 */
-				case GLFW_KEY_V: w.edit_mode = !w.edit_mode; break;
+				case GLFW_KEY_V: flip(w.edit_mode); break;
 				case GLFW_KEY_S: w.editor.save(); break;
-				case GLFW_KEY_1: w.split_view = !w.split_view; break;
+				case GLFW_KEY_1: flip(w.split_view); break;
 				case GLFW_KEY_B: w.editor.branch(); break;
 			}
 	}

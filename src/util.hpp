@@ -128,6 +128,8 @@ namespace GrappleMap
 		foreach (x : w) v.push_back(x);
 		return v;
 	}
+
+	inline void flip(bool & b) { b = !b; }
 }
 
 #endif
