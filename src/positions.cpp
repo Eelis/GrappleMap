@@ -182,6 +182,8 @@ Player spring(Player const & p, optional<Joint> fixed_joint)
 
 void spring(Position & pos, optional<PlayerJoint> j)
 {
+	apply_limits(pos);
+
 	foreach (player : playerNums())
 	{
 		optional<Joint> fixed_joint;
@@ -300,6 +302,16 @@ optional<PlayerJoint> closest_joint(Position const & p, V3 const v, double const
 	}
 
 	return r;
+}
+
+void apply_limits(Position & p)
+{
+	foreach (j : playerJoints)
+	{
+		p[j].y = std::max(jointDefs[j.joint].radius, p[j].y);
+		p[j].x = std::max(-2., std::min(2., p[j].x));
+		p[j].z = std::max(-2., std::min(2., p[j].z));
+	}
 }
 
 }

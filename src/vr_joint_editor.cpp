@@ -55,8 +55,6 @@ namespace GrappleMap
 		}
 		else new_pos[j] = cursor;
 
-		new_pos[j].y = std::max(jointDefs[j.joint].radius, new_pos[j].y);
-
 		spring(new_pos, j);
 
 		editor.replace(new_pos);

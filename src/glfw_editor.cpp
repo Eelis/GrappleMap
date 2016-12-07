@@ -514,9 +514,9 @@ int main(int const argc, char const * const * const argv)
 
 				if (reo.mirror) dragger.x = -dragger.x;
 
-				joint.x = std::max(-2., std::min(2., joint.x + dragger.x * offx));
-				joint.z = std::max(-2., std::min(2., joint.z + dragger.z * offx));
-				joint.y = std::max(jointDefs[w.chosen_joint->joint].radius, joint.y + offy);
+				joint.x += dragger.x * offx;
+				joint.z += dragger.z * offx;
+				joint.y += offy;
 
 				spring(pos, rj);
 

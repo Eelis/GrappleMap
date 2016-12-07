@@ -71,7 +71,7 @@ public:
 
 	void insert_sequences(vector<Sequence> &&); // for bulk, more efficient than individually with set()
 
-	void replace(PositionInSequence, Position const &, bool local);
+	void replace(PositionInSequence, Position, bool local);
 		// The local flag only affects the case where the position denotes a node.
 		// In that case, if local is true, the existing node and connecting sequences
 		// will not be updated, but the sequence will detach from the node instead,

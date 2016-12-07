@@ -38,8 +38,10 @@ void Graph::changed(PositionInSequence const pis)
 	}
 }
 
-void Graph::replace(PositionInSequence const pis, Position const & p, bool const local)
+void Graph::replace(PositionInSequence const pis, Position p, bool const local)
 {
+	apply_limits(p);
+
 	edges.at(pis.sequence.index).sequence.positions.at(pis.position.index) = p;
 
 	optional<ReorientedNode> const rn = node(*this, pis);
