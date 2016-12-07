@@ -72,7 +72,7 @@ Index<i, T> next(Index<i, T> x)
 template <Indexed i, typename T>
 std::ostream & operator<<(std::ostream & o, Index<i, T> const x)
 {
-	return o << x.index;
+	return o << int64_t(x.index);
 }
 
 using SeqNum = Index<Indexed::sequence, uint_fast32_t>;
@@ -99,7 +99,7 @@ inline bool operator==(PlayerJoint a, PlayerJoint b)
 
 inline std::ostream & operator<<(std::ostream & o, PlayerJoint const pj)
 {
-	return o << "player " << pj.player.index << "'s " << to_string(pj.joint);
+	return o << "player " << pj.player << "'s " << to_string(pj.joint);
 }
 
 template<typename T>
@@ -306,7 +306,7 @@ struct Location
 
 inline std::ostream & operator<<(std::ostream & o, NodeNum const n)
 {
-	return o << "node" << n.index;
+	return o << "node" << n;
 }
 
 inline bool operator==(SegmentInSequence const a, SegmentInSequence const b)
@@ -323,7 +323,7 @@ inline bool operator<(SegmentInSequence const a, SegmentInSequence const b)
 
 inline std::ostream & operator<<(std::ostream & o, PositionInSequence const pis)
 {
-	return o << "{" << pis.sequence.index << ", " << pis.position.index << "}";
+	return o << "{" << pis.sequence << ", " << pis.position << "}";
 }
 
 inline bool operator==(PositionInSequence const & a, PositionInSequence const & b)
