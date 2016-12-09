@@ -175,8 +175,6 @@ class VruiXine
 	Vrui::Point screenCenter; // Center of video display screen in navigational coordinates
 	Vrui::Scalar screenHeight; // Height of video display screen in navigational coordinate units
 	Vrui::Scalar aspectRatio; // The aspect ratio of the currently locked video frame
-	Vrui::Scalar screenCurvature; // Relative amount of screen curvature between 0 (flat) and 1 (sphere around display center)
-	Vrui::Scalar fullSphereRadius; // Radius for full-sphere screens in navigational coordinate units
 	double screenAzimuth,screenElevation; // Angles to rotate the screen
 	int stereoMode; // Stream's stereo mode, 0: mono, 1: side-by-side, 2: top/bottom
 	int stereoLayout; // Layout of sub-frames. 0: Left eye is left or top, 1: Left eye is right or bottom
@@ -226,8 +224,6 @@ class VruiXine
 	void screenDistanceValueChangedCallback(GLMotif::TextFieldSlider::ValueChangedCallbackData* cbData); // Callback called when the screen distance slider changes value
 	void screenHeightValueChangedCallback(GLMotif::TextFieldSlider::ValueChangedCallbackData* cbData); // Callback called when the screen height slider changes value
 	void screenBottomValueChangedCallback(GLMotif::TextFieldSlider::ValueChangedCallbackData* cbData); // Callback called when the screen bottom slider changes value
-	void screenCurvatureValueChangedCallback(GLMotif::TextFieldSlider::ValueChangedCallbackData* cbData); // Callback called when the screen curvature slider changes value
-	void fullSphereRadiusValueChangedCallback(GLMotif::TextFieldSlider::ValueChangedCallbackData* cbData); // Callback called when the full-sphere radius slider changes value
 	void screenAzimuthValueChangedCallback(GLMotif::TextFieldSlider::ValueChangedCallbackData* cbData); // Callback called when the screen azimuth angle slider changes value
 	void screenElevationValueChangedCallback(GLMotif::TextFieldSlider::ValueChangedCallbackData* cbData); // Callback called when the screen elevation angle slider changes value
 	
