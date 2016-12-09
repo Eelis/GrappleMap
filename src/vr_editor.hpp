@@ -20,11 +20,15 @@
 
 namespace GrappleMap
 {
+	using ONTransform = Geometry::OrthonormalTransformation<double, 3>;
+
 	struct JointEditor: Vrui::DraggingToolAdapter
 	{
 		Editor & editor;
 		optional<PlayerJoint> joint;
-		optional<V3> offset;
+		optional<V3> joint_edit_offset;
+		optional<Position> start_pos;
+		optional<ONTransform> dragTransform;
 		bool confined = false;
 
 		JointEditor(Vrui::DraggingTool & t, Editor & e, bool confined)

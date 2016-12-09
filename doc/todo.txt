@@ -28,12 +28,11 @@ glfw frontend:
 
 vrui frontend:
 - limb editing
-- figure out how to integrate in an environment that also has web browser, text editor, video player, ...
+- integrate more tools into vr space: web browser, text editor, ...
 - define tools properly
 - make viables completely match actually browseable paths
 - position-in-sequence labels
 - show correct viable lines
-- reorientation tool
 - interface for inserting new transitions
 - graph display
 - update menu entries (e.g. only show one of insert/remove keyframe, and 'enable/disable blabla' instead of 'toggle blabla')
@@ -41,6 +40,9 @@ vrui frontend:
 - menu button for resetting navigation matrix
 - allow dynamically unmapping tools
 - support desktop mode where cursor is a ray
+- video player reorientation, ideally using ordinary window decorations
+- optionally couple video playback to selection position (so that if we have a real-time clip of a technique, we can copy the timing exactly)
+- dynamic video opening
 
 playback:
 - make {pre,post}fix length for demo mode configurable

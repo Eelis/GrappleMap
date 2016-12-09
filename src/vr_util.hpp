@@ -9,6 +9,11 @@ namespace GrappleMap
 	{
 		return V3{v[0], v[1], v[2]};
 	}
+
+	inline V3 v3(Geometry::Point<double, 3> const & v)
+	{
+		return V3{v[0], v[1], v[2]};
+	}
 }
 
 #endif

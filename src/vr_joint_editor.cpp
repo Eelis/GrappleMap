@@ -3,14 +3,36 @@
 
 namespace GrappleMap
 {
+	namespace
+	{
+		Position operator*(Position p, ONTransform const & t)
+		{
+			using Point = Geometry::Point<double, 3>;
+
+			foreach (j : playerJoints)
+			{
+				V3 & v = p[j];
+				v = v3(t.transform(Point(v.x, v.y, v.z)));
+			}
+
+			return p;
+		}
+	}
+
 	void JointEditor::dragStartCallback(Vrui::DraggingTool::DragStartCallbackData * cb)
 	{
-		if (!joint) return;
-
 		editor.push_undo();
 
-		offset = v3(cb->startTransformation.getTranslation()) -
-			editor.current_position()[*joint];
+		start_pos = editor.current_position();
+
+		dragTransform = ONTransform(
+				cb->startTransformation.getTranslation(),
+				cb->startTransformation.getRotation());
+		dragTransform->doInvert();
+
+		if (joint)
+			joint_edit_offset = v3(cb->startTransformation.getTranslation()) -
+				editor.current_position()[*joint];
 	}
 
 	void JointEditor::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
@@ -32,30 +54,42 @@ namespace GrappleMap
 		optional<Reoriented<PositionInSequence>> const
 			pp = position(editor.getLocation());
 
-		if (!joint || !offset || !pp) return;
-
-		PlayerJoint const j = *joint;
+		if (!pp || !dragTransform || !start_pos) return;
 
 		Graph const & g = editor.getGraph();
-
 		Position new_pos = editor.current_position();
-		auto cursor = v3(cbData->currentTransformation.getTranslation()) - *offset;
+		auto const cursor = v3(cbData->currentTransformation.getTranslation());
 
-		if (confined)
+		ONTransform transform = ONTransform(
+			cbData->currentTransformation.getTranslation(),
+			cbData->currentTransformation.getRotation());
+		transform *= *dragTransform;
+
+		if (joint)
 		{
-			if (auto pr = prev(*pp))
-			if (auto ne = next(*pp, g))
+			if (!joint_edit_offset) return;
+
+			PlayerJoint const j = *joint;
+
+			auto const joint_pos = cursor - *joint_edit_offset;
+
+			if (confined)
 			{
-				Position const prev_p = at(*pr, g);
-				Position const next_p = at(*ne, g);
-				V3 const dir = next_p[j] - prev_p[j];
+				if (auto pr = prev(*pp))
+				if (auto ne = next(*pp, g))
+				{
+					Position const prev_p = at(*pr, g);
+					Position const next_p = at(*ne, g);
+					V3 const dir = next_p[j] - prev_p[j];
 
-				new_pos[j] = prev_p[j] + dir * std::max(0., std::min(1., closest(prev_p[j], dir, cursor)));
+					new_pos[j] = prev_p[j] + dir * std::max(0., std::min(1., closest(prev_p[j], dir, joint_pos)));
+				}
 			}
-		}
-		else new_pos[j] = cursor;
+			else new_pos[j] = joint_pos;
 
-		spring(new_pos, j);
+			spring(new_pos, j);
+		}
+		else new_pos = *start_pos * transform;
 
 		editor.replace(new_pos);
 	}
