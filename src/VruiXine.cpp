@@ -70,7 +70,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Vrui/DisplayState.h>
 #include <Vrui/OpenFile.h>
 
-class VruiXine:public Vrui::Application,public GLObject
+class VruiXine
 	{
 	/* Embedded classes: */
 	private:
@@ -239,12 +239,12 @@ class VruiXine:public Vrui::Application,public GLObject
 	
 	/* Methods from Vrui::Application: */
 	virtual void frame(void);
-	virtual void display(GLContextData& contextData) const;
+	virtual void display(GLContextData& contextData, GLObject const *) const;
 	virtual void resetNavigation(void);
-	virtual void eventCallback(EventID eventId,Vrui::InputDevice::ButtonCallbackData* cbData);
+	virtual void eventCallback(Vrui::Application::EventID eventId,Vrui::InputDevice::ButtonCallbackData* cbData);
 	
 	/* Methods from GLObject: */
-	virtual void initContext(GLContextData& contextData) const;
+	virtual void initContext(GLContextData& contextData, GLObject const *) const;
 	};
 
 /***********************************
@@ -1449,8 +1449,7 @@ GLMotif::PopupWindow* VruiXine::createScreenControlDialog(void)
 	}
 
 VruiXine::VruiXine(int& argc,char**& argv)
-	:Vrui::Application(argc,argv),
-	 xine(0),videoOutPort(0),audioOutPort(0),stream(0),eventQueue(0),
+	:xine(0),videoOutPort(0),audioOutPort(0),stream(0),eventQueue(0),
 	 videoFileSelectionHelper(Vrui::getWidgetManager(),"",".mp4;.iso",Vrui::openDirectory(".")),
 	 videoFrameVersion(0),overlaySetVersion(0),
 	 streamControlDialog(0),
@@ -1551,6 +1550,7 @@ VruiXine::VruiXine(int& argc,char**& argv)
 	Vrui::getToolManager()->addAbstractClass(dvdMenuToolFactory,Vrui::ToolManager::defaultToolFactoryDestructor);
 	
 	/* Create dvd menu event tool classes: */
+/*
 	addEventTool("Menu 1",dvdMenuToolFactory,0);
 	addEventTool("Menu 2",dvdMenuToolFactory,1);
 	addEventTool("Menu 3",dvdMenuToolFactory,2);
@@ -1558,28 +1558,29 @@ VruiXine::VruiXine(int& argc,char**& argv)
 	addEventTool("Menu 5",dvdMenuToolFactory,4);
 	addEventTool("Menu 6",dvdMenuToolFactory,5);
 	addEventTool("Menu 7",dvdMenuToolFactory,6);
-	
+*/
 	/* Create an abstract base class for DVD menu navigation tool classes: */
 	BaseToolFactory* dvdMenuNavToolFactory=new BaseToolFactory("DVDMenuNavTool","DVD Menu Navigation",baseToolFactory,*Vrui::getToolManager());
 	Vrui::getToolManager()->addAbstractClass(dvdMenuNavToolFactory,Vrui::ToolManager::defaultToolFactoryDestructor);
 	
 	/* Create dvd menu navigation event tool classes: */
+/*
 	addEventTool("Up",dvdMenuNavToolFactory,9);
 	addEventTool("Down",dvdMenuNavToolFactory,10);
 	addEventTool("Left",dvdMenuNavToolFactory,11);
 	addEventTool("Right",dvdMenuNavToolFactory,12);
 	addEventTool("Select",dvdMenuNavToolFactory,13);
-	
+*/
 	/* Create an abstract base class for DVD chapter navigation tool classes: */
 	BaseToolFactory* dvdChapterNavToolFactory=new BaseToolFactory("DVDChapterNavTool","DVD Chapter Navigation",baseToolFactory,*Vrui::getToolManager());
 	Vrui::getToolManager()->addAbstractClass(dvdChapterNavToolFactory,Vrui::ToolManager::defaultToolFactoryDestructor);
 	
 	/* Create dvd chapter navigation event tool classes: */
-	addEventTool("Previous",dvdChapterNavToolFactory,7);
-	addEventTool("Next",dvdChapterNavToolFactory,8);
+//	addEventTool("Previous",dvdChapterNavToolFactory,7);
+//	addEventTool("Next",dvdChapterNavToolFactory,8);
 	
 	/* Create pause toggle event tool class: */
-	addEventTool("Pause",baseToolFactory,14);
+//	addEventTool("Pause",baseToolFactory,14);
 	
 	/* Create the stream control dialog: */
 	streamControlDialog=createStreamControlDialog();
@@ -1738,10 +1739,10 @@ void VruiXine::frame(void)
 		}
 	}
 
-void VruiXine::display(GLContextData& contextData) const
+void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 	{
 	/* Get the context data item: */
-	DataItem* dataItem=contextData.retrieveDataItem<DataItem>(this);
+	DataItem* dataItem=contextData.retrieveDataItem<DataItem>(glObj);
 	
 	/* Handle the current video frame based on its format: */
 	const Frame& frame=videoFrames.getLockedValue();
@@ -2112,11 +2113,11 @@ void VruiXine::eventCallback(Vrui::Application::EventID eventId,Vrui::InputDevic
 		}
 	}
 
-void VruiXine::initContext(GLContextData& contextData) const
+void VruiXine::initContext(GLContextData& contextData, GLObject const * glObj) const
 	{
 	/* Create a context data item and store it in the OpenGL context: */
 	DataItem* dataItem=new DataItem;
-	contextData.addDataItem(this,dataItem);
+	contextData.addDataItem(glObj,dataItem);
 	
 	dataItem->numVertices[0]=64;
 	dataItem->numVertices[1]=32;
@@ -2257,4 +2258,39 @@ void VruiXine::initContext(GLContextData& contextData) const
 	dataItem->videoShaderUniforms[2][2]=dataItem->videoShaders[2].getUniformLocation("rgbTextureSampler");
 	}
 
-VRUI_APPLICATION_RUN(VruiXine)
+struct HostApp: public Vrui::Application, public GLObject
+{
+	VruiXine video_player;
+
+	HostApp(int & argc, char ** & argv)
+		 : Vrui::Application(argc, argv)
+		 , video_player(argc, argv)
+	{}
+
+	void frame() override
+	{
+		video_player.frame();
+	}
+
+	void display(GLContextData& contextData) const override
+	{
+		video_player.display(contextData, this);
+	}
+
+	void resetNavigation() override
+	{
+		video_player.resetNavigation();
+	}
+
+	void eventCallback(EventID eventId,Vrui::InputDevice::ButtonCallbackData* cbData) override
+	{
+		video_player.eventCallback(eventId, cbData);
+	}
+	
+	void initContext(GLContextData& contextData) const override
+	{
+		video_player.initContext(contextData, this);
+	}
+};
+
+VRUI_APPLICATION_RUN(HostApp)
