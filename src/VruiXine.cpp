@@ -1155,7 +1155,7 @@ VruiXine::VruiXine(std::vector<std::string> const & args)
 	 playbackControlDialog(0),
 	 playbackPosCheckTime(0.0),streamLength(0.0),
 	 screenCenter(0,3,2),screenHeight(3),aspectRatio(Vrui::Scalar(16.0/9.0)),
-	 screenAzimuth(0.0),screenElevation(0.0),
+	 screenAzimuth(0.0),screenElevation(-90.0),
 	 stereoMode(0),stereoLayout(0),stereoSquashed(false),forceMono(false),stereoSeparation(0.0f),
 	 screenParametersVersion(1),
 	 screenControlDialog(0)
