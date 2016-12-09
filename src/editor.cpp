@@ -39,6 +39,8 @@ namespace GrappleMap
 			location->segment = segment_from(*start);
 		else
 			throw std::runtime_error("no such position/transition");
+
+		recalcViables();
 	}
 
 	void Editor::toggle_selected()
