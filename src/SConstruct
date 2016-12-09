@@ -11,7 +11,7 @@ guilibs = ['GL', 'GLU', 'glfw', 'ftgl'] + cmdlibs
 vruilibs = ["GL", "GLU", "ftgl", "Vrui.g++-3", "Geometry.g++-3", "GLGeometry.g++-3", "GLSupport.g++-3", "Threads.g++-3", "Misc.g++-3", "Math.g++-3", "Plugins.g++-3", "GLMotif.g++-3"] + cmdlibs
 
 glfw_editor   = env.Program('grapplemap-glfw-editor', ['glfw_editor.cpp', rendering, common], LIBS=guilibs)
-vr_editor     = env.Program('grapplemap-vr-editor', ['vr_editor.cpp', 'vr_joint_editor.cpp', 'vr_joint_browser.cpp', rendering, common], LIBS=vruilibs)
+vr_editor     = env.Program('grapplemap-vr-editor', ['vr_editor.cpp', 'vr_joint_editor.cpp', 'vr_joint_browser.cpp', 'VruiXine.cpp', rendering, common], LIBS=vruilibs+['xine'])
 glfw_playback = env.Program('grapplemap-glfw-playback', ['glfw_playback.cpp', rendering, common], LIBS=guilibs)
 vr_playback   = env.Program('grapplemap-vr-playback', ['vr_playback.cpp', rendering, common], LIBS=vruilibs)
 todot         = env.Program('grapplemap-todot', ['todot.cpp', common], LIBS=cmdlibs)
@@ -20,7 +20,5 @@ mkpospages    = env.Program('grapplemap-mkpospages', ['mkpospages.cpp', images, 
 				LIBS = ['OSMesa', 'GLU', 'ftgl', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system'])
 mkvid      =env.Program('grapplemap-mkvid', ['makevideo.cpp', images, rendering, common],
 				LIBS = ['OSMesa', 'GLU', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system', 'ftgl'])
-
-vruixine      = env.Program('vruixine', ['VruiXine.cpp', common], LIBS=[vruilibs] + ["xine"])
 
 env.Alias('noX', [dbtojs, mkpospages, mkvid]);

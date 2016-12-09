@@ -64,6 +64,8 @@ namespace GrappleMap
 
 	void VrApp::frame()
 	{
+		video_player.frame();
+
 		editor.frame(Vrui::getCurrentFrameTime());
 
 		// Vrui::scheduleUpdate(Vrui::getNextAnimationTime()); // todo: what is this?
@@ -80,6 +82,7 @@ namespace GrappleMap
 		, opts(getopts(argc, argv))
 		, editor(opts, nullptr)
 		, scale(opts["scale"].as<double>())
+		, video_player(std::vector<std::string>{"vruixine", "test.mp4"})
 	{
 		style.grid_size = 20;
 
@@ -130,8 +133,10 @@ namespace GrappleMap
 		}
 	}
 
-	void VrApp::display(GLContextData &) const
+	void VrApp::display(GLContextData & contextData) const
 	{
+		video_player.display(contextData, this);
+
 		glEnable(GL_POINT_SMOOTH); // todo: move
 
 		optional<PlayerJoint> browse_joint, edit_joint;

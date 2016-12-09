@@ -16,6 +16,7 @@
 #include <Misc/CallbackList.h>
 #include "editor.hpp"
 #include "rendering.hpp"
+#include "VruiXine.hpp"
 
 namespace GrappleMap
 {
@@ -51,7 +52,7 @@ namespace GrappleMap
 
 	using ToggleEvent = GLMotif::ToggleButton::ValueChangedCallbackData;
 
-	class VrApp: public Vrui::Application
+	class VrApp: public Vrui::Application, public GLObject
 	{
 		boost::program_options::variables_map opts;
 		Editor editor;
@@ -63,6 +64,7 @@ namespace GrappleMap
 
 		unique_ptr<JointBrowser> jointBrowser;
 
+		VruiXine video_player;
 
 		void on_save_button(Misc::CallbackData *);
 		void on_undo_button(Misc::CallbackData *);
@@ -75,6 +77,16 @@ namespace GrappleMap
 		void on_lock_toggle(ToggleEvent *);
 		void on_playback_toggle(ToggleEvent *);
 		void on_confine_edits_toggle(ToggleEvent *);
+
+		void initContext(GLContextData& contextData) const override
+		{
+			video_player.initContext(contextData, this);
+		}
+
+		void eventCallback(EventID eventId,Vrui::InputDevice::ButtonCallbackData* cbData) override
+		{
+			video_player.eventCallback(eventId, cbData);
+		}
 
 		public:
 
