@@ -59,7 +59,7 @@ namespace GrappleMap
 		auto cj = closest_joint(
 			editor.current_position(),
 			v3(cbData->currentTransformation.getTranslation()),
-			0.1);
+			0.3);
 
 		if (cj && /*jointDefs[cj->joint].draggable &&*/ editor.getViables()[*cj].total_dist != 0)
 			joint = *cj;
