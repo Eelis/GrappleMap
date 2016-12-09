@@ -500,22 +500,6 @@ void VruiXine::setCropTop(int newCropTop)
 	cropSliders[3]->setValue(crop[3]);
 	}
 
-void VruiXine::setScreenMode(int newScreenMode)
-	{
-	if(screenMode==newScreenMode)
-		return;
-	
-	/* Set the screen mode: */
-	screenMode=newScreenMode;
-	++screenParametersVersion;
-	
-	/* Reset the navigation transformation to the new mode: */
-	resetNavigation();
-	
-	/* Update the UI: */
-	screenModes->setSelectedToggle(screenMode);
-	}
-
 void VruiXine::loadVideo(const char* newVideoFileName)
 	{
 	/* Determine the type of video file: */
@@ -569,7 +553,6 @@ void VruiXine::loadVideo(const char* newVideoFileName)
 		setCropRight(cfg.retrieveValue<int>("./cropRight",crop[1]));
 		setCropBottom(cfg.retrieveValue<int>("./cropBottom",crop[2]));
 		setCropTop(cfg.retrieveValue<int>("./cropTop",crop[3]));
-		setScreenMode(cfg.retrieveValue<int>("./screenMode",screenMode));
 		}
 	catch(...)
 		{
@@ -778,7 +761,6 @@ void VruiXine::saveConfigurationCallback(Misc::CallbackData* cbData)
 		cfg.storeValue<int>("./cropRight",crop[1]);
 		cfg.storeValue<int>("./cropBottom",crop[2]);
 		cfg.storeValue<int>("./cropTop",crop[3]);
-		cfg.storeValue<int>("./screenMode",screenMode);
 		
 		cfg.saveAs((configFileName.c_str()));
 		}
@@ -1039,11 +1021,6 @@ GLMotif::PopupWindow* VruiXine::createPlaybackControlDialog(void)
 	return playbackControlDialogPopup;
 	}
 
-void VruiXine::screenModesValueChangedCallback(GLMotif::RadioBox::ValueChangedCallbackData* cbData)
-	{
-	setScreenMode(cbData->radioBox->getToggleIndex(cbData->newSelectedToggle));
-	}
-
 void VruiXine::screenDistanceValueChangedCallback(GLMotif::TextFieldSlider::ValueChangedCallbackData* cbData)
 	{
 	/* Set the screen distance from the display center: */
@@ -1086,9 +1063,6 @@ void VruiXine::fullSphereRadiusValueChangedCallback(GLMotif::TextFieldSlider::Va
 	{
 	/* Set the full-sphere radius: */
 	fullSphereRadius=cbData->value;
-	
-	if(screenMode==2||screenMode==3)
-		++screenParametersVersion;
 	}
 
 void VruiXine::screenAzimuthValueChangedCallback(GLMotif::TextFieldSlider::ValueChangedCallbackData* cbData)
@@ -1117,20 +1091,7 @@ GLMotif::PopupWindow* VruiXine::createScreenControlDialog(void)
 	
 	new GLMotif::Blind("Blind1",screenControlDialog);
 	
-	screenModes=new GLMotif::RadioBox("ScreenModes",screenControlDialog,false);
-	screenModes->setOrientation(GLMotif::RowColumn::HORIZONTAL);
-	screenModes->setPacking(GLMotif::RowColumn::PACK_TIGHT);
-	screenModes->setSelectionMode(GLMotif::RadioBox::ALWAYS_ONE);
-	
-	screenModes->addToggle("Window");
-	screenModes->addToggle("Theater");
-	screenModes->addToggle("Half Sphere");
-	screenModes->addToggle("Full Sphere");
-	
-	screenModes->setSelectedToggle(screenMode);
-	screenModes->getValueChangedCallbacks().add(this,&VruiXine::screenModesValueChangedCallback);
-	screenModes->manageChild();
-	
+
 	new GLMotif::Label("ScreenDistanceLabel",screenControlDialog,"Screen Distance");
 	
 	GLMotif::TextFieldSlider* screenDistanceSlider=new GLMotif::TextFieldSlider("ScreenDistanceSlider",screenControlDialog,5,ss.fontHeight*10.0f);
@@ -1229,7 +1190,7 @@ VruiXine::VruiXine(std::vector<std::string> const & args)
 	 dvdNavigationDialog(0),
 	 playbackControlDialog(0),
 	 playbackPosCheckTime(0.0),streamLength(0.0),
-	 screenMode(0),screenCenter(0,3,2),screenHeight(3),aspectRatio(Vrui::Scalar(16.0/9.0)),fullSphereRadius(1.5),
+	 screenCenter(0,3,2),screenHeight(3),aspectRatio(Vrui::Scalar(16.0/9.0)),fullSphereRadius(1.5),
 	 screenAzimuth(0.0),screenElevation(0.0),
 	 stereoMode(0),stereoLayout(0),stereoSquashed(false),forceMono(false),stereoSeparation(0.0f),
 	 screenParametersVersion(1),
@@ -1269,14 +1230,6 @@ VruiXine::VruiXine(std::vector<std::string> const & args)
 				else
 					std::cerr<<"Dangling option -ao ignored"<<std::endl;
 				}
-			else if(strcasecmp(argv[i]+1,"window")==0)
-				screenMode=0;
-			else if(strcasecmp(argv[i]+1,"theater")==0)
-				screenMode=1;
-			else if(strcasecmp(argv[i]+1,"halfsphere")==0)
-				screenMode=2;
-			else if(strcasecmp(argv[i]+1,"sphere")==0)
-				screenMode=3;
 			else if(strcasecmp(argv[i]+1,"fullSphereRadius")==0||strcasecmp(argv[i]+1,"fsr")==0)
 				{
 				++i;
@@ -1637,98 +1590,69 @@ void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 		/* Re-generate the vertex buffer contents: */
 		Vertex* vertices=static_cast<Vertex*>(glMapBufferARB(GL_ARRAY_BUFFER_ARB,GL_WRITE_ONLY));
 		Vertex* vPtr=vertices;
-		if(screenMode==2||screenMode==3)
+
+		Vrui::Scalar screenWidth=screenHeight*aspectRatio;
+		if(!stereoSquashed)
+			if(stereoMode==1)
+				screenWidth*=Vrui::Scalar(0.5);
+			else if(stereoMode==2)
+				screenWidth*=Vrui::Scalar(2);
+		if(screenCurvature>Vrui::Scalar(0.005))
 			{
-			/* Create a full sphere with texture coordinates for equirectangular projection: */
+			/* Generate a curved screen: */
+			Vrui::Scalar sphereRadius=screenCenter[1]/screenCurvature;
+			Vrui::Point sphereCenter(0,screenCenter[1]-sphereRadius,0);
+			
+			Vrui::Scalar xAngle=screenWidth/sphereRadius;
+			Vrui::Scalar xAngle0=-Math::div2(xAngle);
+			Vrui::Scalar xas=xAngle/Vrui::Scalar(dataItem->numVertices[0]-1);
+			Vrui::Scalar yAngle=screenHeight/sphereRadius;
+			Vrui::Scalar yAngle0=(screenCenter[2]-Math::div2(screenHeight))/sphereRadius;
+			Vrui::Scalar yas=yAngle/Vrui::Scalar(dataItem->numVertices[1]-1);
+			
 			GLfloat tsx=GLfloat(frameSize[0])/GLfloat(dataItem->numVertices[0]-1);
 			GLfloat tsy=GLfloat(frameSize[1])/GLfloat(dataItem->numVertices[1]-1);
-			Vrui::Scalar horizontalAngleScale=Math::Constants<Vrui::Scalar>::pi;
-			if(screenMode==3)
-				horizontalAngleScale*=Vrui::Scalar(2);
 			for(int y=0;y<dataItem->numVertices[1];++y)
 				for(int x=0;x<dataItem->numVertices[0];++x,++vPtr)
 					{
-					/* Assign texture coordinates: */
 					vPtr->texCoord[0]=GLfloat(x)*tsx;
 					vPtr->texCoord[1]=GLfloat(frameSize[1])-GLfloat(y)*tsy;
 					
-					/* Calculate vertex position: */
-					Vrui::Scalar xa=(Vrui::Scalar(x)/Vrui::Scalar(dataItem->numVertices[0]-1)-Vrui::Scalar(0.5))*horizontalAngleScale;
+					Vrui::Scalar xa=xAngle0+Vrui::Scalar(x)*xas;
 					Vrui::Scalar cx=Math::cos(xa);
 					Vrui::Scalar sx=Math::sin(xa);
-					Vrui::Scalar ya=(Vrui::Scalar(y)/Vrui::Scalar(dataItem->numVertices[1]-1)-Vrui::Scalar(0.5))*Math::Constants<Vrui::Scalar>::pi;
+					Vrui::Scalar ya=yAngle0+Vrui::Scalar(y)*yas;
 					Vrui::Scalar cy=Math::cos(ya);
 					Vrui::Scalar sy=Math::sin(ya);
-					
-					vPtr->position[0]=GLfloat(cy*sx*fullSphereRadius);
-					vPtr->position[1]=GLfloat(cy*cx*fullSphereRadius);
-					vPtr->position[2]=GLfloat(sy*fullSphereRadius);
+					vPtr->position[0]=GLfloat(sphereCenter[0]+cy*sx*sphereRadius);
+					vPtr->position[1]=GLfloat(sphereCenter[1]+cy*cx*sphereRadius);
+					vPtr->position[2]=GLfloat(sphereCenter[2]+sy*sphereRadius);
 					}
 			}
 		else
 			{
-			Vrui::Scalar screenWidth=screenHeight*aspectRatio;
-			if(!stereoSquashed)
-				if(stereoMode==1)
-					screenWidth*=Vrui::Scalar(0.5);
-				else if(stereoMode==2)
-					screenWidth*=Vrui::Scalar(2);
-			if(screenCurvature>Vrui::Scalar(0.005))
-				{
-				/* Generate a curved screen: */
-				Vrui::Scalar sphereRadius=screenCenter[1]/screenCurvature;
-				Vrui::Point sphereCenter(0,screenCenter[1]-sphereRadius,0);
-				
-				Vrui::Scalar xAngle=screenWidth/sphereRadius;
-				Vrui::Scalar xAngle0=-Math::div2(xAngle);
-				Vrui::Scalar xas=xAngle/Vrui::Scalar(dataItem->numVertices[0]-1);
-				Vrui::Scalar yAngle=screenHeight/sphereRadius;
-				Vrui::Scalar yAngle0=(screenCenter[2]-Math::div2(screenHeight))/sphereRadius;
-				Vrui::Scalar yas=yAngle/Vrui::Scalar(dataItem->numVertices[1]-1);
-				
-				GLfloat tsx=GLfloat(frameSize[0])/GLfloat(dataItem->numVertices[0]-1);
-				GLfloat tsy=GLfloat(frameSize[1])/GLfloat(dataItem->numVertices[1]-1);
-				for(int y=0;y<dataItem->numVertices[1];++y)
-					for(int x=0;x<dataItem->numVertices[0];++x,++vPtr)
-						{
-						vPtr->texCoord[0]=GLfloat(x)*tsx;
-						vPtr->texCoord[1]=GLfloat(frameSize[1])-GLfloat(y)*tsy;
-						
-						Vrui::Scalar xa=xAngle0+Vrui::Scalar(x)*xas;
-						Vrui::Scalar cx=Math::cos(xa);
-						Vrui::Scalar sx=Math::sin(xa);
-						Vrui::Scalar ya=yAngle0+Vrui::Scalar(y)*yas;
-						Vrui::Scalar cy=Math::cos(ya);
-						Vrui::Scalar sy=Math::sin(ya);
-						vPtr->position[0]=GLfloat(sphereCenter[0]+cy*sx*sphereRadius);
-						vPtr->position[1]=GLfloat(sphereCenter[1]+cy*cx*sphereRadius);
-						vPtr->position[2]=GLfloat(sphereCenter[2]+sy*sphereRadius);
-						}
-				}
-			else
-				{
-				/* Generate a flat screen: */
-				Vrui::Scalar x0=screenCenter[0]-Math::div2(screenWidth);
-				Vrui::Scalar x1=x0+screenWidth;
-				Vrui::Scalar z0=screenCenter[2]-Math::div2(screenHeight);
-				Vrui::Scalar z1=z0+screenHeight;
-				
-				GLfloat tsx=GLfloat(frameSize[0])/GLfloat(dataItem->numVertices[0]-1);
-				GLfloat tsy=GLfloat(frameSize[1])/GLfloat(dataItem->numVertices[1]-1);
-				Vrui::Scalar sx=screenWidth/Vrui::Scalar(dataItem->numVertices[0]-1);
-				Vrui::Scalar sz=screenHeight/Vrui::Scalar(dataItem->numVertices[1]-1);
-				for(int y=0;y<dataItem->numVertices[1];++y)
-					for(int x=0;x<dataItem->numVertices[0];++x,++vPtr)
-						{
-						vPtr->texCoord[0]=GLfloat(x)*tsx;
-						vPtr->texCoord[1]=GLfloat(frameSize[1])-GLfloat(y)*tsy;
-						
-						vPtr->position[0]=GLfloat(x0+Vrui::Scalar(x)*sx);
-						vPtr->position[1]=GLfloat(screenCenter[1]);
-						vPtr->position[2]=GLfloat(z0+Vrui::Scalar(y)*sz);
-						}
-				}
+			/* Generate a flat screen: */
+			Vrui::Scalar x0=screenCenter[0]-Math::div2(screenWidth);
+			Vrui::Scalar x1=x0+screenWidth;
+			Vrui::Scalar z0=screenCenter[2]-Math::div2(screenHeight);
+			Vrui::Scalar z1=z0+screenHeight;
+			
+			GLfloat tsx=GLfloat(frameSize[0])/GLfloat(dataItem->numVertices[0]-1);
+			GLfloat tsy=GLfloat(frameSize[1])/GLfloat(dataItem->numVertices[1]-1);
+			Vrui::Scalar sx=screenWidth/Vrui::Scalar(dataItem->numVertices[0]-1);
+			Vrui::Scalar sz=screenHeight/Vrui::Scalar(dataItem->numVertices[1]-1);
+			for(int y=0;y<dataItem->numVertices[1];++y)
+				for(int x=0;x<dataItem->numVertices[0];++x,++vPtr)
+					{
+					vPtr->texCoord[0]=GLfloat(x)*tsx;
+					vPtr->texCoord[1]=GLfloat(frameSize[1])-GLfloat(y)*tsy;
+					
+					vPtr->position[0]=GLfloat(x0+Vrui::Scalar(x)*sx);
+					vPtr->position[1]=GLfloat(screenCenter[1]);
+					vPtr->position[2]=GLfloat(z0+Vrui::Scalar(y)*sz);
+					}
 			}
+
 		glUnmapBufferARB(GL_ARRAY_BUFFER_ARB);
 		
 		dataItem->bufferDataVersion=screenParametersVersion;
@@ -1817,69 +1741,11 @@ void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 
 void VruiXine::resetNavigation(void)
 	{
-	switch(screenMode)
-		{
-		case 0: // Window mode
-			{
-			/* Calculate the diagonal size of the current display screen: */
-			Vrui::Scalar screenSize=Math::sqrt(Math::sqr(screenHeight)+Math::sqr(screenHeight*aspectRatio));
-			
-			/* Center the current display screen in the display: */
-			Vrui::setNavigationTransformation(screenCenter,Math::div2(screenSize),Vrui::Vector(0,0,1));
-			
-			break;
-			}
+		/* Calculate the diagonal size of the current display screen: */
+		Vrui::Scalar screenSize=Math::sqrt(Math::sqr(screenHeight)+Math::sqr(screenHeight*aspectRatio));
 		
-		case 1: // Theater mode
-			{
-			/* Project the main viewer's head position to the floor plane along the up direction: */
-			Vrui::Point headPos=Vrui::getMainViewer()->getHeadPosition();
-			const Vrui::Vector& normal=Vrui::getFloorPlane().getNormal();
-			Vrui::Scalar lambda=(Vrui::getFloorPlane().getOffset()-headPos*normal)/(Vrui::getUpDirection()*normal);
-			Vrui::Point footPos=headPos+Vrui::getUpDirection()*lambda;
-			
-			/* Calculate a scaling factor from meters to Vrui physical units: */
-			Vrui::Scalar scale=Vrui::getMeterFactor();
-			
-			/* Calculate a rotation such that Y points forward and Z points up: */
-			Vrui::Vector z=Vrui::getUpDirection();
-			Vrui::Vector x=Vrui::getForwardDirection()^z;
-			Vrui::Vector y=z^x;
-			Vrui::Rotation rotation=Vrui::Rotation::fromBaseVectors(x,y);
-			
-			/* Assemble the navigation transformation: */
-			Vrui::NavTransform nav=Vrui::NavTransform::translateFromOriginTo(footPos);
-			nav*=Vrui::NavTransform::rotate(rotation);
-			nav*=Vrui::NavTransform::scale(scale);
-			Vrui::setNavigationTransformation(nav);
-			
-			break;
-			}
-		
-		case 2: // Half sphere mode
-		case 3: // Full sphere mode
-			{
-			/* Center the screen sphere around the viewer's head position: */
-			Vrui::Point headPos=Vrui::getMainViewer()->getHeadPosition();
-			
-			/* Calculate a scaling factor from meters to Vrui physical units: */
-			Vrui::Scalar scale=Vrui::getMeterFactor();
-			
-			/* Calculate a rotation such that Y points forward and Z points up: */
-			Vrui::Vector z=Vrui::getUpDirection();
-			Vrui::Vector x=Vrui::getForwardDirection()^z;
-			Vrui::Vector y=z^x;
-			Vrui::Rotation rotation=Vrui::Rotation::fromBaseVectors(x,y);
-			
-			/* Assemble the navigation transformation: */
-			Vrui::NavTransform nav=Vrui::NavTransform::translateFromOriginTo(headPos);
-			nav*=Vrui::NavTransform::rotate(rotation);
-			nav*=Vrui::NavTransform::scale(scale);
-			Vrui::setNavigationTransformation(nav);
-			
-			break;
-			}
-		}
+		/* Center the current display screen in the display: */
+		Vrui::setNavigationTransformation(screenCenter,Math::div2(screenSize),Vrui::Vector(0,0,1));
 	}
 
 void VruiXine::eventCallback(Vrui::Application::EventID eventId,Vrui::InputDevice::ButtonCallbackData* cbData)

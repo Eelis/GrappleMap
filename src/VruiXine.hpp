@@ -186,9 +186,7 @@ class VruiXine
 	int crop[4]; // Amount of cropping (left, right, bottom, top) that needs to be applied to incoming video frames
 	int frameSize[2]; // The frame size of the currently locked video frame
 	unsigned int screenParametersVersion; // Version number of screen parameters, including aspect ratio of current frame
-	int screenMode; // Current screen mode, 0: window, 1: theater, 2: half sphere, 3: full sphere
 	GLMotif::PopupWindow* screenControlDialog; // Dialog window to control the position and size of the virtual video projection screen
-	GLMotif::RadioBox* screenModes; // Radio box to select screen mode
 	
 	/* Private methods: */
 	static void xineEventCallback(void* userData,const xine_event_t* event); // Callback called when a playback event occurs
