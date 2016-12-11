@@ -5,6 +5,9 @@ namespace GrappleMap
 {
 	namespace
 	{
+		using VruiRotation = Geometry::Rotation<double, 3>;
+		using VruiVector = Geometry::Vector<double, 3>;
+
 		Position operator*(Position p, ONTransform const & t)
 		{
 			using Point = Geometry::Point<double, 3>;
@@ -17,6 +20,25 @@ namespace GrappleMap
 
 			return p;
 		}
+
+		VruiRotation y_only(VruiRotation const & r)
+		{
+			Geometry::Vector<double, 3> v(1,0,0);
+			auto w = r.transform(v);
+			double a = std::atan2(w[0], w[2]);
+			return VruiRotation::fromEulerAngles(0, a, 0);
+		}
+
+		VruiVector xz_only(VruiVector const v)
+		{
+			return {v[0], 0, v[2]};
+		}
+
+		ONTransform reorientationTransformation(
+			Geometry::OrthogonalTransformation<double, 3> const & t)
+		{
+			return ONTransform(xz_only(t.getTranslation()), y_only(t.getRotation()));
+		}
 	}
 
 	void JointEditor::dragStartCallback(Vrui::DraggingTool::DragStartCallbackData * cb)
@@ -25,9 +47,7 @@ namespace GrappleMap
 
 		start_pos = editor.current_position();
 
-		dragTransform = ONTransform(
-				cb->startTransformation.getTranslation(),
-				cb->startTransformation.getRotation());
+		dragTransform = reorientationTransformation(cb->startTransformation);
 		dragTransform->doInvert();
 
 		if (joint)
@@ -60,9 +80,7 @@ namespace GrappleMap
 		Position new_pos = editor.current_position();
 		auto const cursor = v3(cbData->currentTransformation.getTranslation());
 
-		ONTransform transform = ONTransform(
-			cbData->currentTransformation.getTranslation(),
-			cbData->currentTransformation.getRotation());
+		ONTransform transform = reorientationTransformation(cbData->currentTransformation);
 		transform *= *dragTransform;
 
 		if (joint)
