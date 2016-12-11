@@ -148,7 +148,8 @@ namespace GrappleMap
 			renderScene(
 				editor.getGraph(), editor.current_position(),
 				editor.getViables(), browse_joint, edit_joint,
-				editor.getSelection(), style, playerDrawer);
+				editor.getSelection(), editor.getLocation()->segment,
+				style, playerDrawer);
 		else
 		{
 			glEnable(GL_COLOR_MATERIAL);

@@ -26,6 +26,7 @@ namespace
 	void drawViables(
 		Graph const & graph, Viables const & viable, PlayerJoint const j,
 		OrientedPath const & selection,
+		optional<SegmentInSequence> const current_segment,
 		Camera const * camera, Style const & style)
 	{
 		glEnable(GL_BLEND);
@@ -40,16 +41,26 @@ namespace
 			auto const r = v.second.sequence.reorientation;
 			auto & seq = graph[v.first];
 
-			if (elem(*v.second.sequence, selection))
-				glColor4f(1, 1, 1, 0.6);
-			else
-				glColor4f(1, 1, 0, 0.3);
+			bool const selected = elem(*v.second.sequence, selection);
 
 			glDisable(GL_DEPTH_TEST);
 
-			glBegin(GL_LINE_STRIP);
-			for (PosNum i = v.second.begin; i != v.second.end; ++i) glVertex(apply(r, seq[i], j));
+			glBegin(GL_LINES);
+			for (PosNum i = v.second.begin; i != prev(v.second.end); ++i)
+			{
+				if (current_segment && current_segment->sequence == v.first
+					&& current_segment->segment.index == i.index)
+					glColor4f(0, 1, 0, 0.6);
+				else if (selected) glColor4f(1, 1, 1, 0.6);
+				else glColor4f(1, 1, 0, 0.3);
+
+				glVertex(apply(r, seq[i], j));
+				glVertex(apply(r, seq[next(i)], j));
+			}
 			glEnd();
+
+			if (selected) glColor4f(1, 1, 1, 0.6);
+			else glColor4f(1, 1, 0, 0.3);
 
 			glPointSize(20);
 			glBegin(GL_POINTS);
@@ -206,7 +217,7 @@ void renderWindow(
 
 		if (viables && highlight_joint)
 		{
-			drawViables(graph, *viables, *highlight_joint, selection, &camera, style);
+			drawViables(graph, *viables, *highlight_joint, selection, {}, &camera, style);
 
 			glDisable(GL_DEPTH_TEST);
 			glPointSize(20);
@@ -226,6 +237,7 @@ void renderScene(
 	optional<PlayerJoint> const browse_joint,
 	optional<PlayerJoint> const edit_joint,
 	OrientedPath const & selection,
+	optional<SegmentInSequence> const current_segment,
 	Style const & style,
 	PlayerDrawer const & playerDrawer)
 {
@@ -252,7 +264,7 @@ void renderScene(
 	{
 		auto const j = *edit_joint;
 
-		drawViables(graph, viables, j, selection, nullptr, style);
+		drawViables(graph, viables, j, selection, current_segment, nullptr, style);
 
 		glDisable(GL_DEPTH_TEST);
 		glPointSize(20);
@@ -267,7 +279,7 @@ void renderScene(
 	{
 		auto const j = *browse_joint;
 
-		drawViables(graph, viables, j, selection, nullptr, style);
+		drawViables(graph, viables, j, selection, current_segment, nullptr, style);
 
 		glDisable(GL_DEPTH_TEST);
 		glPointSize(20);

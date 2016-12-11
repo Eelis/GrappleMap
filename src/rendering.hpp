@@ -56,7 +56,9 @@ namespace GrappleMap
 		PerPlayerJoint<ViablesForJoint> const & viables,
 		optional<PlayerJoint> const browse_joint,
 		optional<PlayerJoint> edit_joint,
-		OrientedPath const &, Style const &,
+		OrientedPath const &,
+		optional<SegmentInSequence> current_segment,
+		Style const &,
 		PlayerDrawer const &);
 
 	inline vector<View> third_person_windows_in_corner(double w, double h, double hborder, double vborder)
