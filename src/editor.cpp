@@ -181,6 +181,24 @@ namespace GrappleMap
 		undoStack.pop();
 	}
 
+	void Editor::replace_sequence(vector<Position> const & v)
+	{
+		SeqNum const seq = location->segment.sequence;
+
+		if (v.size() != graph[seq].positions.size())
+			throw std::runtime_error("Editor::replace_sequence: wrong size");
+
+		auto i = v.begin();
+
+		foreach (p : positions(graph, seq))
+		{
+			graph.replace(p, inverse(location.reorientation)(*i), false);
+			++i;
+		}
+
+		recalcViables();
+	}
+
 	void Editor::replace(Position const new_pos)
 	{
 		if (optional<PositionInSequence> const pp = position(*location))
@@ -207,11 +225,6 @@ namespace GrappleMap
 	void Editor::frame(double const secondsElapsed)
 	{
 		if (playback) playback->frame(secondsElapsed);
-	}
-
-	Reoriented<Location> Editor::getLocation() const
-	{
-		return location;
 	}
 
 	void Editor::setLocation(Reoriented<Location> const l)

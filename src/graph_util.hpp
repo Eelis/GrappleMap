@@ -5,17 +5,14 @@
 #include <map>
 #include <boost/range/counting_range.hpp>
 #include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 
 namespace GrappleMap {
 
-using NodeNumIter = boost::counting_iterator<NodeNum, std::forward_iterator_tag, int32_t>;
-using SeqNumIter = boost::counting_iterator<SeqNum, std::forward_iterator_tag, int32_t>;
+using boost::adaptors::transformed;
 
-using NodeNumRange = boost::iterator_range<NodeNumIter>;
-using SeqNumRange = boost::iterator_range<SeqNumIter>;
-
-inline NodeNumRange nodenums(Graph const & g) { return {NodeNum{0}, NodeNum{g.num_nodes()}}; }
-inline SeqNumRange seqnums(Graph const & g) { return {SeqNum{0}, SeqNum{g.num_sequences()}}; }
+inline NodeNum::range nodenums(Graph const & g) { return {NodeNum{0}, NodeNum{g.num_nodes()}}; }
+inline SeqNum::range seqnums(Graph const & g) { return {SeqNum{0}, SeqNum{g.num_sequences()}}; }
 
 SeqNum insert(Graph &, Sequence const &);
 optional<SeqNum> erase_sequence(Graph &, SeqNum);
@@ -32,7 +29,8 @@ inline Reoriented<Location> from_loc(Reoriented<Reversible<SegmentInSequence>> c
 inline Reoriented<Location> to_loc(Reoriented<Reversible<SegmentInSequence>> const & s)
 { return loc(s, 1); }
 
-inline PosNum end(Sequence const & seq) { return {uint_fast8_t(seq.positions.size())}; }
+inline PosNum end(Sequence const & s)
+{ return {PosNum::underlying_type(s.positions.size())}; }
 
 inline PosNum last_pos(Sequence const & s)
 {
@@ -48,6 +46,27 @@ inline PositionInSequence last_pos_in(SeqNum const s, Graph const & g)
 {
 	return {s, last_pos(g[s])};
 }
+
+inline PosNum::range posnums(Graph const & g, SeqNum const s)
+{
+	return {PosNum{0}, end(g[s])};
+}
+
+inline auto positions(Graph const & g, SeqNum const s)
+	// returns a range of PosNum
+{
+	return posnums(g, s) | transformed(
+		[s](PosNum p){ return PositionInSequence{s, p}; });
+}
+
+inline auto positions(Graph const & g, Reoriented<SeqNum> const s)
+	// returns a range of Reoriented<PositionInSequence>
+{
+	return positions(g, *s) | transformed(
+		[s](PositionInSequence const pis)
+		{ return Reoriented<PositionInSequence>{pis, s.reorientation}; });
+}
+
 
 inline SegmentInSequence first_segment(SeqNum const s)
 {

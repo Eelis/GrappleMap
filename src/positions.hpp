@@ -6,6 +6,7 @@
 #include <array>
 #include <cmath>
 #include <iostream>
+#include <boost/range/counting_range.hpp>
 
 namespace GrappleMap {
 
@@ -41,6 +42,9 @@ struct Index
 {
 	using underlying_type = T;
 	T index;
+
+	using iterator = boost::counting_iterator<Index, std::forward_iterator_tag, int32_t>;
+	using range = boost::iterator_range<iterator>;
 };
 
 template <Indexed i, typename T>

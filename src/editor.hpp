@@ -33,7 +33,7 @@ namespace GrappleMap
 		Viables const & getViables() const { return viables; }
 		OrientedPath const & getSelection() const { return selection; }
 		bool lockedToSelection() const { return selectionLock; }
-		Reoriented<Location> getLocation() const;
+		Reoriented<Location> const & getLocation() const { return location; }
 		bool playingBack() const { return bool(playback); }
 
 		Position current_position() const
@@ -55,6 +55,7 @@ namespace GrappleMap
 		void push_undo();
 		void recalcViables(); // called after camera change
 		void replace(Position);
+		void replace_sequence(vector<Position> const &);
 		void frame(double secondsElapsed);
 		void setLocation(Reoriented<Location>);
 		void snapToPos();

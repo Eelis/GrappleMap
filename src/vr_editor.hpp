@@ -26,8 +26,8 @@ namespace GrappleMap
 	{
 		Editor & editor;
 		optional<PlayerJoint> joint;
-		optional<V3> joint_edit_offset;
-		optional<Position> start_pos;
+		optional<V3 const> joint_edit_offset;
+		optional<vector<Position> const> start_seq;
 		optional<ONTransform> dragTransform;
 		bool confined = false;
 

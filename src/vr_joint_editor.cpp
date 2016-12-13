@@ -43,16 +43,23 @@ namespace GrappleMap
 
 	void JointEditor::dragStartCallback(Vrui::DraggingTool::DragStartCallbackData * cb)
 	{
+		Graph const & g = editor.getGraph();
+
 		editor.push_undo();
 
-		start_pos = editor.current_position();
+		{
+			vector<Position> v;
+			foreach (p : positions(g, sequence(segment(editor.getLocation()))))
+				v.push_back(at(p, g));
+			start_seq.emplace(v);
+		}
 
 		dragTransform = reorientationTransformation(cb->startTransformation);
 		dragTransform->doInvert();
 
 		if (joint)
-			joint_edit_offset = v3(cb->startTransformation.getTranslation()) -
-				editor.current_position()[*joint];
+			joint_edit_offset.emplace(v3(cb->startTransformation.getTranslation()) -
+				editor.current_position()[*joint]);
 	}
 
 	void JointEditor::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
@@ -71,10 +78,12 @@ namespace GrappleMap
 
 	void JointEditor::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
 	{
+		Reoriented<Location> const loc = editor.getLocation();
+
 		optional<Reoriented<PositionInSequence>> const
 			pp = position(editor.getLocation());
 
-		if (!pp || !dragTransform || !start_pos) return;
+		if (!pp || !dragTransform || !start_seq) return;
 
 		Graph const & g = editor.getGraph();
 		Position new_pos = editor.current_position();
@@ -106,9 +115,21 @@ namespace GrappleMap
 			else new_pos[j] = joint_pos;
 
 			spring(new_pos, j);
+			editor.replace(new_pos);
 		}
-		else new_pos = *start_pos * transform;
+		else
+		{
+			vector<Position> v = *start_seq;
 
-		editor.replace(new_pos);
+			if (loc->howFar == 0)
+				foreach (p : PosNum::range(PosNum{0}, to(loc->segment).position))
+					v[p.index] = v[p.index] * transform;
+			else if (loc->howFar == 1)
+				foreach (p : PosNum::range(to(loc->segment).position, end(g[loc->segment.sequence])))
+					v[p.index] = v[p.index] * transform;
+			else return;
+
+			editor.replace_sequence(v);
+		}
 	}
 }
