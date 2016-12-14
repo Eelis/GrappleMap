@@ -210,13 +210,33 @@ Reoriented<Reversible<SeqNum>>
 	connect_in(Reoriented<NodeNum> const &, Reversible<SeqNum>, Graph const &),
 	connect_out(Reoriented<NodeNum> const &, Reversible<SeqNum>, Graph const &);
 
-vector<Reoriented<Reversible<SeqNum>>>
-	in_sequences(Reoriented<NodeNum> const &, Graph const &),
-	out_sequences(Reoriented<NodeNum> const &, Graph const &);
+inline auto in_sequences(Reoriented<NodeNum> const & n, Graph const & g)
+{
+	return g[*n].in | boost::adaptors::transformed(
+		[&g, n](Reversible<SeqNum> const s) { return connect_in(n, s, g); });
+}
 
-vector<Reoriented<Reversible<SegmentInSequence>>>
-	in_segments(ReorientedNode const &, Graph const &),
-	out_segments(ReorientedNode const &, Graph const &);
+inline auto out_sequences(Reoriented<NodeNum> const & n, Graph const & g)
+{
+	return g[*n].out | boost::adaptors::transformed(
+		[&g, n](Reversible<SeqNum> const s) { return connect_out(n, s, g); });
+}
+
+inline auto in_segments(Reoriented<NodeNum> const & n, Graph const & g)
+	// returns a range of Reoriented<Reversible<SegmentInSequence>>
+{
+	return in_sequences(n, g) | boost::adaptors::transformed(
+		[&](Reoriented<Reversible<SeqNum>> const & s)
+		{ return last_segment(s, g); });
+}
+
+inline auto out_segments(ReorientedNode const & n, Graph const & g)
+	// returns a range of Reoriented<Reversible<SegmentInSequence>>
+{
+	return out_sequences(n, g) | boost::adaptors::transformed(
+		[&](Reoriented<Reversible<SeqNum>> const & s)
+		{ return first_segment(s, g); });
+}
 
 // comparison
 

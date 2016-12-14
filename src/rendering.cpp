@@ -29,26 +29,24 @@ namespace
 		optional<SegmentInSequence> const current_segment,
 		Camera const * camera, Style const & style)
 	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glLineWidth(4);
 		glNormal3d(0, 1, 0);
 
+		glDisable(GL_DEPTH_TEST);
+
 		foreach (v : viable[j].viables)
 		{
-			if (v.second.end.index - v.second.begin.index < 1) continue;
+			if (v.end.index - v.begin.index < 1) continue;
 
-			auto const r = v.second.sequence.reorientation;
-			auto & seq = graph[v.first];
+			auto const r = v.sequence.reorientation;
+			auto const & seq = graph[*v.sequence];
 
-			bool const selected = elem(*v.second.sequence, selection);
-
-			glDisable(GL_DEPTH_TEST);
+			bool const selected = elem(*v.sequence, selection);
 
 			glBegin(GL_LINES);
-			for (PosNum i = v.second.begin; i != prev(v.second.end); ++i)
+			for (PosNum i = v.begin; i != prev(v.end); ++i)
 			{
-				if (current_segment && current_segment->sequence == v.first
+				if (current_segment && current_segment->sequence == *v.sequence
 					&& current_segment->segment.index == i.index)
 					glColor4f(0, 1, 0, 0.6);
 				else if (selected) glColor4f(1, 1, 1, 0.6);
@@ -64,18 +62,18 @@ namespace
 
 			glPointSize(20);
 			glBegin(GL_POINTS);
-			for (PosNum i = v.second.begin; i != v.second.end; ++i)
-				if (i.index == 0 || i.index == seq.positions.size() - 1)
-					glVertex(apply(r, seq[i], j));
-					// todo: this is silly
+			if (v.begin.index == 0)
+				glVertex(apply(r, seq.positions.front(), j));
+			if (v.end.index == seq.positions.size() - 1)
+				glVertex(apply(r, seq.positions.back(), j));
 			glEnd();
 
-			if (elem(*v.second.sequence, selection))
+			if (selected)
 			{
 				#ifdef USE_FTGL
 				if (camera && !style.font.Error())
 				{
-					for (PosNum i = next(v.second.begin); i != v.second.end; ++i)
+					for (PosNum i = next(v.begin); i != v.end; ++i)
 						renderText(
 							style.font,
 							world2screen(*camera, apply(r, seq[i], j)),
@@ -86,15 +84,15 @@ namespace
 				{
 					glPointSize(10);
 					glBegin(GL_POINTS);
-					for (PosNum i = v.second.begin; i != v.second.end; ++i)
+					for (PosNum i = v.begin; i != v.end; ++i)
 						if (i.index != 0 && i.index != seq.positions.size() - 1)
 							glVertex(apply(r, seq[i], j));
 					glEnd();
 				}
 			}
-
-			glEnable(GL_DEPTH_TEST);
 		}
+
+		glEnable(GL_DEPTH_TEST);
 	}
 }
 

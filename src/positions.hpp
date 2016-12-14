@@ -117,6 +117,12 @@ struct PerPlayer
 
 template<typename T> using PerJoint = array<T, joint_count>;
 
+template<typename T>
+inline bool operator==(PerPlayer<T> const & x, PerPlayer<T> const & y)
+{
+	return x.values == y.values;
+}
+
 struct JointDef { Joint joint; double radius; bool draggable; };
 
 extern PerJoint<JointDef> const jointDefs;
@@ -385,11 +391,6 @@ inline ostream & operator<<(ostream & o, PositionReorientation const & r)
 		<< '}';
 }
 
-inline V3 apply(PositionReorientation const & r, Position const & p, PlayerJoint j)
-{
-	return r(p)[j]; // todo: inefficient
-}
-
 inline PlayerJoint apply(PositionReorientation const & r, PlayerJoint pj)
 {
 	if (r.mirror) pj.joint = mirror(pj.joint);
@@ -397,6 +398,17 @@ inline PlayerJoint apply(PositionReorientation const & r, PlayerJoint pj)
 	if (r.swap_players) pj.player = opponent(pj.player);
 
 	return pj;
+}
+
+inline V3 apply(PositionReorientation const & r, Position const & p, PlayerJoint const j)
+{
+	V3 v = apply(r.reorientation, p[apply(r, j)]);
+
+	if (r.mirror) v = mirror(v);
+
+	assert(distanceSquared(v, r(p)[j]) < 0.001);
+
+	return v;
 }
 
 PositionReorientation inverse(PositionReorientation);

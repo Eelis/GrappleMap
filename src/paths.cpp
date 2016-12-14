@@ -305,22 +305,27 @@ vector<Path> out_paths(Graph const & g, NodeNum const node, unsigned size)
 	return r;
 }
 
-OrientedPath orient(Path const & path, Graph const & g)
+void reorient_from(
+	OrientedPath & path,
+	OrientedPath::iterator const start,
+	Graph const & g)
 {
-	if (path.empty()) return {};
+	Reoriented<NodeNum> n = from(*start, g);
 
-	OrientedPath r;
-
-	Reoriented<NodeNum> n = from(g, path.front());
-
-	for (Reversible<SeqNum> const & s : path)
+	for (auto i = start; i != path.begin(); --i)
 	{
-		Reoriented<Reversible<SeqNum>> rs = connect_out(n, s, g);
-		r.push_back(rs);
-		n = to(rs, g);
+		auto & x = *prev(i);
+		x = connect_in(n, *x, g);
+		n = from(x, g);
 	}
 
-	return r;
+	n = to(*start, g);
+
+	for (auto i = next(start); i != path.end(); ++i)
+	{
+		*i = connect_out(n, **i, g);
+		n = to(*i, g);
+	}
 }
 
 }

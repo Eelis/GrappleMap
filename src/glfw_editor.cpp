@@ -52,12 +52,13 @@ namespace
 		for (Reoriented<SegmentInSequence> const & candidate : candidates)
 		{
 			auto const & m = viables[j].viables;
-			auto const i = m.find(candidate->sequence);
+			auto const i = std::find_if(m.begin(), m.end(),
+				[&](Viable const & v){ return *v.sequence == candidate->sequence; });;
 			if (i == m.end()) continue;
 
 			if (selection && !elem(candidate->sequence, *selection)) continue;
 
-			Viable const & v = i->second;
+			Viable const & v = *i;
 
 			if (candidate->segment.index >= v.begin.index &&
 				candidate->segment.index < v.end.index)
@@ -497,7 +498,7 @@ int main(int const argc, char const * const * const argv)
 				V3 dragger = [&]{
 						PositionReorientation r;
 						r.reorientation.angle = -w.camera.getHorizontalRotation();
-						return compose(reo, r)(V3{1,0,0});
+						return compose(reo, r)(V3{1,0,0}); // todo: this is wrong, doesn't take swap_players into account
 					}();
 				V3 const v = apply(reo, pos, *w.chosen_joint);
 				V2 const joint_xy = world2xy(w.camera, v);

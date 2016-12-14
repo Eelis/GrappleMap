@@ -28,7 +28,7 @@ namespace GrappleMap
 		optional<PlayerJoint> joint;
 		optional<V3 const> joint_edit_offset;
 		optional<vector<Position> const> start_seq;
-		optional<ONTransform> dragTransform;
+		optional<Reorientation> dragTransform;
 		bool confined = false;
 
 		JointEditor(Vrui::DraggingTool & t, Editor & e, bool confined)

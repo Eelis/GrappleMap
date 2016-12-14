@@ -31,11 +31,14 @@ namespace GrappleMap
 		double wait = 0;
 		bool atEnd = false;
 		Graph const & graph;
-		OrientedPath const & path;
+		OrientedPath const path;
 		OrientedPath::const_iterator i = path.begin();
 		SegmentNum segment;
 		double howFar;
 		Position chaser;
+
+		Playback(Playback const &) = delete;
+		Playback(Playback &&) = delete;
 
 		Reoriented<Location> location() const
 		{

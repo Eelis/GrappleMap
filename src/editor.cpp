@@ -32,7 +32,11 @@ namespace GrappleMap
 
 		if (start_desc.find(',') != string::npos)
 		{
-			selection = orient(path_from_desc(start_desc), graph);
+			foreach (x : path_from_desc(start_desc))
+				selection.push_back({x, PositionReorientation{}});
+
+			reorient_from(selection, selection.begin(), graph);
+
 			location = from_loc(first_segment(selection.front(), graph));
 		}
 		else if (auto start = posinseq_by_desc(graph, programOptions["start"].as<string>()))
@@ -156,7 +160,7 @@ namespace GrappleMap
 
 	void Editor::push_undo()
 	{
-		undoStack.emplace(graph, location);
+		undoStack.emplace(graph, location, selection);
 	}
 
 	void Editor::branch()
@@ -165,7 +169,11 @@ namespace GrappleMap
 		{
 			push_undo();
 
-			try { split_at(graph, *pp); }
+			try
+			{
+				split_at(graph, *pp);
+				recalcViables();
+			}
 			catch (exception const & e)
 			{
 				cerr << "could not branch: " << e.what() << '\n';
@@ -177,32 +185,58 @@ namespace GrappleMap
 	{
 		if (undoStack.empty()) return;
 
-		std::tie(graph, location) = undoStack.top();
+		std::tie(graph, location, selection) = undoStack.top();
 		undoStack.pop();
+
+		recalcViables();
+	}
+
+	optional<OrientedPath::iterator> Editor::currently_in_selection()
+	{
+		for (OrientedPath::iterator i = selection.begin(); i != selection.end(); ++i)
+			if (***i == location->segment.sequence)
+				return i;
+		return {};
 	}
 
 	void Editor::replace_sequence(vector<Position> const & v)
 	{
 		SeqNum const seq = location->segment.sequence;
 
-		if (v.size() != graph[seq].positions.size())
-			throw std::runtime_error("Editor::replace_sequence: wrong size");
-
-		auto i = v.begin();
-
-		foreach (p : positions(graph, seq))
+		if (optional<OrientedPath::iterator> pathi = currently_in_selection())
 		{
-			graph.replace(p, inverse(location.reorientation)(*i), false);
-			++i;
-		}
+			if (v.size() != graph[seq].positions.size())
+				throw std::runtime_error("Editor::replace_sequence: wrong size");
 
-		recalcViables();
+			auto i = v.begin();
+
+			foreach (p : positions(graph, seq))
+			{
+				graph.replace(p, inverse(location.reorientation)(*i), false);
+				++i;
+			}
+
+			recalcViables();
+			reorient_from(selection, *pathi, graph);
+		}
 	}
 
 	void Editor::replace(Position const new_pos)
 	{
 		if (optional<PositionInSequence> const pp = position(*location))
-			graph.replace(*pp, inverse(location.reorientation)(new_pos), false);
+		{
+			if (optional<OrientedPath::iterator> i = currently_in_selection())
+			{
+				// we don't allow editing while outside the selection (because suppose
+				// we're miles away from the selection, then figuring out the required
+				// reorientations for the selection involves finding a path to there
+				// from where the edit took place)
+
+				graph.replace(*pp, inverse(location.reorientation)(new_pos), false);
+				recalcViables();
+				reorient_from(selection, *i, graph);
+			}
+		}
 	}
 
 	void Editor::toggle_lock(bool const b)

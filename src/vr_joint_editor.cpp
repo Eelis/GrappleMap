@@ -21,23 +21,22 @@ namespace GrappleMap
 			return p;
 		}
 
-		VruiRotation y_only(VruiRotation const & r)
+		double y_only(VruiRotation const & r)
 		{
 			Geometry::Vector<double, 3> v(1,0,0);
 			auto w = r.transform(v);
-			double a = std::atan2(w[0], w[2]);
-			return VruiRotation::fromEulerAngles(0, a, 0);
+			return std::atan2(w[0], w[2]);
 		}
 
-		VruiVector xz_only(VruiVector const v)
+		V3 xz_only(VruiVector const v)
 		{
-			return {v[0], 0, v[2]};
+			return V3{v[0], 0, v[2]};
 		}
 
-		ONTransform reorientationTransformation(
+		Reorientation reorientationTransformation(
 			Geometry::OrthogonalTransformation<double, 3> const & t)
 		{
-			return ONTransform(xz_only(t.getTranslation()), y_only(t.getRotation()));
+			return Reorientation(xz_only(t.getTranslation()), y_only(t.getRotation()));
 		}
 	}
 
@@ -54,8 +53,7 @@ namespace GrappleMap
 			start_seq.emplace(v);
 		}
 
-		dragTransform = reorientationTransformation(cb->startTransformation);
-		dragTransform->doInvert();
+		dragTransform = inverse(reorientationTransformation(cb->startTransformation));
 
 		if (joint)
 			joint_edit_offset.emplace(v3(cb->startTransformation.getTranslation()) -
@@ -89,8 +87,8 @@ namespace GrappleMap
 		Position new_pos = editor.current_position();
 		auto const cursor = v3(cbData->currentTransformation.getTranslation());
 
-		ONTransform transform = reorientationTransformation(cbData->currentTransformation);
-		transform *= *dragTransform;
+		Reorientation const transform
+			= compose(*dragTransform, reorientationTransformation(cbData->currentTransformation));
 
 		if (joint)
 		{
@@ -119,15 +117,26 @@ namespace GrappleMap
 		}
 		else
 		{
+			if (loc->howFar == 0)
+			{
+				if (loc->segment.segment == SegmentNum{0})
+					return;
+			}
+			else if (loc->howFar == 1)
+			{
+				if (loc->segment.segment == last_segment(g[loc->segment.sequence]))
+					return;
+			}
+			else return;
+
 			vector<Position> v = *start_seq;
 
-			if (loc->howFar == 0)
-				foreach (p : PosNum::range(PosNum{0}, to(loc->segment).position))
-					v[p.index] = v[p.index] * transform;
-			else if (loc->howFar == 1)
-				foreach (p : PosNum::range(to(loc->segment).position, end(g[loc->segment.sequence])))
-					v[p.index] = v[p.index] * transform;
-			else return;
+			auto const posnums = (loc->howFar == 0
+				? PosNum::range(PosNum{0}, to(loc->segment).position)
+				: PosNum::range(to(loc->segment).position, end(g[loc->segment.sequence])));
+
+			foreach (p : posnums)
+				v[p.index] = apply(transform, v[p.index]);
 
 			editor.replace_sequence(v);
 		}

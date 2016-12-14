@@ -36,6 +36,11 @@ namespace GrappleMap
 		return {l->segment, l.reorientation};
 	}
 
+	inline Location start_loc(Reversible<SegmentInSequence> const & s)
+	{
+		return {*s, s.reverse ? 1.0 : 0.0};
+	}
+
 	inline Reoriented<Location> loc(Reoriented<SegmentInSequence> const & s, double const c)
 	{
 		return {{*s, c}, s.reorientation};

@@ -349,15 +349,6 @@ set<NodeNum> nodes_around(Graph const & g, set<NodeNum> const & nodes, unsigned 
 	return r;
 }
 
-template<typename T, typename F>
-auto fmap(vector<T> const & v, F f) -> vector<typename std::result_of<F(T)>::type>
-{
-	vector<typename std::result_of<F(T)>::type> r;
-	r.reserve(v.size());
-	foreach (x : v) r.push_back(f(x));
-	return r;
-}
-
 Reoriented<Reversible<SeqNum>>
 	connect_in(Reoriented<NodeNum> const & n, Reversible<SeqNum> const s, Graph const & g)
 {
@@ -365,38 +356,11 @@ Reoriented<Reversible<SeqNum>>
 		{s, compose(inverse(to(g, s).reorientation), n.reorientation)};
 }
 
-vector<Reoriented<Reversible<SeqNum>>>
-	in_sequences(Reoriented<NodeNum> const & n, Graph const & g)
-{
-	return fmap(g[*n].in, [&](Reversible<SeqNum> const s) { return connect_in(n, s, g); });
-}
-
-vector<Reoriented<Reversible<SegmentInSequence>>>
-	in_segments(Reoriented<NodeNum> const & n, Graph const & g)
-{
-	return fmap(in_sequences(n, g),
-		[&](Reoriented<Reversible<SeqNum>> const & s)
-		{ return last_segment(s, g); });
-}
-
 Reoriented<Reversible<SeqNum>>
 	connect_out(Reoriented<NodeNum> const & n, Reversible<SeqNum> const s, Graph const & g)
 {
 	return Reoriented<Reversible<SeqNum>>
 		{s, compose(inverse(from(g, s).reorientation), n.reorientation)};
-}
-
-vector<Reoriented<Reversible<SeqNum>>>
-	out_sequences(Reoriented<NodeNum> const & n, Graph const & g)
-{
-	return fmap(g[*n].out, [&](Reversible<SeqNum> const s) { return connect_out(n, s, g); });
-}
-
-vector<Reoriented<Reversible<SegmentInSequence>>>
-	out_segments(ReorientedNode const & n, Graph const & g)
-{
-	return fmap(out_sequences(n, g), [&](Reoriented<Reversible<SeqNum>> const & s)
-		{ return first_segment(s, g); });
 }
 
 vector<Reoriented<SegmentInSequence>> segments_around(ReorientedNode const & n, Graph const & g)

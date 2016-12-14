@@ -139,6 +139,9 @@ namespace GrappleMap
 
 		glEnable(GL_POINT_SMOOTH); // todo: move
 
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		optional<PlayerJoint> browse_joint, edit_joint;
 
 		if (jointBrowser) browse_joint = jointBrowser->joint;

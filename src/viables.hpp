@@ -21,7 +21,7 @@ namespace GrappleMap
 	struct ViablesForJoint
 	{
 		double total_dist;
-		std::map<SeqNum, Viable> viables;
+		std::deque<Viable> viables;
 		std::vector<LineSegment> segments;
 	};
 

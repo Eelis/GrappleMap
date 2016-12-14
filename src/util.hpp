@@ -83,6 +83,12 @@ namespace GrappleMap
 		v.insert(v.end(), w.begin(), w.end());
 	}
 
+	template<typename T>
+	void append(std::deque<T> & v, std::deque<T> const & w)
+	{
+		v.insert(v.end(), w.begin(), w.end());
+	}
+
 	template<typename R>
 	string join(R const & rng, string const & sep)
 	{

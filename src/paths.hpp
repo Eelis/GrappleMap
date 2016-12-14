@@ -5,9 +5,19 @@
 
 namespace GrappleMap
 {
-	using Path = vector<Reversible<SeqNum>>;
+	using Path = std::deque<Reversible<SeqNum>>;
 	using Frames = vector<pair<string /* caption */, vector<Position>>>;
 	using OrientedPath = std::deque<Reoriented<Reversible<SeqNum>>>;
+
+	template<typename T>
+	inline bool elem(T const & n, std::deque<Reversible<T>> const & d)
+	{
+		return std::any_of(d.begin(), d.end(),
+			[&](Reversible<T> const & x)
+			{
+				return *x == n;
+			});
+	}
 
 	inline bool elem(SeqNum const & n, OrientedPath const & s)
 	{
@@ -20,7 +30,7 @@ namespace GrappleMap
 
 	Frames smoothen(Frames);
 
-	OrientedPath orient(Path const &, Graph const &);
+	void reorient_from(OrientedPath &, OrientedPath::iterator, Graph const &);
 
 	Frames frames(Graph const &, Path const &, unsigned frames_per_pos);
 

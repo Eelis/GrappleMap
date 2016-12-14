@@ -38,30 +38,57 @@ void Graph::changed(PositionInSequence const pis)
 	}
 }
 
+ReorientedNode * Graph::node(PositionInSequence const pis)
+{
+	if (pis.position.index == 0)
+		return &edges[pis.sequence.index].from;
+	if (!next(pis, *this))
+		return &edges[pis.sequence.index].to;
+	return nullptr;
+}
+
 void Graph::replace(PositionInSequence const pis, Position p, bool const local)
 {
 	apply_limits(p);
 
-	edges.at(pis.sequence.index).sequence.positions.at(pis.position.index) = p;
+	Position & stored = edges.at(pis.sequence.index).sequence.positions.at(pis.position.index);
 
-	optional<ReorientedNode> const rn = node(*this, pis);
-	if (!local && rn)
-	{
-		nodes[(*rn)->index].position = inverse(rn->reorientation)(p);
-		assert(basicallySame((*this)[*rn], p));
+	if (stored == p) return;
 
-		foreach (e : edges)
-		{
-			if (*e.from == **rn)
-				e.sequence.positions.front() = (*this)[e.from];
-
-			if (*e.to == **rn)
-				e.sequence.positions.back() = (*this)[e.to];
-		}
-	}
-	else changed(pis);
+	stored = p;
 
 	std::cerr << "Replaced position " << pis << std::endl;
+
+	if (local)
+	{
+		changed(pis);
+		return;
+	}
+
+	if (ReorientedNode * const rn = node(pis))
+	{
+		if (auto reo = is_reoriented(nodes[(*rn)->index].position, p))
+		{
+			std::cerr << "Recognized position as mere reorientation.\n";
+			rn->reorientation = *reo;
+			assert(basicallySame((*this)[*rn], p));
+		}
+		else
+		{
+			std::cerr << "Change to connecting position, updating connected edges.\n";
+			nodes[(*rn)->index].position = inverse(rn->reorientation)(p);
+			assert(basicallySame((*this)[*rn], p));
+
+			foreach (e : edges)
+			{
+				if (*e.from == **rn)
+					e.sequence.positions.front() = (*this)[e.from];
+
+				if (*e.to == **rn)
+					e.sequence.positions.back() = (*this)[e.to];
+			}
+		}
+	}
 }
 
 void Graph::split_segment(Location const loc)

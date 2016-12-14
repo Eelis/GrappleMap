@@ -12,7 +12,8 @@ struct Graph
 		Position position;
 		vector<string> description;
 		optional<unsigned> line_nr;
-		vector<Reversible<SeqNum>> in, out; // bidirectional ones appear in both
+		vector<Reversible<SeqNum>> in, out;
+			// only bidirectional transitions appear as reversed seqs here
 	};
 
 	struct Edge
@@ -34,6 +35,7 @@ private:
 
 	void changed(PositionInSequence);
 	void compute_in_out(NodeNum);
+	ReorientedNode * node(PositionInSequence);
 
 public:
 

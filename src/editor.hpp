@@ -11,15 +11,20 @@ namespace GrappleMap
 {
 	class Editor
 	{
+		// Editor's main work is keeping the viables and selection
+		// consistent with the graph as it is being traversed and altered.
+
 		string const dbFile;
 		Graph graph;
-		std::stack<std::pair<Graph, Reoriented<Location>>> undoStack;
+		std::stack<std::tuple<Graph, Reoriented<Location>, OrientedPath>> undoStack;
 		Viables viables;
 		OrientedPath selection;
 		Camera const * const camera; // needed because in 2d projection it affects viables
 		bool selectionLock = true;
 		unique_ptr<Playback> playback;
 		Reoriented<Location> location{{SegmentInSequence{{0}, 0}, 0}, {}};
+
+		optional<OrientedPath::iterator> currently_in_selection();
 
 	public:
 
@@ -53,7 +58,7 @@ namespace GrappleMap
 		void toggle_lock(bool);
 		void toggle_playback();
 		void push_undo();
-		void recalcViables(); // called after camera change
+		void recalcViables();
 		void replace(Position);
 		void replace_sequence(vector<Position> const &);
 		void frame(double secondsElapsed);
