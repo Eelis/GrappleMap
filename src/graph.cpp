@@ -108,10 +108,12 @@ void Graph::clone(PositionInSequence const pis) // todo: remove
 void Graph::insert_sequences(vector<Sequence> && v) // for bulk, more efficient than individually
 {
 	foreach (s : v)
-		edges.push_back(Edge{
-			find_or_add(s.positions.front()),
-			find_or_add(s.positions.back()),
-			std::move(s)});
+	{
+		ReorientedNode const
+			from = find_or_add(s.positions.front()),
+			to = find_or_add(s.positions.back());
+		edges.push_back(Edge{from, to, std::move(s)});
+	}
 
 	foreach (n : nodenums(*this))
 		compute_in_out(n);
