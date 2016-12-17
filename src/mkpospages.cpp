@@ -432,10 +432,10 @@ namespace
 		{
 			cout << '.' << std::flush;
 
-			auto const props = properties(g, sn);
+			auto const props = properties(g[sn]);
 
-			bool top = props.count("top") != 0;
-			bool bottom = props.count("bottom") != 0;
+			bool top = elem("top", props);
+			bool bottom = elem("bottom", props);
 
 			auto frames = frames_for_sequence(g, sn);
 
@@ -671,10 +671,10 @@ namespace
 				foreach (p : v) p = reo(inverse(this_side.reorientation)(p));
 				assert(basicallySame(v.back(), reo(pos)));
 
-				auto const props = properties(graph, *step);
+				auto const props = properties(graph[*step]);
 
-				bool top = props.count("top")!=0;
-				bool bottom = props.count("bottom")!=0;
+				bool top = elem("top", props);
+				bool bottom = elem("bottom", props);
 
 				bool const sweep = is_sweep(graph, *step);
 
@@ -707,9 +707,9 @@ namespace
 				foreach (p : v) p = reo(inverse(this_side.reorientation)(p));
 				assert(basicallySame(v.front(), reo(pos)));
 
-				auto const props = properties(graph, *step);
+				auto const props = properties(graph[*step]);
 
-				outgoing.push_back({step, props.count("top")!=0, props.count("bottom")!=0, v, {}, *other_side});
+				outgoing.push_back({step, elem("top", props), elem("bottom", props), v, {}, *other_side});
 				longest_out = std::max(longest_out, v.size());
 			}
 

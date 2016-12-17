@@ -170,31 +170,6 @@ inline M operator*(M const & a, M const & b)
 		,  a[ 3]*b[12] + a[ 7]*b[13] + a[11]*b[14] + a[15]*b[15] }};
 }
 
-using LineSegment = std::pair<V2, V2>;
-
-inline bool lineSegmentsIntersect(LineSegment a, LineSegment b) // todo: this is no good
-{
-	if (a.first == b.first || a.first == b.second ||
-	    a.second == b.first || a.second == b.second) return false;
-
-	if (a.second.x < a.first.x) std::swap(a.first, a.second);
-	if (b.second.x < b.first.x) std::swap(b.first, b.second);
-
-	if (a.second.x - a.first.x < 0.0001 || b.second.x - b.first.x < 0.0001) return false;
-
-	double const ar = (a.second.y - a.first.y) / (a.second.x - a.first.x);
-	double const br = (b.second.y - b.first.y) / (b.second.x - b.first.x);
-
-	if (std::abs(ar - br) < 0.0001) return false;
-
-	double const a_at0 = a.first.y - a.first.x * ar;
-	double const b_at0 = b.first.y - b.first.x * br;
-
-	double const x = (b_at0 - a_at0) / (ar - br);
-	
-	return a.first.x <= x && x <= a.second.x && b.first.x <= x && x <= b.second.x;
-}
-
 struct Reorientation
 {
 	V3 offset;
@@ -211,9 +186,6 @@ inline std::ostream & operator<<(std::ostream & o, Reorientation const r)
 }
 
 inline auto members(Reorientation const & r) { return std::tie(r.offset, r.angle); }
-
-inline bool operator==(Reorientation const & a, Reorientation const & b) { return members(a) == members(b); }
-inline bool operator<(Reorientation const & a, Reorientation const & b) { return members(a) < members(b); }
 
 inline V3 apply(Reorientation const & r, V3 v) // formalized
 {

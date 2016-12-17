@@ -430,7 +430,7 @@ int main(int const argc, char const * const * const argv)
 
 
 			OrientedPath const
-				tempSel{forwardStep(sequence(segment(w.editor.getLocation())))},
+				tempSel{nonreversed(sequence(w.editor.getLocation()))},
 				& sel = w.editor.getSelection().empty() ? tempSel : w.editor.getSelection();
 					// ugh
 

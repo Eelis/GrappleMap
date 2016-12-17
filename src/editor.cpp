@@ -61,12 +61,11 @@ namespace GrappleMap
 	{
 		if (playback) return;
 
-		Reoriented<SeqNum> const
-			seq = sequence(segment(location));
+		Reoriented<SeqNum> const seq = sequence(location);
 
-		Reoriented<Step> const
-			fs = forwardStep(seq),
-			bs = backStep(seq);
+		Reoriented<Reversible<SeqNum>> const
+			fs = nonreversed(seq),
+			bs = reversed(seq);
 
 		if (selection.empty()) selection.push_back(fs);
 		else if (**selection.front() == *seq) selection.pop_front();
@@ -97,7 +96,7 @@ namespace GrappleMap
 				}
 			}
 
-			selection = {forwardStep(sequence(segment(location)))};
+			selection = {nonreversed(sequence(location))};
 		}
 	}
 
@@ -243,7 +242,7 @@ namespace GrappleMap
 		else
 		{
 			if (selection.empty())
-				selection = {forwardStep(sequence(segment(location)))};
+				selection = {nonreversed(sequence(location))};
 
 			playback.reset(new Playback(graph, selection));
 		}

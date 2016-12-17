@@ -162,16 +162,16 @@ optional<PosNum> Graph::erase(PositionInSequence const pis)
 	return pos;
 }
 
-optional<ReorientedNode> Graph::is_reoriented_node(Position const & p) const
+optional<Reoriented<NodeNum>> Graph::is_reoriented_node(Position const & p) const
 {
 	foreach(n : nodenums(*this))
 		if (auto r = is_reoriented(nodes[n.index].position, p))
-			return ReorientedNode{n, *r};
+			return n * *r;
 
 	return none;
 }
 
-ReorientedNode Graph::find_or_add(Position const & p)
+Reoriented<NodeNum> Graph::find_or_add(Position const & p)
 {
 	if (auto m = is_reoriented_node(p))
 		return *m;
@@ -182,7 +182,7 @@ ReorientedNode Graph::find_or_add(Position const & p)
 
 	compute_in_out(nn);
 
-	return ReorientedNode{nn, PositionReorientation{}};
+	return nn * PositionReorientation{};
 }
 
 void Graph::compute_in_out(NodeNum const n)

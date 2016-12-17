@@ -58,7 +58,7 @@ namespace GrappleMap
 		if (!joint) return;
 
 		OrientedPath const
-			tempSel{forwardStep(sequence(segment(editor.getLocation())))},
+			tempSel{nonreversed(sequence(editor.getLocation()))},
 			& sel = editor.getSelection().empty() ? tempSel : editor.getSelection();
 
 		if (auto l = closerLocation(

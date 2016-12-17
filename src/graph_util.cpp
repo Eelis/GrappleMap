@@ -267,10 +267,10 @@ vector<Reoriented<SegmentInSequence>> segments_around(ReorientedNode const & n, 
 	vector<Reoriented<SegmentInSequence>> r;
 
 	foreach (x : in_segments(n, g))
-		r.push_back(Reoriented<SegmentInSequence>{**x, x.reorientation});
+		r.push_back(**x * x.reorientation);
 
 	foreach (x : out_segments(n, g))
-		r.push_back(Reoriented<SegmentInSequence>{**x, x.reorientation});
+		r.push_back(**x * x.reorientation);
 		
 	return r;
 }

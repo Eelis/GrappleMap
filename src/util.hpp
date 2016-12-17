@@ -10,6 +10,8 @@
 #include <boost/program_options.hpp>
 #include <boost/range.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 #include <iostream>
 #include <fstream>
 
@@ -36,6 +38,8 @@ namespace GrappleMap
 	using std::unique_ptr;
 	using boost::optional;
 	using boost::none;
+	using boost::adaptors::filtered;
+	using boost::adaptors::transformed;
 
 	template<typename I, typename F>
 	I minimal(I i, I e, F f)
@@ -113,6 +117,12 @@ namespace GrappleMap
 	bool elem(T const & x, vector<T> const & v)
 	{
 		return std::find(v.begin(), v.end(), x) != v.end();
+	}
+
+	template<typename T, typename U>
+	bool elem(T const & x, set<U> const & s)
+	{
+		return s.find(x) != s.end();
 	}
 
 	template<typename K, typename V>

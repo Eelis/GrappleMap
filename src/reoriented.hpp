@@ -2,6 +2,7 @@
 #define GRAPPLEMAP_REORIENTED_HPP
 
 #include "positions.hpp"
+#include "locations.hpp"
 
 namespace GrappleMap
 {
@@ -18,8 +19,19 @@ namespace GrappleMap
 		T const & operator*() const { return value; }
 	};
 
+	template<typename T>
+	inline Reoriented<T> operator*(T x, PositionReorientation r)
+	{
+		return {x, r};
+	}
+
 	using ReorientedNode = Reoriented<NodeNum>;
 	using ReorientedSegment = Reoriented<SegmentInSequence>;
+
+	inline Reoriented<SegmentInSequence> segment(Reoriented<Location> const & l)
+	{
+		return {l->segment, l.reorientation};
+	}
 
 	inline Reoriented<SeqNum> sequence(Reoriented<SegmentInSequence> const & s)
 	{
@@ -31,9 +43,9 @@ namespace GrappleMap
 		return {s->sequence, s.reorientation};
 	}
 
-	inline Reoriented<SegmentInSequence> segment(Reoriented<Location> const & l)
+	inline Reoriented<SeqNum> sequence(Reoriented<Location> const & l)
 	{
-		return {l->segment, l.reorientation};
+		return sequence(segment(l));
 	}
 
 	inline Location start_loc(Reversible<SegmentInSequence> const & s)
@@ -43,24 +55,82 @@ namespace GrappleMap
 
 	inline Reoriented<Location> loc(Reoriented<SegmentInSequence> const & s, double const c)
 	{
-		return {{*s, c}, s.reorientation};
+		return Location{*s, c} * s.reorientation;
 	}
 
 	inline Reoriented<Location> loc(Reoriented<Reversible<SegmentInSequence>> const & s, double const c)
 	{
-		return loc(
-			Reoriented<SegmentInSequence>{**s, s.reorientation},
-			s->reverse ? (1-c) : c);
+		return loc(**s * s.reorientation, s->reverse ? (1-c) : c);
 	}
 
-	inline Reoriented<Step> forwardStep(Reoriented<SeqNum> const & s)
+	inline Reoriented<Step> nonreversed(Reoriented<SeqNum> const & s)
 	{
-		return {forwardStep(*s), s.reorientation};
+		return {nonreversed(*s), s.reorientation};
 	}
 
-	inline Reoriented<Step> backStep(Reoriented<SeqNum> const & s)
+	inline Reoriented<Step> reversed(Reoriented<SeqNum> const & s)
 	{
-		return {backStep(*s), s.reorientation};
+		return {reversed(*s), s.reorientation};
+	}
+
+	inline Reoriented<Location> from_loc(Reoriented<SegmentInSequence> const & s) { return loc(s, 0); }
+	inline Reoriented<Location> to_loc(Reoriented<SegmentInSequence> const & s) { return loc(s, 1); }
+
+	inline Reoriented<Location> from_loc(Reoriented<Reversible<SegmentInSequence>> const & s)
+	{ return loc(s, 0); }
+
+	inline Reoriented<Location> to_loc(Reoriented<Reversible<SegmentInSequence>> const & s)
+	{ return loc(s, 1); }
+
+	template<typename T>
+	Reoriented<T> forget_direction(Reoriented<Reversible<T>> const & s)
+	{
+		return **s * s.reorientation;
+	}
+
+	inline Reoriented<PositionInSequence> first_pos_in(Reoriented<SeqNum> const s)
+	{
+		return first_pos_in(*s) * s.reorientation;
+	}
+
+	inline Reoriented<PositionInSequence> from_pos(Reoriented<SegmentInSequence> const & s)
+	{
+		return from(*s) * s.reorientation;
+	}
+
+	inline Reoriented<PositionInSequence> to_pos(Reoriented<SegmentInSequence> const & s)
+	{
+		return to(*s) * s.reorientation;
+	}
+
+	template<typename T>
+	Reoriented<Reversible<T>> reverse(Reoriented<Reversible<T>> x)
+	{
+		*x = reverse(*x);
+		return x;
+	}
+
+	inline Reoriented<PositionInSequence> operator*(Reoriented<SeqNum> const & seq, PosNum const pos)
+	{
+		return (*seq * pos) * seq.reorientation;
+	}
+
+	inline Reoriented<SegmentInSequence> operator*(Reoriented<SeqNum> const & seq, SegmentNum const seg)
+	{
+		return (*seq * seg) * seq.reorientation;
+	}
+
+	inline optional<Reoriented<PositionInSequence>> position(Reoriented<Location> const & l)
+	{
+		if (auto x = position(*l)) return *x * l.reorientation;
+		return boost::none;
+	}
+
+	template <typename T>
+	optional<Reoriented<T>> prev(Reoriented<T> const & s)
+	{
+		if (auto x = prev(*s)) return *x * s.reorientation;
+		return boost::none;
 	}
 }
 

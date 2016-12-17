@@ -34,11 +34,11 @@ Frames frames(Graph const & g, Path const & path, unsigned const frames_per_pos)
 		};
 
 	Frames r;
-	ReorientedNode n = from(g, path.front());
+	Reoriented<NodeNum> n = from(g, path.front());
 
 	foreach (step : path)
 	{
-		pair<vector<Position>, ReorientedNode> p =
+		pair<vector<Position>, Reoriented<NodeNum>> p =
 			follow(g, n, *step, frames_per_pos / (g[*step].detailed ? 2 : 1));
 
 		p.first.pop_back();
@@ -70,7 +70,7 @@ class PathFinder
 
 	static constexpr SeqNum begin_trans{838};
 
-	bool do_find(ReorientedNode const n, size_t const size)
+	bool do_find(Reoriented<NodeNum> const n, size_t const size)
 	{
 		if (size == 0) return true;
 
@@ -135,10 +135,10 @@ public:
 		: graph(g)
 	{
 		foreach(n : nodenums(g))
-			standing.push_back(tags(g[n]).count("standing") != 0);
+			standing.push_back(is_tagged(g, "standing", n));
 	}
 
-	Path find(ReorientedNode const n, size_t const size)
+	Path find(Reoriented<NodeNum> const n, size_t const size)
 	{
 		if (do_find(n, size))
 			return scene;
