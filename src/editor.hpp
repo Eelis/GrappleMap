@@ -56,6 +56,9 @@ namespace GrappleMap
 		void snapToPos();
 	};
 
+	void retreat(Editor &);
+	void advance(Editor &);
+
 	void swap_players(Editor &);
 	void mirror_position(Editor &);
 }

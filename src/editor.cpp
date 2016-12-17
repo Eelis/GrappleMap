@@ -43,6 +43,18 @@ namespace GrappleMap
 			throw std::runtime_error("no such position/transition");
 	}
 
+	void advance(Editor & e)
+	{
+		if (auto x = advance_along(e.getLocation(), e.getSelection(), e.getGraph()))
+			e.setLocation(*x);
+	}
+
+	void retreat(Editor & e)
+	{
+		if (auto x = retreat_along(e.getLocation(), e.getSelection(), e.getGraph()))
+			e.setLocation(*x);
+	}
+
 	void Editor::toggle_selected()
 	{
 		if (playback) return;

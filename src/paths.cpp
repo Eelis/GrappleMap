@@ -328,4 +328,102 @@ void reorient_from(
 	}
 }
 
+optional<Reoriented<Location>> advance_along(
+	Reoriented<Location> location, OrientedPath const & path, Graph const & graph)
+{
+	auto i = path.begin();
+
+	for (; i != path.end(); ++i)
+	{
+		Reoriented<Reversible<SeqNum>> const & seq = *i;
+
+		if (**seq == location->segment.sequence)
+		{
+			if (seq->reverse)
+			{
+				if (location->howFar > 0)
+				{
+					location->howFar = 0;
+					return location;
+				}
+
+				if (location->segment.segment != SegmentNum{0})
+				{
+					--location->segment.segment;
+					return location;
+				}
+			}
+			else
+			{
+				if (location->howFar < 1)
+				{
+					location->howFar = 1;
+					return location;
+				}
+
+				if (location->segment != last_segment(location->segment.sequence, graph))
+				{
+					++location->segment.segment;
+					return location;
+				}
+			}
+
+			if (++i == path.end()) return boost::none;
+
+			return to_loc(first_segment(*i, graph));
+		}
+	}
+
+	return boost::none;
+}
+
+optional<Reoriented<Location>> retreat_along(
+	Reoriented<Location> location, OrientedPath const & path, Graph const & graph)
+{
+	auto i = path.rbegin();
+
+	for (; i != path.rend(); ++i)
+	{
+		Reoriented<Reversible<SeqNum>> const & seq = *i;
+
+		if (**seq == location->segment.sequence)
+		{
+			if (seq->reverse)
+			{
+				if (location->howFar < 1)
+				{
+					location->howFar = 1;
+					return location;
+				}
+
+				if (location->segment != last_segment(location->segment.sequence, graph))
+				{
+					++location->segment.segment;
+					return location;
+				}
+			}
+			else
+			{
+				if (location->howFar > 0)
+				{
+					location->howFar = 0;
+					return location;
+				}
+
+				if (location->segment.segment != SegmentNum{0})
+				{
+					--location->segment.segment;
+					return location;
+				}
+			}
+
+			if (++i == path.rend()) return boost::none;
+
+			return from_loc(last_segment(*i, graph));
+		}
+	}
+
+	return boost::none;
+}
+
 }

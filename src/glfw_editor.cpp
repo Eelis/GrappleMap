@@ -240,28 +240,13 @@ void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int 
 
 void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double yoffset)
 {
-/*
 	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(glfwWindow));
 
-	if (yoffset == -1)
-	{
-		if (auto pp = prev(w.location.position))
-		{
-			w.location.position = *pp;
-			w.next_pos = none;
-		}
-	}
-	else if (yoffset == 1)
-	{
-		if (auto const n = next(w.graph, w.location))
-		{
-			w.location = *n;
-			w.next_pos = none;
-		}
-	}
+	if (yoffset == -1) retreat(w.editor);
+	else if (yoffset == 1) advance(w.editor);
+	else return;
 
 	print_status(w);
-	*/
 }
 
 std::vector<View> const

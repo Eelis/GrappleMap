@@ -51,6 +51,10 @@ namespace GrappleMap
 
 	vector<Path> in_paths(Graph const &, NodeNum, unsigned size);
 	vector<Path> out_paths(Graph const &, NodeNum, unsigned size);
+
+	optional<Reoriented<Location>>
+		advance_along(Reoriented<Location>, OrientedPath const &, Graph const &),
+		retreat_along(Reoriented<Location>, OrientedPath const &, Graph const &);
 }
 
 #endif
