@@ -352,7 +352,7 @@ void VruiXine::shutdownXine(void)
 	audioOutPort=0;
 	if(xine!=0)
 		xine_exit(xine);
-	xine!=0;
+	xine=0;
 	}
 
 void VruiXine::setStereoMode(int newStereoMode)
@@ -724,7 +724,7 @@ GLMotif::PopupWindow* VruiXine::createStreamControlDialog(void)
 	return streamControlDialogPopup;
 	}
 
-void VruiXine::dvdNavigationButtonCallback(Misc::CallbackData* cbData,const int& eventId)
+void VruiXine::dvdNavigationButtonCallback(Misc::CallbackData*,const int& eventId)
 	{
 	/* Send an event to the xine library: */
 	xineSendEvent(eventId);
@@ -735,7 +735,7 @@ void VruiXine::loadVideoFileCallback(GLMotif::FileSelectionDialog::OKCallbackDat
 	loadVideo(cbData->getSelectedPath().c_str());
 	}
 
-void VruiXine::saveConfigurationCallback(Misc::CallbackData* cbData)
+void VruiXine::saveConfigurationCallback(Misc::CallbackData*)
 	{
 	/* Create a configuration file of the same base name as the video file: */
 	const char* extension=0;
@@ -941,7 +941,7 @@ inline char* formatTime(int timeMs,char timeString[9])
 
 }
 
-void VruiXine::skipBackCallback(Misc::CallbackData* cbData)
+void VruiXine::skipBackCallback(Misc::CallbackData*)
 	{
 	/* Skip back by 10 seconds: */
 	double newTime=playbackSlider->getValue()-10.0;
@@ -951,7 +951,7 @@ void VruiXine::skipBackCallback(Misc::CallbackData* cbData)
 	playbackPosCheckTime=0.0;
 	}
 
-void VruiXine::skipAheadCallback(Misc::CallbackData* cbData)
+void VruiXine::skipAheadCallback(Misc::CallbackData*)
 	{
 	/* Skip ahead by 10 seconds: */
 	double newTime=playbackSlider->getValue()+10.0;
@@ -1169,7 +1169,7 @@ VruiXine::VruiXine(std::vector<std::string> const & args)
 	crop[3]=crop[2]=crop[1]=crop[0]=0;
 	bool startPaused=false;
 
-	auto const argc = args.size();
+	int const argc(args.size());
 	std::vector<char const *> argvec;
 	for (std::string const & a : args) argvec.push_back(a.c_str());
 	char const ** argv = argvec.data();
@@ -1527,7 +1527,7 @@ void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 		}
 	else if(stereoMode==2) // Top/bottom stereo
 		{
-		const Vrui::DisplayState& ds=Vrui::getDisplayState(contextData);
+		//const Vrui::DisplayState& ds=Vrui::getDisplayState(contextData);
 		texScale[1]=0.5f;
 		texOffset[1]=eyeIndex==0?0.0f:GLfloat(frameSize[1])*0.5f;
 		if(stereoLayout==1)
@@ -1549,16 +1549,16 @@ void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 
 		Vrui::Scalar screenWidth=screenHeight*aspectRatio;
 		if(!stereoSquashed)
+		{
 			if(stereoMode==1)
 				screenWidth*=Vrui::Scalar(0.5);
 			else if(stereoMode==2)
 				screenWidth*=Vrui::Scalar(2);
+		}
 
 		/* Generate a flat screen: */
 		Vrui::Scalar x0=screenCenter[0]-Math::div2(screenWidth);
-		Vrui::Scalar x1=x0+screenWidth;
 		Vrui::Scalar z0=screenCenter[2]-Math::div2(screenHeight);
-		Vrui::Scalar z1=z0+screenHeight;
 		
 		GLfloat tsx=GLfloat(frameSize[0])/GLfloat(dataItem->numVertices[0]-1);
 		GLfloat tsy=GLfloat(frameSize[1])/GLfloat(dataItem->numVertices[1]-1);
@@ -1626,7 +1626,6 @@ void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 		glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
 		Vrui::Scalar screenWidth=screenHeight*aspectRatio;
 		Vrui::Scalar x0=screenCenter[0]-Math::div2(screenWidth);
-		Vrui::Scalar x1=x0+screenWidth;
 		Vrui::Scalar z0=screenCenter[2]-Math::div2(screenHeight);
 		Vrui::Scalar z1=z0+screenHeight;
 		Vrui::Scalar xs=screenWidth/Vrui::Scalar(frameSize[0]);
