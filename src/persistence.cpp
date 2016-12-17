@@ -70,7 +70,8 @@ namespace
 							{ desc
 							, vector<Position>{}
 							, line_nr - desc.size()
-							, properties_in_desc(desc).count("detailed") != 0 });
+							, properties_in_desc(desc).count("detailed") != 0
+							, properties_in_desc(desc).count("bidirectional") != 0 });
 						desc.clear();
 					}
 
@@ -270,7 +271,7 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 		else if (is_bottom_move(graph[s]))
 			o << ",color=blue";
 
-		if (is_bidirectional(graph[s]))
+		if (graph[s].bidirectional)
 			o << ",dir=\"both\"";
 
 		o << "];\n";

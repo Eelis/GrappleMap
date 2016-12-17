@@ -135,6 +135,20 @@ namespace GrappleMap
 		return v;
 	}
 
+	template<typename T>
+	vector<T> operator+(vector<T> l, vector<T> const & r)
+	{
+		return l += r;
+	}
+
+	template<typename T>
+	vector<T> make_vector(T x)
+	{
+		vector<T> r;
+		r.emplace_back(std::move(x));
+		return r;
+	}
+
 	inline void flip(bool & b) { b = !b; }
 }
 

@@ -34,7 +34,7 @@ namespace GrappleMap
 		JointEditor(Vrui::DraggingTool & t, Editor & e, bool confined)
 			: Vrui::DraggingToolAdapter{&t}, editor(e), confined(confined)
 		{}
-		
+
 		void dragStartCallback(Vrui::DraggingTool::DragStartCallbackData *) override;
 		void dragCallback(Vrui::DraggingTool::DragCallbackData *) override;
 		void idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData *) override;
@@ -65,9 +65,9 @@ namespace GrappleMap
 		double const scale;
 		unique_ptr<JointEditor> jointEditor;
 		bool confineEdits = false;
-
+		PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> accessibleSegments;
 		unique_ptr<JointBrowser> jointBrowser;
-
+		vector<Viable> viables;
 		VruiXine video_player;
 
 		void on_save_button(Misc::CallbackData *);

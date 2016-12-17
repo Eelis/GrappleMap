@@ -1,6 +1,5 @@
 #include "editor.hpp"
 #include "persistence.hpp"
-
 namespace GrappleMap
 {
 	namespace
@@ -23,10 +22,9 @@ namespace GrappleMap
 		}
 	}
 
-	Editor::Editor(boost::program_options::variables_map const & programOptions, Camera const * cam)
+	Editor::Editor(boost::program_options::variables_map const & programOptions)
 		: dbFile(programOptions["db"].as<string>())
 		, graph{loadGraph(dbFile)}
-		, camera(cam)
 	{
 		string const start_desc = programOptions["start"].as<string>();
 
@@ -43,8 +41,6 @@ namespace GrappleMap
 			location->segment = segment_from(*start);
 		else
 			throw std::runtime_error("no such position/transition");
-
-		recalcViables();
 	}
 
 	void Editor::toggle_selected()
@@ -73,7 +69,7 @@ namespace GrappleMap
 				selection.push_back(fs);
 				return;
 			}
-			else if (is_bidirectional(graph[*seq]))
+			else if (graph[*seq].bidirectional)
 			{
 				if (*to(graph, *bs) == *from(graph, *selection.front()))
 				{
@@ -102,8 +98,6 @@ namespace GrappleMap
 		flip(location.reorientation.mirror);
 
 		foreach (t : selection) flip(t.reorientation.mirror);
-
-		recalcViables();
 	}
 
 	void Editor::delete_keyframe()
@@ -115,7 +109,6 @@ namespace GrappleMap
 			if (auto const new_pos = graph.erase(*p))
 			{
 				//todo: location.position = *new_pos;
-				recalcViables();
 			}
 			else undoStack.pop();
 		}
@@ -140,13 +133,6 @@ namespace GrappleMap
 		e.replace(mirror(p));
 	}
 
-	void Editor::recalcViables()
-	{
-		foreach (j : playerJoints)
-			viables[j] = determineViables(graph, from_pos(segment(location)), // todo: bad
-					j, camera);
-	}
-	
 	void Editor::insert_keyframe()
 	{
 		push_undo();
@@ -154,8 +140,6 @@ namespace GrappleMap
 		graph.split_segment(*location);
 		++location->segment.segment;
 		location->howFar = 0;
-
-		recalcViables();
 	}
 
 	void Editor::push_undo()
@@ -172,7 +156,6 @@ namespace GrappleMap
 			try
 			{
 				split_at(graph, *pp);
-				recalcViables();
 			}
 			catch (exception const & e)
 			{
@@ -187,8 +170,6 @@ namespace GrappleMap
 
 		std::tie(graph, location, selection) = undoStack.top();
 		undoStack.pop();
-
-		recalcViables();
 	}
 
 	optional<OrientedPath::iterator> Editor::currently_in_selection()
@@ -216,8 +197,7 @@ namespace GrappleMap
 				++i;
 			}
 
-			recalcViables();
-			reorient_from(selection, *pathi, graph);
+			reorient_from(selection, *pathi, graph); // todo: elsehwere, too
 		}
 	}
 
@@ -233,7 +213,6 @@ namespace GrappleMap
 				// from where the edit took place)
 
 				graph.replace(*pp, inverse(location.reorientation)(new_pos), false);
-				recalcViables();
 				reorient_from(selection, *i, graph);
 			}
 		}
@@ -267,11 +246,7 @@ namespace GrappleMap
 
 		if (selectionLock && !elem(l->segment.sequence, selection)) return;
 
-		bool const differentSegment = (l->segment != location->segment);
-
 		location = l;
-
-		if (differentSegment) recalcViables();
 	}
 
 	void Editor::snapToPos()

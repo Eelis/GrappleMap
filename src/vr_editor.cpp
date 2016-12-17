@@ -66,6 +66,24 @@ namespace GrappleMap
 	{
 		video_player.frame();
 
+		{
+			viables.clear();
+
+			auto add_vias = [&](PlayerJoint const j)
+				{
+					viables += determineViables(editor.getGraph(),
+						from_pos(segment(editor.getLocation())),
+						j, nullptr);
+				};
+
+			if (jointBrowser && jointBrowser->joint) add_vias(*(jointBrowser->joint));
+			if (jointEditor && jointEditor->joint) add_vias(*(jointBrowser->joint));
+		}
+
+		accessibleSegments = closeCandidates(
+			editor.getGraph(), segment(editor.getLocation()), nullptr,
+			editor.lockedToSelection() ? &editor.getSelection() : nullptr);
+
 		editor.frame(Vrui::getCurrentFrameTime());
 
 		// Vrui::scheduleUpdate(Vrui::getNextAnimationTime()); // todo: what is this?
@@ -80,7 +98,7 @@ namespace GrappleMap
 	VrApp::VrApp(int argc, char ** argv)
 		: Vrui::Application(argc, argv)
 		, opts(getopts(argc, argv))
-		, editor(opts, nullptr)
+		, editor(opts)
 		, scale(opts["scale"].as<double>())
 		, video_player(std::vector<std::string>{"vruixine", "test.mp4"})
 	{
@@ -150,8 +168,10 @@ namespace GrappleMap
 		if (!editor.playingBack())
 			renderScene(
 				editor.getGraph(), editor.current_position(),
-				editor.getViables(), browse_joint, edit_joint,
-				editor.getSelection(), editor.getLocation()->segment,
+				viables, browse_joint, edit_joint,
+				editor.getSelection(),
+				accessibleSegments,
+				editor.getLocation()->segment,
 				style, playerDrawer);
 		else
 		{

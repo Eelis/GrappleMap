@@ -14,6 +14,9 @@ struct Graph
 		optional<unsigned> line_nr;
 		vector<Reversible<SeqNum>> in, out;
 			// only bidirectional transitions appear as reversed seqs here
+		vector<Reversible<SeqNum>> in_out;
+			// reverse means ends in node, non-reverse means starts in node
+			// transitions only appear in their primary direction here
 	};
 
 	struct Edge
@@ -67,7 +70,7 @@ public:
 
 	void insert_node(Position pos, vector<string> desc, optional<unsigned> line)
 	{
-		nodes.emplace_back(Node{pos, desc, line, {}, {}});
+		nodes.emplace_back(Node{pos, desc, line, {}, {}, {}});
 		compute_in_out(NodeNum{NodeNum::underlying_type(nodes.size() - 1)});
 	}
 

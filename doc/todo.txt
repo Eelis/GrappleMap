@@ -30,9 +30,7 @@ vrui frontend:
 - limb editing
 - integrate more tools into vr space: web browser, text editor, ...
 - define tools properly
-- make viables completely match actually browseable paths
 - position-in-sequence labels
-- show correct viable lines
 - interface for inserting new transitions
 - graph display
 - update menu entries (e.g. only show one of insert/remove keyframe, and 'enable/disable blabla' instead of 'toggle blabla')

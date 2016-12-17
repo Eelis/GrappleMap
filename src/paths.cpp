@@ -315,7 +315,7 @@ void reorient_from(
 	for (auto i = start; i != path.begin(); --i)
 	{
 		auto & x = *prev(i);
-		x = connect_in(n, *x, g);
+		x = gp_connect(n, *x, g);
 		n = from(x, g);
 	}
 
@@ -323,7 +323,7 @@ void reorient_from(
 
 	for (auto i = next(start); i != path.end(); ++i)
 	{
-		*i = connect_out(n, **i, g);
+		*i = gp_connect(n, **i, g);
 		n = to(*i, g);
 	}
 }

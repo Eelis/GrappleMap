@@ -97,7 +97,7 @@ void ImageMaker::png(
 
 	renderWindow(
 		view,
-		nullptr, // no viables
+		{}, // no viables
 		graph, pos, camera,
 		none, // no highlighted joint
 		{}, // default colors
@@ -169,7 +169,7 @@ void ImageMaker::png(
 	{
 		renderWindow(
 			view,
-			nullptr, // no viables
+			{}, // no viables
 			graph, p->first, p->second,
 			none, // no highlighted joint
 			{}, // default colors

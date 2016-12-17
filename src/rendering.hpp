@@ -45,7 +45,7 @@ namespace GrappleMap
 	void grid(V3 color, unsigned size = 2, unsigned line_width = 2);
 
 	void renderWindow(vector<View> const &,
-		Viables const *, Graph const &, Position const &,
+		vector<Viable> const &, Graph const &, Position const &,
 		Camera, optional<PlayerJoint> highlight_joint,
 		PerPlayerJoint<optional<V3>> colors,
 		int left, int bottom, int width, int height,
@@ -53,10 +53,11 @@ namespace GrappleMap
 		Style const &, PlayerDrawer const &);
 
 	void renderScene(Graph const &, Position const &,
-		PerPlayerJoint<ViablesForJoint> const & viables,
+		vector<Viable> const & viables,
 		optional<PlayerJoint> const browse_joint,
 		optional<PlayerJoint> edit_joint,
 		OrientedPath const &,
+		PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> const & accessibleSegments,
 		optional<SegmentInSequence> current_segment,
 		Style const &,
 		PlayerDrawer const &);

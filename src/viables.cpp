@@ -1,158 +1,122 @@
 #include "viables.hpp"
-#include "graph_util.hpp"
 #include "camera.hpp"
 
 namespace GrappleMap {
 
 namespace
 {
-	struct Calculator
+	void extend(
+		Graph const & graph,
+		PlayerJoint const j,
+		Camera const * const camera,
+		vector<Viable> & viables,
+		unsigned const depth,
+		Reoriented<PositionInSequence> pp,
+		bool const node_done)
+			// if pp happens to denote a node, then if node_done is true,
+			// other segments adjacent to that node are already taken care of
 	{
-		Graph const & graph;
-		PlayerJoint const j;
-		Camera const * const camera;
-		ViablesForJoint vfj;
+		Viable via{j, sequence(pp), pp->position, next(pp->position), pp->position, depth};
 
-		bool seen(SeqNum const s) const
-		{
-			foreach(x : vfj.viables)
-				if (*x.sequence == s)
-					return true;
-			return false;
-		}
+		auto const & sequ = graph[pp->sequence];
 
-		Viable viableFront(Reoriented<SeqNum> const seq)
-		{
-			auto const xyz = apply(seq.reorientation, graph[*seq].positions.front(), j);
-			auto const xy = camera ? world2xy(*camera, xyz) : V2{0, 0};
-			return Viable{seq, 0, 1, xyz, xyz, xy, xy};
-		}
+		V3 const startv = at(via.sequence * via.origin, j, graph);
 
-		Viable viableBack(Reoriented<SeqNum> const seq)
-		{
-			auto const & sequence = graph[*seq];
-			auto const xyz = apply(seq.reorientation, sequence.positions.back(), j);
-			auto const xy = camera ? world2xy(*camera, xyz) : V2{0, 0};
-			return Viable{seq, last_pos(sequence), end(sequence), xyz, xyz, xy, xy};
-		}
+		V3 lastv = startv;
+		optional<V2> lastxy;
+		unsigned lastd = depth;
 
-		void extend_forward(int const depth, Viable & via)
-		{
-			auto const & sequence = graph[*via.sequence];
-
-			for (; via.end.index != sequence.positions.size(); ++via.end)
+		auto progress = [&](V3 const v)
 			{
-				V3 const v = apply(via.sequence.reorientation, sequence[via.end], j);
-
-				if (distanceSquared(v, via.endV3) < 0.003) break;
+				if (distanceSquared(v, lastv) < 0.003) return false;
 
 				if (camera)
 				{
+					if (!lastxy) lastxy = world2xy(*camera, lastv);
+
 					V2 const xy = world2xy(*camera, v);
-
-					double const
-						xydistSqrd = distanceSquared(xy, via.endxy),
-						xydist = std::sqrt(xydistSqrd);
-
-					if (xydist < 0.0005) break;
-
-					via.endxy = xy;
-					vfj.total_dist += xydist;
+					if (distanceSquared(xy, *lastxy) < 0.0001) return false;
+					lastxy = xy;
 				}
-				else ++vfj.total_dist; // in vr mode, just count segments
 
-				via.endV3 = v;
-			}
+				lastv = v;
 
-			if (via.end == end(sequence))
-				extend_from(depth + 1, to(via.sequence, graph));
+				return true;
+			};
+
+		for (; via.end.index != sequ.positions.size(); ++via.end)
+		{
+			if (!progress(apply(via.sequence.reorientation, sequ[via.end], j)))
+				break;
+			if (++lastd == 7) break;
 		}
 
-		void extend_backward(int const depth, Viable & via)
-		{
-			auto & sequence = graph[*via.sequence];
+		lastv = startv;
+		lastxy = boost::none;
+		lastd = depth;
 
-			int pos = via.begin.index;
-			--pos;
-			for (; pos != -1; --pos)
+		for (; via.begin != PosNum{0}; --via.begin)
+		{
+			if (!progress(apply(via.sequence.reorientation, sequ.positions[via.begin.index - 1], j)))
+				break;
+			if (++lastd == 7) break;
+		}
+
+		viables.push_back(via);
+
+		auto further = [&](Reoriented<NodeNum> const & n, unsigned const depth)
 			{
-				V3 const v = apply(via.sequence.reorientation, sequence.positions[pos], j);
+				for (Reoriented<Reversible<SeqNum>> const & seq : inout_sequences(n, graph))
+					if (**seq != *via.sequence)
+						extend(graph, j, camera, viables,
+							depth, first_pos_in(seq, graph), true);
+			};
 
-				if (distanceSquared(v, via.beginV3) < 0.003) break;
+		if (via.end == end(sequ) && (via.end != next(pp->position) || !node_done))
+			further(to(via.sequence, graph), via.depth(*prev(via.end)));
 
-				if (camera)
-				{
-					V2 const xy = world2xy(*camera, v);
-
-					double const
-						xydistSqrd = distanceSquared(xy, via.beginxy),
-						xydist = std::sqrt(xydistSqrd);
-
-					if (xydist < 0.0005) break;
-
-					via.beginxy = xy;
-					vfj.total_dist += xydist;
-				}
-				else ++vfj.total_dist;
-
-				via.beginV3 = v;
-			}
-
-			via.begin.index = pos + 1;
-
-			if (via.begin.index == 0)
-				extend_from(depth+1, from(via.sequence, graph));
-		}
-
-		Reoriented<SeqNum> forget_direction(Reoriented<Reversible<SeqNum>> const & s)
-		{
-			return {**s, s.reorientation};
-		}
-
-		void extend_from(int const depth, ReorientedNode const rn)
-		{
-			if (depth >= 3) return;
-
-			for (Reoriented<Reversible<SeqNum>> const & seq : out_sequences(rn, graph))
-				if (!seq->reverse && !seen(**seq))
-				{
-					vfj.viables.push_back(viableFront(forget_direction(seq)));
-					extend_forward(depth + 1, vfj.viables.back());
-				}
-
-			for (Reoriented<Reversible<SeqNum>> const & seq : in_sequences(rn, graph))
-				if (!seq->reverse && !seen(**seq))
-				{
-					vfj.viables.push_back(viableBack(forget_direction(seq)));
-					extend_backward(depth + 1, vfj.viables.back());
-				}
-		}
-	};
+		if (via.begin == PosNum{0} && (pp->position != PosNum{0} || !node_done))
+			further(from(via.sequence, graph), via.depth(via.begin));
+	}
 }
 
-ViablesForJoint determineViables
+bool viable(Graph const & graph,
+	Reoriented<SegmentInSequence> const & segment,
+	PlayerJoint const j, Camera const * const camera)
+{
+	return
+		(distanceSquared(
+			graph[from(*segment)][j],
+			graph[to(*segment)][j]) > 0.003)
+		&&
+		(!camera || distanceSquared(
+			world2xy(*camera, at(from_pos(segment), j, graph)),
+			world2xy(*camera, at(to_pos(segment), j, graph))) > 0.0001);
+}
+
+vector<Viable> determineViables
 	( Graph const & graph, Reoriented<PositionInSequence> const from
 	, PlayerJoint const j, Camera const * const camera)
 {
-	auto const jp = apply(from.reorientation, graph[*from], j);
-	auto const jpxy = camera ? world2xy(*camera, jp) : V2{0, 0};
+	vector<Viable> r;
+	extend(graph, j, camera, r, 0, from, false);
+	return r;
+}
 
-	Calculator c
-		{	graph, j, camera
-		,	ViablesForJoint
-			{ 0
-			, {Viable{sequence(from), from->position, next(from->position), jp, jp, jpxy, jpxy}}
-			, std::vector<LineSegment>{}
-			}
-		};
+PerPlayerJoint<vector<Reoriented<SegmentInSequence>>>
+	closeCandidates(
+		Graph const & graph, Reoriented<SegmentInSequence> const & current,
+		Camera const * const camera, OrientedPath const * const selection)
+{
+	PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> r;
 
-	auto & v = c.vfj.viables.back();
-	c.extend_forward(0, v);
-	c.extend_backward(0, v);
+	foreach (candidate : make_vector(current) + neighbours(current, graph, true))
+		if (!selection || elem(candidate->sequence, *selection))
+			foreach (j : playerJoints)
+				if (viable(graph, candidate, j, camera))
+					r[j].push_back(candidate);
 
-	if (c.vfj.total_dist < 0.3) return ViablesForJoint{0, {}, {}};
-
-	return c.vfj;
+	return r;
 }
 
 }

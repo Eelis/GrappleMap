@@ -1,6 +1,5 @@
 #include "rendering.hpp"
-#include "util.hpp"
-#include "graph.hpp"
+#include "graph_util.hpp"
 #include "camera.hpp"
 #ifdef USE_FTGL
 #include <FTGL/ftgl.h>
@@ -23,40 +22,72 @@ namespace
 			up.x, up.y, up.z);
 	}
 
+	void drawSelection(
+		Graph const & g, OrientedPath const & path, PlayerJoint const j,
+		Camera const * const camera, Style const & style)
+	{
+		glNormal3d(0, 1, 0);
+		glDisable(GL_DEPTH_TEST);
+		glLineWidth(4);
+
+		glColor4f(1, 1, 1, 0.6);
+
+		foreach (seq : path)
+		{
+			glBegin(GL_LINE_STRIP);
+				foreach (p : positions(forget_direction(seq), g))
+					glVertex(at(p, j, g));
+			glEnd();
+		}
+
+		#ifdef USE_FTGL
+		if (camera && !style.font.Error())
+			foreach (seq : path)
+				foreach (p : positions(forget_direction(seq), g))
+					renderText(
+						style.font,
+						world2screen(*camera, at(p, j, g)),
+						to_string(p->position.index + 1), white);
+		else
+		#endif
+		{
+			glPointSize(10);
+			glBegin(GL_POINTS);
+			foreach (seq : path)
+				foreach (v : joint_positions(forget_direction(seq), j, g))
+//				if (p.index != 0 && i.index != seq.positions.size() - 1)
+					glVertex(v);
+			glEnd();
+		}
+	}
+
 	void drawViables(
-		Graph const & graph, Viables const & viable, PlayerJoint const j,
+		Graph const & graph, vector<Viable> const & viables,
 		OrientedPath const & selection,
 		optional<SegmentInSequence> const current_segment,
 		Camera const * camera, Style const & style)
 	{
-		glLineWidth(4);
 		glNormal3d(0, 1, 0);
-
 		glDisable(GL_DEPTH_TEST);
+		glLineWidth(4);
 
-		foreach (v : viable[j].viables)
+		foreach (v : viables)
 		{
-			if (v.end.index - v.begin.index < 1) continue;
+			if (elem(*v.sequence, selection)) continue;
 
-			auto const r = v.sequence.reorientation;
-			auto const & seq = graph[*v.sequence];
-
-			bool const selected = elem(*v.sequence, selection);
-
-			glBegin(GL_LINES);
-			for (PosNum i = v.begin; i != prev(v.end); ++i)
+			glBegin(GL_LINE_STRIP);
+			foreach (i : PosNum::range(v.begin, v.end))
 			{
 				if (current_segment && current_segment->sequence == *v.sequence
 					&& current_segment->segment.index == i.index)
 					glColor4f(0, 1, 0, 0.6);
-				else if (selected) glColor4f(1, 1, 1, 0.6);
-				else glColor4f(1, 1, 0, 0.3);
+				else
+					glColor4f(1, 1, 0, std::max(0.0, 0.3 - v.depth(i) * 0.05));
 
-				glVertex(apply(r, seq[i], j));
-				glVertex(apply(r, seq[next(i)], j));
+				glVertex(at(v.sequence * i, v.joint, graph));
 			}
 			glEnd();
-
+/*
 			if (selected) glColor4f(1, 1, 1, 0.6);
 			else glColor4f(1, 1, 0, 0.3);
 
@@ -64,32 +95,10 @@ namespace
 			glBegin(GL_POINTS);
 			if (v.begin.index == 0)
 				glVertex(apply(r, seq.positions.front(), j));
-			if (v.end.index == seq.positions.size() - 1)
+			if (v.end.index == seq.positions.size())
 				glVertex(apply(r, seq.positions.back(), j));
 			glEnd();
-
-			if (selected)
-			{
-				#ifdef USE_FTGL
-				if (camera && !style.font.Error())
-				{
-					for (PosNum i = next(v.begin); i != v.end; ++i)
-						renderText(
-							style.font,
-							world2screen(*camera, apply(r, seq[i], j)),
-							to_string(i.index), white);
-				}
-				else
-				#endif
-				{
-					glPointSize(10);
-					glBegin(GL_POINTS);
-					for (PosNum i = v.begin; i != v.end; ++i)
-						if (i.index != 0 && i.index != seq.positions.size() - 1)
-							glVertex(apply(r, seq[i], j));
-					glEnd();
-				}
-			}
+*/
 		}
 
 		glEnable(GL_DEPTH_TEST);
@@ -155,7 +164,7 @@ Style::Style()
 
 void renderWindow(
 	std::vector<View> const & views,
-	Viables const * const viables,
+	vector<Viable> const & viables,
 	Graph const & graph,
 	Position const & position,
 	Camera camera,
@@ -213,10 +222,12 @@ void renderWindow(
 
 		playerDrawer.drawPlayers(position, colors, v.first_person);
 
-		if (viables && highlight_joint)
-		{
-			drawViables(graph, *viables, *highlight_joint, selection, {}, &camera, style);
+		if (highlight_joint) drawSelection(graph, selection, *highlight_joint, &camera, style);
 
+		drawViables(graph, viables, selection, {}, &camera, style);
+
+		if (highlight_joint)
+		{
 			glDisable(GL_DEPTH_TEST);
 			glPointSize(20);
 			glColor(white);
@@ -231,10 +242,11 @@ void renderWindow(
 void renderScene(
 	Graph const & graph,
 	Position const & position,
-	PerPlayerJoint<ViablesForJoint> const & viables,
+	vector<Viable> const & viables,
 	optional<PlayerJoint> const browse_joint,
 	optional<PlayerJoint> const edit_joint,
 	OrientedPath const & selection,
+	PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> const & accessibleSegments,
 	optional<SegmentInSequence> const current_segment,
 	Style const & style,
 	PlayerDrawer const & playerDrawer)
@@ -249,7 +261,7 @@ void renderScene(
 		PerPlayerJoint<optional<V3>> colors;
 
 		foreach (j : playerJoints)
-			if (viables[j].total_dist != 0)
+			if (!accessibleSegments[j].empty())
 				colors[j] = white * 0.4 + playerDefs[j.player].color * 0.6;
 
 		if (browse_joint) colors[*browse_joint] = V3{1, 1, 0};
@@ -258,35 +270,20 @@ void renderScene(
 		playerDrawer.drawPlayers(position, colors, {});
 	}
 
-	if (edit_joint)
-	{
-		auto const j = *edit_joint;
 
-		drawViables(graph, viables, j, selection, current_segment, nullptr, style);
+	if (edit_joint) drawSelection(graph, selection, *edit_joint, nullptr, style);
+	if (browse_joint) drawSelection(graph, selection, *browse_joint, nullptr, style);
 
-		glDisable(GL_DEPTH_TEST);
-		glPointSize(20);
-		glColor(white);
+	drawViables(graph, viables, selection, current_segment, nullptr, style);
 
-		glBegin(GL_POINTS);
-		glVertex(position[j]);
-		glEnd();
-	}
+	glDisable(GL_DEPTH_TEST);
+	glPointSize(20);
+	glColor(white);
 
-	if (browse_joint)
-	{
-		auto const j = *browse_joint;
-
-		drawViables(graph, viables, j, selection, current_segment, nullptr, style);
-
-		glDisable(GL_DEPTH_TEST);
-		glPointSize(20);
-		glColor(white);
-
-		glBegin(GL_POINTS);
-		glVertex(position[j]);
-		glEnd();
-	}
+	glBegin(GL_POINTS);
+	if (edit_joint) glVertex(position[*edit_joint]);
+	if (browse_joint) glVertex(position[*browse_joint]);
+	glEnd();
 }
 
 }

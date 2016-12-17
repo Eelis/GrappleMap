@@ -20,78 +20,50 @@ using namespace GrappleMap;
 
 namespace
 {
-	double whereBetween(Position const & n, Position const & m, PlayerJoint const j, Camera const & camera, V2 const cursor)
+	double whereBetween(V2 const v, V2 const w, Camera const & camera, V2 const cursor)
 	{
-		V2 v = world2xy(camera, n[j]);
-		V2 w = world2xy(camera, m[j]);
-
-		V2 a = cursor - v;
-		V2 b = w - v;
+		V2 const
+			a = cursor - v,
+			b = w - v;
 
 		return std::max(0., std::min(1., inner_prod(a, b) / norm2(b) / norm2(b)));
 	}
 
-	optional<Reoriented<Location>> determineNextPos(
-		Viables const & viables,
-		Graph const & graph,
-		PlayerJoint const j,
-		Reoriented<SegmentInSequence> const & current,
-		Camera const & camera,
-		V2 const cursor,
-		OrientedPath const * const selection)
+	optional<Reoriented<Location>>
+		determineNextPos(
+			Graph const & graph, PlayerJoint const j,
+			vector<Reoriented<SegmentInSequence>> const & candidates,
+			Camera const & camera, V2 const cursor)
 	{
-		optional<Reoriented<Location>> nl;
+		struct Best { Reoriented<Location> loc; double score; };
 
-		double best = 1000000;
+		optional<Best> best;
 
-		vector<Reoriented<SegmentInSequence>>
-			candidates = neighbours(current, graph, true);
-
-		candidates.push_back(current);
-
-		for (Reoriented<SegmentInSequence> const & candidate : candidates)
+		foreach (candidate : candidates)
 		{
-			auto const & m = viables[j].viables;
-			auto const i = std::find_if(m.begin(), m.end(),
-				[&](Viable const & v){ return *v.sequence == candidate->sequence; });;
-			if (i == m.end()) continue;
+			V2 const
+				v = world2xy(camera, at(from_pos(candidate), j, graph)),
+				w = world2xy(camera, at(to_pos(candidate), j, graph));
 
-			if (selection && !elem(candidate->sequence, *selection)) continue;
+			double const howfar = whereBetween(v, w, camera, cursor);
 
-			Viable const & v = *i;
+			V2 const ultimate = v + (w - v) * howfar;
 
-			if (candidate->segment.index >= v.begin.index &&
-				candidate->segment.index < v.end.index)
-			{
-				Position const
-					n = at(from_pos(candidate), graph),
-					  m = at(to_pos(candidate), graph);
+			double const score = distanceSquared(ultimate, cursor);
 
-				double const howfar = whereBetween(n, m, j, camera, cursor);
-
-				V2 const v = world2xy(camera, n[j]);
-				V2 const w = world2xy(camera, m[j]);
-
-				V2 const ultimate = v + (w - v) * howfar;
-
-				double const d = distanceSquared(ultimate, cursor);
-
-				if (d < best)
-				{
-					nl = {Location{*candidate, howfar}, candidate.reorientation};
-					best = d;
-				}
-			}
+			if (!best || score < best->score)
+				best = Best{Location{*candidate, howfar}, candidate.reorientation, score};
 		}
 
-		return nl;
+		if (!best) return boost::none;
+		return best->loc;
 	}
 }
 
 struct Window
 {
 	explicit Window(boost::program_options::variables_map const & opts)
-		: editor(opts, &camera)
+		: editor(opts)
 	{}
 
 	PlayerJoint closest_joint = {{0}, LeftAnkle};
@@ -427,6 +399,9 @@ int main(int const argc, char const * const * const argv)
 
 		double lastTime = glfwGetTime();
 
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		while (!glfwWindowShouldClose(window))
 		{
 			glfwPollEvents();
@@ -455,8 +430,6 @@ int main(int const argc, char const * const * const argv)
 			{
 				w.camera.setViewportSize(v->fov, v->w * width, v->h * height);
 
-				w.editor.recalcViables();
-
 				double xpos, ypos;
 				glfwGetCursorPos(window, &xpos, &ypos);
 
@@ -470,21 +443,25 @@ int main(int const argc, char const * const * const argv)
 						(((y - v->y) / v->h) - 0.5) * 2};
 			}
 
+
+			OrientedPath const
+				tempSel{forwardStep(sequence(segment(w.editor.getLocation())))},
+				& sel = w.editor.getSelection().empty() ? tempSel : w.editor.getSelection();
+					// ugh
+
+			PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> const
+				candidates = closeCandidates(
+					w.editor.getGraph(), segment(w.editor.getLocation()),
+					&w.camera, w.editor.lockedToSelection() ? &sel : nullptr);
+
 			if (cursor && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 			{
-				OrientedPath const
-					tempSel{forwardStep(sequence(segment(w.editor.getLocation())))},
-					& sel = w.editor.getSelection().empty() ? tempSel : w.editor.getSelection();
+				auto const thejoint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
 
 				if (auto best_next_pos = determineNextPos(
-						w.editor.getViables(), w.editor.getGraph(),
-						w.chosen_joint ? *w.chosen_joint : w.closest_joint,
-						segment(w.editor.getLocation()),
-						w.camera, *cursor,
-						w.editor.lockedToSelection() ? &sel : nullptr))
-				{
+						w.editor.getGraph(), thejoint,
+						candidates[thejoint], w.camera, *cursor))
 					w.editor.setLocation(*best_next_pos);
-				}
 			}
 
 			Position pos = w.editor.current_position();
@@ -540,24 +517,28 @@ int main(int const argc, char const * const * const argv)
 
 			PerPlayerJoint<optional<V3>> colors;
 
-			if (w.edit_mode)
-				foreach (j : playerJoints)
-					colors[j] = white;
-			else
-				foreach (j : playerJoints)
-					if (w.editor.getViables()[j].total_dist != 0)
-						colors[j] = white * 0.4 + playerDefs[j.player].color * 0.6;
+			if (w.edit_mode) foreach (j : playerJoints) colors[j] = white;
+			else foreach (j : playerJoints)
+				if (!candidates[j].empty())
+					colors[j] = white * 0.4 + playerDefs[j.player].color * 0.6;
 
 			colors[special_joint] = yellow;
 
+			Graph const & graph = w.editor.getGraph();
+
 			if (w.editor.playingBack())
 				renderWindow(
-					views, nullptr, w.editor.getGraph(), pos, w.camera, {},
+					views, {}, graph, pos, w.camera, {},
 					{}, 0, 0, width, height, {}, w.style, w.playerDrawer);
 			else
 				renderWindow(
-					views, &w.editor.getViables(), w.editor.getGraph(), pos, w.camera, special_joint,
-					colors, 0, 0, width, height, w.editor.getSelection(), w.style, w.playerDrawer);
+					views,
+					determineViables(graph,
+						from_pos(segment(w.editor.getLocation())),
+						special_joint, &w.camera),
+					graph, pos, w.camera, special_joint,
+					colors, 0, 0, width, height,
+					w.editor.getSelection(), w.style, w.playerDrawer);
 
 			glfwSwapBuffers(window);
 

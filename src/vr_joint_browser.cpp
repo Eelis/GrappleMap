@@ -14,24 +14,17 @@ namespace GrappleMap
 			PlayerJoint const j,
 			OrientedPath const * const selection)
 		{
-			vector<ReorientedSegment> candidates = neighbours(root, g, true);
+			vector<ReorientedSegment> const candidates = closeCandidates(g, root, nullptr, selection)[j];
 
-			candidates.push_back(root);
-
-			struct Best { Reoriented<Location> location; double dist; };
+			struct Best { Reoriented<Location> loc; double score; };
 			optional<Best> best;
 
-			foreach (cand : candidates)
+			foreach (cand : closeCandidates(g, root, nullptr, selection)[j])
 			{
-				if (selection && !elem(cand->sequence, *selection)) continue;
-
 				V3 const
 					rayOrigin = at(from_pos(cand), g)[j],
 					rayTarget = at(to_pos(cand), g)[j],
 					rayDir = rayTarget - rayOrigin;
-
-				if (norm2(rayDir) < 0.05) continue; // tiny segments are not nice for browsing
-					// todo: make sure exactly the corresponding viables are shown
 
 				double c = closest(rayOrigin, rayDir, cursor);
 
@@ -40,31 +33,24 @@ namespace GrappleMap
 
 				if (0 <= c && c <= 1)
 				{
-					double const d = distance(cursor, rayOrigin + rayDir * c);
+					double const score = distance(cursor, rayOrigin + rayDir * c);
 
-					if (!best || d < best->dist) best = Best{loc(cand, c), d};
+					if (!best || score < best->score)
+						best = Best{loc(cand, c), score};
 				}
 			}
 
-			// todo: can we use a std::minimal thingy here?
-
 			if (!best) return boost::none;
-
-			return best->location;
+			return best->loc;
 		}
 	}
 
 	void JointBrowser::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
 	{
-		auto cj = closest_joint(
+		joint = closest_joint(
 			editor.current_position(),
 			v3(cbData->currentTransformation.getTranslation()),
 			0.3);
-
-		if (cj && /*jointDefs[cj->joint].draggable &&*/ editor.getViables()[*cj].total_dist != 0)
-			joint = *cj;
-		else
-			joint = boost::none;
 	}
 
 	void JointBrowser::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)

@@ -4,22 +4,16 @@
 #include <stack>
 #include "persistence.hpp"
 #include "reoriented.hpp"
-#include "viables.hpp"
 #include "playback.hpp"
 
 namespace GrappleMap
 {
 	class Editor
 	{
-		// Editor's main work is keeping the viables and selection
-		// consistent with the graph as it is being traversed and altered.
-
 		string const dbFile;
 		Graph graph;
 		std::stack<std::tuple<Graph, Reoriented<Location>, OrientedPath>> undoStack;
-		Viables viables;
 		OrientedPath selection;
-		Camera const * const camera; // needed because in 2d projection it affects viables
 		bool selectionLock = true;
 		unique_ptr<Playback> playback;
 		Reoriented<Location> location{{SegmentInSequence{{0}, 0}, 0}, {}};
@@ -28,14 +22,11 @@ namespace GrappleMap
 
 	public:
 
-		Editor(
-			boost::program_options::variables_map const & programOptions,
-			Camera const *);
+		explicit Editor(boost::program_options::variables_map const &);
 
 		// read
 
 		Graph const & getGraph() const { return graph; }
-		Viables const & getViables() const { return viables; }
 		OrientedPath const & getSelection() const { return selection; }
 		bool lockedToSelection() const { return selectionLock; }
 		Reoriented<Location> const & getLocation() const { return location; }
@@ -58,7 +49,6 @@ namespace GrappleMap
 		void toggle_lock(bool);
 		void toggle_playback();
 		void push_undo();
-		void recalcViables();
 		void replace(Position);
 		void replace_sequence(vector<Position> const &);
 		void frame(double secondsElapsed);

@@ -177,7 +177,7 @@ ReorientedNode Graph::find_or_add(Position const & p)
 	if (auto m = is_reoriented_node(p))
 		return *m;
 
-	nodes.push_back(Node{p, vector<string>(), {}, {}, {}});
+	nodes.push_back(Node{p, vector<string>(), {}, {}, {}, {}});
 
 	NodeNum const nn{uint16_t(nodes.size() - 1)};
 
@@ -192,6 +192,7 @@ void Graph::compute_in_out(NodeNum const n)
 
 	node.in.clear();
 	node.out.clear();
+	node.in_out.clear();
 
 	for (SeqNum s{0}; s.index != edges.size(); ++s.index)
 	{
@@ -199,10 +200,19 @@ void Graph::compute_in_out(NodeNum const n)
 			& from_ = from(s),
 			& to_ = to(s);
 
-		if (*to_ == n) node.in.push_back({s, false});
-		if (*from_ == n) node.out.push_back({s, false});
+		if (*to_ == n)
+		{
+			node.in.push_back({s, false});
+			node.in_out.push_back({s, true});
+		}
 
-		if (is_bidirectional(edges[s.index].sequence))
+		if (*from_ == n)
+		{
+			node.out.push_back({s, false});
+			node.in_out.push_back({s, false});
+		}
+
+		if (edges[s.index].sequence.bidirectional)
 		{
 			if (*from_ == n) node.in.push_back({s, true});
 			if (*to_ == n) node.out.push_back({s, true});

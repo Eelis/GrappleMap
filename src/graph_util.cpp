@@ -37,7 +37,7 @@ optional<Step> step_by_desc(Graph const & g, string const & desc, optional<NodeN
 		{
 			if (!from || *g.from(sn) == *from)
 				return Step{sn, false};
-			if (is_bidirectional(g[sn]) && *g.to(sn) == *from)
+			if (g[sn].bidirectional && *g.to(sn) == *from)
 				return Step{sn, true};
 		}
 
@@ -61,7 +61,7 @@ optional<NodeNum> node_by_desc(Graph const & g, string const & desc)
 
 optional<PositionInSequence> posinseq_by_desc(Graph const & g, string const & s)
 {
-	if (s == "last-trans") return first_pos_in({g.num_sequences() - 1u});
+	if (s == "last-trans") return first_pos_in(SeqNum{g.num_sequences() - 1u});
 
 	if (auto step = step_by_desc(g, s)) return first_pos_in(**step);
 
@@ -349,18 +349,19 @@ set<NodeNum> nodes_around(Graph const & g, set<NodeNum> const & nodes, unsigned 
 	return r;
 }
 
-Reoriented<Reversible<SeqNum>>
-	connect_in(Reoriented<NodeNum> const & n, Reversible<SeqNum> const s, Graph const & g)
+Reoriented<Reversible<SeqNum>> gp_connect(
+	Reoriented<NodeNum> const & n,
+	Reversible<SeqNum> const s, Graph const & g)
 {
-	return Reoriented<Reversible<SeqNum>>
-		{s, compose(inverse(to(g, s).reorientation), n.reorientation)};
-}
+	Reoriented<Reversible<SeqNum>> r;
 
-Reoriented<Reversible<SeqNum>>
-	connect_out(Reoriented<NodeNum> const & n, Reversible<SeqNum> const s, Graph const & g)
-{
-	return Reoriented<Reversible<SeqNum>>
-		{s, compose(inverse(from(g, s).reorientation), n.reorientation)};
+	if (*from(g, s) == *n)
+		r = {s, compose(inverse(from(g, s).reorientation), n.reorientation)};
+	else if (*to(g, s) == *n)
+		r = {s, compose(inverse(to(g, s).reorientation), n.reorientation)};
+	else assert(!"gp_connect");
+
+	return r;
 }
 
 vector<Reoriented<SegmentInSequence>> segments_around(ReorientedNode const & n, Graph const & g)

@@ -61,6 +61,10 @@ Index<i, T> & operator++(Index<i, T> & x)
 { ++x.index; return x; }
 
 template <Indexed i, typename T>
+Index<i, T> & operator--(Index<i, T> & x)
+{ --x.index; return x; }
+
+template <Indexed i, typename T>
 optional<Index<i, T>> prev(Index<i, T> x)
 {
 	if (x.index == 0) return boost::none;
@@ -173,7 +177,7 @@ struct Sequence
 	vector<string> description;
 	vector<Position> positions; // invariant: .size()>=2
 	optional<unsigned> line_nr;
-	bool detailed;
+	bool detailed, bidirectional;
 
 	Position const & operator[](PosNum const n) const { return positions[n.index]; }
 };
