@@ -1,6 +1,15 @@
 import os
 
+# release:
 env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3 -DUSE_FTGL')
+
+# profiling:
+# env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3 -pg', LINKFLAGS='-pg')
+
+# consistency testing:
+# env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -O3 -DUSE_FTGL')
+
+# debugging:
 # env = Environment(CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -g')
 
 common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp'])
