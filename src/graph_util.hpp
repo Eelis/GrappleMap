@@ -188,25 +188,32 @@ inline SegmentInSequence segment_to(PositionInSequence const n)
 inline PositionInSequence from(SegmentInSequence const s) { return {s.sequence, from(s.segment)}; }
 inline PositionInSequence to(SegmentInSequence const s) { return {s.sequence, to(s.segment)}; }
 
+template<typename T>
+Reversible<T> reverse(Reversible<T> x)
+{
+	x.reverse = !x.reverse;
+	return x;
+}
+
 inline Reoriented<NodeNum> const & from(Graph const & g, Reversible<SeqNum> const s)
 {
-	return s.reverse ? g.to(*s) : g.from(*s);
+	return s.reverse ? g[*s].to : g[*s].from;
 }
 
 inline Reoriented<NodeNum> const & to(Graph const & g, Reversible<SeqNum> const s)
 {
-	return s.reverse ? g.from(*s) : g.to(*s);
+	return from(g, reverse(s));
 }
 
 inline Reoriented<NodeNum> from(Reoriented<SeqNum> const & s, Graph const & g)
 {
-	ReorientedNode const & n = g.from(*s);
+	ReorientedNode const & n = g[*s].from;
 	return {*n, compose(n.reorientation, s.reorientation)};
 }
 
 inline Reoriented<NodeNum> to(Reoriented<SeqNum> const & s, Graph const & g)
 {
-	Reoriented<NodeNum> const & n = g.to(*s);
+	Reoriented<NodeNum> const & n = g[*s].to;
 	return {*n, compose(n.reorientation, s.reorientation)};
 }
 
@@ -220,6 +227,13 @@ inline Reoriented<PositionInSequence> to_pos(Reoriented<SegmentInSequence> const
 	return {to(*s), s.reorientation};
 }
 
+template<typename T>
+Reoriented<Reversible<T>> reverse(Reoriented<Reversible<T>> x)
+{
+	*x = reverse(*x);
+	return x;
+}
+
 inline Reoriented<NodeNum> from(Reoriented<Reversible<SeqNum>> const & s, Graph const & g)
 {
 	return s->reverse
@@ -229,9 +243,7 @@ inline Reoriented<NodeNum> from(Reoriented<Reversible<SeqNum>> const & s, Graph 
 
 inline Reoriented<NodeNum> to(Reoriented<Reversible<SeqNum>> const & s, Graph const & g)
 {
-	return s->reverse
-		? from(forget_direction(s), g)
-		: to(forget_direction(s), g);
+	return from(reverse(s), g);
 }
 
 inline Reoriented<PositionInSequence> operator*(Reoriented<SeqNum> const & seq, PosNum const pos)
@@ -309,6 +321,33 @@ inline auto out_segments(ReorientedNode const & n, Graph const & g)
 		{ return first_segment(s, g); });
 }
 
+// at
+
+inline Position const & at(PositionInSequence const i, Graph const & g)
+{
+	return g[i.sequence][i.position];
+}
+
+inline Position at(Location const & l, Graph const & g)
+{
+	return between(at(from(l.segment), g), at(to(l.segment), g), l.howFar);
+}
+
+inline Position at(Reoriented<Location> const & l, Graph const & g)
+{
+	return l.reorientation(at(*l, g));
+}
+
+inline Position at(Reoriented<PositionInSequence> const & s, Graph const & g)
+{
+	return s.reorientation(at(*s, g));
+}
+
+inline V3 at(Reoriented<PositionInSequence> const & s, PlayerJoint const j, Graph const & g)
+{
+	return apply(s.reorientation, at(*s, g), j);
+}
+
 // misc
 
 vector<Reoriented<SegmentInSequence>>
@@ -316,24 +355,17 @@ vector<Reoriented<SegmentInSequence>>
 
 inline optional<ReorientedNode> node(Graph const & g, PositionInSequence const pis)
 {
-	if (pis.position.index == 0) return g.from(pis.sequence);
-	if (!next(pis, g)) return g.to(pis.sequence);
+	if (pis.position.index == 0) return g[pis.sequence].from;
+	if (!next(pis, g)) return g[pis.sequence].to;
 	return none;
 }
 
 inline void replace(Graph & graph, PositionInSequence const pis, PlayerJoint const j, V3 const v, bool const local)
 {
-	Position p = graph[pis];
+	Position p = at(pis, graph);
 	p[j] = v;
 	graph.replace(pis, p, local);
 }
-
-optional<Step> step_by_desc(Graph const &, string const & desc, optional<NodeNum> from = none);
-optional<NodeNum> node_by_desc(Graph const &, string const & desc);
-optional<PositionInSequence> posinseq_by_desc(Graph const & g, string const & desc);
-
-optional<PositionInSequence> node_as_posinseq(Graph const &, NodeNum);
-	// may return either the beginning of a sequence or the end
 
 pair<vector<Position>, ReorientedNode> follow(Graph const &, ReorientedNode const &, SeqNum, unsigned frames_per_pos);
 ReorientedNode follow(Graph const &, ReorientedNode const &, SeqNum);
@@ -343,80 +375,10 @@ bool connected(Graph const &, NodeNum, NodeNum);
 
 inline optional<NodeNum> node_at(Graph const & g, PositionInSequence const pis)
 {
-	if (pis == first_pos_in(pis.sequence)) return *g.from(pis.sequence);
-	if (pis == last_pos_in(pis.sequence, g)) return *g.to(pis.sequence);
+	if (pis == first_pos_in(pis.sequence)) return *g[pis.sequence].from;
+	if (pis == last_pos_in(pis.sequence, g)) return *g[pis.sequence].to;
 	return boost::none;
 }
-
-set<string> tags(Graph const &);
-set<string> tags_in_desc(vector<string> const &);
-set<string> properties_in_desc(vector<string> const &);
-
-inline set<string> tags(Graph::Node const & n)
-{
-	return tags_in_desc(n.description);
-}
-
-inline set<string> tags(Sequence const & s)
-{
-	return tags_in_desc(s.description);
-}
-
-inline set<string> properties(Graph const & g, SeqNum const s)
-{
-	return properties_in_desc(g[s].description);
-}
-
-inline bool is_top_move(Sequence const & s)
-{
-	return properties_in_desc(s.description).count("top") != 0;
-}
-
-inline bool is_bottom_move(Sequence const & s)
-{
-	return properties_in_desc(s.description).count("bottom") != 0;
-}
-
-inline bool is_tagged(Graph const & g, string const & tag, NodeNum const n)
-{
-	return tags(g[n]).count(tag) != 0;
-}
-
-inline bool is_tagged(Graph const & g, string const & tag, SeqNum const sn)
-{
-	return tags(g[sn]).count(tag) != 0
-		|| (is_tagged(g, tag, *g.from(sn))
-		&& is_tagged(g, tag, *g.to(sn)));
-}
-
-inline auto tagged_nodes(Graph const & g, string const & tag)
-{
-	return nodenums(g) | boost::adaptors::filtered(
-		[&](NodeNum n){ return is_tagged(g, tag, n); });
-}
-
-inline auto tagged_sequences(Graph const & g, string const & tag)
-{
-	return seqnums(g) | boost::adaptors::filtered(
-		[&](SeqNum n){ return is_tagged(g, tag, n); });
-}
-
-using TagQuery = set<pair<string /* tag */, bool /* include/exclude */>>;
-
-inline auto match(Graph const & g, TagQuery const & q)
-{
-	return nodenums(g) | boost::adaptors::filtered(
-		[&](NodeNum n){
-			foreach (e : q)
-			{
-				if (is_tagged(g, e.first, n) != e.second)
-					return false;
-			}
-			return true;
-			});
-}
-
-TagQuery query_for(Graph const &, NodeNum);
 
 set<NodeNum> nodes_around(Graph const &, set<NodeNum> const &, unsigned depth = 1);
 
@@ -427,27 +389,7 @@ optional<NodeNum> node_by_arg(Graph const &, string const & arg);
 
 inline bool is_sweep(Graph const & g, SeqNum const s)
 {
-	return g.from(s).reorientation.swap_players != g.to(s).reorientation.swap_players;
-}
-
-inline Position at(Location const & l, Graph const & g)
-{
-	return between(g[from(l.segment)], g[to(l.segment)], l.howFar);
-}
-
-inline Position at(Reoriented<Location> const & l, Graph const & g)
-{
-	return l.reorientation(at(*l, g));
-}
-
-inline Position at(Reoriented<PositionInSequence> const & s, Graph const & g)
-{
-	return s.reorientation(g[*s]);
-}
-
-inline V3 at(Reoriented<PositionInSequence> const & s, PlayerJoint const j, Graph const & g)
-{
-	return apply(s.reorientation, g[*s], j);
+	return g[s].from.reorientation.swap_players != g[s].to.reorientation.swap_players;
 }
 
 inline optional<PositionInSequence> position(Location const & l)

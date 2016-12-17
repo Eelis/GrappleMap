@@ -1,4 +1,5 @@
 #include "paths.hpp"
+#include "metadata.hpp"
 
 namespace GrappleMap {
 
@@ -27,7 +28,7 @@ Frames frames(Graph const & g, Path const & path, unsigned const frames_per_pos)
 		{
 			assert(!g[seq].description.empty());
 			string desc = g[seq].description.front();
-			if (desc == "..." && !g[*g.to(seq)].description.empty()) desc = g[*g.to(seq)].description.front();
+			if (desc == "..." && !g[*g[seq].to].description.empty()) desc = g[*g[seq].to].description.front();
 			desc = replace_all(desc, "\\n", " ");
 			return desc;
 		};

@@ -7,11 +7,10 @@
 #include "camera.hpp"
 #include "persistence.hpp"
 #include "math.hpp"
-#include "positions.hpp"
 #include "viables.hpp"
 #include "rendering.hpp"
 #include "images.hpp"
-#include "graph_util.hpp"
+#include "metadata.hpp"
 #include <boost/program_options.hpp>
 #include <iostream>
 #include <iomanip>
@@ -113,13 +112,13 @@ namespace
 
 		PositionInSequence location{seqNum, 0};
 
-		vector<Position> r(10, graph[location]);
+		vector<Position> r(10, at(location, graph));
 
 		for (; next(location, graph); location = *next(location, graph))
 			for (unsigned howfar = 0; howfar != frames_per_pos; ++howfar)
 				r.push_back(between(
-					graph[location],
-					graph[*next(location, graph)],
+					at(location, graph),
+					at(*next(location, graph), graph),
 					howfar / double(frames_per_pos)));
 
 		r.resize(r.size() + 10, graph[seqNum].positions.back());
@@ -246,17 +245,17 @@ namespace
 			set<string> tt = tags(g[s]);
 
 			{
-				set<string> const from_tags = tags(g[*g.from(s)]);
-				foreach(t : tags(g[*g.to(s)]))
+				set<string> const from_tags = tags(g[*g[s].from]);
+				foreach(t : tags(g[*g[s].to]))
 					if (from_tags.find(t) != from_tags.end())
 						tt.insert(t);
 			}
 
 			html
 				<< "<tr>"
-				<< "<td><a href='p" << g.from(s)->index << "n.html'>" << nlspace(desc(g[*g.from(s)])) << "</a></td>"
+				<< "<td><a href='p" << g[s].from->index << "n.html'>" << nlspace(desc(g[*g[s].from])) << "</a></td>"
 				<< "<td><b>" << nlspace(g[s].description.front()) << "</b></td>"
-				<< "<td><a href='p" << g.to(s)->index << "n.html'>" << nlspace(desc(g[*g.to(s)])) << "</a></td>"
+				<< "<td><a href='p" << g[s].to->index << "n.html'>" << nlspace(desc(g[*g[s].to])) << "</a></td>"
 				<< "<td>" << g[s].positions.size() << "</td>"
 				<< "<td>" << tt.size() << "</td>"
 				<< "</tr>";
@@ -440,7 +439,7 @@ namespace
 
 			auto frames = frames_for_sequence(g, sn);
 
-			if (g.from(sn).reorientation.swap_players)
+			if (g[sn].from.reorientation.swap_players)
 				foreach (p : frames) swap_players(p);
 
 			auto const reo = canonical_reorientation_with_mirror(frames.front());

@@ -1,4 +1,5 @@
 #include "persistence.hpp"
+#include "metadata.hpp"
 #include <fstream>
 #include <iterator>
 #include <cstring>
@@ -255,24 +256,19 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 
 	foreach(s : seqnums(graph))
 	{
-		NodeNum const
-			from = *graph.from(s),
-			to = *graph.to(s);
+		auto & e = graph[s];
 
-		if (!nodes.count(from) || !nodes.count(to)) continue;
+		if (!nodes.count(*e.from) || !nodes.count(*e.to)) continue;
 
-		auto const d = graph[s].description.front();
+		auto const d = e.description.front();
 
-		o << from.index << " -> " << to.index
+		o << *e.from << " -> " << *e.to
 		  << " [label=\"" << (d == "..." ? "" : d) << "\"";
 
-		if (is_top_move(graph[s]))
-			o << ",color=red";
-		else if (is_bottom_move(graph[s]))
-			o << ",color=blue";
+		if (is_top_move(e)) o << ",color=red";
+		else if (is_bottom_move(e)) o << ",color=blue";
 
-		if (graph[s].bidirectional)
-			o << ",dir=\"both\"";
+		if (e.bidirectional) o << ",dir=\"both\"";
 
 		o << "];\n";
 	}
@@ -387,8 +383,8 @@ void tojs(Graph const & graph, std::ostream & js)
 		Sequence const & seq = graph[s];
 
 		js << "{id:" << s.index;
-		js << ",from:"; tojs(graph.from(s), js);
-		js << ",to:"; tojs(graph.to(s), js);
+		js << ",from:"; tojs(graph[s].from, js);
+		js << ",to:"; tojs(graph[s].to, js);
 		js << ",frames:[";
 		foreach (pos : seq.positions)
 		{

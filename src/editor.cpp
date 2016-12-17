@@ -1,5 +1,7 @@
 #include "editor.hpp"
 #include "persistence.hpp"
+#include "metadata.hpp"
+
 namespace GrappleMap
 {
 	namespace

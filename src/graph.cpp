@@ -8,7 +8,7 @@ void Graph::changed(PositionInSequence const pis)
 
 	if (pis.position.index == 0)
 	{
-		Reoriented<NodeNum> const new_from = find_or_add(edge.sequence.positions.front());
+		Reoriented<NodeNum> const new_from = find_or_add(edge.positions.front());
 		NodeNum const old_from = *edge.from;
 
 		edge.from = new_from;
@@ -23,7 +23,7 @@ void Graph::changed(PositionInSequence const pis)
 	}
 	else if (!next(pis, *this))
 	{
-		Reoriented<NodeNum> const new_to = find_or_add(edge.sequence.positions.back());
+		Reoriented<NodeNum> const new_to = find_or_add(edge.positions.back());
 		NodeNum const old_to = *edge.to;
 
 		edge.to = new_to;
@@ -51,7 +51,7 @@ void Graph::replace(PositionInSequence const pis, Position p, bool const local)
 {
 	apply_limits(p);
 
-	Position & stored = edges.at(pis.sequence.index).sequence.positions.at(pis.position.index);
+	Position & stored = edges.at(pis.sequence.index).positions.at(pis.position.index);
 
 	if (stored == p) return;
 
@@ -82,10 +82,10 @@ void Graph::replace(PositionInSequence const pis, Position p, bool const local)
 			foreach (e : edges)
 			{
 				if (*e.from == **rn)
-					e.sequence.positions.front() = (*this)[e.from];
+					e.positions.front() = (*this)[e.from];
 
 				if (*e.to == **rn)
-					e.sequence.positions.back() = (*this)[e.to];
+					e.positions.back() = (*this)[e.to];
 			}
 		}
 	}
@@ -93,14 +93,14 @@ void Graph::replace(PositionInSequence const pis, Position p, bool const local)
 
 void Graph::split_segment(Location const loc)
 {
-	auto & positions =  edges.at(loc.segment.sequence.index).sequence.positions;
+	auto & positions =  edges.at(loc.segment.sequence.index).positions;
 	Position const p = at(loc, *this);
 	positions.insert(positions.begin() + loc.segment.segment.index + 1, p);
 }
 
 void Graph::clone(PositionInSequence const pis) // todo: remove
 {
-	auto & positions =  edges.at(pis.sequence.index).sequence.positions;
+	auto & positions =  edges.at(pis.sequence.index).positions;
 	Position const p = positions.at(pis.position.index);
 	positions.insert(positions.begin() + pis.position.index, p);
 }
@@ -146,15 +146,14 @@ void Graph::set(optional<SeqNum> const num, optional<Sequence> const seq)
 optional<PosNum> Graph::erase(PositionInSequence const pis)
 {
 	auto & edge = edges.at(pis.sequence.index);
-	auto & positions = edge.sequence.positions;
 
-	if (positions.size() == 2)
+	if (edge.positions.size() == 2)
 	{
 		std::cerr << "Cannot erase either of last two elements in sequence." << std::endl;
 		return none;
 	}
 
-	positions.erase(positions.begin() + pis.position.index);
+	edge.positions.erase(edge.positions.begin() + pis.position.index);
 
 	auto const pos = std::min(pis.position, last_pos((*this)[pis.sequence]));
 
@@ -197,8 +196,8 @@ void Graph::compute_in_out(NodeNum const n)
 	for (SeqNum s{0}; s.index != edges.size(); ++s.index)
 	{
 		ReorientedNode const
-			& from_ = from(s),
-			& to_ = to(s);
+			& from_ = (*this)[s].from,
+			& to_ = (*this)[s].to;
 
 		if (*to_ == n)
 		{
@@ -212,7 +211,7 @@ void Graph::compute_in_out(NodeNum const n)
 			node.in_out.push_back({s, false});
 		}
 
-		if (edges[s.index].sequence.bidirectional)
+		if (edges[s.index].bidirectional)
 		{
 			if (*from_ == n) node.in.push_back({s, true});
 			if (*to_ == n) node.out.push_back({s, true});

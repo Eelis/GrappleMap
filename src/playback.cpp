@@ -5,7 +5,7 @@
 #include "positions.hpp"
 #include "viables.hpp"
 #include "rendering.hpp"
-#include "graph_util.hpp"
+#include "metadata.hpp"
 #include "paths.hpp"
 #include <unistd.h>
 #include <GL/glu.h>

@@ -175,7 +175,8 @@ using Position = PerPlayerJoint<V3>;
 struct Sequence
 {
 	vector<string> description;
-	vector<Position> positions; // invariant: .size()>=2
+	vector<Position> positions;
+		// invariant: .size()>=2
 	optional<unsigned> line_nr;
 	bool detailed, bidirectional;
 

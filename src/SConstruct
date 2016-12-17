@@ -12,7 +12,7 @@ env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -D
 # debugging:
 # env = Environment(CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -g')
 
-common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp'])
+common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp'])
 rendering = env.Object(['rendering.cpp', 'playerdrawer.cpp'])
 images = env.Object('images.cpp')
 cmdlibs = ['boost_program_options']

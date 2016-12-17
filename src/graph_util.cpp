@@ -29,52 +29,11 @@ optional<SeqNum> erase_sequence(Graph & g, SeqNum const sn)
 	return SeqNum{sn.index == 0 ? 0 : sn.index - 1};
 }
 
-optional<Step> step_by_desc(Graph const & g, string const & desc, optional<NodeNum> const from)
-{
-	foreach(sn : seqnums(g))
-		if (replace_all(g[sn].description.front(), "\\n", " ") == desc
-			|| desc == "t" + std::to_string(sn.index))
-		{
-			if (!from || *g.from(sn) == *from)
-				return Step{sn, false};
-			if (g[sn].bidirectional && *g.to(sn) == *from)
-				return Step{sn, true};
-		}
-
-	return none;
-}
-
-optional<NodeNum> node_by_desc(Graph const & g, string const & desc)
-{
-	if (desc.size() >= 2 && desc.front() == 'p' && all_digits(desc.substr(1)))
-		return NodeNum{uint16_t(std::stoul(desc.substr(1)))};
-
-	foreach(n : nodenums(g))
-	{
-		auto const & d = g[n].description;
-		if (!d.empty() && replace_all(d.front(), "\\n", " ") == desc)
-			return n;
-	}
-
-	return none;
-}
-
-optional<PositionInSequence> posinseq_by_desc(Graph const & g, string const & s)
-{
-	if (s == "last-trans") return first_pos_in(SeqNum{g.num_sequences() - 1u});
-
-	if (auto step = step_by_desc(g, s)) return first_pos_in(**step);
-
-	if (auto n = node_by_desc(g, s)) return node_as_posinseq(g, *n);
-
-	return none;
-}
-
 optional<PositionInSequence> node_as_posinseq(Graph const & g, NodeNum const node)
 {
 	foreach(sn : seqnums(g)) // todo: bad
-		if (*g.from(sn) == node) return first_pos_in(sn);
-		else if (*g.to(sn) == node) return last_pos_in(sn, g);
+		if (*g[sn].from == node) return first_pos_in(sn);
+		else if (*g[sn].to == node) return last_pos_in(sn, g);
 
 	return none;
 }
@@ -97,9 +56,9 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 	vector<Position> positions;
 	ReorientedNode m;
 
-	if (*g.from(s) == *n)
+	if (*g[s].from == *n)
 	{
-		PositionReorientation const r = compose(inverse(g.from(s).reorientation), n.reorientation);
+		PositionReorientation const r = compose(inverse(g[s].from.reorientation), n.reorientation);
 
 		assert(basicallySame( 
 			g[s].positions.front(),
@@ -124,12 +83,12 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 
 			for (unsigned howfar = 0; howfar <= frames_per_pos; ++howfar)
 				positions.push_back(between(
-					r(g[location]),
-					r(g[*next(location, g)]),
+					r(at(location, g)),
+					r(at(*next(location, g), g)),
 					howfar / double(frames_per_pos)));
 
-		*m = *g.to(s);
-		m.reorientation = compose(g.to(s).reorientation, r);
+		*m = *g[s].to;
+		m.reorientation = compose(g[s].to.reorientation, r);
 
 		assert(basicallySame(
 			positions.back(),
@@ -143,7 +102,7 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 			g[m]
 			));
 	}
-	else if (*g.to(s) == *n)
+	else if (*g[s].to == *n)
 	{
 		assert(basicallySame(
 			g[s].positions.back(),
@@ -153,7 +112,7 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 			g[last_pos_in(s, g)]
 			));
 
-		PositionReorientation const r = compose(inverse(g.to(s).reorientation), n.reorientation);
+		PositionReorientation const r = compose(inverse(g[s].to.reorientation), n.reorientation);
 
 		assert(basicallySame(
 			r(g[last_pos_in(s, g)]),
@@ -171,12 +130,12 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 
 			for (unsigned howfar = 0; howfar <= frames_per_pos; ++howfar)
 				positions.push_back(between(
-					r(g[location]),
-					r(g[*prev(location)]),
+					r(at(location, g)),
+					r(at(*prev(location), g)),
 					howfar / double(frames_per_pos)));
 
-		*m = *g.from(s);
-		m.reorientation = compose(g.from(s).reorientation, r);
+		*m = *g[s].from;
+		m.reorientation = compose(g[s].from.reorientation, r);
 	}
 	else throw std::runtime_error(
 		"node " + std::to_string(n->index) + " is not connected to sequence " + std::to_string(s.index));
@@ -189,16 +148,16 @@ pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode co
 
 ReorientedNode follow(Graph const & g, ReorientedNode const & n, SeqNum const s)
 {
-	if (*g.from(s) == *n)
+	if (*g[s].from == *n)
 		return
-			{ *g.to(s)
-			, compose(g.to(s).reorientation,
-			  compose(inverse(g.from(s).reorientation),
+			{ *g[s].to
+			, compose(g[s].to.reorientation,
+			  compose(inverse(g[s].from.reorientation),
 			  n.reorientation)) };
-	else if (*g.to(s) == *n)
-		return { *g.from(s)
-			, compose(g.from(s).reorientation,
-			  compose(inverse(g.to(s).reorientation),
+	else if (*g[s].to == *n)
+		return { *g[s].from
+			, compose(g[s].from.reorientation,
+			  compose(inverse(g[s].to.reorientation),
 			  n.reorientation)) };
 	else throw std::runtime_error(
 		"node " + std::to_string(n->index) + " is not connected to sequence " + std::to_string(s.index));
@@ -206,8 +165,8 @@ ReorientedNode follow(Graph const & g, ReorientedNode const & n, SeqNum const s)
 
 NodeNum follow(Graph const & g, NodeNum const n, SeqNum const s)
 {
-	if (*g.from(s) == n) return *g.to(s);
-	if (*g.to(s) == n) return *g.from(s);
+	if (*g[s].from == n) return *g[s].to;
+	if (*g[s].to == n) return *g[s].from;
 	throw std::runtime_error(
 		"node " + std::to_string(n.index) + " is not connected to sequence " + std::to_string(s.index));
 }
@@ -227,67 +186,6 @@ set<string> tags_in_desc(vector<string> const & desc)
 			while (iss >> tag) r.insert(tag);
 		}
 	}
-
-	return r;
-}
-
-TagQuery query_for(Graph const & g, NodeNum const n)
-{
-	TagQuery q;
-
-	foreach (t : tags(g[n]))
-		q.insert(make_pair(t, true));
-
-	while (q.size() < 10)
-	{
-		map<string, int> c;
-
-		foreach (m : match(g, q))
-			if (m != n)
-				foreach (t : tags(g[m]))
-					if (q.find(make_pair(t, true)) == q.end()
-						&& q.find(make_pair(t, false)) == q.end())
-						++c[t];
-
-		if (c.empty()) break;
-
-		auto me = std::max_element(c.begin(), c.end(),
-			[](pair<string, int> const & x, pair<string, int> const & y)
-			{
-				return x.second < y.second;
-			});
-
-		q.insert(make_pair(me->first, false));
-	}
-
-	return q;
-}
-
-set<string> properties_in_desc(vector<string> const & desc)
-{
-	set<string> r;
-
-	string const decl = "properties:";
-
-	foreach(line : desc)
-	{
-		if (line.substr(0, decl.size()) == decl)
-		{
-			std::istringstream iss(line.substr(decl.size()));
-			string prop;
-			while (iss >> prop) r.insert(prop);
-		}
-	}
-
-	return r;
-}
-
-set<string> tags(Graph const & g)
-{
-	set<string> r;
-
-	foreach(n : nodenums(g)) foreach(t : tags(g[n])) r.insert(t);
-	foreach(s : seqnums(g)) foreach(t : tags(g[s])) r.insert(t);
 
 	return r;
 }

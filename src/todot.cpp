@@ -1,6 +1,6 @@
 #include "util.hpp"
 #include "persistence.hpp"
-#include "graph_util.hpp"
+#include "metadata.hpp"
 #include <iostream>
 #include <vector>
 #include <boost/program_options.hpp>

@@ -86,8 +86,8 @@ bool viable(Graph const & graph,
 {
 	return
 		(distanceSquared(
-			graph[from(*segment)][j],
-			graph[to(*segment)][j]) > 0.003)
+			at(from(*segment), graph)[j],
+			at(to(*segment), graph)[j]) > 0.003)
 		&&
 		(!camera || distanceSquared(
 			world2xy(*camera, at(from_pos(segment), j, graph)),

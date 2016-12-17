@@ -19,18 +19,21 @@ struct Graph
 			// transitions only appear in their primary direction here
 	};
 
-	struct Edge
+	struct Edge: Sequence
 	{
 		ReorientedNode from, to;
-		Sequence sequence;
 			// invariant: g[from] == sequence.positions.front()
 			// invariant: g[to] == sequences.positions.back()
+
+		Edge(ReorientedNode f, ReorientedNode t, Sequence s)
+			: Sequence(std::move(s)), from(f), to(t)
+		{}
 	};
 
 private:
 
 	vector<Node> nodes;
-	vector<Edge> edges; // indexed by seqnum
+	vector<Edge> edges;
 
 	optional<ReorientedNode> is_reoriented_node(Position const &) const;
 
@@ -46,22 +49,13 @@ public:
 
 	// const access
 
-	Position const & operator[](PositionInSequence const i) const
-	{
-		return (*this)[i.sequence][i.position];
-	}
-
 	Position operator[](ReorientedNode const & n) const
 	{
 		return n.reorientation(nodes[n->index].position);
 	}
 
 	Node const & operator[](NodeNum const n) const { return nodes[n.index]; }
-
-	Sequence const & operator[](SeqNum const s) const { return edges[s.index].sequence; }
-
-	ReorientedNode const & from(SeqNum const s) const { return edges[s.index].from; }
-	ReorientedNode const & to(SeqNum const s) const { return edges[s.index].to; }
+	Edge const & operator[](SeqNum const s) const { return edges[s.index]; }
 
 	uint16_t num_sequences() const { return edges.size(); }
 	uint16_t num_nodes() const { return nodes.size(); }

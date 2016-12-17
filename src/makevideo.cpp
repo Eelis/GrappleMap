@@ -2,7 +2,7 @@
 #include "persistence.hpp"
 #include "positions.hpp"
 #include "rendering.hpp"
-#include "graph_util.hpp"
+#include "metadata.hpp"
 #include "images.hpp"
 #include "paths.hpp"
 #include <boost/program_options.hpp>
