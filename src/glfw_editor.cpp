@@ -20,7 +20,7 @@ using namespace GrappleMap;
 
 namespace
 {
-	double whereBetween(V2 const v, V2 const w, Camera const & camera, V2 const cursor)
+	double whereBetween(V2 const v, V2 const w, V2 const cursor)
 	{
 		V2 const
 			a = cursor - v,
@@ -45,7 +45,7 @@ namespace
 				v = world2xy(camera, at(from_pos(candidate), j, graph)),
 				w = world2xy(camera, at(to_pos(candidate), j, graph));
 
-			double const howfar = whereBetween(v, w, camera, cursor);
+			double const howfar = whereBetween(v, w, cursor);
 
 			V2 const ultimate = v + (w - v) * howfar;
 
@@ -60,9 +60,9 @@ namespace
 	}
 }
 
-struct Window
+struct Application
 {
-	explicit Window(boost::program_options::variables_map const & opts)
+	explicit Application(boost::program_options::variables_map const & opts)
 		: editor(opts)
 	{}
 
@@ -77,9 +77,10 @@ struct Window
 	double last_cursor_x = 0, last_cursor_y = 0;
 	Style style;
 	PlayerDrawer playerDrawer;
+	PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> candidates;
 };
 
-void print_status(Window const & w)
+void print_status(Application const & w)
 {
 	SegmentInSequence const s = w.editor.getLocation()->segment;
 	SeqNum const sn = s.sequence;
@@ -92,7 +93,7 @@ void print_status(Window const & w)
 		<< seq.description.front() << string(30, ' ') << std::flush;
 }
 
-void translate(Window & w, V3 const v)
+void translate(Application & w, V3 const v)
 {
 	w.editor.push_undo();
 	w.editor.replace(w.editor.current_position() + v);
@@ -100,7 +101,7 @@ void translate(Window & w, V3 const v)
 
 void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int action, int mods)
 {
-	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(glfwWindow));
+	Application& w = *reinterpret_cast<Application *>(glfwGetWindowUserPointer(glfwWindow));
 
 	double const translation = mods & GLFW_MOD_SHIFT ? 0.2 : 0.02;
 
@@ -222,7 +223,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 
 void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int const action, int /*mods*/)
 {
-	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(glfwWindow));
+	Application & w = *reinterpret_cast<Application *>(glfwGetWindowUserPointer(glfwWindow));
 
 	if (action == GLFW_PRESS)
 	{
@@ -240,7 +241,7 @@ void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int 
 
 void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double yoffset)
 {
-	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(glfwWindow));
+	Application & w = *reinterpret_cast<Application *>(glfwGetWindowUserPointer(glfwWindow));
 
 	if (yoffset == -1) retreat(w.editor);
 	else if (yoffset == 1) advance(w.editor);
@@ -251,7 +252,7 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 
 std::vector<View> const
 	single_view
-		{ {0, 0, 1, 1, none, 90} },
+		{ {0, 0, 1, 1, none, 60} },
 	split_view
 		{ {0, 0, .5, 1, none, 90}
 		, {.5, .5, .5, .5, player0, 75}
@@ -265,7 +266,7 @@ View const * main_view(std::vector<View> const & vv)
 
 void cursor_pos_callback(GLFWwindow * const window, double const xpos, double const ypos)
 {
-	Window & w = *reinterpret_cast<Window *>(glfwGetWindowUserPointer(window));
+	Application & w = *reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
 
 	if (w.last_cursor_x != 0 && w.last_cursor_y != 0 &&
 		glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_3) == GLFW_PRESS)
@@ -358,19 +359,108 @@ boost::optional<po::variables_map> readArgs(int const argc, char const * const *
 	return vm;
 }
 
+void do_edit(Application & w, V2 const cursor)
+{
+	Position pos = w.editor.current_position();
+
+	auto const reo = w.editor.getLocation().reorientation;
+
+	V3 dragger = [&]{
+			PositionReorientation r;
+			r.reorientation.angle = -w.camera.getHorizontalRotation();
+			return compose(reo, r)(V3{1,0,0}); // todo: this is wrong, doesn't take swap_players into account
+		}();
+	V3 const v = apply(reo, pos, *w.chosen_joint);
+	V2 const joint_xy = world2xy(w.camera, v);
+
+	double const
+		offx = (cursor.x - joint_xy.x)
+			/ (world2xy(w.camera, v + dragger).x - joint_xy.x),
+		offy = (cursor.y - joint_xy.y)
+			* 0.01 / (world2xy(w.camera, v + V3{0,0.01,0}).y - joint_xy.y);
+
+	auto const rj = apply(reo, *w.chosen_joint);
+
+	auto & joint = pos[rj];
+
+	if (reo.mirror) dragger.x = -dragger.x;
+
+	joint.x += dragger.x * offx;
+	joint.z += dragger.z * offx;
+	joint.y += offy;
+
+	spring(pos, rj);
+
+	w.editor.replace(pos);
+}
+
+void update_camera(GLFWwindow * const window, Application & w)
+{
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) w.camera.rotateVertical(-0.05);
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) w.camera.rotateVertical(0.05);
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { w.camera.rotateHorizontal(0.03); w.jiggle = pi(); }
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { w.camera.rotateHorizontal(-0.03); w.jiggle = 0; }
+	if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) w.camera.zoom(-0.05);
+	if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) w.camera.zoom(0.05);
+
+	if (!w.edit_mode && !w.chosen_joint)
+	{
+		w.jiggle += 0.01;
+		w.camera.rotateHorizontal(sin(w.jiggle) * 0.0005);
+	}
+}
+
+void do_render(GLFWwindow * const window, Application const & w)
+{
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+
+	PerPlayerJoint<optional<V3>> colors;
+	vector<Viable> viables;
+	OrientedPath selection;
+
+	auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
+
+	if (!w.editor.playingBack())
+	{
+		if (w.edit_mode) foreach (j : playerJoints) colors[j] = white;
+		else foreach (j : playerJoints)
+			if (!w.candidates[j].empty())
+				colors[j] = white * 0.4 + playerDefs[j.player].color * 0.6;
+
+		colors[special_joint] = yellow;
+
+		viables = determineViables(w.editor.getGraph(),
+			from_pos(segment(w.editor.getLocation())),
+			special_joint, &w.camera);
+
+		selection = w.editor.getSelection();
+	}
+
+	auto & views = w.split_view ? split_view : single_view;
+
+	renderWindow(views, viables, w.editor.getGraph(), w.editor.current_position(), w.camera, special_joint,
+		colors, 0, 0, width, height, selection, w.style, w.playerDrawer);
+}
+
 int main(int const argc, char const * const * const argv)
 {
 	try
 	{
 		auto const vm = readArgs(argc, argv);
 		if (!vm) return 0;
-		Window w(*vm);
+		Application w(*vm);
+		Graph const & graph = w.editor.getGraph();
 
-		if (!glfwInit()) return -1;
+		if (!glfwInit()) throw std::runtime_error("could not initialize GLFW");
 
 		GLFWwindow * const window = glfwCreateWindow(640, 480, "GrappleMap", nullptr, nullptr);
 
-		if (!window) { glfwTerminate(); return -1; }
+		if (!window)
+		{
+			glfwTerminate();
+			throw std::runtime_error("could not create window");
+		}
 
 		glfwSetWindowUserPointer(window, &w);
 
@@ -391,18 +481,7 @@ int main(int const argc, char const * const * const argv)
 		{
 			glfwPollEvents();
 
-			if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) w.camera.rotateVertical(-0.05);
-			if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) w.camera.rotateVertical(0.05);
-			if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { w.camera.rotateHorizontal(0.03); w.jiggle = pi(); }
-			if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { w.camera.rotateHorizontal(-0.03); w.jiggle = 0; }
-			if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) w.camera.zoom(-0.05);
-			if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) w.camera.zoom(0.05);
-
-			if (!w.edit_mode && !w.chosen_joint)
-			{
-				w.jiggle += 0.01;
-				w.camera.rotateHorizontal(sin(w.jiggle) * 0.0005);
-			}
+			update_camera(window, w);
 
 			int width, height;
 			glfwGetFramebufferSize(window, &width, &height);
@@ -428,102 +507,38 @@ int main(int const argc, char const * const * const argv)
 						(((y - v->y) / v->h) - 0.5) * 2};
 			}
 
-
 			OrientedPath const
 				tempSel{nonreversed(sequence(w.editor.getLocation()))},
 				& sel = w.editor.getSelection().empty() ? tempSel : w.editor.getSelection();
 					// ugh
 
-			PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> const
-				candidates = closeCandidates(
-					w.editor.getGraph(), segment(w.editor.getLocation()),
-					&w.camera, w.editor.lockedToSelection() ? &sel : nullptr);
-
-			if (cursor && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-			{
-				auto const thejoint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
-
-				if (auto best_next_pos = determineNextPos(
-						w.editor.getGraph(), thejoint,
-						candidates[thejoint], w.camera, *cursor))
-					w.editor.setLocation(*best_next_pos);
-			}
-
-			Position pos = w.editor.current_position();
-
-			// editing
-
-			if (!w.editor.playingBack() && cursor && w.chosen_joint && w.edit_mode && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-			{
-				auto const reo = w.editor.getLocation().reorientation;
-
-				V3 dragger = [&]{
-						PositionReorientation r;
-						r.reorientation.angle = -w.camera.getHorizontalRotation();
-						return compose(reo, r)(V3{1,0,0}); // todo: this is wrong, doesn't take swap_players into account
-					}();
-				V3 const v = apply(reo, pos, *w.chosen_joint);
-				V2 const joint_xy = world2xy(w.camera, v);
-
-				double const
-					offx = (cursor->x - joint_xy.x)
-						/ (world2xy(w.camera, v + dragger).x - joint_xy.x),
-					offy = (cursor->y - joint_xy.y)
-						* 0.01 / (world2xy(w.camera, v + V3{0,0.01,0}).y - joint_xy.y);
-
-				auto const rj = apply(reo, *w.chosen_joint);
-
-				auto & joint = pos[rj];
-
-				if (reo.mirror) dragger.x = -dragger.x;
-
-				joint.x += dragger.x * offx;
-				joint.z += dragger.z * offx;
-				joint.y += offy;
-
-				spring(pos, rj);
-
-				w.editor.replace(pos);
-			}
-			else if (cursor && !w.chosen_joint)
-				w.closest_joint = *minimal(
-					playerJoints.begin(), playerJoints.end(),
-					[&](PlayerJoint j) { return norm2(world2xy(w.camera, pos[j]) - *cursor); });
-
-			if (!w.edit_mode && !w.chosen_joint && !w.editor.playingBack())
-			{
-				auto const center = xz(pos[player0][Core] + pos[player1][Core]) / 2;
-				w.camera.setOffset(center);
-			}
+			w.candidates = closeCandidates(
+				graph, segment(w.editor.getLocation()),
+				&w.camera, w.editor.lockedToSelection() ? &sel : nullptr);
 
 			auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
 
-			glfwGetFramebufferSize(window, &width, &height);
+			if (cursor && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+				if (auto best_next_pos = determineNextPos(
+						graph, special_joint,
+						w.candidates[special_joint], w.camera, *cursor))
+					w.editor.setLocation(*best_next_pos);
 
-			PerPlayerJoint<optional<V3>> colors;
+			if (!w.editor.playingBack() && cursor && w.chosen_joint && w.edit_mode
+				&& glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+				do_edit(w, *cursor);
+			else if (cursor && !w.chosen_joint)
+			{
+				Position const pos = w.editor.current_position();
+				w.closest_joint = *minimal(
+					playerJoints.begin(), playerJoints.end(),
+					[&](PlayerJoint j) { return norm2(world2xy(w.camera, pos[j]) - *cursor); });
+			}
 
-			if (w.edit_mode) foreach (j : playerJoints) colors[j] = white;
-			else foreach (j : playerJoints)
-				if (!candidates[j].empty())
-					colors[j] = white * 0.4 + playerDefs[j.player].color * 0.6;
+			if (!w.edit_mode && !w.chosen_joint && !w.editor.playingBack())
+				w.camera.setOffset(center(w.editor.current_position()));
 
-			colors[special_joint] = yellow;
-
-			Graph const & graph = w.editor.getGraph();
-
-			if (w.editor.playingBack())
-				renderWindow(
-					views, {}, graph, pos, w.camera, {},
-					{}, 0, 0, width, height, {}, w.style, w.playerDrawer);
-			else
-				renderWindow(
-					views,
-					determineViables(graph,
-						from_pos(segment(w.editor.getLocation())),
-						special_joint, &w.camera),
-					graph, pos, w.camera, special_joint,
-					colors, 0, 0, width, height,
-					w.editor.getSelection(), w.style, w.playerDrawer);
+			do_render(window, w);
 
 			glfwSwapBuffers(window);
 

@@ -11,10 +11,10 @@ namespace GrappleMap
 		static constexpr unsigned faces = 10;
 
 		std::array<std::pair<double, double>, faces + 1> angles; // pillar
-		icosphere::IndexedMesh const icomesh;
+		icosphere::IndexedMesh const fine_icomesh, course_icomesh;
 
 		void drawPillar(V3 from, V3 to, double from_radius, double to_radius) const;
-		void drawSphere(V3 center, double radius) const;
+		void drawSphere(V3 center, double radius, bool fine = true) const;
 		void drawLimbs(Position const &, optional<PlayerNum> first_person_player) const;
 		void drawJoints(Position const &,
 			PerPlayerJoint<optional<V3>> const & colors,

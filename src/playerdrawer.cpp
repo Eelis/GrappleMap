@@ -156,7 +156,8 @@ namespace
 }
 
 PlayerDrawer::PlayerDrawer()
-	: icomesh{icosphere::make_icosphere(1)}
+	: fine_icomesh{icosphere::make_icosphere(2)}
+	, course_icomesh{icosphere::make_icosphere(1)}
 {
 	double const s = 2 * pi() / faces;
 
@@ -164,17 +165,19 @@ PlayerDrawer::PlayerDrawer()
 		angles[i] = std::make_pair(sin(i * s), cos(i * s));
 }
 
-void PlayerDrawer::drawSphere(V3 center, double radius) const
+void PlayerDrawer::drawSphere(V3 center, double radius, bool const fine) const
 {
+	auto const & mesh = fine ? fine_icomesh : course_icomesh;
+
 	auto f = [&](unsigned i)
 		{
-			auto v = icomesh.first[i];
+			auto v = mesh.first[i];
 			glNormal(v);
 			glVertex(center + v * radius);
 		};
 
 	glBegin(GL_TRIANGLES);
-		foreach (t : icomesh.second)
+		foreach (t : mesh.second)
 		{
 			
 			f(t.vertex[2]);
@@ -229,7 +232,10 @@ void PlayerDrawer::drawJoints(Position const & pos,
 		}
 		else glColor(playerDefs[pj.player].color);
 
-		drawSphere(pos[pj], jointDefs[pj.joint].radius + extraBig);
+		drawSphere(pos[pj], jointDefs[pj.joint].radius + extraBig,
+			pj.joint == Head || pj.joint == Core ||
+			pj.joint == RightHip || pj.joint == LeftHip ||
+			pj.joint == RightShoulder || pj.joint == LeftShoulder);
 	}
 }
 
@@ -268,8 +274,6 @@ void PlayerDrawer::drawPlayers(Position const & pos,
 	drawJoints(pos, colors, first_person_player);
 
 	fatTriangle(pos, LeftHip, Core, RightHip);
-	fatTriangle(pos, Core, LeftShoulder, Neck);
-	fatTriangle(pos, Neck, RightShoulder, Core);
 	fatTriangle(pos, LeftShoulder, Neck, RightShoulder);
 	fatTriangle(pos, LeftShoulder, Core, RightShoulder);
 	fatTriangle(pos, LeftAnkle, LeftHeel, LeftToe);
