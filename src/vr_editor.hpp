@@ -38,15 +38,22 @@ namespace GrappleMap
 		void dragStartCallback(Vrui::DraggingTool::DragStartCallbackData *) override;
 		void dragCallback(Vrui::DraggingTool::DragCallbackData *) override;
 		void idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData *) override;
+
+		private:
+
+			void dragSingleJoint(V3 cursor);
+			void dragAllJoints(Reorientation);
 	};
 
 	struct JointBrowser: Vrui::DraggingToolAdapter
 	{
 		Editor & editor;
 		optional<PlayerJoint> joint;
+		PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> const & accessibleSegments;
 
-		JointBrowser(Vrui::DraggingTool & t, Editor & e)
-			: Vrui::DraggingToolAdapter{&t}, editor(e)
+		JointBrowser(Vrui::DraggingTool & t, Editor & e,
+			PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> const & as)
+			: Vrui::DraggingToolAdapter{&t}, editor(e), accessibleSegments(as)
 		{}
 	
 		void dragCallback(Vrui::DraggingTool::DragCallbackData *) override;

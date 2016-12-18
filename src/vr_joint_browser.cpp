@@ -1,51 +1,9 @@
-// todo: rename
-
 #include "vr_editor.hpp"
 #include "vr_util.hpp"
 
 namespace GrappleMap
 {
-	namespace
-	{
-		optional<Reoriented<Location>> closerLocation(
-			Graph const & g,
-			V3 const cursor,
-			ReorientedSegment const root,
-			PlayerJoint const j,
-			OrientedPath const * const selection)
-		{
-			vector<ReorientedSegment> const candidates = closeCandidates(g, root, nullptr, selection)[j];
-
-			struct Best { Reoriented<Location> loc; double score; };
-			optional<Best> best;
-
-			foreach (cand : closeCandidates(g, root, nullptr, selection)[j])
-			{
-				V3 const
-					rayOrigin = at(from_pos(cand), g)[j],
-					rayTarget = at(to_pos(cand), g)[j],
-					rayDir = rayTarget - rayOrigin;
-
-				double c = closest(rayOrigin, rayDir, cursor);
-
-				if (c < 0) c = 0;
-				if (c > 1) c = 1;
-
-				if (0 <= c && c <= 1)
-				{
-					double const score = distance(cursor, rayOrigin + rayDir * c);
-
-					if (!best || score < best->score)
-						best = Best{loc(cand, c), score};
-				}
-			}
-
-			if (!best) return boost::none;
-			return best->loc;
-		}
-	}
-
-	void JointBrowser::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
+	void JointBrowser::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * const cbData)
 	{
 		joint = closest_joint(
 			editor.current_position(),
@@ -53,23 +11,37 @@ namespace GrappleMap
 			0.3);
 	}
 
-	void JointBrowser::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
+	void JointBrowser::dragCallback(Vrui::DraggingTool::DragCallbackData * const cbData)
 	{
 		if (!joint) return;
 
-		OrientedPath const
-			tempSel{nonreversed(sequence(editor.getLocation()))},
-			& sel = editor.getSelection().empty() ? tempSel : editor.getSelection();
+		V3 const cursor = v3(cbData->currentTransformation.getTranslation());
 
-		if (auto l = closerLocation(
-				editor.getGraph(),
-				v3(cbData->currentTransformation.getTranslation()),
-				segment(editor.getLocation()),
-				*joint,
-				editor.lockedToSelection() ? &sel : nullptr))
+		struct Best { Reoriented<Location> loc; double score; };
+		optional<Best> best;
+
+		foreach (cand : accessibleSegments[*joint])
 		{
-			editor.setLocation(*l);
+			V3 const
+				rayOrigin = at(from_pos(cand), editor.getGraph())[*joint],
+				rayTarget = at(to_pos(cand), editor.getGraph())[*joint],
+				rayDir = rayTarget - rayOrigin;
+
+			double c = closest(rayOrigin, rayDir, cursor);
+
+			if (c < 0) c = 0;
+			if (c > 1) c = 1;
+
+			if (0 <= c && c <= 1)
+			{
+				double const score = distance(cursor, rayOrigin + rayDir * c);
+
+				if (!best || score < best->score)
+					best = Best{loc(cand, c), score};
+			}
 		}
+
+		if (best) editor.setLocation(best->loc);
 	}
 
 	void JointBrowser::dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *)

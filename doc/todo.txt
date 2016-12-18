@@ -88,7 +88,7 @@ composer:
 
 new tools:
 - diff, to visualize changes made to transitions
-- transition editor in browser
+- transition editor in browser (looks like webassembly is coming soon)
 
 misc:
 - mobile-friendly versions of things
@@ -96,6 +96,7 @@ misc:
 - get webserver to compress transitions (saves 70%)
 - for each transition, generate a file containing its frames, so that the web pages can request only what they need instead of loading everything
 - generate lightweight db summary file that only contains position data for nodes, for use by e.g. search page
+- precompile util.hpp
 
 binary packages:
 - maybe make a dockerfile for the crosscompile env

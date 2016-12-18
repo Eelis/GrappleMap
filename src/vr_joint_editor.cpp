@@ -74,28 +74,15 @@ namespace GrappleMap
 			0.1);
 	}
 
-	void JointEditor::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
+	void JointEditor::dragSingleJoint(V3 const cursor)
 	{
-		Reoriented<Location> const loc = editor.getLocation();
+		if (!joint || !joint_edit_offset) return;
 
-		optional<Reoriented<PositionInSequence>> const
-			pp = position(editor.getLocation());
-
-		if (!pp || !dragTransform || !start_seq) return;
-
-		Graph const & g = editor.getGraph();
-		Position new_pos = editor.current_position();
-		auto const cursor = v3(cbData->currentTransformation.getTranslation());
-
-		Reorientation const transform
-			= compose(*dragTransform, reorientationTransformation(cbData->currentTransformation));
-
-		if (joint)
+		if (optional<Reoriented<PositionInSequence>> const pp = *position(editor.getLocation()))
 		{
-			if (!joint_edit_offset) return;
-
+			Graph const & g = editor.getGraph();
 			PlayerJoint const j = *joint;
-
+			Position new_pos = editor.current_position();
 			auto const joint_pos = cursor - *joint_edit_offset;
 
 			if (confined)
@@ -115,30 +102,46 @@ namespace GrappleMap
 			spring(new_pos, j);
 			editor.replace(new_pos);
 		}
-		else
+	}
+
+	void JointEditor::dragAllJoints(Reorientation const transform)
+	{
+		Reoriented<Location> const loc = editor.getLocation();
+
+		if (!dragTransform || !start_seq) return;
+
+		Graph const & g = editor.getGraph();
+
+		if (loc->howFar == 0)
 		{
-			if (loc->howFar == 0)
-			{
-				if (loc->segment.segment == SegmentNum{0})
-					return;
-			}
-			else if (loc->howFar == 1)
-			{
-				if (loc->segment.segment == last_segment(g[loc->segment.sequence]))
-					return;
-			}
-			else return;
-
-			vector<Position> v = *start_seq;
-
-			auto const posnums = (loc->howFar == 0
-				? PosNum::range(PosNum{0}, to(loc->segment).position)
-				: PosNum::range(to(loc->segment).position, end(g[loc->segment.sequence])));
-
-			foreach (p : posnums)
-				v[p.index] = apply(transform, v[p.index]);
-
-			editor.replace_sequence(v);
+			if (loc->segment.segment == SegmentNum{0})
+				return;
 		}
+		else if (loc->howFar == 1)
+		{
+			if (loc->segment.segment == last_segment(g[loc->segment.sequence]))
+				return;
+		}
+		else return;
+
+		vector<Position> v = *start_seq;
+
+		auto const posnums = (loc->howFar == 0
+			? PosNum::range(PosNum{0}, to(loc->segment).position)
+			: PosNum::range(to(loc->segment).position, end(g[loc->segment.sequence])));
+
+		foreach (p : posnums)
+			v[p.index] = apply(transform, v[p.index]);
+
+		editor.replace_sequence(v);
+	}
+
+	void JointEditor::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
+	{
+		if (joint)
+			dragSingleJoint(v3(cbData->currentTransformation.getTranslation()));
+		else if (dragTransform)
+			dragAllJoints(compose(*dragTransform,
+				reorientationTransformation(cbData->currentTransformation)));
 	}
 }

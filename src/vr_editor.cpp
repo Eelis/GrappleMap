@@ -145,7 +145,7 @@ namespace GrappleMap
 		{
 			switch (tools_created++)
 			{
-				case 0: jointBrowser.reset(new JointBrowser(*tool, editor)); break;
+				case 0: jointBrowser.reset(new JointBrowser(*tool, editor, accessibleSegments)); break;
 				case 1: jointEditor.reset(new JointEditor(*tool, editor, confineEdits)); break;
 			}
 		}
