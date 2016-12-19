@@ -220,13 +220,6 @@ void VruiXine::xineOutputCallback(void* userData,int frameFormat,int frameWidth,
 		
 		#endif
 		
-		/* Delete current storage: */
-		for(int i=0;i<3;++i)
-			{
-			delete[] newFrame.planes[i];
-			newFrame.planes[i]=0;
-			}
-		
 		/* Update the frame format: */
 		newFrame.format=frameFormat;
 		newFrame.size[0]=frameWidth;
@@ -236,33 +229,37 @@ void VruiXine::xineOutputCallback(void* userData,int frameFormat,int frameWidth,
 		if(newFrame.format==XINE_VORAW_YV12)
 			{
 			/* Allocate full-size Y plane and half-size U and V planes: */
-			newFrame.planes[0]=new unsigned char[newFrame.size[1]*newFrame.size[0]];
-			newFrame.planes[1]=new unsigned char[(newFrame.size[1]>>1)*(newFrame.size[0]>>1)];
-			newFrame.planes[2]=new unsigned char[(newFrame.size[1]>>1)*(newFrame.size[0]>>1)];
+			newFrame.planes[0].resize(newFrame.size[1]*newFrame.size[0]);
+			newFrame.planes[1].resize((newFrame.size[1]>>1)*(newFrame.size[0]>>1));
+			newFrame.planes[2].resize((newFrame.size[1]>>1)*(newFrame.size[0]>>1));
 			}
 		else if(newFrame.format==XINE_VORAW_YUY2)
 			{
 			/* Allocate interleaved YU and Y2 plane: */
-			newFrame.planes[0]=new unsigned char[newFrame.size[1]*newFrame.size[0]*2];
+			newFrame.planes[0].resize(newFrame.size[1]*newFrame.size[0]*2);
+			newFrame.planes[1] = {};
+			newFrame.planes[2] = {};
 			}
 		else if(newFrame.format==XINE_VORAW_RGB)
 			{
 			/* Allocate interleaved RGB plane: */
-			newFrame.planes[0]=new unsigned char[newFrame.size[1]*newFrame.size[0]*3];
+			newFrame.planes[0].resize(newFrame.size[1]*newFrame.size[0]*3);
+			newFrame.planes[1] = {};
+			newFrame.planes[2] = {};
 			}
 		}
 	
 	/* Copy the received frame data: */
 	if(newFrame.format==XINE_VORAW_YV12)
 		{
-		memcpy(newFrame.planes[0],data0,newFrame.size[1]*newFrame.size[0]);
-		memcpy(newFrame.planes[1],data1,(newFrame.size[1]>>1)*(newFrame.size[0]>>1));
-		memcpy(newFrame.planes[2],data2,(newFrame.size[1]>>1)*(newFrame.size[0]>>1));
+		memcpy(newFrame.planes[0].data(),data0,newFrame.size[1]*newFrame.size[0]);
+		memcpy(newFrame.planes[1].data(),data1,(newFrame.size[1]>>1)*(newFrame.size[0]>>1));
+		memcpy(newFrame.planes[2].data(),data2,(newFrame.size[1]>>1)*(newFrame.size[0]>>1));
 		}
 	else if(newFrame.format==XINE_VORAW_YUY2)
-		memcpy(newFrame.planes[0],data0,newFrame.size[1]*newFrame.size[0]*2);
+		memcpy(newFrame.planes[0].data(),data0,newFrame.size[1]*newFrame.size[0]*2);
 	else if(newFrame.format==XINE_VORAW_RGB)
-		memcpy(newFrame.planes[0],data0,newFrame.size[1]*newFrame.size[0]*3);
+		memcpy(newFrame.planes[0].data(),data0,newFrame.size[1]*newFrame.size[0]*3);
 	
 	/* Update the display aspect ratio: */
 	newFrame.aspectRatio=Vrui::Scalar(frameAspect);
@@ -347,7 +344,7 @@ void VruiXine::shutdownXine(void)
 	if(videoOutPort!=0)
 		xine_close_video_driver(xine,videoOutPort);
 	videoOutPort=0;
-	if(audioOutPort==0)
+	if(audioOutPort!=0)
 		xine_close_audio_driver(xine,audioOutPort);
 	audioOutPort=0;
 	if(xine!=0)
@@ -905,6 +902,7 @@ GLMotif::PopupWindow* VruiXine::createDvdNavigationDialog(void)
 	volumeSlider=new GLMotif::Slider("VolumeSlider",dvdNavigationDialog1,GLMotif::Slider::VERTICAL,ss.fontHeight*5.0f);
 	volumeSlider->setValueRange(0.0,100.0,1.0);
 	volumeSlider->getValueChangedCallbacks().add(this,&VruiXine::volumeSliderValueChangedCallback);
+	volumeSlider->setValue(0.0);
 	
 	dvdNavigationDialog1->manageChild();
 	
@@ -1077,7 +1075,6 @@ GLMotif::PopupWindow* VruiXine::createScreenControlDialog(void)
 	
 	new GLMotif::Blind("Blind1",screenControlDialog);
 	
-
 	new GLMotif::Label("ScreenDistanceLabel",screenControlDialog,"Screen Distance");
 	
 	GLMotif::TextFieldSlider* screenDistanceSlider=new GLMotif::TextFieldSlider("ScreenDistanceSlider",screenControlDialog,5,ss.fontHeight*10.0f);
@@ -1450,7 +1447,7 @@ void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 			glPixelStorei(GL_UNPACK_SKIP_ROWS,crop[3]);
 			glPixelStorei(GL_UNPACK_ROW_LENGTH,frame.size[0]);
 			glPixelStorei(GL_UNPACK_SKIP_PIXELS,crop[0]);
-			glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_R8,frameSize[0],frameSize[1],0,GL_RED,GL_UNSIGNED_BYTE,frame.planes[0]);
+			glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_R8,frameSize[0],frameSize[1],0,GL_RED,GL_UNSIGNED_BYTE,frame.planes[0].data());
 			}
 		
 		/* Bind the U texture plane: */
@@ -1462,7 +1459,7 @@ void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 			glPixelStorei(GL_UNPACK_SKIP_ROWS,crop[3]>>1);
 			glPixelStorei(GL_UNPACK_ROW_LENGTH,frame.size[0]>>1);
 			glPixelStorei(GL_UNPACK_SKIP_PIXELS,crop[0]>>1);
-			glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_R8,frameSize[0]>>1,frameSize[1]>>1,0,GL_RED,GL_UNSIGNED_BYTE,frame.planes[1]);
+			glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_R8,frameSize[0]>>1,frameSize[1]>>1,0,GL_RED,GL_UNSIGNED_BYTE,frame.planes[1].data());
 			}
 		
 		/* Bind the V texture plane: */
@@ -1474,7 +1471,7 @@ void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 			glPixelStorei(GL_UNPACK_SKIP_ROWS,crop[3]>>1);
 			glPixelStorei(GL_UNPACK_ROW_LENGTH,frame.size[0]>>1);
 			glPixelStorei(GL_UNPACK_SKIP_PIXELS,crop[0]>>1);
-			glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_R8,frameSize[0]>>1,frameSize[1]>>1,0,GL_RED,GL_UNSIGNED_BYTE,frame.planes[2]);
+			glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_R8,frameSize[0]>>1,frameSize[1]>>1,0,GL_RED,GL_UNSIGNED_BYTE,frame.planes[2].data());
 			}
 		
 		glActiveTextureARB(GL_TEXTURE0_ARB+0);
@@ -1489,7 +1486,7 @@ void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 			glPixelStorei(GL_UNPACK_SKIP_ROWS,crop[3]);
 			glPixelStorei(GL_UNPACK_ROW_LENGTH,frame.size[0]);
 			glPixelStorei(GL_UNPACK_SKIP_PIXELS,crop[0]);
-			glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_RG8,frameSize[0],frameSize[1],0,GL_RG,GL_UNSIGNED_BYTE,frame.planes[0]);
+			glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_RG8,frameSize[0],frameSize[1],0,GL_RG,GL_UNSIGNED_BYTE,frame.planes[0].data());
 			}
 		}
 	else if(frame.format==XINE_VORAW_RGB)
@@ -1507,7 +1504,7 @@ void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 			glPixelStorei(GL_UNPACK_SKIP_ROWS,crop[2]);
 			glPixelStorei(GL_UNPACK_ROW_LENGTH,frame.size[0]);
 			glPixelStorei(GL_UNPACK_SKIP_PIXELS,crop[0]);
-			glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_RGB8,frameSize[0],frameSize[1],0,GL_RGB,GL_UNSIGNED_BYTE,frame.planes[0]);
+			glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_RGB8,frameSize[0],frameSize[1],0,GL_RGB,GL_UNSIGNED_BYTE,frame.planes[0].data());
 			}
 		}
 	

@@ -84,7 +84,7 @@ class VruiXine
 		int format; // Format of video frame (YV12, YUY2, or RGB)
 		int size[2]; // Size of video frame
 		Vrui::Scalar aspectRatio; // Display aspect ratio of video frame
-		unsigned char* planes[3]; // Pointers to up to three video frame planes
+		std::vector<unsigned char> planes[3]; // Up to three video frame planes
 		
 		/* Constructors and destructors: */
 		Frame(void) // Creates an empty frame
@@ -92,12 +92,6 @@ class VruiXine
 			 aspectRatio(0)
 			{
 			size[0]=size[1]=0;
-			planes[0]=planes[1]=planes[2]=0;
-			}
-		~Frame(void) // Destroys a frame
-			{
-			for(int i=0;i<3;++i)
-				delete[] planes[i];
 			}
 		};
 	
