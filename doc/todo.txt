@@ -40,7 +40,10 @@ vrui frontend:
 - support desktop mode where cursor is a ray
 - video player reorientation, ideally using ordinary window decorations
 - optionally couple video playback to selection position (so that if we have a real-time clip of a technique, we can copy the timing exactly)
-- dynamic video opening
+- make video optional command line option
+- re-sync/seek video after adding/removing keyframes
+- segment highlighting is broken
+- reorienting start/end positions is broken
 
 playback:
 - make {pre,post}fix length for demo mode configurable
