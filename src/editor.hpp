@@ -53,11 +53,12 @@ namespace GrappleMap
 		void replace_sequence(vector<Position> const &);
 		void frame(double secondsElapsed);
 		void setLocation(Reoriented<Location>);
-		void snapToPos();
 	};
 
+	bool snapToPos(Editor &);
 	void retreat(Editor &);
 	void advance(Editor &);
+	optional<double> timeInSelection(Editor const &);
 
 	void swap_players(Editor &);
 	void mirror_position(Editor &);

@@ -45,20 +45,28 @@ namespace GrappleMap
 			void dragAllJoints(Reorientation);
 	};
 
+	using AccessibleSegments = PerPlayerJoint<vector<Reoriented<SegmentInSequence>>>;
+
 	struct JointBrowser: Vrui::DraggingToolAdapter
 	{
 		Editor & editor;
 		optional<PlayerJoint> joint;
-		PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> const & accessibleSegments;
+		AccessibleSegments const & accessibleSegments;
+		VruiXine * video_player;
 
 		JointBrowser(Vrui::DraggingTool & t, Editor & e,
-			PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> const & as)
-			: Vrui::DraggingToolAdapter{&t}, editor(e), accessibleSegments(as)
+			AccessibleSegments const & as, VruiXine * vp)
+			: Vrui::DraggingToolAdapter{&t}, editor(e)
+			, accessibleSegments(as), video_player(vp)
 		{}
 	
 		void dragCallback(Vrui::DraggingTool::DragCallbackData *) override;
 		void dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *) override;
 		void idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData *) override;
+
+		private:
+
+			void seek() const;
 	};
 
 	using ToggleEvent = GLMotif::ToggleButton::ValueChangedCallbackData;
@@ -72,7 +80,7 @@ namespace GrappleMap
 		double const scale;
 		unique_ptr<JointEditor> jointEditor;
 		bool confineEdits = false;
-		PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> accessibleSegments;
+		AccessibleSegments accessibleSegments;
 		unique_ptr<JointBrowser> jointBrowser;
 		vector<Viable> viables;
 		VruiXine video_player;
@@ -88,6 +96,7 @@ namespace GrappleMap
 		void on_lock_toggle(ToggleEvent *);
 		void on_playback_toggle(ToggleEvent *);
 		void on_confine_edits_toggle(ToggleEvent *);
+		void on_sync_video_toggle(ToggleEvent *);
 
 		void initContext(GLContextData& contextData) const override
 		{

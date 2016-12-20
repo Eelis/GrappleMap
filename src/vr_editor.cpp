@@ -62,6 +62,11 @@ namespace GrappleMap
 	void VrApp::on_swap_button(Misc::CallbackData *) { swap_players(editor); }
 	void VrApp::on_branch_button(Misc::CallbackData *) { editor.branch(); }
 
+	void VrApp::on_sync_video_toggle(ToggleEvent * cb)
+	{
+		video_player.setTimeRef(cb->set ? timeInSelection(editor) : boost::none);
+	}
+
 	void VrApp::frame()
 	{
 		video_player.frame();
@@ -123,6 +128,7 @@ namespace GrappleMap
 		toggle("Lock", &VrApp::on_lock_toggle, editor.lockedToSelection());
 		toggle("Playback", &VrApp::on_playback_toggle, editor.playingBack());
 		toggle("Confine Edits", &VrApp::on_confine_edits_toggle, confineEdits);
+		toggle("Sync Video", &VrApp::on_sync_video_toggle, false);
 
 		btn("Undo", &VrApp::on_undo_button);
 		btn("Mirror", &VrApp::on_mirror_button);
@@ -145,7 +151,7 @@ namespace GrappleMap
 		{
 			switch (tools_created++)
 			{
-				case 0: jointBrowser.reset(new JointBrowser(*tool, editor, accessibleSegments)); break;
+				case 0: jointBrowser.reset(new JointBrowser(*tool, editor, accessibleSegments, &video_player)); break;
 				case 1: jointEditor.reset(new JointEditor(*tool, editor, confineEdits)); break;
 			}
 		}

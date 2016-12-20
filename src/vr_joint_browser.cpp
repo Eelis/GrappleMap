@@ -41,11 +41,23 @@ namespace GrappleMap
 			}
 		}
 
-		if (best) editor.setLocation(best->loc);
+		if (best)
+		{
+			editor.setLocation(best->loc);
+			seek();
+		}
+	}
+
+	void JointBrowser::seek() const
+	{
+		if (!video_player) return;
+
+		if (auto t = timeInSelection(editor))
+			video_player->gotoRecordedFrame(*t);
 	}
 
 	void JointBrowser::dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *)
 	{
-		editor.snapToPos();
+		if (snapToPos(editor)) seek();
 	}
 }

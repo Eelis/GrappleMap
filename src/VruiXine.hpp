@@ -72,6 +72,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Vrui/GenericAbstractToolFactory.h>
 #include <Vrui/DisplayState.h>
 #include <Vrui/OpenFile.h>
+#include <boost/optional.hpp>
 
 class VruiXine
 	{
@@ -179,6 +180,10 @@ class VruiXine
 	int frameSize[2]; // The frame size of the currently locked video frame
 	unsigned int screenParametersVersion; // Version number of screen parameters, including aspect ratio of current frame
 	GLMotif::PopupWindow* screenControlDialog; // Dialog window to control the position and size of the virtual video projection screen
+
+	unsigned recordIndex = 0;
+	std::vector<Frame> recordedFrames{300}; // 10 seconds at 30 fps, 5 seconds at 60 fps
+	boost::optional<double> timeRef = 0;
 	
 	/* Private methods: */
 	static void xineEventCallback(void* userData,const xine_event_t* event); // Callback called when a playback event occurs
@@ -236,6 +241,16 @@ class VruiXine
 	
 	/* Methods from GLObject: */
 	virtual void initContext(GLContextData& contextData, GLObject const *) const;
+
+	/* Recording: */
+	void setTimeRef(boost::optional<double> t) { timeRef = t; }
+	void gotoRecordedFrame(double t /* in seconds */);
+		// The idea (for now) is:
+		//  1) pause playback after ~5 seconds of uninterrupted playback
+		//  2) call setTimeRef(t) to mark the current frame (which is also the end of the recording)
+		//     as t
+		//  3) call gotoRecordedFrame(t') with t' < t
+
 	};
 
 #endif

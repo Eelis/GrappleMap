@@ -235,7 +235,7 @@ void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int 
 	else if (action == GLFW_RELEASE)
 	{
 		w.chosen_joint = none;
-		w.editor.snapToPos();
+		snapToPos(w.editor);
 	}
 }
 

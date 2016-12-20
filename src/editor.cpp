@@ -22,6 +22,39 @@ namespace GrappleMap
 
 			return p;
 		}
+
+		double segmentsPerSecond(bool detailed)
+		{
+			return detailed ? 10 : 5;
+		}
+
+		double timeInSequence(Location const & l)
+			// counted in seconds
+			// todo: handle detailed
+			// todo: use chrono?
+		{
+			return (l.segment.segment.index + l.howFar) / segmentsPerSecond(false /* todo */);
+		}
+
+		optional<double> timeIn(OrientedPath const & p, Location const & l, Graph const & g)
+			// counted in seconds
+			// todo: handle detailed
+		{
+			double t = 0;
+
+			foreach (s : p)
+			{
+				double const s_dur = (g[**s].positions.size() - 1) / segmentsPerSecond(false);
+
+				if (l.segment.sequence == **s)
+				{
+					return t + (s->reverse ? s_dur - timeInSequence(l) : timeInSequence(l));
+				}
+				else t += s_dur;
+			}
+
+			return boost::none;
+		}
 	}
 
 	Editor::Editor(boost::program_options::variables_map const & programOptions)
@@ -262,14 +295,28 @@ namespace GrappleMap
 		location = l;
 	}
 
-	void Editor::snapToPos()
+	bool snapToPos(Editor & e)
 	{
-		if (playback) return;
+		if (e.playingBack()) return false;
 
-		double & c = location->howFar;
+		Reoriented<Location> l = e.getLocation();
+
+		double & c = l->howFar;
 
 		double const r = std::round(c);
 
-		if (std::abs(c - r) < 0.2) c = r;
+		if (std::abs(c - r) < 0.2)
+		{
+			c = r;
+			e.setLocation(l);
+			return true;
+		}
+
+		return false;
+	}
+
+	optional<double> timeInSelection(Editor const & e)
+	{
+		return timeIn(e.getSelection(), *e.getLocation(), e.getGraph());
 	}
 }

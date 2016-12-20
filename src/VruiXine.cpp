@@ -263,11 +263,36 @@ void VruiXine::xineOutputCallback(void* userData,int frameFormat,int frameWidth,
 	
 	/* Update the display aspect ratio: */
 	newFrame.aspectRatio=Vrui::Scalar(frameAspect);
-	
+
+	/* Record the frame: */
+	thisPtr->recordedFrames[thisPtr->recordIndex] = newFrame;
+	if (++thisPtr->recordIndex == thisPtr->recordedFrames.size())
+		thisPtr->recordIndex = 0;
+
 	/* Post the new video frame and wake up the main thread: */
 	thisPtr->videoFrames.postNewValue();
 	Vrui::requestUpdate();
 	}
+
+void VruiXine::gotoRecordedFrame(double const t)
+{
+	if (!timeRef) return;
+
+	double const secondsAgo = *timeRef - t;
+
+	double const fps = 30; // todo: get real value
+
+	size_t const i = secondsAgo * fps; // todo: think about rounding
+
+	if (0 <= i && i < recordedFrames.size())
+	{
+		videoFrames.startNewValue() = recordedFrames[
+			(recordIndex - 1 - i + recordedFrames.size()) % recordedFrames.size()];
+
+		videoFrames.postNewValue();
+		Vrui::requestUpdate();
+	}
+}
 
 void VruiXine::xineOverlayCallback(void* userData,int numOverlays,raw_overlay_t* overlays)
 	{
