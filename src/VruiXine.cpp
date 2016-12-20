@@ -1080,12 +1080,6 @@ void VruiXine::screenAzimuthValueChangedCallback(GLMotif::TextFieldSlider::Value
 	screenAzimuth=cbData->value;
 	}
 
-void VruiXine::screenElevationValueChangedCallback(GLMotif::TextFieldSlider::ValueChangedCallbackData* cbData)
-	{
-	/* Set screen's elevation angle: */
-	screenElevation=cbData->value;
-	}
-
 GLMotif::PopupWindow* VruiXine::createScreenControlDialog(void)
 	{
 	const GLMotif::StyleSheet& ss=*Vrui::getWidgetManager()->getStyleSheet();
@@ -1097,8 +1091,6 @@ GLMotif::PopupWindow* VruiXine::createScreenControlDialog(void)
 	screenControlDialog->setOrientation(GLMotif::RowColumn::VERTICAL);
 	screenControlDialog->setPacking(GLMotif::RowColumn::PACK_TIGHT);
 	screenControlDialog->setNumMinorWidgets(2);
-	
-	new GLMotif::Blind("Blind1",screenControlDialog);
 	
 	new GLMotif::Label("ScreenDistanceLabel",screenControlDialog,"Screen Distance");
 	
@@ -1141,23 +1133,13 @@ GLMotif::PopupWindow* VruiXine::createScreenControlDialog(void)
 	
 	new GLMotif::Label("ScreenAzimuthLabel",screenRotationBox,"Azimuth");
 	
-	GLMotif::TextFieldSlider* screenAzimuthSlider=new GLMotif::TextFieldSlider("ScreenAzimuthSlider",screenRotationBox,5,ss.fontHeight*5.0f);
+	GLMotif::TextFieldSlider* screenAzimuthSlider=new GLMotif::TextFieldSlider("ScreenAzimuthSlider",screenRotationBox,5,ss.fontHeight*50.0f);
 	screenAzimuthSlider->setSliderMapping(GLMotif::TextFieldSlider::LINEAR);
 	screenAzimuthSlider->setValueType(GLMotif::TextFieldSlider::INT);
 	screenAzimuthSlider->setValueRange(-180.0,180.0,1.0);
 	screenAzimuthSlider->setValue(screenAzimuth);
 	screenAzimuthSlider->getSlider()->addNotch(0.0f);
 	screenAzimuthSlider->getValueChangedCallbacks().add(this,&VruiXine::screenAzimuthValueChangedCallback);
-	
-	new GLMotif::Label("ScreenElevationLabel",screenRotationBox,"Elevation");
-	
-	GLMotif::TextFieldSlider* screenElevationSlider=new GLMotif::TextFieldSlider("ScreenElevationSlider",screenRotationBox,5,ss.fontHeight*5.0f);
-	screenElevationSlider->setSliderMapping(GLMotif::TextFieldSlider::LINEAR);
-	screenElevationSlider->setValueType(GLMotif::TextFieldSlider::INT);
-	screenElevationSlider->setValueRange(-90.0,90.0,1.0);
-	screenElevationSlider->setValue(screenElevation);
-	screenElevationSlider->getSlider()->addNotch(0.0f);
-	screenElevationSlider->getValueChangedCallbacks().add(this,&VruiXine::screenElevationValueChangedCallback);
 	
 	screenRotationBox->setColumnWeight(1,1.0f);
 	screenRotationBox->setColumnWeight(3,1.0f);
@@ -1176,8 +1158,8 @@ VruiXine::VruiXine(std::vector<std::string> const & args)
 	 dvdNavigationDialog(0),
 	 playbackControlDialog(0),
 	 playbackPosCheckTime(0.0),streamLength(0.0),
-	 screenCenter(0,3,2),screenHeight(3),aspectRatio(Vrui::Scalar(16.0/9.0)),
-	 screenAzimuth(0.0),screenElevation(-90.0),
+	 screenCenter(0,0,0/*2*/),screenHeight(3),aspectRatio(Vrui::Scalar(16.0/9.0)),
+	 screenAzimuth(0.0),
 	 stereoMode(0),stereoLayout(0),stereoSquashed(false),forceMono(false),stereoSeparation(0.0f),
 	 screenParametersVersion(1),
 	 screenControlDialog(0)
@@ -1579,22 +1561,27 @@ void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 		}
 
 		/* Generate a flat screen: */
-		Vrui::Scalar x0=screenCenter[0]-Math::div2(screenWidth);
-		Vrui::Scalar z0=screenCenter[2]-Math::div2(screenHeight);
+		Vrui::Scalar const
+			x0=screenCenter[0]-Math::div2(screenWidth),
+			z0=screenCenter[2]-Math::div2(screenHeight);
 		
-		GLfloat tsx=GLfloat(frameSize[0])/GLfloat(dataItem->numVertices[0]-1);
-		GLfloat tsy=GLfloat(frameSize[1])/GLfloat(dataItem->numVertices[1]-1);
-		Vrui::Scalar sx=screenWidth/Vrui::Scalar(dataItem->numVertices[0]-1);
-		Vrui::Scalar sz=screenHeight/Vrui::Scalar(dataItem->numVertices[1]-1);
+		GLfloat const
+			tsx=GLfloat(frameSize[0])/GLfloat(dataItem->numVertices[0]-1),
+			tsy=GLfloat(frameSize[1])/GLfloat(dataItem->numVertices[1]-1);
+
+		Vrui::Scalar const
+			sx=screenWidth/Vrui::Scalar(dataItem->numVertices[0]-1),
+			sz=screenHeight/Vrui::Scalar(dataItem->numVertices[1]-1);
+
 		for(int y=0;y<dataItem->numVertices[1];++y)
 			for(int x=0;x<dataItem->numVertices[0];++x,++vPtr)
 				{
 				vPtr->texCoord[0]=GLfloat(x)*tsx;
 				vPtr->texCoord[1]=GLfloat(frameSize[1])-GLfloat(y)*tsy;
 				
-				vPtr->position[0]=GLfloat(x0+Vrui::Scalar(x)*sx);
-				vPtr->position[1]=GLfloat(screenCenter[1]);
-				vPtr->position[2]=GLfloat(z0+Vrui::Scalar(y)*sz);
+				vPtr->position[0]=GLfloat(screenCenter[1]);
+				vPtr->position[1]=GLfloat(z0+Vrui::Scalar(y)*sz);
+				vPtr->position[2]=GLfloat(x0+Vrui::Scalar(x)*sx);
 				}
 
 		glUnmapBufferARB(GL_ARRAY_BUFFER_ARB);
@@ -1606,8 +1593,8 @@ void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 	
 	/* Draw the screen: */
 	glPushMatrix();
-	glRotated(screenAzimuth,0.0,0.0,1.0);
-	glRotated(screenElevation,1.0,0.0,0.0);
+	glRotated(screenAzimuth,0.0,1.0,0.0);
+	glTranslated(4 /* todo: one of the slided values */, 0, 0);
 	
 	GLVertexArrayParts::enable(Vertex::getPartsMask());
 	glVertexPointer(static_cast<const Vertex*>(0));

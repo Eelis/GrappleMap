@@ -84,6 +84,7 @@ namespace GrappleMap
 		unique_ptr<JointBrowser> jointBrowser;
 		vector<Viable> viables;
 		VruiXine video_player;
+		GLMotif::PopupWindow * editorControlDialog;
 
 		void on_save_button(Misc::CallbackData *);
 		void on_undo_button(Misc::CallbackData *);
@@ -97,6 +98,8 @@ namespace GrappleMap
 		void on_playback_toggle(ToggleEvent *);
 		void on_confine_edits_toggle(ToggleEvent *);
 		void on_sync_video_toggle(ToggleEvent *);
+
+		GLMotif::PopupWindow * createEditorControlDialog();
 
 		void initContext(GLContextData& contextData) const override
 		{

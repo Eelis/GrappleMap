@@ -23,34 +23,37 @@ namespace GrappleMap
 			return p;
 		}
 
-		double segmentsPerSecond(bool detailed)
+		unsigned segmentsPerSecond(Sequence const & s) // todo: move
 		{
-			return detailed ? 10 : 5;
+			return s.detailed ? 10 : 5;
 		}
 
-		double timeInSequence(Location const & l)
-			// counted in seconds
-			// todo: handle detailed
-			// todo: use chrono?
+		double timeInSequence(Location const & l, Graph const & g)
 		{
-			return (l.segment.segment.index + l.howFar) / segmentsPerSecond(false /* todo */);
+			return (l.segment.segment.index + l.howFar)
+				/ segmentsPerSecond(g[l.segment.sequence]);
+		}
+
+		double duration(Sequence const & s)
+		{
+			return num_segments(s) / segmentsPerSecond(s);
 		}
 
 		optional<double> timeIn(OrientedPath const & p, Location const & l, Graph const & g)
-			// counted in seconds
-			// todo: handle detailed
 		{
 			double t = 0;
 
 			foreach (s : p)
 			{
-				double const s_dur = (g[**s].positions.size() - 1) / segmentsPerSecond(false);
+				double const s_dur = duration(g[**s]);
 
 				if (l.segment.sequence == **s)
 				{
-					return t + (s->reverse ? s_dur - timeInSequence(l) : timeInSequence(l));
+					double const tis = timeInSequence(l, g);
+					return t + (s->reverse ? s_dur - tis : tis);
 				}
-				else t += s_dur;
+
+				t += s_dur;
 			}
 
 			return boost::none;

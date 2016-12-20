@@ -141,6 +141,38 @@ namespace GrappleMap
 
 		mainMenu->manageMenu();
 		Vrui::setMainMenu(mainMenu);
+
+		editorControlDialog=createEditorControlDialog();
+		Vrui::popupPrimaryWidget(editorControlDialog);
+		Vrui::getWidgetManager()->hide(editorControlDialog);
+	}
+
+	GLMotif::PopupWindow * VrApp::createEditorControlDialog()
+	{
+		const GLMotif::StyleSheet& ss=*Vrui::getWidgetManager()->getStyleSheet();
+		
+		GLMotif::PopupWindow * popup = new GLMotif::PopupWindow("EditorControlDialogPopup",Vrui::getWidgetManager(),"Editor Control");
+		popup->setResizableFlags(true,false);
+/*		
+		GLMotif::RowColumn* dialog=new GLMotif::RowColumn("EditorControlDialog",popup,false);
+		dialog->setOrientation(GLMotif::RowColumn::VERTICAL);
+		dialog->setPacking(GLMotif::RowColumn::PACK_TIGHT);
+		dialog->setNumMinorWidgets(2);
+		
+		new GLMotif::Label("ScreenDistanceLabel",dialog,"Screen Distance");
+		
+		GLMotif::TextFieldSlider* scaleSlider=new GLMotif::TextFieldSlider("ScaleSlider",dialog,5,ss.fontHeight*10.0f);
+		scaleSlider->setSliderMapping(GLMotif::TextFieldSlider::LINEAR);
+		scaleSlider->setValueType(GLMotif::TextFieldSlider::FLOAT);
+		scaleSlider->getTextField()->setPrecision(1);
+		scaleSlider->getTextField()->setFloatFormat(GLMotif::TextField::FIXED);
+		scaleSlider->setValueRange(0.1,2.0,0.05);
+		scaleSlider->setValue(1); // todo: initial value
+		scaleSlider->getValueChangedCallbacks().add(this,&VrApp::scaleValueChangedCallback);
+		
+		dialog->manageChild();*/
+		
+		return popup;
 	}
 
 	void VrApp::toolCreationCallback(Vrui::ToolManager::ToolCreationCallbackData * cbData)

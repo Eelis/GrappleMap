@@ -150,6 +150,11 @@ inline SegmentNum end_segmentnum(Sequence const & s)
 	return {SegmentNum::underlying_type(s.positions.size() - 1)};
 }
 
+inline SegmentNum::underlying_type num_segments(Sequence const & s)
+{
+	return s.positions.size() - 1;
+}
+
 inline SegmentNum::range segments(Sequence const & s)
 {
 	return {SegmentNum{0}, end_segmentnum(s)};
