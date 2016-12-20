@@ -27,6 +27,7 @@ namespace GrappleMap
 				("help,h", "show this help")
 				("start", po::value<string>()->default_value("last-trans"), "see START below")
 				("db", po::value<string>()->default_value("GrappleMap.txt"), "database file")
+				("video", po::value<string>(), "video file")
 				("scale", po::value<double>()->default_value(1.0));
 
 			po::positional_options_description posopts;
@@ -94,12 +95,13 @@ namespace GrappleMap
 
 	void VrApp::on_sync_video_toggle(ToggleEvent * cb)
 	{
-		video_player.setTimeRef(cb->set ? timeInSelection(editor) : boost::none);
+		if (video_player)
+			video_player->setTimeRef(cb->set ? timeInSelection(editor) : boost::none);
 	}
 
 	void VrApp::frame()
 	{
-		video_player.frame();
+		if (video_player) video_player->frame();
 
 		{
 			viables.clear();
@@ -122,9 +124,9 @@ namespace GrappleMap
 
 		editor.frame(Vrui::getCurrentFrameTime());
 
-		if (editor.playingBack())
+		if (video_player && editor.playingBack())
 			if (auto t = timeInSelection(editor))
-				video_player.seek(*t);
+				video_player->seek(*t);
 
 		// Vrui::scheduleUpdate(Vrui::getNextAnimationTime()); // todo: what is this?
 	}
@@ -140,8 +142,10 @@ namespace GrappleMap
 		, opts(getopts(argc, argv))
 		, editor(opts)
 		, scale(opts["scale"].as<double>())
-		, video_player(std::vector<std::string>{"vruixine", "test.mp4"})
 	{
+		if (opts.count("video"))
+			video_player.reset(new VruiXine(
+				std::vector<std::string>{"vruixine", opts["video"].as<string>()}));
 		style.grid_size = 20;
 		editorControlDialog=createEditorControlDialog();
 		Vrui::popupPrimaryWidget(editorControlDialog);
@@ -174,12 +178,12 @@ namespace GrappleMap
 		toggle("Confine edits to interpolations", &VrApp::on_confine_edits_toggle, confineEdits);
 		toggle("Sync Video", &VrApp::on_sync_video_toggle, false);
 
-		btn("Undo", &VrApp::on_undo_button);
-		btn("Mirror", &VrApp::on_mirror_button);
+		btn("Undo edit", &VrApp::on_undo_button);
+		btn("Mirror position", &VrApp::on_mirror_button);
 		btn("Branch", &VrApp::on_branch_button);
-		btn("Swap", &VrApp::on_swap_button);
-		btn("Interpolate", &VrApp::on_interpolate_button);
-		btn("Save", &VrApp::on_save_button);
+		btn("Swap players", &VrApp::on_swap_button);
+		btn("Interpolate position", &VrApp::on_interpolate_button);
+		btn("Save database", &VrApp::on_save_button);
 		btn("Delete keyframe", &VrApp::on_delete_keyframe_button);
 		btn("(Un)select transition", &VrApp::on_select_button);
 
@@ -196,7 +200,7 @@ namespace GrappleMap
 		{
 			switch (tools_created++)
 			{
-				case 0: jointBrowser.reset(new JointBrowser(*tool, editor, accessibleSegments, &video_player)); break;
+				case 0: jointBrowser.reset(new JointBrowser(*tool, editor, accessibleSegments, video_player.get())); break;
 				case 1: jointEditor.reset(new JointEditor(*tool, editor, confineEdits)); break;
 			}
 		}
@@ -204,7 +208,7 @@ namespace GrappleMap
 
 	void VrApp::display(GLContextData & contextData) const
 	{
-		video_player.display(contextData, this);
+		if (video_player) video_player->display(contextData, this);
 
 		glEnable(GL_POINT_SMOOTH); // todo: move
 

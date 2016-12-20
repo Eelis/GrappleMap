@@ -93,7 +93,7 @@ namespace GrappleMap
 		AccessibleSegments accessibleSegments;
 		unique_ptr<JointBrowser> jointBrowser;
 		vector<Viable> viables;
-		VruiXine video_player;
+		unique_ptr<VruiXine> video_player;
 		GLMotif::PopupWindow * editorControlDialog;
 
 		void on_save_button(Misc::CallbackData *);
@@ -113,12 +113,14 @@ namespace GrappleMap
 
 		void initContext(GLContextData& contextData) const override
 		{
-			video_player.initContext(contextData, this);
+			if (video_player)
+				video_player->initContext(contextData, this);
 		}
 
 		void eventCallback(EventID eventId,Vrui::InputDevice::ButtonCallbackData* cbData) override
 		{
-			video_player.eventCallback(eventId, cbData);
+			if (video_player)
+				video_player->eventCallback(eventId, cbData);
 		}
 
 		public:
