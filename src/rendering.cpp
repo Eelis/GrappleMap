@@ -244,7 +244,7 @@ void renderScene(
 	Position const & position,
 	vector<Viable> const & viables,
 	optional<PlayerJoint> const browse_joint,
-	optional<PlayerJoint> const edit_joint,
+	vector<PlayerJoint> const & edit_joints,
 	OrientedPath const & selection,
 	PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> const & accessibleSegments,
 	optional<SegmentInSequence> const current_segment,
@@ -260,18 +260,20 @@ void renderScene(
 	{
 		PerPlayerJoint<optional<V3>> colors;
 
-		foreach (j : playerJoints)
-			if (!accessibleSegments[j].empty())
-				colors[j] = white * 0.4 + playerDefs[j.player].color * 0.6;
-
 		if (browse_joint) colors[*browse_joint] = V3{1, 1, 0};
-		if (edit_joint) colors[*edit_joint] = V3{0, 1, 0};
+
+		foreach (j : playerJoints)
+		{
+			if (elem(j, edit_joints)) colors[j] = V3{0, 1, 0};
+
+			if (!colors[j] && !accessibleSegments[j].empty())
+				colors[j] = white * 0.4 + playerDefs[j.player].color * 0.6;
+		}
 
 		playerDrawer.drawPlayers(position, colors, {});
 	}
 
-
-	if (edit_joint) drawSelection(graph, selection, *edit_joint, nullptr, style);
+	if (edit_joints.size() == 1) drawSelection(graph, selection, edit_joints.front(), nullptr, style);
 	if (browse_joint) drawSelection(graph, selection, *browse_joint, nullptr, style);
 
 	drawViables(graph, viables, selection, current_segment, nullptr, style);
@@ -281,7 +283,7 @@ void renderScene(
 	glColor(white);
 
 	glBegin(GL_POINTS);
-	if (edit_joint) glVertex(position[*edit_joint]);
+	foreach (j : edit_joints) glVertex(position[j]);
 	if (browse_joint) glVertex(position[*browse_joint]);
 	glEnd();
 }

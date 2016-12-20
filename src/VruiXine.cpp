@@ -274,7 +274,7 @@ void VruiXine::xineOutputCallback(void* userData,int frameFormat,int frameWidth,
 	Vrui::requestUpdate();
 	}
 
-void VruiXine::gotoRecordedFrame(double const t)
+void VruiXine::seek(double const t)
 {
 	if (!timeRef) return;
 
@@ -1024,7 +1024,7 @@ GLMotif::PopupWindow* VruiXine::createPlaybackControlDialog(void)
 	skipBackButton->getSelectCallbacks().add(this,&VruiXine::skipBackCallback);
 	new GLMotif::Glyph("LeftGlyph",skipBackButton,GLMotif::GlyphGadget::SIMPLE_ARROW_LEFT,GLMotif::GlyphGadget::IN);
 	
-	playbackSlider=new GLMotif::Slider("PlaybackSlider",playbackControlDialog,GLMotif::Slider::HORIZONTAL,ss.fontHeight*20.0f);
+	playbackSlider=new GLMotif::Slider("PlaybackSlider",playbackControlDialog,GLMotif::Slider::HORIZONTAL,ss.fontHeight*25.0f);
 	playbackSlider->setValueRange(0.0,1.0,1.0);
 	playbackSlider->setValue(0.0);
 	playbackSlider->getDraggingCallbacks().add(this,&VruiXine::playbackSliderDraggingCallback);
@@ -1158,8 +1158,7 @@ VruiXine::VruiXine(std::vector<std::string> const & args)
 	 dvdNavigationDialog(0),
 	 playbackControlDialog(0),
 	 playbackPosCheckTime(0.0),streamLength(0.0),
-	 screenCenter(0,0,0/*2*/),screenHeight(3),aspectRatio(Vrui::Scalar(16.0/9.0)),
-	 screenAzimuth(0.0),
+	 aspectRatio(Vrui::Scalar(16.0/9.0)),
 	 stereoMode(0),stereoLayout(0),stereoSquashed(false),forceMono(false),stereoSeparation(0.0f),
 	 screenParametersVersion(1),
 	 screenControlDialog(0)
@@ -1593,7 +1592,7 @@ void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 	
 	/* Draw the screen: */
 	glPushMatrix();
-	glRotated(screenAzimuth,0.0,1.0,0.0);
+	glRotated(-screenAzimuth,0.0,1.0,0.0);
 	glTranslated(4 /* todo: one of the slided values */, 0, 0);
 	
 	GLVertexArrayParts::enable(Vertex::getPartsMask());

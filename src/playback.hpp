@@ -40,6 +40,8 @@ namespace GrappleMap
 		Playback(Playback const &) = delete;
 		Playback(Playback &&) = delete;
 
+	public:
+
 		Reoriented<Location> location() const
 		{
 			assert (i != path.end());
@@ -48,8 +50,6 @@ namespace GrappleMap
 				Location{{***i, segment}, howFar},
 				i->reorientation};
 		}
-
-	public:
 
 		Playback(Graph const &, OrientedPath const &);
 

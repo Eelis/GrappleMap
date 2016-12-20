@@ -290,10 +290,10 @@ Position orient_canonically_with_mirror(Position const & p)
 	return canonical_reorientation_with_mirror(p)(p);
 }
 
-optional<PlayerJoint> closest_joint(Position const & p, V3 const v, double const max_dist)
+pair<PlayerJoint, double> closest_joint(Position const & p, V3 const v)
 {
-	double d = max_dist * max_dist;
-	optional<PlayerJoint> r;
+	double d = 100000;
+	PlayerJoint r;
 
 	foreach(j : playerJoints)
 	{
@@ -301,7 +301,14 @@ optional<PlayerJoint> closest_joint(Position const & p, V3 const v, double const
 		if (dd < d) { r = j; d = dd; }
 	}
 
-	return r;
+	return {r, d};
+}
+
+optional<PlayerJoint> closest_joint(Position const & p, V3 const v, double const max_dist)
+{
+	auto const j = closest_joint(p, v);
+	if (j.second < max_dist * max_dist) return j.first;
+	return boost::none;
 }
 
 void apply_limits(Position & p)

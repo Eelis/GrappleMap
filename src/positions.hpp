@@ -185,6 +185,7 @@ inline V3 cameraOffsetFor(Position const & p)
 	return r;
 }
 
+pair<PlayerJoint, double> closest_joint(Position const &, V3);
 optional<PlayerJoint> closest_joint(Position const &, V3, double max_dist);
 
 void apply_limits(Position &);

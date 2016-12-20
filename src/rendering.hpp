@@ -55,7 +55,7 @@ namespace GrappleMap
 	void renderScene(Graph const &, Position const &,
 		vector<Viable> const & viables,
 		optional<PlayerJoint> const browse_joint,
-		optional<PlayerJoint> edit_joint,
+		vector<PlayerJoint> const & edit_joints,
 		OrientedPath const &,
 		PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> const & accessibleSegments,
 		optional<SegmentInSequence> current_segment,

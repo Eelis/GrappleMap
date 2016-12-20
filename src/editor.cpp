@@ -189,6 +189,8 @@ namespace GrappleMap
 		graph.split_segment(*location);
 		++location->segment.segment;
 		location->howFar = 0;
+
+		assert(is_at_keyframe(*this));
 	}
 
 	void Editor::push_undo()
@@ -289,6 +291,12 @@ namespace GrappleMap
 		if (playback) playback->frame(secondsElapsed);
 	}
 
+	optional<Reoriented<Location>> Editor::playingBack() const
+	{
+		if (playback) return playback->location();
+		return boost::none;
+	}
+
 	void Editor::setLocation(Reoriented<Location> const l)
 	{
 		if (playback) return;
@@ -320,6 +328,12 @@ namespace GrappleMap
 
 	optional<double> timeInSelection(Editor const & e)
 	{
-		return timeIn(e.getSelection(), *e.getLocation(), e.getGraph());
+		Location loc;
+
+		if (optional<Reoriented<Location>> oloc = e.playingBack())
+			loc = **oloc;
+		else loc = *e.getLocation();
+
+		return timeIn(e.getSelection(), loc, e.getGraph());
 	}
 }

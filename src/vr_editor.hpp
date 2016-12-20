@@ -25,7 +25,7 @@ namespace GrappleMap
 	struct JointEditor: Vrui::DraggingToolAdapter
 	{
 		Editor & editor;
-		optional<PlayerJoint> joint;
+		pair<PlayerJoint, double> closest_joint;
 		optional<V3 const> joint_edit_offset;
 		optional<vector<Position> const> start_seq;
 		optional<Reorientation> dragTransform;
@@ -38,6 +38,16 @@ namespace GrappleMap
 		void dragStartCallback(Vrui::DraggingTool::DragStartCallbackData *) override;
 		void dragCallback(Vrui::DraggingTool::DragCallbackData *) override;
 		void idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData *) override;
+
+		bool draggingSingleJoint() const
+		{
+			return closest_joint.second < 0.1 * 0.1;
+		}
+		
+		bool draggingAllJoints() const
+		{
+			return closest_joint.second > 0.5 * 0.5;
+		}
 
 		private:
 
@@ -90,8 +100,8 @@ namespace GrappleMap
 		void on_undo_button(Misc::CallbackData *);
 		void on_swap_button(Misc::CallbackData *);
 		void on_mirror_button(Misc::CallbackData *);
+		void on_interpolate_button(Misc::CallbackData *);
 		void on_branch_button(Misc::CallbackData *);
-		void on_insert_keyframe_button(Misc::CallbackData *);
 		void on_delete_keyframe_button(Misc::CallbackData *);
 		void on_select_button(Misc::CallbackData *);
 		void on_lock_toggle(ToggleEvent *);

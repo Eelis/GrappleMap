@@ -53,7 +53,7 @@ namespace GrappleMap
 		if (!video_player) return;
 
 		if (auto t = timeInSelection(editor))
-			video_player->gotoRecordedFrame(*t);
+			video_player->seek(*t);
 	}
 
 	void JointBrowser::dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *)

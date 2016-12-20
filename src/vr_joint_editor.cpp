@@ -40,11 +40,32 @@ namespace GrappleMap
 		}
 	}
 
+	void JointEditor::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
+	{
+		closest_joint = GrappleMap::closest_joint(
+			editor.current_position(),
+			v3(cbData->currentTransformation.getTranslation()));
+	}
+
 	void JointEditor::dragStartCallback(Vrui::DraggingTool::DragStartCallbackData * cb)
 	{
+		editor.push_undo();
+
 		Graph const & g = editor.getGraph();
 
-		editor.push_undo();
+		if (!is_at_keyframe(editor))
+		{
+			editor.insert_keyframe();
+
+			Position p = editor.current_position();
+			for(int i = 0; i != 30; ++i) spring(p);
+			editor.replace(p);
+
+			closest_joint = GrappleMap::closest_joint(
+				editor.current_position(),
+				v3(cb->startTransformation.getTranslation()));
+		}
+
 
 		{
 			vector<Position> v;
@@ -55,33 +76,29 @@ namespace GrappleMap
 
 		dragTransform = inverse(reorientationTransformation(cb->startTransformation));
 
-		if (joint)
-			joint_edit_offset.emplace(v3(cb->startTransformation.getTranslation()) -
-				editor.current_position()[*joint]);
+		joint_edit_offset.emplace(v3(cb->startTransformation.getTranslation()) -
+			editor.current_position()[closest_joint.first]);
 	}
 
-	void JointEditor::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * cbData)
+	void JointEditor::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
 	{
-		if (!position(*editor.getLocation()))
-		{
-			joint = boost::none;
-			return;
-		}
+		if (!position(*editor.getLocation())) return;
 
-		joint = closest_joint(
-			editor.current_position(),
-			v3(cbData->currentTransformation.getTranslation()),
-			0.1);
+		if (draggingSingleJoint())
+			dragSingleJoint(v3(cbData->currentTransformation.getTranslation()));
+		else if (draggingAllJoints() && dragTransform)
+			dragAllJoints(compose(*dragTransform,
+				reorientationTransformation(cbData->currentTransformation)));
 	}
 
 	void JointEditor::dragSingleJoint(V3 const cursor)
 	{
-		if (!joint || !joint_edit_offset) return;
+		if (!joint_edit_offset) return;
 
 		if (optional<Reoriented<PositionInSequence>> const pp = *position(editor.getLocation()))
 		{
 			Graph const & g = editor.getGraph();
-			PlayerJoint const j = *joint;
+			PlayerJoint const j = closest_joint.first;
 			Position new_pos = editor.current_position();
 			auto const joint_pos = cursor - *joint_edit_offset;
 
@@ -136,12 +153,4 @@ namespace GrappleMap
 		editor.replace_sequence(v);
 	}
 
-	void JointEditor::dragCallback(Vrui::DraggingTool::DragCallbackData * cbData)
-	{
-		if (joint)
-			dragSingleJoint(v3(cbData->currentTransformation.getTranslation()));
-		else if (dragTransform)
-			dragAllJoints(compose(*dragTransform,
-				reorientationTransformation(cbData->currentTransformation)));
-	}
 }

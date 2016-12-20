@@ -167,10 +167,10 @@ class VruiXine
 	GLMotif::TextField* streamLengthText; // Text field showing the length of the current stream
 	double playbackPosCheckTime; // Next application time at which to check the playback position
 	double streamLength; // Most recently reported stream length in seconds
-	Vrui::Point screenCenter; // Center of video display screen in navigational coordinates
-	Vrui::Scalar screenHeight; // Height of video display screen in navigational coordinate units
+	Vrui::Scalar screenHeight = 3; // Height of video display screen in navigational coordinate units
+	Vrui::Point screenCenter{0,0,screenHeight/2}; // Center of video display screen in navigational coordinates
 	Vrui::Scalar aspectRatio; // The aspect ratio of the currently locked video frame
-	double screenAzimuth; // Angles to rotate the screen
+	double screenAzimuth = 0; // Angles to rotate the screen
 	int stereoMode; // Stream's stereo mode, 0: mono, 1: side-by-side, 2: top/bottom
 	int stereoLayout; // Layout of sub-frames. 0: Left eye is left or top, 1: Left eye is right or bottom
 	bool stereoSquashed; // Flag whether stereo sub-frames are squashed to fit into the original frame
@@ -243,12 +243,12 @@ class VruiXine
 
 	/* Recording: */
 	void setTimeRef(boost::optional<double> t) { timeRef = t; }
-	void gotoRecordedFrame(double t /* in seconds */);
+	void seek(double t /* in seconds */);
 		// The idea (for now) is:
 		//  1) pause playback after ~5 seconds of uninterrupted playback
-		//  2) call setTimeRef(t) to mark the current frame (which is also the end of the recording)
-		//     as t
-		//  3) call gotoRecordedFrame(t') with t' < t
+		//  2) call setTimeRef(t) to mark the current frame (which is also
+		//     the end of the recording) as t
+		//  3) call seek(t') with t' < t
 
 	};
 

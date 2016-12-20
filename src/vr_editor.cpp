@@ -49,18 +49,48 @@ namespace GrappleMap
 
 			return vm;
 		}
+
+		vector<PlayerJoint> editedJoints(JointEditor const & e)
+		{
+			vector<PlayerJoint> r;
+
+			if (e.draggingSingleJoint())
+				r.push_back(e.closest_joint.first);
+			else if (e.draggingAllJoints())
+				foreach (j : playerJoints) r.push_back(j);
+
+			return r;
+		}
 	}
 
 	void VrApp::on_lock_toggle(ToggleEvent * cb) { editor.toggle_lock(cb->set); }
 	void VrApp::on_playback_toggle(ToggleEvent *) { editor.toggle_playback(); }
 	void VrApp::on_select_button(Misc::CallbackData *) { editor.toggle_selected(); }
 	void VrApp::on_save_button(Misc::CallbackData *) { editor.save(); }
-	void VrApp::on_insert_keyframe_button(Misc::CallbackData *) { editor.insert_keyframe(); }
 	void VrApp::on_delete_keyframe_button(Misc::CallbackData *) { editor.delete_keyframe(); }
 	void VrApp::on_undo_button(Misc::CallbackData *) { editor.undo(); }
 	void VrApp::on_mirror_button(Misc::CallbackData *) { editor.mirror(); }
 	void VrApp::on_swap_button(Misc::CallbackData *) { swap_players(editor); }
 	void VrApp::on_branch_button(Misc::CallbackData *) { editor.branch(); }
+
+	void VrApp::on_interpolate_button(Misc::CallbackData *)
+	{
+		editor.push_undo();
+
+		optional<Reoriented<PositionInSequence>> const pos
+			= position(editor.getLocation());
+		if (!pos) return;
+
+		Graph const & g = editor.getGraph();
+
+		if (auto nextLoc = next(*pos, g))
+		if (auto prevLoc = prev(*pos))
+		{
+			auto p = between(at(*prevLoc, g), at(*nextLoc, g));
+			for(int i = 0; i != 30; ++i) spring(p);
+			editor.replace(p);
+		}
+	}
 
 	void VrApp::on_sync_video_toggle(ToggleEvent * cb)
 	{
@@ -82,7 +112,8 @@ namespace GrappleMap
 				};
 
 			if (jointBrowser && jointBrowser->joint) add_vias(*(jointBrowser->joint));
-			if (jointEditor && jointEditor->joint) add_vias(*(jointBrowser->joint));
+			if (jointEditor && jointEditor->draggingSingleJoint())
+				add_vias(jointEditor->closest_joint.first);
 		}
 
 		accessibleSegments = closeCandidates(
@@ -90,6 +121,10 @@ namespace GrappleMap
 			editor.lockedToSelection() ? &editor.getSelection() : nullptr);
 
 		editor.frame(Vrui::getCurrentFrameTime());
+
+		if (editor.playingBack())
+			if (auto t = timeInSelection(editor))
+				video_player.seek(*t);
 
 		// Vrui::scheduleUpdate(Vrui::getNextAnimationTime()); // todo: what is this?
 	}
@@ -108,40 +143,6 @@ namespace GrappleMap
 		, video_player(std::vector<std::string>{"vruixine", "test.mp4"})
 	{
 		style.grid_size = 20;
-
-		GLMotif::PopupMenu * mainMenu = new GLMotif::PopupMenu("MainMenu", Vrui::getWidgetManager());
-		mainMenu->setTitle("GrappleMap");
-
-		auto btn = [&](char const * n, decltype(&VrApp::on_save_button) h)
-			{
-				auto p = new GLMotif::Button(n, mainMenu, n);
-				p->getSelectCallbacks().add(this, h);
-			};
-
-		auto toggle = [&](char const * n, decltype(&VrApp::on_lock_toggle) h, bool b)
-			{
-				auto t = new GLMotif::ToggleButton(n, mainMenu, n);
-				t->setToggle(b);
-				t->getValueChangedCallbacks().add(this, h);
-			};
-
-		toggle("Lock", &VrApp::on_lock_toggle, editor.lockedToSelection());
-		toggle("Playback", &VrApp::on_playback_toggle, editor.playingBack());
-		toggle("Confine Edits", &VrApp::on_confine_edits_toggle, confineEdits);
-		toggle("Sync Video", &VrApp::on_sync_video_toggle, false);
-
-		btn("Undo", &VrApp::on_undo_button);
-		btn("Mirror", &VrApp::on_mirror_button);
-		btn("Branch", &VrApp::on_branch_button);
-		btn("Swap", &VrApp::on_swap_button);
-		btn("Save", &VrApp::on_save_button);
-		btn("Insert Keyframe", &VrApp::on_insert_keyframe_button);
-		btn("Delete Keyframe", &VrApp::on_delete_keyframe_button);
-		btn("Select/Unselect Transition", &VrApp::on_select_button);
-
-		mainMenu->manageMenu();
-		Vrui::setMainMenu(mainMenu);
-
 		editorControlDialog=createEditorControlDialog();
 		Vrui::popupPrimaryWidget(editorControlDialog);
 		Vrui::getWidgetManager()->hide(editorControlDialog);
@@ -149,30 +150,42 @@ namespace GrappleMap
 
 	GLMotif::PopupWindow * VrApp::createEditorControlDialog()
 	{
-		const GLMotif::StyleSheet& ss=*Vrui::getWidgetManager()->getStyleSheet();
+//		const GLMotif::StyleSheet& ss=*Vrui::getWidgetManager()->getStyleSheet();
 		
-		GLMotif::PopupWindow * popup = new GLMotif::PopupWindow("EditorControlDialogPopup",Vrui::getWidgetManager(),"Editor Control");
-		popup->setResizableFlags(true,false);
-/*		
-		GLMotif::RowColumn* dialog=new GLMotif::RowColumn("EditorControlDialog",popup,false);
-		dialog->setOrientation(GLMotif::RowColumn::VERTICAL);
-		dialog->setPacking(GLMotif::RowColumn::PACK_TIGHT);
-		dialog->setNumMinorWidgets(2);
+		GLMotif::PopupWindow * window = new GLMotif::PopupWindow("EditorControlDialogPopup", Vrui::getWidgetManager(),"Editor Control");
+
+		GLMotif::RowColumn * dialog = new GLMotif::RowColumn("EditorControlDialog", window, false);
+
+		auto btn = [&](char const * n, decltype(&VrApp::on_save_button) h)
+			{
+				auto p = new GLMotif::Button(n, dialog, n);
+				p->getSelectCallbacks().add(this, h);
+			};
+
+		auto toggle = [&](char const * n, decltype(&VrApp::on_lock_toggle) h, bool b)
+			{
+				auto t = new GLMotif::ToggleButton(n, dialog, n);
+				t->setToggle(b);
+				t->getValueChangedCallbacks().add(this, h);
+			};
+
+		toggle("Playback", &VrApp::on_playback_toggle, bool(editor.playingBack()));
+		toggle("Confine browsing to selection", &VrApp::on_lock_toggle, editor.lockedToSelection());
+		toggle("Confine edits to interpolations", &VrApp::on_confine_edits_toggle, confineEdits);
+		toggle("Sync Video", &VrApp::on_sync_video_toggle, false);
+
+		btn("Undo", &VrApp::on_undo_button);
+		btn("Mirror", &VrApp::on_mirror_button);
+		btn("Branch", &VrApp::on_branch_button);
+		btn("Swap", &VrApp::on_swap_button);
+		btn("Interpolate", &VrApp::on_interpolate_button);
+		btn("Save", &VrApp::on_save_button);
+		btn("Delete keyframe", &VrApp::on_delete_keyframe_button);
+		btn("(Un)select transition", &VrApp::on_select_button);
+
+		dialog->manageChild();
 		
-		new GLMotif::Label("ScreenDistanceLabel",dialog,"Screen Distance");
-		
-		GLMotif::TextFieldSlider* scaleSlider=new GLMotif::TextFieldSlider("ScaleSlider",dialog,5,ss.fontHeight*10.0f);
-		scaleSlider->setSliderMapping(GLMotif::TextFieldSlider::LINEAR);
-		scaleSlider->setValueType(GLMotif::TextFieldSlider::FLOAT);
-		scaleSlider->getTextField()->setPrecision(1);
-		scaleSlider->getTextField()->setFloatFormat(GLMotif::TextField::FIXED);
-		scaleSlider->setValueRange(0.1,2.0,0.05);
-		scaleSlider->setValue(1); // todo: initial value
-		scaleSlider->getValueChangedCallbacks().add(this,&VrApp::scaleValueChangedCallback);
-		
-		dialog->manageChild();*/
-		
-		return popup;
+		return window;
 	}
 
 	void VrApp::toolCreationCallback(Vrui::ToolManager::ToolCreationCallbackData * cbData)
@@ -198,19 +211,22 @@ namespace GrappleMap
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		optional<PlayerJoint> browse_joint, edit_joint;
-
-		if (jointBrowser) browse_joint = jointBrowser->joint;
-		if (jointEditor) edit_joint = jointEditor->joint;
-
 		if (!editor.playingBack())
+		{
+			optional<PlayerJoint> browse_joint;
+			if (jointBrowser) browse_joint = jointBrowser->joint;
+
+			vector<PlayerJoint> editJoints;
+			if (jointEditor) editJoints = editedJoints(*jointEditor);
+
 			renderScene(
 				editor.getGraph(), editor.current_position(),
-				viables, browse_joint, edit_joint,
+				viables, browse_joint, editJoints,
 				editor.getSelection(),
 				accessibleSegments,
 				editor.getLocation()->segment,
 				style, playerDrawer);
+		}
 		else
 		{
 			glEnable(GL_COLOR_MATERIAL);

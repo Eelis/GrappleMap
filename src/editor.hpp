@@ -30,7 +30,7 @@ namespace GrappleMap
 		OrientedPath const & getSelection() const { return selection; }
 		bool lockedToSelection() const { return selectionLock; }
 		Reoriented<Location> const & getLocation() const { return location; }
-		bool playingBack() const { return bool(playback); }
+		optional<Reoriented<Location>> playingBack() const;
 
 		Position current_position() const
 		{
@@ -62,6 +62,11 @@ namespace GrappleMap
 
 	void swap_players(Editor &);
 	void mirror_position(Editor &);
+
+	inline bool is_at_keyframe(Editor const & e)
+	{
+		return bool(position(*e.getLocation()));
+	}
 }
 
 #endif
