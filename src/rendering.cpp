@@ -24,6 +24,7 @@ namespace
 
 	void drawSelection(
 		Graph const & g, OrientedPath const & path, PlayerJoint const j,
+		optional<SegmentInSequence> const current_segment,
 		Camera const * const camera, Style const & style)
 	{
 		glNormal3d(0, 1, 0);
@@ -36,7 +37,15 @@ namespace
 		{
 			glBegin(GL_LINE_STRIP);
 				foreach (p : positions(forget_direction(seq), g))
+				{
+					if (current_segment && to(*current_segment) == *p)
+						glBegin(GL_LINE_STRIP);
+
 					glVertex(at(p, j, g));
+
+					if (current_segment && from(*current_segment) == *p)
+						glEnd();
+				}
 			glEnd();
 		}
 
@@ -73,20 +82,27 @@ namespace
 
 		foreach (v : viables)
 		{
-			if (elem(*v.sequence, selection)) continue;
-
-			glBegin(GL_LINE_STRIP);
-			foreach (i : PosNum::range(v.begin, v.end))
+			if (elem(*v.sequence, selection))
 			{
-				if (current_segment && current_segment->sequence == *v.sequence
-					&& current_segment->segment.index == i.index)
-					glColor4f(0, 1, 0, 0.6);
-				else
-					glColor4f(1, 1, 0, std::max(0.0, 0.3 - v.depth(i) * 0.05));
-
-				glVertex(at(v.sequence * i, v.joint, graph));
+				if (current_segment && current_segment->sequence == *v.sequence)
+				{
+					glColor4f(0, 1, 0, 0.8);
+					glBegin(GL_LINES);
+						glVertex(at(v.sequence * from(current_segment->segment), v.joint, graph));
+						glVertex(at(v.sequence * to(current_segment->segment), v.joint, graph));
+					glEnd();
+				}
 			}
-			glEnd();
+			else
+			{
+				glBegin(GL_LINE_STRIP);
+				foreach (i : PosNum::range(v.begin, v.end))
+				{
+					glColor4f(1, 1, 0, std::max(0.0, 0.3 - v.depth(i) * 0.05));
+					glVertex(at(v.sequence * i, v.joint, graph));
+				}
+				glEnd();
+			}
 /*
 			if (selected) glColor4f(1, 1, 1, 0.6);
 			else glColor4f(1, 1, 0, 0.3);
@@ -222,7 +238,10 @@ void renderWindow(
 
 		playerDrawer.drawPlayers(position, colors, v.first_person);
 
-		if (highlight_joint) drawSelection(graph, selection, *highlight_joint, &camera, style);
+		if (highlight_joint)
+			drawSelection(
+				graph, selection, *highlight_joint,
+				boost::none, &camera, style);
 
 		drawViables(graph, viables, selection, {}, &camera, style);
 
@@ -273,8 +292,10 @@ void renderScene(
 		playerDrawer.drawPlayers(position, colors, {});
 	}
 
-	if (edit_joints.size() == 1) drawSelection(graph, selection, edit_joints.front(), nullptr, style);
-	if (browse_joint) drawSelection(graph, selection, *browse_joint, nullptr, style);
+	if (edit_joints.size() == 1)
+		drawSelection(graph, selection, edit_joints.front(), current_segment, nullptr, style);
+	if (browse_joint)
+		drawSelection(graph, selection, *browse_joint, current_segment, nullptr, style);
 
 	drawViables(graph, viables, selection, current_segment, nullptr, style);
 
@@ -283,7 +304,7 @@ void renderScene(
 	glColor(white);
 
 	glBegin(GL_POINTS);
-	foreach (j : edit_joints) glVertex(position[j]);
+	//foreach (j : edit_joints) glVertex(position[j]);
 	if (browse_joint) glVertex(position[*browse_joint]);
 	glEnd();
 }

@@ -42,8 +42,10 @@ vrui frontend:
 - optionally couple video playback to selection position (so that if we have a real-time clip of a technique, we can copy the timing exactly)
 - make video optional command line option
 - re-sync/seek video after adding/removing keyframes
-- segment highlighting is broken
 - reorienting start/end positions is broken
+- slider for video sync offset
+- dialogs often open in weird place
+- startup selection empty
 
 playback:
 - make {pre,post}fix length for demo mode configurable
@@ -52,6 +54,7 @@ playback:
 
 vr playback:
 - first person view
+- dialog with options for things like "cycle through entries/continuations"
 
 position pages:
 - find a better tool/library for generating gifs (need more speed and compression) (Magick++ seems worth a try even though it's also ImageMagick..)
