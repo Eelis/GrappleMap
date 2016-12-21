@@ -29,15 +29,6 @@ optional<SeqNum> erase_sequence(Graph & g, SeqNum const sn)
 	return SeqNum{sn.index == 0 ? 0 : sn.index - 1};
 }
 
-optional<PositionInSequence> node_as_posinseq(Graph const & g, NodeNum const node)
-{
-	foreach(sn : seqnums(g)) // todo: bad
-		if (*g[sn].from == node) return first_pos_in(sn);
-		else if (*g[sn].to == node) return last_pos_in(sn, g);
-
-	return none;
-}
-
 void split_at(Graph & g, PositionInSequence const pis)
 {
 	if (node(g, pis)) throw runtime_error("cannot split node");

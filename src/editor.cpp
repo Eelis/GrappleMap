@@ -70,15 +70,27 @@ namespace GrappleMap
 		{
 			foreach (x : path_from_desc(start_desc))
 				selection.push_back({x, PositionReorientation{}});
-
-			reorient_from(selection, selection.begin(), graph);
-
-			location = from_loc(first_segment(selection.front(), graph));
 		}
-		else if (auto start = posinseq_by_desc(graph, programOptions["start"].as<string>()))
-			location->segment = segment_from(*start);
-		else
-			throw std::runtime_error("no such position/transition");
+		else if (auto start = named_entity(graph, programOptions["start"].as<string>()))
+		{
+			if (Step const * step = boost::get<Step>(&*start))
+			{
+				selection = {{*step, PositionReorientation{}}};
+			}
+			else if (NodeNum const * node = boost::get<NodeNum>(&*start))
+			{
+				auto const & io = graph[*node].in_out;
+				if (io.empty()) error("cannot edit unconnected node");
+				location = {start_loc(io.front(), graph), PositionReorientation{}};
+				return;
+
+			}
+			else error("unexpected type of named entity");
+		}
+		else error("no such position/transition");
+
+		reorient_from(selection, selection.begin(), graph);
+		location = from_loc(first_segment(selection.front(), graph));
 	}
 
 	void advance(Editor & e)

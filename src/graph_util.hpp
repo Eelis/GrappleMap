@@ -81,6 +81,11 @@ inline Reversible<SegmentInSequence> first_segment(Reversible<SeqNum> const & s,
 	return {s.reverse ? last_segment(*s, g) : first_segment(*s), s.reverse};
 }
 
+inline Location start_loc(Reversible<SeqNum> const & s, Graph const & g)
+{
+	return start_loc(first_segment(s, g));
+}
+
 inline Reversible<SegmentInSequence> last_segment(Reversible<SeqNum> const & s, Graph const & g)
 {
 	return {s.reverse ? first_segment(*s) : last_segment(*s, g), s.reverse};
@@ -293,9 +298,6 @@ inline auto joint_positions(Reoriented<SeqNum> const & s, PlayerJoint const j, G
 	return positions(s, g) | transformed(
 		[&g, j](Reoriented<PositionInSequence> const & p) { return at(p, j, g); });
 }
-
-optional<PositionInSequence> node_as_posinseq(Graph const &, NodeNum);
-	// may return either the beginning of a sequence or the end
 
 }
 

@@ -41,10 +41,8 @@ vrui frontend:
 - video player reorientation, ideally using ordinary window decorations
 - optionally couple video playback to selection position (so that if we have a real-time clip of a technique, we can copy the timing exactly)
 - re-sync/seek video after adding/removing keyframes
-- reorienting start/end positions is broken
 - slider for video sync offset
 - dialogs often open in weird place
-- startup selection empty
 
 playback:
 - make {pre,post}fix length for demo mode configurable

@@ -93,13 +93,13 @@ namespace GrappleMap
 		return none;
 	}
 
-	optional<PositionInSequence> posinseq_by_desc(Graph const & g, string const & s)
+	optional<NamedEntity> named_entity(Graph const & g, string const & s)
 	{
-		if (s == "last-trans") return first_pos_in(SeqNum{g.num_sequences() - 1u});
+		if (s == "last-trans") return NamedEntity(nonreversed(SeqNum{g.num_sequences() - 1u}));
 
-		if (auto step = step_by_desc(g, s)) return first_pos_in(**step);
+		if (auto step = step_by_desc(g, s)) return NamedEntity{*step};
 
-		if (auto n = node_by_desc(g, s)) return node_as_posinseq(g, *n);
+		if (auto n = node_by_desc(g, s)) return NamedEntity{*n};
 
 		return none;
 	}

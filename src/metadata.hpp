@@ -2,12 +2,15 @@
 #define GRAPPLEMAP_METADATA_HPP
 
 #include "graph_util.hpp"
+#include <boost/variant.hpp>
 
 namespace GrappleMap
 {
+	using NamedEntity = boost::variant<NodeNum, Step>;
+
 	optional<Step> step_by_desc(Graph const &, string const & desc, optional<NodeNum> from = none);
 	optional<NodeNum> node_by_desc(Graph const &, string const & desc);
-	optional<PositionInSequence> posinseq_by_desc(Graph const & g, string const & desc);
+	optional<NamedEntity> named_entity(Graph const & g, string const & desc);
 
 	set<string> tags(Graph const &);
 	set<string> tags_in_desc(vector<string> const &);
