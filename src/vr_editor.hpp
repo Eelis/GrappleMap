@@ -44,7 +44,7 @@ namespace GrappleMap
 		{
 			return closest_joint.second < 0.1 * 0.1;
 		}
-		
+
 		bool draggingAllJoints() const
 		{
 			return closest_joint.second > 0.5 * 0.5;
@@ -58,32 +58,28 @@ namespace GrappleMap
 
 	using AccessibleSegments = PerPlayerJoint<vector<Reoriented<SegmentInSequence>>>;
 
+	struct VrApp;
+
 	struct JointBrowser: Vrui::DraggingToolAdapter
 	{
-		Editor & editor;
+		VrApp & app;
 		optional<PlayerJoint> joint;
-		AccessibleSegments const & accessibleSegments;
-		VruiXine * video_player;
 
-		JointBrowser(Vrui::DraggingTool & t, Editor & e,
-			AccessibleSegments const & as, VruiXine * vp)
-			: Vrui::DraggingToolAdapter{&t}, editor(e)
-			, accessibleSegments(as), video_player(vp)
+		JointBrowser(Vrui::DraggingTool & t, VrApp & a)
+			: Vrui::DraggingToolAdapter{&t}, app(a)
 		{}
-	
+
 		void dragCallback(Vrui::DraggingTool::DragCallbackData *) override;
 		void dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *) override;
 		void idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData *) override;
-
-		private:
-
-			void seek() const;
 	};
 
 	using ToggleEvent = GLMotif::ToggleButton::ValueChangedCallbackData;
 
 	class VrApp: public Vrui::Application, public GLObject
 	{
+		friend struct JointBrowser;
+
 		boost::program_options::variables_map opts;
 		Editor editor;
 		Style style;
@@ -96,6 +92,7 @@ namespace GrappleMap
 		unique_ptr<JointBrowser> jointBrowser;
 		vector<Viable> viables;
 		unique_ptr<VruiXine> video_player;
+		GLMotif::ToggleButton * videoSyncToggle{};
 		GLMotif::PopupWindow * editorControlDialog;
 
 		void on_save_button(Misc::CallbackData *);
@@ -113,6 +110,8 @@ namespace GrappleMap
 		void on_sync_video_toggle(ToggleEvent *);
 
 		GLMotif::PopupWindow * createEditorControlDialog();
+
+		void video_sync();
 
 		void initContext(GLContextData& contextData) const override
 		{

@@ -265,50 +265,48 @@ void VruiXine::xineOutputCallback(void* userData,int frameFormat,int frameWidth,
 	newFrame.aspectRatio=Vrui::Scalar(frameAspect);
 
 	/* Record the frame: */
-	thisPtr->recordedFrames[thisPtr->recordIndex] = newFrame;
-	if (++thisPtr->recordIndex == thisPtr->recordedFrames.size())
-		thisPtr->recordIndex = 0;
+	thisPtr->recordedFrames[thisPtr->oldestRecord] = newFrame;
+	if (++thisPtr->oldestRecord == thisPtr->recordedFrames.size())
+		thisPtr->oldestRecord = 0;
 
 	/* Post the new video frame and wake up the main thread: */
 	thisPtr->videoFrames.postNewValue();
 	Vrui::requestUpdate();
+	thisPtr->showingRecordedFrame = boost::none;
 	}
 
-void VruiXine::goto_recorded(size_t frames_ago)
+void VruiXine::gotoRecorded(size_t const framesSinceOldest)
 {
-	// todo: don't bother if we're already there
-	
-	if (frames_ago >= recordedFrames.size()) return;
+	if (showingRecordedFrame == framesSinceOldest) return;
+
+	if (framesSinceOldest >= recordedFrames.size()) return;
 
 	videoFrames.startNewValue() = recordedFrames[
-		(int(recordIndex) - 1 - frames_ago + recordedFrames.size()) % recordedFrames.size()];
+		(oldestRecord + framesSinceOldest + recordedFrames.size()) % recordedFrames.size()];
 
-	microPlaybackSlider->setValue(recordedFrames.size() - 1 - frames_ago);
+	microPlaybackSlider->setValue(framesSinceOldest);
 
 	videoFrames.postNewValue();
 	Vrui::requestUpdate();
-}
-
-size_t VruiXine::microPlaybackSliderValue() const
-{
-	return recordedFrames.size() - 1 - microPlaybackSlider->getValue();
+	showingRecordedFrame = framesSinceOldest;
 }
 
 double const fps = 30; // todo: get real value
 
 void VruiXine::setTimeRef(boost::optional<double> const t)
 {
-	if (t) timeRef = *t + microPlaybackSliderValue() / fps;
+	if (t)
+	{
+		if (!showingRecordedFrame) return;
+
+		timeRef = *t - *showingRecordedFrame / fps;
+	}
 	else timeRef = boost::none;
 }
 
 void VruiXine::seek(double const t)
 {
-	if (!timeRef) return;
-
-	double const secondsAgo = *timeRef - t;
-
-	goto_recorded(secondsAgo * fps);
+	if (timeRef) gotoRecorded((t - *timeRef) * fps);
 }
 
 void VruiXine::xineOverlayCallback(void* userData,int numOverlays,raw_overlay_t* overlays)
@@ -1015,7 +1013,7 @@ void VruiXine::playbackSliderDraggingCallback(GLMotif::DragWidget::DraggingCallb
 
 void VruiXine::microPlaybackSliderValueChangedCallback(GLMotif::Slider::ValueChangedCallbackData* cbData)
 {
-	goto_recorded(recordedFrames.size() - 1 - cbData->value);
+	gotoRecorded(cbData->value);
 }
 
 void VruiXine::playbackSliderValueChangedCallback(GLMotif::Slider::ValueChangedCallbackData* cbData)
@@ -1075,8 +1073,8 @@ GLMotif::PopupWindow* VruiXine::createPlaybackControlDialog(void)
 		microRow->setPacking(GLMotif::RowColumn::PACK_TIGHT);
 
 		microPlaybackSlider=new GLMotif::Slider("PlaybackSlider",microRow,GLMotif::Slider::HORIZONTAL,ss.fontHeight*25.0f);
-		microPlaybackSlider->setValueRange(0.0,recordedFrames.size() - 1.0,1.0);
-		microPlaybackSlider->setValue(0.0);
+		microPlaybackSlider->setValueRange(0, recordedFrames.size() - 1, 1);
+		microPlaybackSlider->setValue(0);
 		microPlaybackSlider->getValueChangedCallbacks().add(this,&VruiXine::microPlaybackSliderValueChangedCallback);
 
 		microRow->manageChild();
@@ -1177,7 +1175,7 @@ GLMotif::PopupWindow* VruiXine::createScreenControlDialog(void)
 	
 	new GLMotif::Label("ScreenAzimuthLabel",screenRotationBox,"Azimuth");
 	
-	GLMotif::TextFieldSlider* screenAzimuthSlider=new GLMotif::TextFieldSlider("ScreenAzimuthSlider",screenRotationBox,5,ss.fontHeight*50.0f);
+	GLMotif::TextFieldSlider* screenAzimuthSlider=new GLMotif::TextFieldSlider("ScreenAzimuthSlider",screenRotationBox,5,ss.fontHeight*25.0f);
 	screenAzimuthSlider->setSliderMapping(GLMotif::TextFieldSlider::LINEAR);
 	screenAzimuthSlider->setValueType(GLMotif::TextFieldSlider::INT);
 	screenAzimuthSlider->setValueRange(-180.0,180.0,1.0);

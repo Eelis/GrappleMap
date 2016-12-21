@@ -6,7 +6,7 @@ namespace GrappleMap
 	void JointBrowser::idleMotionCallback(Vrui::DraggingTool::IdleMotionCallbackData * const cbData)
 	{
 		joint = closest_joint(
-			editor.current_position(),
+			app.editor.current_position(),
 			v3(cbData->currentTransformation.getTranslation()),
 			0.3);
 	}
@@ -20,11 +20,11 @@ namespace GrappleMap
 		struct Best { Reoriented<Location> loc; double score; };
 		optional<Best> best;
 
-		foreach (cand : accessibleSegments[*joint])
+		foreach (cand : app.accessibleSegments[*joint])
 		{
 			V3 const
-				rayOrigin = at(from_pos(cand), editor.getGraph())[*joint],
-				rayTarget = at(to_pos(cand), editor.getGraph())[*joint],
+				rayOrigin = at(from_pos(cand), app.editor.getGraph())[*joint],
+				rayTarget = at(to_pos(cand), app.editor.getGraph())[*joint],
 				rayDir = rayTarget - rayOrigin;
 
 			double c = closest(rayOrigin, rayDir, cursor);
@@ -43,21 +43,13 @@ namespace GrappleMap
 
 		if (best)
 		{
-			editor.setLocation(best->loc);
-			seek();
+			app.editor.setLocation(best->loc);
+			app.video_sync();
 		}
-	}
-
-	void JointBrowser::seek() const
-	{
-		if (!video_player) return;
-
-		if (auto t = timeInSelection(editor))
-			video_player->seek(*t);
 	}
 
 	void JointBrowser::dragEndCallback(Vrui::DraggingTool::DragEndCallbackData *)
 	{
-		if (snapToPos(editor)) seek();
+		if (snapToPos(app.editor)) app.video_sync();
 	}
 }

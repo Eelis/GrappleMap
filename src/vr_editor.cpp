@@ -64,12 +64,25 @@ namespace GrappleMap
 		}
 	}
 
+	void VrApp::video_sync()
+	{
+		if (videoSyncToggle->getToggle() && video_player)
+			if (auto t = timeInSelection(editor))
+				video_player->seek(*t);
+	}
+
 	void VrApp::on_lock_toggle(ToggleEvent * cb) { editor.toggle_lock(cb->set); }
 	void VrApp::on_playback_toggle(ToggleEvent *) { editor.toggle_playback(); }
-	void VrApp::on_select_button(Misc::CallbackData *) { editor.toggle_selected(); }
+
+	void VrApp::on_select_button(Misc::CallbackData *)
+	{
+		editor.toggle_selected();
+		// todo: (re)sync video
+	}
+
 	void VrApp::on_save_button(Misc::CallbackData *) { editor.save(); }
-	void VrApp::on_delete_keyframe_button(Misc::CallbackData *) { editor.delete_keyframe(); }
-	void VrApp::on_undo_button(Misc::CallbackData *) { editor.undo(); }
+	void VrApp::on_delete_keyframe_button(Misc::CallbackData *) { editor.delete_keyframe(); video_sync(); }
+	void VrApp::on_undo_button(Misc::CallbackData *) { editor.undo(); video_sync(); }
 	void VrApp::on_mirror_button(Misc::CallbackData *) { editor.mirror(); }
 	void VrApp::on_swap_button(Misc::CallbackData *) { swap_players(editor); }
 	void VrApp::on_branch_button(Misc::CallbackData *) { editor.branch(); }
@@ -148,12 +161,12 @@ namespace GrappleMap
 		, opts(getopts(argc, argv))
 		, editor(opts)
 		, scale(opts["scale"].as<double>())
+		, video_player(opts.count("video")
+			? new VruiXine({"vruixine", opts["video"].as<string>()})
+			: nullptr)
+		, editorControlDialog(createEditorControlDialog())
 	{
-		if (opts.count("video"))
-			video_player.reset(new VruiXine(
-				std::vector<std::string>{"vruixine", opts["video"].as<string>()}));
 		style.grid_size = 20;
-		editorControlDialog=createEditorControlDialog();
 		Vrui::popupPrimaryWidget(editorControlDialog);
 		Vrui::getWidgetManager()->hide(editorControlDialog);
 	}
@@ -177,13 +190,14 @@ namespace GrappleMap
 				auto t = new GLMotif::ToggleButton(n, dialog, n);
 				t->setToggle(b);
 				t->getValueChangedCallbacks().add(this, h);
+				return t;
 			};
 
 		toggle("Playback", &VrApp::on_playback_toggle, bool(editor.playingBack()));
 		toggle("Confine browsing to selection", &VrApp::on_lock_toggle, editor.lockedToSelection());
 		toggle("Confine edits to interpolations", &VrApp::on_confine_edits_toggle, confineEdits);
 		toggle("Enable keyframe insertion", &VrApp::on_keyframe_insertion_enabled_toggle, keyframeInsertionEnabled);
-		toggle("Sync Video", &VrApp::on_sync_video_toggle, false);
+		videoSyncToggle = toggle("Sync Video", &VrApp::on_sync_video_toggle, false);
 
 		btn("Undo edit", &VrApp::on_undo_button);
 		btn("Mirror position", &VrApp::on_mirror_button);
@@ -207,7 +221,7 @@ namespace GrappleMap
 		{
 			switch (tools_created++)
 			{
-				case 0: jointBrowser.reset(new JointBrowser(*tool, editor, accessibleSegments, video_player.get())); break;
+				case 0: jointBrowser.reset(new JointBrowser(*tool, *this)); break;
 				case 1:
 					jointEditor.reset(new JointEditor(*tool, editor));
 					jointEditor->confined = confineEdits;

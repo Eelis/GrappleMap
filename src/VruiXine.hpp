@@ -182,15 +182,16 @@ class VruiXine
 	unsigned int screenParametersVersion; // Version number of screen parameters, including aspect ratio of current frame
 	GLMotif::PopupWindow* screenControlDialog; // Dialog window to control the position and size of the virtual video projection screen
 
-	unsigned recordIndex = 0;
-	std::vector<Frame> recordedFrames{300}; // 10 seconds at 30 fps, 5 seconds at 60 fps
+	unsigned oldestRecord = 0;
+	std::vector<Frame> recordedFrames{150}; // 5 seconds at 30 fps
 	boost::optional<double> timeRef = 0;
+	boost::optional<size_t> showingRecordedFrame;
+	void gotoRecorded(size_t framesSinceOldest);
 	
 	/* Private methods: */
 	static void xineEventCallback(void* userData,const xine_event_t* event); // Callback called when a playback event occurs
 	static void xineOutputCallback(void* userData,int frameFormat,int frameWidth,int frameHeight,double frameAspect,void* data0,void* data1,void* data2); // Callback called from video output plug-in when a new video frame is ready for display
 	static void xineOverlayCallback(void* userData,int numOverlays,raw_overlay_t* overlays); // Callback called from video output plug-in when an overlay needs to be merged into the video stream
-	size_t microPlaybackSliderValue() const;
 	void xineSendEvent(int eventId); // Sends an event to the xine library
 	void shutdownXine(void); // Cleanly shuts down the xine library
 	void setStereoMode(int newStereoMode);
@@ -246,7 +247,6 @@ class VruiXine
 
 	/* Recording: */
 	void setTimeRef(boost::optional<double> t);
-	void goto_recorded(size_t);
 	void seek(double t /* in seconds */);
 		// The user story (for now) is:
 		//  1) pause playback after ~5 seconds of uninterrupted playback

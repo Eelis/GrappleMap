@@ -58,6 +58,7 @@ namespace GrappleMap
 			if (!keyframeInsertionEnabled) return;
 
 			editor.insert_keyframe();
+			// todo: app.video_sync();
 
 			Position p = editor.current_position();
 			for(int i = 0; i != 30; ++i) spring(p);
@@ -67,7 +68,6 @@ namespace GrappleMap
 				editor.current_position(),
 				v3(cb->startTransformation.getTranslation()));
 		}
-
 
 		{
 			vector<Position> v;
