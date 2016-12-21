@@ -30,9 +30,10 @@ namespace GrappleMap
 		optional<vector<Position> const> start_seq;
 		optional<Reorientation> dragTransform;
 		bool confined = false;
+		bool keyframeInsertionEnabled = false;
 
-		JointEditor(Vrui::DraggingTool & t, Editor & e, bool confined)
-			: Vrui::DraggingToolAdapter{&t}, editor(e), confined(confined)
+		JointEditor(Vrui::DraggingTool & t, Editor & e)
+			: Vrui::DraggingToolAdapter{&t}, editor(e)
 		{}
 
 		void dragStartCallback(Vrui::DraggingTool::DragStartCallbackData *) override;
@@ -90,6 +91,7 @@ namespace GrappleMap
 		double const scale;
 		unique_ptr<JointEditor> jointEditor;
 		bool confineEdits = false;
+		bool keyframeInsertionEnabled = false;
 		AccessibleSegments accessibleSegments;
 		unique_ptr<JointBrowser> jointBrowser;
 		vector<Viable> viables;
@@ -107,6 +109,7 @@ namespace GrappleMap
 		void on_lock_toggle(ToggleEvent *);
 		void on_playback_toggle(ToggleEvent *);
 		void on_confine_edits_toggle(ToggleEvent *);
+		void on_keyframe_insertion_enabled_toggle(ToggleEvent *);
 		void on_sync_video_toggle(ToggleEvent *);
 
 		GLMotif::PopupWindow * createEditorControlDialog();

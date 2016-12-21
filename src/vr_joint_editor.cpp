@@ -55,6 +55,8 @@ namespace GrappleMap
 
 		if (!is_at_keyframe(editor))
 		{
+			if (!keyframeInsertionEnabled) return;
+
 			editor.insert_keyframe();
 
 			Position p = editor.current_position();

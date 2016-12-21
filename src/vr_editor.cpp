@@ -137,6 +137,12 @@ namespace GrappleMap
 		if (jointEditor) jointEditor->confined = confineEdits;
 	}
 
+	void VrApp::on_keyframe_insertion_enabled_toggle(ToggleEvent * e)
+	{
+		keyframeInsertionEnabled = e->set;
+		if (jointEditor) jointEditor->keyframeInsertionEnabled = keyframeInsertionEnabled;
+	}
+
 	VrApp::VrApp(int argc, char ** argv)
 		: Vrui::Application(argc, argv)
 		, opts(getopts(argc, argv))
@@ -176,6 +182,7 @@ namespace GrappleMap
 		toggle("Playback", &VrApp::on_playback_toggle, bool(editor.playingBack()));
 		toggle("Confine browsing to selection", &VrApp::on_lock_toggle, editor.lockedToSelection());
 		toggle("Confine edits to interpolations", &VrApp::on_confine_edits_toggle, confineEdits);
+		toggle("Enable keyframe insertion", &VrApp::on_keyframe_insertion_enabled_toggle, keyframeInsertionEnabled);
 		toggle("Sync Video", &VrApp::on_sync_video_toggle, false);
 
 		btn("Undo edit", &VrApp::on_undo_button);
@@ -201,7 +208,11 @@ namespace GrappleMap
 			switch (tools_created++)
 			{
 				case 0: jointBrowser.reset(new JointBrowser(*tool, editor, accessibleSegments, video_player.get())); break;
-				case 1: jointEditor.reset(new JointEditor(*tool, editor, confineEdits)); break;
+				case 1:
+					jointEditor.reset(new JointEditor(*tool, editor));
+					jointEditor->confined = confineEdits;
+					jointEditor->keyframeInsertionEnabled = keyframeInsertionEnabled;
+					break;
 			}
 		}
 	}
