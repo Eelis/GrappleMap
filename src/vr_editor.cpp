@@ -168,7 +168,6 @@ namespace GrappleMap
 	{
 		style.grid_size = 20;
 		Vrui::popupPrimaryWidget(editorControlDialog);
-		Vrui::getWidgetManager()->hide(editorControlDialog);
 	}
 
 	GLMotif::PopupWindow * VrApp::createEditorControlDialog()

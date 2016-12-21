@@ -1318,22 +1318,18 @@ VruiXine::VruiXine(std::vector<std::string> const & args)
 	/* Create the stream control dialog: */
 	streamControlDialog=createStreamControlDialog();
 	Vrui::popupPrimaryWidget(streamControlDialog);
-	Vrui::getWidgetManager()->hide(streamControlDialog);
 	
 	/* Create the DVD navigation dialog: */
 	dvdNavigationDialog=createDvdNavigationDialog();
 	Vrui::popupPrimaryWidget(dvdNavigationDialog);
-	Vrui::getWidgetManager()->hide(dvdNavigationDialog);
 	
 	/* Create the playback control dialog: */
 	playbackControlDialog=createPlaybackControlDialog();
 	Vrui::popupPrimaryWidget(playbackControlDialog);
-	Vrui::getWidgetManager()->hide(playbackControlDialog);
 	
 	/* Create the screen control dialog: */
 	screenControlDialog=createScreenControlDialog();
 	Vrui::popupPrimaryWidget(screenControlDialog);
-	Vrui::getWidgetManager()->hide(screenControlDialog);
 	
 	/* Create a xine engine instance: */
 	if((xine=xine_new())==0)
