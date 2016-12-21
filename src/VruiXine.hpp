@@ -163,6 +163,7 @@ class VruiXine
 	GLMotif::PopupWindow* playbackControlDialog; // Dialog window to control playback position
 	GLMotif::TextField* playbackPositionText; // Text field showing the current playback position
 	GLMotif::Slider* playbackSlider; // Slider to drag the current playback position
+	GLMotif::Slider* microPlaybackSlider;
 	bool playbackSliderDragging; // Flag whether the playback slider is currently being dragged
 	GLMotif::TextField* streamLengthText; // Text field showing the length of the current stream
 	double playbackPosCheckTime; // Next application time at which to check the playback position
@@ -189,6 +190,7 @@ class VruiXine
 	static void xineEventCallback(void* userData,const xine_event_t* event); // Callback called when a playback event occurs
 	static void xineOutputCallback(void* userData,int frameFormat,int frameWidth,int frameHeight,double frameAspect,void* data0,void* data1,void* data2); // Callback called from video output plug-in when a new video frame is ready for display
 	static void xineOverlayCallback(void* userData,int numOverlays,raw_overlay_t* overlays); // Callback called from video output plug-in when an overlay needs to be merged into the video stream
+	size_t microPlaybackSliderValue() const;
 	void xineSendEvent(int eventId); // Sends an event to the xine library
 	void shutdownXine(void); // Cleanly shuts down the xine library
 	void setStereoMode(int newStereoMode);
@@ -218,6 +220,7 @@ class VruiXine
 	void skipAheadCallback(Misc::CallbackData* cbData); // Callback called when the "skip ahead" button is pressed
 	void playbackSliderDraggingCallback(GLMotif::DragWidget::DraggingCallbackData* cbData); // Callback called when the playback slider is being dragged
 	void playbackSliderValueChangedCallback(GLMotif::Slider::ValueChangedCallbackData* cbData); // Callback called when the playback slider changes value
+	void microPlaybackSliderValueChangedCallback(GLMotif::Slider::ValueChangedCallbackData* cbData);
 	GLMotif::PopupWindow* createPlaybackControlDialog(void); // Creates the playback control dialog
 	void screenModesValueChangedCallback(GLMotif::RadioBox::ValueChangedCallbackData* cbData); // Callback called when the theater mode toggle is toggled
 	void screenDistanceValueChangedCallback(GLMotif::TextFieldSlider::ValueChangedCallbackData* cbData); // Callback called when the screen distance slider changes value
@@ -242,13 +245,15 @@ class VruiXine
 	virtual void initContext(GLContextData& contextData, GLObject const *) const;
 
 	/* Recording: */
-	void setTimeRef(boost::optional<double> t) { timeRef = t; }
+	void setTimeRef(boost::optional<double> t);
+	void goto_recorded(size_t);
 	void seek(double t /* in seconds */);
-		// The idea (for now) is:
+		// The user story (for now) is:
 		//  1) pause playback after ~5 seconds of uninterrupted playback
-		//  2) call setTimeRef(t) to mark the current frame (which is also
-		//     the end of the recording) as t
-		//  3) call seek(t') with t' < t
+		//  2) use the microplayback slider to inspect the recorded buffer
+		//     and go to a recognizable moment
+		//  3) browse the position to the corresponding moment
+		//  4) synchronize
 
 	};
 

@@ -274,24 +274,41 @@ void VruiXine::xineOutputCallback(void* userData,int frameFormat,int frameWidth,
 	Vrui::requestUpdate();
 	}
 
+void VruiXine::goto_recorded(size_t frames_ago)
+{
+	// todo: don't bother if we're already there
+	
+	if (frames_ago >= recordedFrames.size()) return;
+
+	videoFrames.startNewValue() = recordedFrames[
+		(int(recordIndex) - 1 - frames_ago + recordedFrames.size()) % recordedFrames.size()];
+
+	microPlaybackSlider->setValue(recordedFrames.size() - 1 - frames_ago);
+
+	videoFrames.postNewValue();
+	Vrui::requestUpdate();
+}
+
+size_t VruiXine::microPlaybackSliderValue() const
+{
+	return recordedFrames.size() - 1 - microPlaybackSlider->getValue();
+}
+
+double const fps = 30; // todo: get real value
+
+void VruiXine::setTimeRef(boost::optional<double> const t)
+{
+	if (t) timeRef = *t + microPlaybackSliderValue() / fps;
+	else timeRef = boost::none;
+}
+
 void VruiXine::seek(double const t)
 {
 	if (!timeRef) return;
 
 	double const secondsAgo = *timeRef - t;
 
-	double const fps = 30; // todo: get real value
-
-	size_t const i = secondsAgo * fps; // todo: think about rounding
-
-	if (0 <= i && i < recordedFrames.size())
-	{
-		videoFrames.startNewValue() = recordedFrames[
-			(recordIndex - 1 - i + recordedFrames.size()) % recordedFrames.size()];
-
-		videoFrames.postNewValue();
-		Vrui::requestUpdate();
-	}
+	goto_recorded(secondsAgo * fps);
 }
 
 void VruiXine::xineOverlayCallback(void* userData,int numOverlays,raw_overlay_t* overlays)
@@ -996,6 +1013,11 @@ void VruiXine::playbackSliderDraggingCallback(GLMotif::DragWidget::DraggingCallb
 		}
 	}
 
+void VruiXine::microPlaybackSliderValueChangedCallback(GLMotif::Slider::ValueChangedCallbackData* cbData)
+{
+	goto_recorded(recordedFrames.size() - 1 - cbData->value);
+}
+
 void VruiXine::playbackSliderValueChangedCallback(GLMotif::Slider::ValueChangedCallbackData* cbData)
 	{
 	/* Update the playback position text field to the current slider position: */
@@ -1013,33 +1035,55 @@ GLMotif::PopupWindow* VruiXine::createPlaybackControlDialog(void)
 	GLMotif::PopupWindow* playbackControlDialogPopup=new GLMotif::PopupWindow("PlaybackControlDialogPopup",Vrui::getWidgetManager(),"Playback Control");
 	playbackControlDialogPopup->setResizableFlags(true,false);
 	
-	GLMotif::RowColumn* playbackControlDialog=new GLMotif::RowColumn("PlaybackControlDialog",playbackControlDialogPopup,false);
-	playbackControlDialog->setOrientation(GLMotif::RowColumn::HORIZONTAL);
-	playbackControlDialog->setPacking(GLMotif::RowColumn::PACK_TIGHT);
-	
-	playbackPositionText=new GLMotif::TextField("PlaybackPositionText",playbackControlDialog,9);
-	playbackPositionText->setString("00:00:00");
-	
-	GLMotif::NewButton* skipBackButton=new GLMotif::NewButton("SkipBackButton",playbackControlDialog);
-	skipBackButton->getSelectCallbacks().add(this,&VruiXine::skipBackCallback);
-	new GLMotif::Glyph("LeftGlyph",skipBackButton,GLMotif::GlyphGadget::SIMPLE_ARROW_LEFT,GLMotif::GlyphGadget::IN);
-	
-	playbackSlider=new GLMotif::Slider("PlaybackSlider",playbackControlDialog,GLMotif::Slider::HORIZONTAL,ss.fontHeight*25.0f);
-	playbackSlider->setValueRange(0.0,1.0,1.0);
-	playbackSlider->setValue(0.0);
-	playbackSlider->getDraggingCallbacks().add(this,&VruiXine::playbackSliderDraggingCallback);
-	playbackSlider->getValueChangedCallbacks().add(this,&VruiXine::playbackSliderValueChangedCallback);
-	
-	GLMotif::NewButton* skipAheadButton=new GLMotif::NewButton("SkipAheadButton",playbackControlDialog);
-	skipAheadButton->getSelectCallbacks().add(this,&VruiXine::skipAheadCallback);
-	new GLMotif::Glyph("RightGlyph",skipAheadButton,GLMotif::GlyphGadget::SIMPLE_ARROW_RIGHT,GLMotif::GlyphGadget::IN);
-	
-	streamLengthText=new GLMotif::TextField("StreamLengthText",playbackControlDialog,9);
-	streamLengthText->setString("00:00:00");
-	
-	playbackControlDialog->setColumnWeight(1,1.0);
-	
-	playbackControlDialog->manageChild();
+
+	GLMotif::RowColumn * column = new GLMotif::RowColumn("EditorControlDialog", playbackControlDialogPopup, false);
+
+	{
+		GLMotif::RowColumn* playbackControlDialog=new GLMotif::RowColumn("PlaybackControlDialog",column,false);
+		playbackControlDialog->setOrientation(GLMotif::RowColumn::HORIZONTAL);
+		playbackControlDialog->setPacking(GLMotif::RowColumn::PACK_TIGHT);
+		
+		playbackPositionText=new GLMotif::TextField("PlaybackPositionText",playbackControlDialog,9);
+		playbackPositionText->setString("00:00:00");
+		
+		GLMotif::NewButton* skipBackButton=new GLMotif::NewButton("SkipBackButton",playbackControlDialog);
+		skipBackButton->getSelectCallbacks().add(this,&VruiXine::skipBackCallback);
+		new GLMotif::Glyph("LeftGlyph",skipBackButton,GLMotif::GlyphGadget::SIMPLE_ARROW_LEFT,GLMotif::GlyphGadget::IN);
+		
+		playbackSlider=new GLMotif::Slider("PlaybackSlider",playbackControlDialog,GLMotif::Slider::HORIZONTAL,ss.fontHeight*25.0f);
+		playbackSlider->setValueRange(0.0,1.0,1.0);
+		playbackSlider->setValue(0.0);
+		playbackSlider->getDraggingCallbacks().add(this,&VruiXine::playbackSliderDraggingCallback);
+		playbackSlider->getValueChangedCallbacks().add(this,&VruiXine::playbackSliderValueChangedCallback);
+		
+		GLMotif::NewButton* skipAheadButton=new GLMotif::NewButton("SkipAheadButton",playbackControlDialog);
+		skipAheadButton->getSelectCallbacks().add(this,&VruiXine::skipAheadCallback);
+		new GLMotif::Glyph("RightGlyph",skipAheadButton,GLMotif::GlyphGadget::SIMPLE_ARROW_RIGHT,GLMotif::GlyphGadget::IN);
+		
+		streamLengthText=new GLMotif::TextField("StreamLengthText",playbackControlDialog,9);
+		streamLengthText->setString("00:00:00");
+		
+		playbackControlDialog->setColumnWeight(1,1.0);
+		
+		playbackControlDialog->manageChild();
+	}
+
+
+	{
+		GLMotif::RowColumn* microRow=new GLMotif::RowColumn("MicroRow",column,false);
+		microRow->setOrientation(GLMotif::RowColumn::HORIZONTAL);
+		microRow->setPacking(GLMotif::RowColumn::PACK_TIGHT);
+
+		microPlaybackSlider=new GLMotif::Slider("PlaybackSlider",microRow,GLMotif::Slider::HORIZONTAL,ss.fontHeight*25.0f);
+		microPlaybackSlider->setValueRange(0.0,recordedFrames.size() - 1.0,1.0);
+		microPlaybackSlider->setValue(0.0);
+		microPlaybackSlider->getValueChangedCallbacks().add(this,&VruiXine::microPlaybackSliderValueChangedCallback);
+
+		microRow->manageChild();
+	}
+
+
+	column->manageChild();
 	
 	return playbackControlDialogPopup;
 	}

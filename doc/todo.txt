@@ -33,16 +33,18 @@ vrui frontend:
 - position-in-sequence labels
 - interface for inserting new transitions
 - graph display
-- update menu entries (e.g. only show one of insert/remove keyframe, and 'enable/disable blabla' instead of 'toggle blabla')
+- update menu entries (e.g. disable "remove keyframe")
 - write tutorial
-- menu button for resetting navigation matrix
 - allow dynamically unmapping tools
 - support desktop mode where cursor is a ray
 - video player reorientation, ideally using ordinary window decorations
-- optionally couple video playback to selection position (so that if we have a real-time clip of a technique, we can copy the timing exactly)
 - re-sync/seek video after adding/removing keyframes
-- slider for video sync offset
 - dialogs often open in weird place
+- make microplayback slider more managable
+- different idiom for microplayback: zoom mode. in zoom mode, the normal
+  slider is replaced with the microplayback slider
+- quickly record frames in non-real-time when zoom mode is entered,
+  so that zoomed seeking works without preconditions
 
 playback:
 - make {pre,post}fix length for demo mode configurable
