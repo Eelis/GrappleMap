@@ -355,41 +355,22 @@ void VruiXine::xineSendEvent(int eventId)
 		{
 		/* Prepare a xine event: */
 		xine_event_t event;
-		event.stream=stream;
+		event.stream=&*stream;
 		event.data=0;
 		event.data_length=0;
 		event.type=xineEventTypes[eventId];
 		
 		/* Send the event: */
-		xine_event_send(stream,&event);
+		xine_event_send(&*stream,&event);
 		}
 	else if(eventId==14)
 		{
 		/* Toggle pause state: */
-		if(xine_get_param(stream,XINE_PARAM_SPEED)==XINE_SPEED_PAUSE)
-			xine_set_param(stream,XINE_PARAM_SPEED,XINE_SPEED_NORMAL);
+		if(xine_get_param(&*stream,XINE_PARAM_SPEED)==XINE_SPEED_PAUSE)
+			xine_set_param(&*stream,XINE_PARAM_SPEED,XINE_SPEED_NORMAL);
 		else
-			xine_set_param(stream,XINE_PARAM_SPEED,XINE_SPEED_PAUSE);
+			xine_set_param(&*stream,XINE_PARAM_SPEED,XINE_SPEED_PAUSE);
 		}
-	}
-
-void VruiXine::shutdownXine(void)
-	{
-	if(eventQueue!=0)
-		xine_event_dispose_queue(eventQueue);
-	eventQueue=0;
-	if(stream!=0)
-		xine_dispose(stream);
-	stream=0;
-	if(videoOutPort!=0)
-		xine_close_video_driver(xine,videoOutPort);
-	videoOutPort=0;
-	if(audioOutPort!=0)
-		xine_close_audio_driver(xine,audioOutPort);
-	audioOutPort=0;
-	if(xine!=0)
-		xine_exit(xine);
-	xine=0;
 	}
 
 void VruiXine::setStereoMode(int newStereoMode)
@@ -545,7 +526,7 @@ void VruiXine::loadVideo(const char* newVideoFileName)
 		/* Open a DVD image inside an iso file: */
 		std::string mrl="dvd:/";
 		mrl.append(newVideoFileName);
-		if(!xine_open(stream,mrl.c_str())||!xine_play(stream,0,0))
+		if(!xine_open(&*stream,mrl.c_str())||!xine_play(&*stream,0,0))
 			{
 			/* Signal an error and bail out: */
 			Misc::formattedUserError("Load Video: Unable to play DVD %s",newVideoFileName);
@@ -555,7 +536,7 @@ void VruiXine::loadVideo(const char* newVideoFileName)
 	else
 		{
 		/* Open a video file: */
-		if(!xine_open(stream,newVideoFileName)||!xine_play(stream,0,0))
+		if(!xine_open(&*stream,newVideoFileName)||!xine_play(&*stream,0,0))
 			{
 			/* Signal an error and bail out: */
 			Misc::formattedUserError("Load Video: Unable to play video file %s",newVideoFileName);
@@ -597,7 +578,7 @@ void VruiXine::loadVideo(const char* newVideoFileName)
 		}
 	
 	/* Set the stream's audio volume: */
-	xine_set_param(stream,XINE_PARAM_AUDIO_VOLUME,int(Math::floor(volumeSlider->getValue()+0.5)));
+	xine_set_param(&*stream,XINE_PARAM_AUDIO_VOLUME,int(Math::floor(volumeSlider->getValue()+0.5)));
 	}
 
 void VruiXine::stereoModesValueChangedCallback(GLMotif::RadioBox::ValueChangedCallbackData* cbData)
@@ -811,7 +792,7 @@ void VruiXine::saveConfigurationCallback(Misc::CallbackData*)
 void VruiXine::volumeSliderValueChangedCallback(GLMotif::Slider::ValueChangedCallbackData* cbData)
 	{
 	/* Set the stream's audio volume: */
-	xine_set_param(stream,XINE_PARAM_AUDIO_VOLUME,int(Math::floor(cbData->value+0.5)));
+	xine_set_param(&*stream,XINE_PARAM_AUDIO_VOLUME,int(Math::floor(cbData->value+0.5)));
 	}
 
 GLMotif::PopupWindow* VruiXine::createDvdNavigationDialog(void)
@@ -983,7 +964,7 @@ void VruiXine::skipBackCallback(Misc::CallbackData*)
 	{
 	/* Skip back by 10 seconds: */
 	double newTime=playbackSlider->getValue()-10.0;
-	xine_play(stream,0,int(newTime*1000.0+0.5));
+	xine_play(&*stream,0,int(newTime*1000.0+0.5));
 	
 	/* Invalidate the playback position: */
 	playbackPosCheckTime=0.0;
@@ -993,7 +974,7 @@ void VruiXine::skipAheadCallback(Misc::CallbackData*)
 	{
 	/* Skip ahead by 10 seconds: */
 	double newTime=playbackSlider->getValue()+10.0;
-	xine_play(stream,0,int(newTime*1000.0+0.5));
+	xine_play(&*stream,0,int(newTime*1000.0+0.5));
 	
 	/* Invalidate the playback position: */
 	playbackPosCheckTime=0.0;
@@ -1004,7 +985,7 @@ void VruiXine::playbackSliderDraggingCallback(GLMotif::DragWidget::DraggingCallb
 	if(cbData->reason==GLMotif::DragWidget::DraggingCallbackData::DRAGGING_STOPPED)
 		{
 		/* Set the playback position in the current stream: */
-		xine_play(stream,0,int(playbackSlider->getValue()*1000.0+0.5));
+		xine_play(&*stream,0,int(playbackSlider->getValue()*1000.0+0.5));
 		
 		/* Invalidate the playback position: */
 		playbackPosCheckTime=0.0;
@@ -1193,23 +1174,16 @@ GLMotif::PopupWindow* VruiXine::createScreenControlDialog(void)
 	}
 
 VruiXine::VruiXine(std::vector<std::string> const & args)
-	:xine(0),videoOutPort(0),audioOutPort(0),stream(0),eventQueue(0),
-	 videoFileSelectionHelper(Vrui::getWidgetManager(),"",".mp4;.iso",Vrui::openDirectory(".")),
+	:videoFileSelectionHelper(Vrui::getWidgetManager(),"",".mp4;.iso",Vrui::openDirectory(".")),
 	 videoFrameVersion(0),overlaySetVersion(0),
-	 streamControlDialog(0),
-	 dvdNavigationDialog(0),
-	 playbackControlDialog(0),
 	 playbackPosCheckTime(0.0),streamLength(0.0),
 	 aspectRatio(Vrui::Scalar(16.0/9.0)),
 	 stereoMode(0),stereoLayout(0),stereoSquashed(false),forceMono(false),stereoSeparation(0.0f),
-	 screenParametersVersion(1),
-	 screenControlDialog(0)
+	 screenParametersVersion(1)
 	{
 	frameSize[0]=frameSize[1]=0;
 	
 	/* Parse the command line: */
-	const char* videoOutDriver=0;
-	const char* audioOutDriver=0;
 	const char* mrl=0;
 	crop[3]=crop[2]=crop[1]=crop[0]=0;
 	bool startPaused=false;
@@ -1223,23 +1197,7 @@ VruiXine::VruiXine(std::vector<std::string> const & args)
 		{
 		if(argv[i][0]=='-')
 			{
-			if(strcasecmp(argv[i]+1,"vo")==0)
-				{
-				++i;
-				if(i<argc)
-					videoOutDriver=argv[i];
-				else
-					std::cerr<<"Dangling option -vo ignored"<<std::endl;
-				}
-			else if(strcasecmp(argv[i]+1,"ao")==0)
-				{
-				++i;
-				if(i<argc)
-					audioOutDriver=argv[i];
-				else
-					std::cerr<<"Dangling option -ao ignored"<<std::endl;
-				}
-			else if(strcasecmp(argv[i]+1,"sideBySide")==0||strcasecmp(argv[i]+1,"sbs")==0)
+			if(strcasecmp(argv[i]+1,"sideBySide")==0||strcasecmp(argv[i]+1,"sbs")==0)
 				{
 				std::cout<<"Enabling side-by-side stereo"<<std::endl;
 				stereoMode=1;
@@ -1316,96 +1274,36 @@ VruiXine::VruiXine(std::vector<std::string> const & args)
 //	addEventTool("Pause",baseToolFactory,14);
 	
 	/* Create the stream control dialog: */
-	streamControlDialog=createStreamControlDialog();
-	Vrui::popupPrimaryWidget(streamControlDialog);
+	streamControlDialog.reset(createStreamControlDialog());
+	Vrui::popupPrimaryWidget(streamControlDialog.get());
 	
 	/* Create the DVD navigation dialog: */
-	dvdNavigationDialog=createDvdNavigationDialog();
-	Vrui::popupPrimaryWidget(dvdNavigationDialog);
+	dvdNavigationDialog.reset(createDvdNavigationDialog());
+	Vrui::popupPrimaryWidget(dvdNavigationDialog.get());
 	
 	/* Create the playback control dialog: */
-	playbackControlDialog=createPlaybackControlDialog();
-	Vrui::popupPrimaryWidget(playbackControlDialog);
+	playbackControlDialog.reset(createPlaybackControlDialog());
+	Vrui::popupPrimaryWidget(playbackControlDialog.get());
 	
 	/* Create the screen control dialog: */
-	screenControlDialog=createScreenControlDialog();
-	Vrui::popupPrimaryWidget(screenControlDialog);
+	screenControlDialog.reset(createScreenControlDialog());
+	Vrui::popupPrimaryWidget(screenControlDialog.get());
 	
-	/* Create a xine engine instance: */
-	if((xine=xine_new())==0)
-		throw std::runtime_error("VruiXine: Error while creating xine engine instance");
-	
-	/* Load xine's configuration file: */
-	std::string configFileName=xine_get_homedir();
-	configFileName.push_back('/');
-	configFileName.append(".xine/config");
-	xine_config_load(xine,configFileName.c_str());
-	
-	/* Initialize the xine engine instance: */
-	xine_init(xine);
-	
-	/* Create a video output port: */
-	raw_visual_t rawVisual;
-	rawVisual.user_data=this;
-	rawVisual.supported_formats=XINE_VORAW_YV12|XINE_VORAW_RGB;
-	rawVisual.raw_output_cb=xineOutputCallback;
-	rawVisual.raw_overlay_cb=xineOverlayCallback;
-	if((videoOutPort=xine_open_video_driver(xine,videoOutDriver,XINE_VISUAL_TYPE_RAW,&rawVisual))==0)
-		{
-		/* Shut down and signal an error: */
-		shutdownXine();
-		Misc::throwStdErr("VruiXine: Error while opening video output port for driver %s",videoOutDriver!=0?videoOutDriver:"auto");
-		}
-	
-	/* Create an audio output port: */
-	if((audioOutPort=xine_open_audio_driver(xine,audioOutDriver,0))==0)
-		{
-		/* Shut down and signal an error: */
-		shutdownXine();
-		Misc::throwStdErr("VruiXine: Error while opening audio output port for driver %s",audioOutDriver!=0?audioOutDriver:"auto");
-		}
-	
-	/* Create a stream object: */
-	if((stream=xine_stream_new(xine,audioOutPort,videoOutPort))==0)
-		{
-		/* Shut down and signal an error: */
-		shutdownXine();
-		throw std::runtime_error("VruiXine: Error while creating multimedia stream object");
-		}
-	
-	/* Create an event queue for the stream and start listening on it: */
-	if((eventQueue=xine_event_new_queue(stream))==0)
-		{
-		/* Shut down and signal an error: */
-		shutdownXine();
-		throw std::runtime_error("VruiXine: Error while creating event queue");
-		}
-	xine_event_create_listener_thread(eventQueue,xineEventCallback,this);
+	xine_event_create_listener_thread(&*eventQueue,xineEventCallback,this);
 	
 	/* Open the stream MRL: */
 	loadVideo(mrl);
 	
 	if(startPaused)
-		xine_set_param(stream,XINE_PARAM_SPEED,XINE_SPEED_PAUSE);
+		xine_set_param(&*stream,XINE_PARAM_SPEED,XINE_SPEED_PAUSE);
 	
 	/* Get the stream's audio volume: */
-	volumeSlider->setValue(xine_get_param(stream,XINE_PARAM_AUDIO_VOLUME));
+	volumeSlider->setValue(xine_get_param(&*stream,XINE_PARAM_AUDIO_VOLUME));
 
 	Vrui::inhibitScreenSaver();
 	
 	/* Set the navigational coordinate unit to meters: */
 	Vrui::getCoordinateManager()->setUnit(Geometry::LinearUnit(Geometry::LinearUnit::METER,1.0));
-	}
-
-VruiXine::~VruiXine(void)
-	{
-	delete streamControlDialog;
-	delete dvdNavigationDialog;
-	delete playbackControlDialog;
-	delete screenControlDialog;
-	
-	/* Shut down the xine library: */
-	shutdownXine();
 	}
 
 void VruiXine::frame(void)
@@ -1438,7 +1336,7 @@ void VruiXine::frame(void)
 		{
 		/* Check the stream length and playback position: */
 		int streamPos,streamTimeMs,streamLengthMs;
-		if(xine_get_pos_length(stream,&streamPos,&streamTimeMs,&streamLengthMs))
+		if(xine_get_pos_length(&*stream,&streamPos,&streamTimeMs,&streamLengthMs))
 			{
 			/* Recalculate stream time in ms because it's bogus as reported: */
 			streamTimeMs=int((long(streamLengthMs)*long(streamPos)+32768L)/65536L);
@@ -1467,6 +1365,16 @@ void VruiXine::frame(void)
 		playbackPosCheckTime=Vrui::getApplicationTime()+1.0;
 		}
 	}
+
+raw_visual_t VruiXine::mkRawVisual()
+{
+	raw_visual_t r;
+	r.user_data = this;
+	r.supported_formats = XINE_VORAW_YV12 | XINE_VORAW_RGB;
+	r.raw_output_cb = xineOutputCallback;
+	r.raw_overlay_cb = xineOverlayCallback;
+	return r;
+}
 
 void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 	{

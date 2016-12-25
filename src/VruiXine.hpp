@@ -21,9 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef VRUIXINE_HPP
 #define VRUIXINE_HPP
 
+#include "xine_wrap.hpp"
 #include <string.h>
-#include <xine.h>
-#include <xine/xineutils.h>
 #include <string>
 #include <stdexcept>
 #include <iostream>
@@ -73,6 +72,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Vrui/DisplayState.h>
 #include <Vrui/OpenFile.h>
 #include <boost/optional.hpp>
+
+namespace Xine = GrappleMap::Xine;
 
 class VruiXine
 	{
@@ -139,28 +140,31 @@ class VruiXine
 	
 	typedef GLGeometry::Vertex<GLfloat,2,void,0,void,GLfloat,3> Vertex; // Type for vertices to render the video display screen
 	
+	raw_visual_t mkRawVisual();
+
 	/* Elements: */
-	xine_t* xine; // Handle to the main xine engine object
-	xine_video_port_t* videoOutPort; // Handle to the video output port
-	xine_audio_port_t* audioOutPort; // Handle to the audio output port
-	xine_stream_t* stream; // Handle to the played multimedia stream
-	xine_event_queue_t* eventQueue; // Handle to the event queue
+	Xine::Engine xine;
+	raw_visual_t rawVisual = mkRawVisual();
+	Xine::VideoPort videoOutPort{xine, rawVisual};
+	Xine::AudioPort audioOutPort{xine};
+	Xine::Stream stream{xine, audioOutPort, videoOutPort};
+	Xine::EventQueue eventQueue{stream};
 	std::string videoFileName; // File name of the currently playing video
 	GLMotif::FileSelectionHelper videoFileSelectionHelper; // Helper object to open video files
 	Threads::TripleBuffer<Frame> videoFrames; // Triple buffer of video frames received from the video output plug-in
 	unsigned int videoFrameVersion; // Version number of currently locked frame
 	Threads::TripleBuffer<OverlaySet> overlaySets; // Triple buffer of overlay sets
 	unsigned int overlaySetVersion; // Version number of currently locked overlay set
-	GLMotif::PopupWindow* streamControlDialog; // Dialog window to control properties of the played video stream
+	std::unique_ptr<GLMotif::PopupWindow> streamControlDialog; // Dialog window to control properties of the played video stream
 	GLMotif::RadioBox* stereoModes; // Radio box to select stereo modes
 	GLMotif::RadioBox* stereoLayouts; // Radio box to select stereo sub-frame layouts
 	GLMotif::ToggleButton* stereoSquashedToggle; // Toggle to select squashed stereo
 	GLMotif::ToggleButton* forceMonoToggle; // Toggle to force mono mode on stereo videos
 	GLMotif::TextFieldSlider* stereoSeparationSlider; // Slider to adjust stereo separation in stereo videos
 	GLMotif::TextFieldSlider* cropSliders[4]; // Sliders to adjust video cropping
-	GLMotif::PopupWindow* dvdNavigationDialog; // Dialog window for DVD menu and chapter navigation
+	std::unique_ptr<GLMotif::PopupWindow> dvdNavigationDialog; // Dialog window for DVD menu and chapter navigation
 	GLMotif::Slider* volumeSlider; // Slider to adjust audio volume
-	GLMotif::PopupWindow* playbackControlDialog; // Dialog window to control playback position
+	std::unique_ptr<GLMotif::PopupWindow> playbackControlDialog; // Dialog window to control playback position
 	GLMotif::TextField* playbackPositionText; // Text field showing the current playback position
 	GLMotif::Slider* playbackSlider; // Slider to drag the current playback position
 	GLMotif::Slider* microPlaybackSlider;
@@ -180,7 +184,7 @@ class VruiXine
 	int crop[4]; // Amount of cropping (left, right, bottom, top) that needs to be applied to incoming video frames
 	int frameSize[2]; // The frame size of the currently locked video frame
 	unsigned int screenParametersVersion; // Version number of screen parameters, including aspect ratio of current frame
-	GLMotif::PopupWindow* screenControlDialog; // Dialog window to control the position and size of the virtual video projection screen
+	std::unique_ptr<GLMotif::PopupWindow> screenControlDialog; // Dialog window to control the position and size of the virtual video projection screen
 
 	unsigned oldestRecord = 0;
 	std::vector<Frame> recordedFrames{150}; // 5 seconds at 30 fps
@@ -193,7 +197,6 @@ class VruiXine
 	static void xineOutputCallback(void* userData,int frameFormat,int frameWidth,int frameHeight,double frameAspect,void* data0,void* data1,void* data2); // Callback called from video output plug-in when a new video frame is ready for display
 	static void xineOverlayCallback(void* userData,int numOverlays,raw_overlay_t* overlays); // Callback called from video output plug-in when an overlay needs to be merged into the video stream
 	void xineSendEvent(int eventId); // Sends an event to the xine library
-	void shutdownXine(void); // Cleanly shuts down the xine library
 	void setStereoMode(int newStereoMode);
 	void setStereoLayout(int newStereoLayout);
 	void setStereoSquashed(bool newStereoSquashed);
@@ -234,7 +237,6 @@ class VruiXine
 	/* Constructors and destructors: */
 	public:
 	VruiXine(std::vector<std::string> const & argv);
-	virtual ~VruiXine(void);
 	
 	/* Methods from Vrui::Application: */
 	virtual void frame(void);
