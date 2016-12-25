@@ -10,7 +10,7 @@ env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -D
 # env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -O3 -DUSE_FTGL')
 
 # debugging:
-# env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -g')
+#env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -g')
 
 common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp'])
 rendering = env.Object(['rendering.cpp', 'playerdrawer.cpp'])
@@ -19,7 +19,7 @@ cmdlibs = ['boost_program_options']
 guilibs = ['GL', 'GLU', 'glfw', 'ftgl'] + cmdlibs
 vruilibs = ["GL", "GLU", "ftgl", "Vrui.g++-3", "Geometry.g++-3", "GLGeometry.g++-3", "GLSupport.g++-3", "Threads.g++-3", "Misc.g++-3", "Math.g++-3", "Plugins.g++-3", "GLMotif.g++-3"] + cmdlibs
 
-glfw_editor   = env.Program('grapplemap-glfw-editor', ['glfw_editor.cpp', rendering, common], LIBS=guilibs)
+glfw_editor   = env.Program('grapplemap-glfw-editor', ['glfw_editor.cpp', rendering, common, 'video_player.cpp', 'video_monitor.cpp'], LIBS=guilibs+vruilibs+['xine'])
 vr_editor     = env.Program('grapplemap-vr-editor', ['vr_editor.cpp', 'vr_joint_editor.cpp', 'vr_joint_browser.cpp', 'VruiXine.cpp', rendering, common], LIBS=vruilibs+['xine'])
 glfw_playback = env.Program('grapplemap-glfw-playback', ['glfw_playback.cpp', rendering, common], LIBS=guilibs)
 vr_playback   = env.Program('grapplemap-vr-playback', ['vr_playback.cpp', rendering, common], LIBS=vruilibs)

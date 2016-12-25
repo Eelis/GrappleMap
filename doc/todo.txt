@@ -25,6 +25,7 @@ glfw frontend:
 - respect 'draggable' again(?)
 - test clipboard
 - restore remaining disabled commands
+- make dependency on Vrui (for video playback) optional
 
 vrui frontend:
 - limb editing
@@ -45,6 +46,7 @@ vrui frontend:
   slider is replaced with the microplayback slider
 - quickly record frames in non-real-time when zoom mode is entered,
   so that zoomed seeking works without preconditions
+- reuse VideoPlayer and VideoMonitor in VruiXine
 
 playback:
 - make {pre,post}fix length for demo mode configurable

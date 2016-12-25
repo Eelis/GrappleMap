@@ -15,6 +15,8 @@
 #include <algorithm>
 #include <iterator>
 #include <stack>
+#include "video_player.hpp"
+#include <GL/GLExtensionManager.h>
 
 using namespace GrappleMap;
 
@@ -78,6 +80,8 @@ struct Application
 	Style style;
 	PlayerDrawer playerDrawer;
 	PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> candidates;
+	unique_ptr<VideoMonitor> monitor;
+	unique_ptr<VideoPlayer> videoPlayer;
 };
 
 void print_status(Application const & w)
@@ -336,7 +340,8 @@ boost::optional<po::variables_map> readArgs(int const argc, char const * const *
 	optdesc.add_options()
 		("help,h", "show this help")
 		("start", po::value<string>()->default_value("last-trans"), "see START below")
-		("db", po::value<string>()->default_value("GrappleMap.txt"), "database file");
+		("db", po::value<string>()->default_value("GrappleMap.txt"), "database file")
+		("video", po::value<string>(), "video file");
 
 	po::positional_options_description posopts;
 	posopts.add("start", -1);
@@ -441,6 +446,11 @@ void do_render(GLFWwindow * const window, Application const & w)
 
 	renderWindow(views, viables, w.editor.getGraph(), w.editor.current_position(), w.camera, special_joint,
 		colors, 0, 0, width, height, selection, w.style, w.playerDrawer);
+
+	glEnable(GL_DEPTH);
+	glEnable(GL_DEPTH_TEST);
+
+	if (w.monitor) w.monitor->display();
 }
 
 int main(int const argc, char const * const * const argv)
@@ -474,12 +484,23 @@ int main(int const argc, char const * const * const argv)
 
 		double lastTime = glfwGetTime();
 
+		GLExtensionManager glExtMan;
+		glExtMan.makeCurrent(&glExtMan);
+
+		if (vm->count("video"))
+		{
+			w.monitor.reset(new VideoMonitor);
+			w.videoPlayer.reset(new VideoPlayer(w.monitor->videoFrames, (*vm)["video"].as<string>()));
+		}
+
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		while (!glfwWindowShouldClose(window))
 		{
 			glfwPollEvents();
+
+			if (w.monitor) w.monitor->frame();
 
 			update_camera(window, w);
 
