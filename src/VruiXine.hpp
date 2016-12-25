@@ -130,8 +130,6 @@ class VruiXine
 		GLShader videoShaders[3]; // Shaders to render video textures in YV12, YUY2, and RGB formats, respectively
 		int videoShaderUniforms[3][5]; // Uniform variable locations of the three video rendering shaders
 		unsigned int frameTextureVersion; // Version number of frame in frame texture(s)
-		GLuint overlayTextureIds[XINE_VORAW_MAX_OVL]; // IDs of textures holding overlays
-		unsigned int overlayTextureVersion; // Version number of overlay set in overlay textures
 		
 		/* Constructors and destructors: */
 		DataItem(void);
@@ -153,8 +151,6 @@ class VruiXine
 	GLMotif::FileSelectionHelper videoFileSelectionHelper; // Helper object to open video files
 	Threads::TripleBuffer<Frame> videoFrames; // Triple buffer of video frames received from the video output plug-in
 	unsigned int videoFrameVersion; // Version number of currently locked frame
-	Threads::TripleBuffer<OverlaySet> overlaySets; // Triple buffer of overlay sets
-	unsigned int overlaySetVersion; // Version number of currently locked overlay set
 	std::unique_ptr<GLMotif::PopupWindow> streamControlDialog; // Dialog window to control properties of the played video stream
 	GLMotif::RadioBox* stereoModes; // Radio box to select stereo modes
 	GLMotif::RadioBox* stereoLayouts; // Radio box to select stereo sub-frame layouts

@@ -26,8 +26,7 @@ Methods of class VruiXine::DataItem:
 
 VruiXine::DataItem::DataItem(void)
 	:vertexBufferId(0),indexBufferId(0),bufferDataVersion(0),
-	 frameTextureVersion(0),
-	 overlayTextureVersion(0)
+	 frameTextureVersion(0)
 	{
 	/* Initialize all required OpenGL extensions: */
 	GLARBMultitexture::initExtension();
@@ -41,9 +40,6 @@ VruiXine::DataItem::DataItem(void)
 	
 	/* Create three frame texture objects: */
 	glGenTextures(3,frameTextureIds);
-	
-	/* Create overlay texture objects: */
-	glGenTextures(XINE_VORAW_MAX_OVL,overlayTextureIds);
 	}
 
 VruiXine::DataItem::~DataItem(void)
@@ -54,9 +50,6 @@ VruiXine::DataItem::~DataItem(void)
 	
 	/* Delete the three frame texture objects: */
 	glDeleteTextures(3,frameTextureIds);
-	
-	/* Delete the overlay texture objects: */
-	glDeleteTextures(XINE_VORAW_MAX_OVL,overlayTextureIds);
 	}
 
 /*************************
@@ -309,35 +302,8 @@ void VruiXine::seek(double const t)
 	if (timeRef) gotoRecorded((t - *timeRef) * fps);
 }
 
-void VruiXine::xineOverlayCallback(void* userData,int numOverlays,raw_overlay_t* overlays)
+void VruiXine::xineOverlayCallback(void* /*userData*/,int /*numOverlays*/,raw_overlay_t*)
 	{
-	VruiXine* thisPtr=static_cast<VruiXine*>(userData);
-	
-	/* Prepare a new slot in the overlay set triple buffer: */
-	OverlaySet& newOverlaySet=thisPtr->overlaySets.startNewValue();
-	
-	/* Copy the received overlay set: */
-	newOverlaySet.numOverlays=numOverlays;
-	for(int i=0;i<numOverlays;++i)
-		{
-		raw_overlay_t& ovl=newOverlaySet.overlays[i];
-		delete[] ovl.ovl_rgba;
-		ovl.ovl_w=overlays[i].ovl_w;
-		ovl.ovl_h=overlays[i].ovl_h;
-		ovl.ovl_x=overlays[i].ovl_x;
-		ovl.ovl_y=overlays[i].ovl_y;
-		ovl.ovl_rgba=new uint8_t[ovl.ovl_h*ovl.ovl_w*4];
-		memcpy(ovl.ovl_rgba,overlays[i].ovl_rgba,ovl.ovl_h*ovl.ovl_w*4);
-		}
-	for(int i=numOverlays;i<XINE_VORAW_MAX_OVL;++i)
-		{
-		delete[] newOverlaySet.overlays[i].ovl_rgba;
-		newOverlaySet.overlays[i].ovl_rgba=0;
-		}
-	
-	/* Post the new overlay set and wake up the main thread: */
-	thisPtr->overlaySets.postNewValue();
-	Vrui::requestUpdate();
 	}
 
 void VruiXine::xineSendEvent(int eventId)
@@ -1175,7 +1141,7 @@ GLMotif::PopupWindow* VruiXine::createScreenControlDialog(void)
 
 VruiXine::VruiXine(std::vector<std::string> const & args)
 	:videoFileSelectionHelper(Vrui::getWidgetManager(),"",".mp4;.iso",Vrui::openDirectory(".")),
-	 videoFrameVersion(0),overlaySetVersion(0),
+	 videoFrameVersion(0),
 	 playbackPosCheckTime(0.0),streamLength(0.0),
 	 aspectRatio(Vrui::Scalar(16.0/9.0)),
 	 stereoMode(0),stereoLayout(0),stereoSquashed(false),forceMono(false),stereoSeparation(0.0f),
@@ -1323,13 +1289,6 @@ void VruiXine::frame(void)
 			frameSize[1]=f.size[1]-crop[2]-crop[3];
 			aspectRatio=videoFrames.getLockedValue().aspectRatio;
 			}
-		}
-	
-	/* Lock the most recent overlay set: */
-	if(overlaySets.lockNewValue())
-		{
-		/* Invalidate the current overlay textures: */
-		++overlaySetVersion;
 		}
 	
 	if(Vrui::getApplicationTime()>=playbackPosCheckTime)
@@ -1570,47 +1529,6 @@ void VruiXine::display(GLContextData& contextData, GLObject const * glObj) const
 	/* Disable the video shaders: */
 	GLShader::disablePrograms();
 	
-	/* Draw all current overlays: */
-	if(overlaySets.getLockedValue().numOverlays>0)
-		{
-		glPushAttrib(GL_ENABLE_BIT|GL_COLOR_BUFFER_BIT);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_TEXTURE_RECTANGLE_ARB);
-		glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
-		Vrui::Scalar screenWidth=screenHeight*aspectRatio;
-		Vrui::Scalar x0=screenCenter[0]-Math::div2(screenWidth);
-		Vrui::Scalar z0=screenCenter[2]-Math::div2(screenHeight);
-		Vrui::Scalar z1=z0+screenHeight;
-		Vrui::Scalar xs=screenWidth/Vrui::Scalar(frameSize[0]);
-		Vrui::Scalar ys=screenHeight/Vrui::Scalar(frameSize[1]);
-		const OverlaySet& ovls=overlaySets.getLockedValue();
-		for(int i=0;i<ovls.numOverlays;++i)
-			{
-			/* Bind the overlay's texture: */
-			const raw_overlay_t& ovl=ovls.overlays[i];
-			glBindTexture(GL_TEXTURE_RECTANGLE_ARB,dataItem->overlayTextureIds[i]);
-			if(dataItem->overlayTextureVersion!=overlaySetVersion)
-				glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_RGBA8,ovl.ovl_w,ovl.ovl_h,0,GL_RGBA,GL_UNSIGNED_BYTE,ovl.ovl_rgba);
-			
-			/* Draw the overlay: */
-			glBegin(GL_QUADS);
-			glTexCoord2i(0,ovl.ovl_h);
-			glVertex3d(x0+Vrui::Scalar(ovl.ovl_x)*xs,screenCenter[1]-0.1,z1-Vrui::Scalar(ovl.ovl_y+ovl.ovl_h)*ys);
-			glTexCoord2i(ovl.ovl_w,ovl.ovl_h);
-			glVertex3d(x0+Vrui::Scalar(ovl.ovl_x+ovl.ovl_w)*xs,screenCenter[1]-0.1,z1-Vrui::Scalar(ovl.ovl_y+ovl.ovl_h)*ys);
-			glTexCoord2i(ovl.ovl_w,0);
-			glVertex3d(x0+Vrui::Scalar(ovl.ovl_x+ovl.ovl_w)*xs,screenCenter[1]-0.1,z1-Vrui::Scalar(ovl.ovl_y)*ys);
-			glTexCoord2i(0,0);
-			glVertex3d(x0+Vrui::Scalar(ovl.ovl_x)*xs,screenCenter[1]-0.1,z1-Vrui::Scalar(ovl.ovl_y)*ys);
-			glEnd();
-			}
-		dataItem->overlayTextureVersion=overlaySetVersion;
-		glBindTexture(GL_TEXTURE_RECTANGLE_ARB,0);
-		
-		glPopAttrib();
-		}
-	
 	glPopMatrix();
 	}
 
@@ -1670,18 +1588,6 @@ void VruiXine::initContext(GLContextData& contextData, GLObject const * glObj) c
 	for(int i=0;i<3;++i)
 		{
 		glBindTexture(GL_TEXTURE_RECTANGLE_ARB,dataItem->frameTextureIds[i]);
-		glTexParameteri(GL_TEXTURE_RECTANGLE_ARB,GL_TEXTURE_BASE_LEVEL,0);
-		glTexParameteri(GL_TEXTURE_RECTANGLE_ARB,GL_TEXTURE_MAX_LEVEL,0);
-		glTexParameteri(GL_TEXTURE_RECTANGLE_ARB,GL_TEXTURE_WRAP_S,clampMode);
-		glTexParameteri(GL_TEXTURE_RECTANGLE_ARB,GL_TEXTURE_WRAP_T,clampMode);
-		glTexParameteri(GL_TEXTURE_RECTANGLE_ARB,GL_TEXTURE_MIN_FILTER,sampleMode);
-		glTexParameteri(GL_TEXTURE_RECTANGLE_ARB,GL_TEXTURE_MAG_FILTER,sampleMode);
-		}
-	
-	/* Initialize the overlay set textures: */
-	for(int i=0;i<XINE_VORAW_MAX_OVL;++i)
-		{
-		glBindTexture(GL_TEXTURE_RECTANGLE_ARB,dataItem->overlayTextureIds[i]);
 		glTexParameteri(GL_TEXTURE_RECTANGLE_ARB,GL_TEXTURE_BASE_LEVEL,0);
 		glTexParameteri(GL_TEXTURE_RECTANGLE_ARB,GL_TEXTURE_MAX_LEVEL,0);
 		glTexParameteri(GL_TEXTURE_RECTANGLE_ARB,GL_TEXTURE_WRAP_S,clampMode);
