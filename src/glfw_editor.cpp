@@ -6,6 +6,7 @@
 #include "viables.hpp"
 #include "rendering.hpp"
 #include "graph_util.hpp"
+#include "video_player.hpp"
 #include <GLFW/glfw3.h>
 #include <boost/program_options.hpp>
 #include <cmath>
@@ -15,7 +16,6 @@
 #include <algorithm>
 #include <iterator>
 #include <stack>
-#include "video_player.hpp"
 #include <GL/GLExtensionManager.h>
 
 using namespace GrappleMap;
@@ -342,7 +342,7 @@ boost::optional<po::variables_map> readArgs(int const argc, char const * const *
 		("help,h", "show this help")
 		("start", po::value<string>()->default_value("last-trans"), "see START below")
 		("db", po::value<string>()->default_value("GrappleMap.txt"), "database file")
-		("video", po::value<string>(), "video file");
+		("video", po::value<string>(), "video MRL (man 1 xine)");
 
 	po::positional_options_description posopts;
 	posopts.add("start", -1);
@@ -492,8 +492,10 @@ int main(int const argc, char const * const * const argv)
 		{
 			w.monitor.reset(new VideoMonitor);
 //			w.videoPlayer.reset(new VideoPlayer(w.monitor->videoFrames, (*vm)["video"].as<string>()));
+
 			w.pbVideoPlayer.reset(new PrebufferedVideoPlayer(
-				w.monitor->videoFrames, videoFrames((*vm)["video"].as<string>())));
+				w.monitor->videoFrames,
+				videoFrames(videoTimeFromArg((*vm)["video"].as<string>()))));
 		}
 
 		glEnable(GL_BLEND);

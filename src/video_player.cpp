@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "video_player.hpp"
 
 #include <xine/video_out.h>
+#include <boost/regex.hpp>
 
 namespace GrappleMap {
 
@@ -282,19 +283,34 @@ VideoFrame makeFrame(xine_video_frame_t const & f)
 	return b;
 }
 
-vector<VideoFrame> videoFrames(string filename)
+TimeInVideo videoTimeFromArg(string const & s)
+{
+	boost::regex r("(.+)@([0-9]+):([0-9]+):([0-9]+)");
+
+	boost::cmatch m;
+
+	if (!boost::regex_match(s.c_str(), m, r)) return {s, 0};
+
+	int const
+		hours = std::stoi(m[2]),
+		minutes = std::stoi(m[3]),
+		seconds = std::stoi(m[4]),
+		millis = ((hours * 60 + minutes) * 60 + seconds) * 1000;
+
+	return {m[1], millis};
+}
+
+vector<VideoFrame> videoFrames(TimeInVideo const & tiv)
 {
 	Xine::Engine xine;
 	Xine::VideoPort videoOutPort{xine, xine_new_framegrab_video_port(&*xine)};
 	Xine::Stream stream{xine, nullptr /* no audio */, videoOutPort};
 
+	if(!xine_open(&*stream, tiv.mrl.c_str()) || !xine_play(&*stream, 0, tiv.time))
+		error("cannot load media: " + tiv.mrl);
+
 	vector<VideoFrame> r;
-
-
-	if(!xine_open(&*stream,filename.c_str())||!xine_play(&*stream,0,0))
-		error("Load Video: Unable to play video file: " + filename);
 	xine_video_frame_t fr;
-
 	unsigned c = 200;
 
 	while (xine_get_next_video_frame(&*videoOutPort, &fr) && --c)

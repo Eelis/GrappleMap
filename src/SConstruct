@@ -19,7 +19,7 @@ cmdlibs = ['boost_program_options']
 guilibs = ['GL', 'GLU', 'glfw', 'ftgl'] + cmdlibs
 vruilibs = ["GL", "GLU", "ftgl", "Vrui.g++-3", "Geometry.g++-3", "GLGeometry.g++-3", "GLSupport.g++-3", "Threads.g++-3", "Misc.g++-3", "Math.g++-3", "Plugins.g++-3", "GLMotif.g++-3"] + cmdlibs
 
-glfw_editor   = env.Program('grapplemap-glfw-editor', ['glfw_editor.cpp', rendering, common, 'video_player.cpp', 'video_monitor.cpp'], LIBS=guilibs+vruilibs+['xine'])
+glfw_editor   = env.Program('grapplemap-glfw-editor', ['glfw_editor.cpp', rendering, common, 'video_player.cpp', 'video_monitor.cpp'], LIBS=guilibs+vruilibs+['xine', 'boost_regex'])
 vr_editor     = env.Program('grapplemap-vr-editor', ['vr_editor.cpp', 'vr_joint_editor.cpp', 'vr_joint_browser.cpp', 'VruiXine.cpp', rendering, common], LIBS=vruilibs+['xine'])
 glfw_playback = env.Program('grapplemap-glfw-playback', ['glfw_playback.cpp', rendering, common], LIBS=guilibs)
 vr_playback   = env.Program('grapplemap-vr-playback', ['vr_playback.cpp', rendering, common], LIBS=vruilibs)

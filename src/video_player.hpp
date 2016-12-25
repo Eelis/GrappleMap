@@ -30,7 +30,15 @@ namespace GrappleMap
 			VideoPlayer(Threads::TripleBuffer<VideoFrame> & output, string filename);
 	};
 
-	vector<VideoFrame> videoFrames(string filename);
+	struct TimeInVideo
+	{
+		string mrl;
+		int time; // in milliseconds
+	};
+
+	TimeInVideo videoTimeFromArg(string const &);
+
+	vector<VideoFrame> videoFrames(TimeInVideo const &);
 
 	class PrebufferedVideoPlayer
 	{
