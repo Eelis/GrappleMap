@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "video_player.hpp"
 
+#include <xine/video_out.h>
+
 namespace GrappleMap {
 
 typedef GLGeometry::Vertex<GLfloat,2,void,0,void,GLfloat,3> Vertex; // Type for vertices to render the video display screen
@@ -135,46 +137,11 @@ void VideoPlayer::xineOutputCallback(void* userData,int frameFormat,int frameWid
 	/* Re-allocate the frame's storage if the video format has changed: */
 	if(newFrame.format!=frameFormat||newFrame.size[0]!=frameWidth||newFrame.size[1]!=frameHeight)
 		{
-		#if 0
-		
-		std::cout<<"Video format changed from ";
-		switch(newFrame.format)
-			{
-			case XINE_VORAW_YV12:
-				std::cout<<"YpCbCr 4:2:0";
-				break;
-			
-			case XINE_VORAW_YUY2:
-				std::cout<<"YpCbCr 4:2:2";
-				break;
-			
-			case XINE_VORAW_RGB:
-				std::cout<<"RGB";
-				break;
-			}
-		std::cout<<", "<<newFrame.size[0]<<" x "<<newFrame.size[1]<<" to ";
-		switch(frameFormat)
-			{
-			case XINE_VORAW_YV12:
-				std::cout<<"YpCbCr 4:2:0";
-				break;
-			
-			case XINE_VORAW_YUY2:
-				std::cout<<"YpCbCr 4:2:2";
-				break;
-			
-			case XINE_VORAW_RGB:
-				std::cout<<"RGB";
-				break;
-			}
-		std::cout<<", "<<frameWidth<<" x "<<frameHeight<<std::endl;
-		
-		#endif
-		
 		/* Update the frame format: */
 		newFrame.format=frameFormat;
 		newFrame.size[0]=frameWidth;
 		newFrame.size[1]=frameHeight;
+
 		
 		/* Allocate new frame storage: */
 		if(newFrame.format==XINE_VORAW_YV12)
@@ -214,7 +181,6 @@ void VideoPlayer::xineOutputCallback(void* userData,int frameFormat,int frameWid
 	
 	/* Update the display aspect ratio: */
 	newFrame.aspectRatio=frameAspect;
-
 
 	/* Post the new video frame and wake up the main thread: */
 	thisPtr->frame.postNewValue();
@@ -258,7 +224,6 @@ void VideoPlayer::xineSendEvent(int eventId)
 		}
 	}
 
-
 raw_visual_t VideoPlayer::mkRawVisual()
 {
 	raw_visual_t r;
@@ -276,6 +241,83 @@ VideoPlayer::VideoPlayer(Threads::TripleBuffer<VideoFrame> & o, string const fil
 	
 	if(!xine_open(&*stream,filename.c_str())||!xine_play(&*stream,0,0))
 		error("Load Video: Unable to play video file: " + filename);
+}
+
+VideoFrame makeFrame(xine_video_frame_t const & f)
+{
+	vo_frame_t * realframe = (vo_frame_t*) f.xine_frame;
+
+	VideoFrame b;
+	b.size[0] = f.width;
+	b.size[1] = f.height;
+	b.aspectRatio = f.aspect_ratio;
+
+	switch (realframe->format)
+	{
+		case XINE_IMGFMT_YV12:
+			b.format = XINE_VORAW_YV12;
+
+			/* Allocate full-size Y plane and half-size U and V planes: */
+			b.planes[0].resize(b.size[1]*b.size[0]);
+			b.planes[1].resize((b.size[1]>>1)*(b.size[0]>>1));
+			b.planes[2].resize((b.size[1]>>1)*(b.size[0]>>1));
+			std::copy_n(realframe->base[0], b.size[1]*b.size[0], b.planes[0].data());
+			std::copy_n(realframe->base[1], (b.size[1]>>1)*(b.size[0]>>1), b.planes[1].data());
+			std::copy_n(realframe->base[2], (b.size[1]>>1)*(b.size[0]>>1), b.planes[2].data());
+			break;
+		case XINE_IMGFMT_YUY2:
+			b.format = XINE_VORAW_YUY2;
+			/* Allocate interleaved YU and Y2 plane: */
+			b.planes[0] = vector<unsigned char>(realframe->base[0], realframe->base[0] + b.size[1]*b.size[0]*2);
+			break;
+		case XINE_VORAW_RGB:
+			b.format = XINE_VORAW_RGB;
+			/* Allocate interleaved RGB plane: */
+			b.planes[0] = vector<unsigned char>(realframe->base[0], realframe->base[0] + b.size[1]*b.size[0]*3);
+			break;
+		default:
+			error("unrecognized format");
+	}
+
+	return b;
+}
+
+vector<VideoFrame> videoFrames(string filename)
+{
+	Xine::Engine xine;
+	Xine::VideoPort videoOutPort{xine, xine_new_framegrab_video_port(&*xine)};
+	Xine::Stream stream{xine, nullptr /* no audio */, videoOutPort};
+
+	vector<VideoFrame> r;
+
+
+	if(!xine_open(&*stream,filename.c_str())||!xine_play(&*stream,0,0))
+		error("Load Video: Unable to play video file: " + filename);
+	xine_video_frame_t fr;
+
+	unsigned c = 200;
+
+	while (xine_get_next_video_frame(&*videoOutPort, &fr) && --c)
+	{
+		r.push_back(makeFrame(fr));
+		xine_free_video_frame(&*videoOutPort, &fr);
+	}
+
+	return r;
+}
+
+PrebufferedVideoPlayer::PrebufferedVideoPlayer(Threads::TripleBuffer<VideoFrame> & o, vector<VideoFrame> in)
+	: output(o), frames(std::move(in))
+{}
+
+void PrebufferedVideoPlayer::nextFrame()
+{
+	if (frames.empty()) return;
+
+	if (++current >= frames.size()) current = 0;
+
+	output.startNewValue() = frames[current];
+	output.postNewValue();
 }
 
 }

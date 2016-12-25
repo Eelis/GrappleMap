@@ -55,21 +55,23 @@ namespace GrappleMap
 				xine_close_video_driver(&*e, p);
 			} // can be removed when we can assume C++14
 
-			explicit VideoPort(Engine const & e, raw_visual_t & r)
-				: VideoPortPtr(
-					xine_open_video_driver(&*e, nullptr, XINE_VISUAL_TYPE_RAW, &r),
-					[&e](xine_video_port_t * q){ close(e, q); })
+			VideoPort(Engine const & e, xine_video_port_t * p)
+				: VideoPortPtr(p, [&e](xine_video_port_t * q){ close(e, q); })
 			{
-				if (!get()) throw std::runtime_error("cannot create xine video port");
+				if (!p) throw std::runtime_error("cannot create xine video port");
 			}
+
+			VideoPort(Engine const & e, raw_visual_t & r)
+				: VideoPort(e, xine_open_video_driver(&*e, nullptr, XINE_VISUAL_TYPE_RAW, &r))
+			{}
 		};
 
 		using StreamPtr = std::unique_ptr<xine_stream_t, decltype(&xine_dispose)>;
 
 		struct Stream: StreamPtr
 		{
-			Stream(Engine const & e, AudioPort const & audio, VideoPort const & video)
-				: StreamPtr(xine_stream_new(&*e, &*audio, &*video), &xine_dispose)
+			Stream(Engine const & e, xine_audio_port_t * audio, VideoPort const & video)
+				: StreamPtr(xine_stream_new(&*e, audio, &*video), &xine_dispose)
 			{
 				if (!get()) throw std::runtime_error("cannot create xine stream");
 			}

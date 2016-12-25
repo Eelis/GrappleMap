@@ -51,6 +51,7 @@ void VideoMonitor::display() const
 	/* Handle the current video frame based on its format: */
 	const VideoFrame& frame=videoFrames.getLockedValue();
 	int shaderIndex=0;
+
 	if(frame.format==XINE_VORAW_YV12)
 		{
 		/* Bind the YV12 shader: */
@@ -68,7 +69,9 @@ void VideoMonitor::display() const
 			glPixelStorei(GL_UNPACK_SKIP_PIXELS,crop[0]);
 			glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_R8,frameSize[0],frameSize[1],0,GL_RED,GL_UNSIGNED_BYTE,frame.planes[0].data());
 			}
-		
+
+		int const pitch = ((frame.size[0]+15)/16) * 8;
+
 		/* Bind the U texture plane: */
 		glActiveTextureARB(GL_TEXTURE0_ARB+1);
 		glBindTexture(GL_TEXTURE_RECTANGLE_ARB,frameTextureIds[1]);
@@ -76,7 +79,7 @@ void VideoMonitor::display() const
 		if(frameTextureVersion!=videoFrameVersion)
 			{
 			glPixelStorei(GL_UNPACK_SKIP_ROWS,crop[3]>>1);
-			glPixelStorei(GL_UNPACK_ROW_LENGTH,frame.size[0]>>1);
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, pitch);
 			glPixelStorei(GL_UNPACK_SKIP_PIXELS,crop[0]>>1);
 			glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_R8,frameSize[0]>>1,frameSize[1]>>1,0,GL_RED,GL_UNSIGNED_BYTE,frame.planes[1].data());
 			}
@@ -88,7 +91,7 @@ void VideoMonitor::display() const
 		if(frameTextureVersion!=videoFrameVersion)
 			{
 			glPixelStorei(GL_UNPACK_SKIP_ROWS,crop[3]>>1);
-			glPixelStorei(GL_UNPACK_ROW_LENGTH,frame.size[0]>>1);
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, pitch);
 			glPixelStorei(GL_UNPACK_SKIP_PIXELS,crop[0]>>1);
 			glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_R8,frameSize[0]>>1,frameSize[1]>>1,0,GL_RED,GL_UNSIGNED_BYTE,frame.planes[2].data());
 			}
@@ -126,6 +129,7 @@ void VideoMonitor::display() const
 			glTexImage2D(GL_TEXTURE_RECTANGLE_ARB,0,GL_RGB8,frameSize[0],frameSize[1],0,GL_RGB,GL_UNSIGNED_BYTE,frame.planes[0].data());
 			}
 		}
+	else return; // throw std::runtime_error("unrecognized format");
 	
 	/* Mark the texture objects as up-to-date: */
 	frameTextureVersion=videoFrameVersion;

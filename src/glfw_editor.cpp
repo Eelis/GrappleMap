@@ -82,6 +82,7 @@ struct Application
 	PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> candidates;
 	unique_ptr<VideoMonitor> monitor;
 	unique_ptr<VideoPlayer> videoPlayer;
+	unique_ptr<PrebufferedVideoPlayer> pbVideoPlayer;
 };
 
 void print_status(Application const & w)
@@ -490,7 +491,9 @@ int main(int const argc, char const * const * const argv)
 		if (vm->count("video"))
 		{
 			w.monitor.reset(new VideoMonitor);
-			w.videoPlayer.reset(new VideoPlayer(w.monitor->videoFrames, (*vm)["video"].as<string>()));
+//			w.videoPlayer.reset(new VideoPlayer(w.monitor->videoFrames, (*vm)["video"].as<string>()));
+			w.pbVideoPlayer.reset(new PrebufferedVideoPlayer(
+				w.monitor->videoFrames, videoFrames((*vm)["video"].as<string>())));
 		}
 
 		glEnable(GL_BLEND);
@@ -501,6 +504,7 @@ int main(int const argc, char const * const * const argv)
 			glfwPollEvents();
 
 			if (w.monitor) w.monitor->frame();
+			if (w.pbVideoPlayer) w.pbVideoPlayer->nextFrame();
 
 			update_camera(window, w);
 

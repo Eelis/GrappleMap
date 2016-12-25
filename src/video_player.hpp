@@ -1,6 +1,8 @@
 #ifndef GRAPPLEMAP_VIDEO_PLAYER_HPP
 #define GRAPPLEMAP_VIDEO_PLAYER_HPP
 
+#define XINE_ENABLE_EXPERIMENTAL_FEATURES
+
 #include "xine_wrap.hpp"
 #include "video_monitor.hpp"
 #include "util.hpp"
@@ -14,7 +16,7 @@ namespace GrappleMap
 		raw_visual_t rawVisual = mkRawVisual();
 		Xine::VideoPort videoOutPort{xine, rawVisual};
 		Xine::AudioPort audioOutPort{xine};
-		Xine::Stream stream{xine, audioOutPort, videoOutPort};
+		Xine::Stream stream{xine, audioOutPort.get(), videoOutPort};
 		Xine::EventQueue eventQueue{stream};
 		
 		raw_visual_t mkRawVisual();
@@ -26,6 +28,20 @@ namespace GrappleMap
 		public:
 
 			VideoPlayer(Threads::TripleBuffer<VideoFrame> & output, string filename);
+	};
+
+	vector<VideoFrame> videoFrames(string filename);
+
+	class PrebufferedVideoPlayer
+	{
+		Threads::TripleBuffer<VideoFrame> & output;
+		vector<VideoFrame> frames;
+		unsigned current = 0;
+		
+		public:
+
+			PrebufferedVideoPlayer(Threads::TripleBuffer<VideoFrame> & output, vector<VideoFrame> frames);
+			void nextFrame();
 	};
 }
 

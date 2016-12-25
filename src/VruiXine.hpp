@@ -145,7 +145,7 @@ class VruiXine
 	raw_visual_t rawVisual = mkRawVisual();
 	Xine::VideoPort videoOutPort{xine, rawVisual};
 	Xine::AudioPort audioOutPort{xine};
-	Xine::Stream stream{xine, audioOutPort, videoOutPort};
+	Xine::Stream stream{xine, &*audioOutPort, videoOutPort};
 	Xine::EventQueue eventQueue{stream};
 	std::string videoFileName; // File name of the currently playing video
 	GLMotif::FileSelectionHelper videoFileSelectionHelper; // Helper object to open video files
