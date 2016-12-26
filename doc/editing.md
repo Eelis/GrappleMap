@@ -113,3 +113,13 @@ As the name suggests.
 Doubles the keyframe density (i.e. halves the duration of each keyframe).
 
 The increased control over timing and joint paths that this doubling provides can make detailed transitions look significantly better, but they are a little bit more work to edit.
+
+## 6. Using video reference
+
+First, use an ordinary video player to find the time index of the technique you
+want to model in a video file. Then, run the editor with "--video filename@##:##;##"
+to make it load the first 200 frames starting at the specified time index.
+Inside the editor, move the model to a recognizable position (e.g. an impact), and
+use the numpad +/- keys (with ctrl for extra speed) to move the video to the
+corresponding frame. Finally, use the comma/period keys to rotate the screen
+to match the model.
