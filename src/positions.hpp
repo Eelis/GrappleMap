@@ -143,9 +143,14 @@ inline double normalRotation(Position const & p) // formalized
 	return -angle(heading(p));
 }
 
-inline V2 center(Position const & p) // formalized
+inline V3 center(Position const & p)
 {
-	return xz(between(p[player0][Core], p[player1][Core]));
+	return between(p[player0][Core], p[player1][Core]);
+}
+
+inline V2 xzCenter(Position const & p) // formalized
+{
+	return xz(center(p));
 }
 
 template<typename F>
@@ -165,7 +170,7 @@ inline Position translate(V3 const off, Position const & p)
 	return mapCoords(p, [off](V3 v){ return v + off; });
 }
 
-inline V3 normalTranslation(Position const & p) { return y0(-center(p)); } // formalized
+inline V3 normalTranslation(Position const & p) { return y0(-xzCenter(p)); } // formalized
 
 inline Position translateNormal(Position const & p)
 {

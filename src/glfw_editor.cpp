@@ -149,7 +149,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 			{
 				case GLFW_KEY_X: { swap_players(w.editor); break; }
 				case GLFW_KEY_M: { mirror_position(w.editor); break; }
-				case GLFW_KEY_P: { w.editor.toggle_playback(); break; }
+				case GLFW_KEY_P: { w.editor.toggle_playback(); sync_video(w); break; }
 				case GLFW_KEY_L: { w.editor.toggle_lock(!w.editor.lockedToSelection()); break; }
 				case GLFW_KEY_SPACE: { w.editor.toggle_selected(); break; }
 				case GLFW_KEY_INSERT: { w.editor.insert_keyframe(); break; }
@@ -588,7 +588,11 @@ int main(int const argc, char const * const * const argv)
 			}
 
 			if (!w.edit_mode && !w.chosen_joint && !w.editor.playingBack())
-				w.camera.setOffset(center(w.editor.current_position()));
+			{
+				V3 c = center(w.editor.current_position());
+				c.y *= 0.7;
+				w.camera.setOffset(c);
+			}
 
 			do_render(window, w);
 
