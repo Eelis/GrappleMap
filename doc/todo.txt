@@ -25,9 +25,12 @@ glfw frontend:
 - respect 'draggable' again(?)
 - test clipboard
 - restore remaining disabled commands
-- make dependency on Vrui (for video playback) optional
+- make dependency on Vrui (for video playback) optional (because we eventually want to target WebAssembly, where glfw is likely available but Vrui likely isn't)
 - fix bad pixels at bottom of video monitor
-- sometimes frame stepping doesn't work
+- sometimes video frames seem to appear in duplicate
+- use mouse to enter reorientations
+- edit-dragger doesn't handle mirrored reorientations (i think)
+- exceptions don't seem to get caught
 
 vrui frontend:
 - limb editing
@@ -49,6 +52,7 @@ vrui frontend:
 - quickly record frames in non-real-time when zoom mode is entered,
   so that zoomed seeking works without preconditions
 - reuse VideoPlayer and VideoMonitor in VruiXine
+- reorienting first/last segment doesn't (always) work
 
 playback:
 - make {pre,post}fix length for demo mode configurable
