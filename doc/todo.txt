@@ -26,7 +26,6 @@ glfw frontend:
 - test clipboard
 - restore remaining disabled commands
 - make dependency on Vrui (for video playback) optional
-- add controls for monitor rotation
 - fix bad pixels at bottom of video monitor
 - sometimes frame stepping doesn't work
 

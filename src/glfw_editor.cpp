@@ -156,6 +156,9 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				case GLFW_KEY_DELETE: { w.editor.delete_keyframe(); break; }
 				case GLFW_KEY_I: w.editor.mirror(); break;
 
+				case GLFW_KEY_COMMA: if (w.monitor) w.monitor->rotate(5); break;
+				case GLFW_KEY_PERIOD: if (w.monitor) w.monitor->rotate(-5); break;
+
 				// set position to center
 /*
 				case GLFW_KEY_U:
@@ -347,6 +350,7 @@ string const controls =
 	"  ctrl-z     - undo\n"
 	"  ins        - duplicate current frame\n"
 	"  del        - delete current frame\n"
+	"  comma/period - rotate video screen\n"
 	"\n"
 	"Mouse controls:\n"
 	"  scroll wheel              - scroll through frames in sequence\n"

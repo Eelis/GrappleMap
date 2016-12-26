@@ -37,6 +37,7 @@ namespace GrappleMap
 		unsigned int videoFrameVersion = 0; // Version number of currently locked frame
 		double screenHeight = 3; // Height of video display screen in navigational coordinate units
 		double aspectRatio = 16.0/9.0;  // The aspect ratio of the currently locked video frame
+		double angle = 90; // in degrees
 		int crop[4]{};
 		int frameSize[2]{}; // The frame size of the currently locked video frame
 		unsigned int screenParametersVersion = 1; // Version number of screen parameters, including aspect ratio of current frame
@@ -52,6 +53,8 @@ namespace GrappleMap
 		
 		VideoMonitor();
 		~VideoMonitor();
+
+		void rotate(double a) { angle += a; }
 
 		void frame();
 		void display() const;

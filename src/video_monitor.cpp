@@ -43,7 +43,6 @@ void VideoMonitor::frame()
 			aspectRatio=videoFrames.getLockedValue().aspectRatio;
 			}
 		}
-	
 	}
 
 void VideoMonitor::display() const
@@ -185,8 +184,8 @@ void VideoMonitor::display() const
 	
 	/* Draw the screen: */
 	glPushMatrix();
-	glRotated(90,0.0,1.0,0.0);
-	glTranslated(4 /* todo: one of the slided values */, 0, 0);
+	glRotated(angle, 0.0, 1.0, 0.0);
+	glTranslated(4 /* todo: one of the slided values */, 1 /* todo: compute */, 0);
 	
 	GLVertexArrayParts::enable(Vertex::getPartsMask());
 	glVertexPointer(static_cast<const Vertex*>(0));
