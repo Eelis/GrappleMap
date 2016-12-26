@@ -300,7 +300,7 @@ TimeInVideo videoTimeFromArg(string const & s)
 	return {m[1], millis};
 }
 
-vector<VideoFrame> videoFrames(TimeInVideo const & tiv)
+vector<VideoFrame> loadVideoFrames(TimeInVideo const & tiv)
 {
 	Xine::Engine xine;
 	Xine::VideoPort videoOutPort{xine, xine_new_framegrab_video_port(&*xine)};
@@ -320,20 +320,6 @@ vector<VideoFrame> videoFrames(TimeInVideo const & tiv)
 	}
 
 	return r;
-}
-
-PrebufferedVideoPlayer::PrebufferedVideoPlayer(Threads::TripleBuffer<VideoFrame> & o, vector<VideoFrame> in)
-	: output(o), frames(std::move(in))
-{}
-
-void PrebufferedVideoPlayer::seek(unsigned const i)
-{
-	std::cout << "seeking to " << i << std::endl;
-
-	if (frames.empty()) return;
-
-	output.startNewValue() = frames[i % frames.size()];
-	output.postNewValue();
 }
 
 }

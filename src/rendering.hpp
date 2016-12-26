@@ -50,7 +50,8 @@ namespace GrappleMap
 		PerPlayerJoint<optional<V3>> colors,
 		int left, int bottom, int width, int height,
 		OrientedPath const &,
-		Style const &, PlayerDrawer const &);
+		Style const &, PlayerDrawer const &,
+		function<void()> extraRender = {});
 
 	void renderScene(Graph const &, Position const &,
 		vector<Viable> const & viables,

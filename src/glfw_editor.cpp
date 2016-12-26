@@ -82,15 +82,21 @@ struct Application
 	PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> candidates;
 	unique_ptr<VideoMonitor> monitor;
 	unique_ptr<VideoPlayer> videoPlayer;
-	unique_ptr<PrebufferedVideoPlayer> pbVideoPlayer;
 	int videoOffset = 0;
+	vector<VideoFrame> videoFrames;
 };
 
 void sync_video(Application & app)
 {
-	if (app.pbVideoPlayer)
+	if (!app.videoFrames.empty() && app.monitor)
 		if (auto t = timeInSelection(app.editor))
-			app.pbVideoPlayer->seek(*t * 30 + app.videoOffset); // todo: get fps
+		{
+			unsigned const i = *t * 30 + app.videoOffset; // todo: get fps
+
+			auto & output = app.monitor->videoFrames;
+			output.startNewValue() = app.videoFrames[i % app.videoFrames.size()];
+			output.postNewValue();
+		}
 }
 
 void print_status(Application const & w)
@@ -460,13 +466,12 @@ void do_render(GLFWwindow * const window, Application const & w)
 
 	auto & views = w.split_view ? split_view : single_view;
 
-	renderWindow(views, viables, w.editor.getGraph(), w.editor.current_position(), w.camera, special_joint,
-		colors, 0, 0, width, height, selection, w.style, w.playerDrawer);
-
 	glEnable(GL_DEPTH);
 	glEnable(GL_DEPTH_TEST);
 
-	if (w.monitor) w.monitor->display();
+	renderWindow(views, viables, w.editor.getGraph(), w.editor.current_position(), w.camera, special_joint,
+		colors, 0, 0, width, height, selection, w.style, w.playerDrawer,
+		[&]{ if (w.monitor) w.monitor->display(); });
 }
 
 int main(int const argc, char const * const * const argv)
@@ -506,11 +511,8 @@ int main(int const argc, char const * const * const argv)
 		if (vm->count("video"))
 		{
 			w.monitor.reset(new VideoMonitor);
-//			w.videoPlayer.reset(new VideoPlayer(w.monitor->videoFrames, (*vm)["video"].as<string>()));
-
-			w.pbVideoPlayer.reset(new PrebufferedVideoPlayer(
-				w.monitor->videoFrames,
-				videoFrames(videoTimeFromArg((*vm)["video"].as<string>()))));
+			w.videoFrames = loadVideoFrames(videoTimeFromArg((*vm)["video"].as<string>()));
+			sync_video(w);
 		}
 
 		glEnable(GL_BLEND);

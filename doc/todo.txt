@@ -26,6 +26,9 @@ glfw frontend:
 - test clipboard
 - restore remaining disabled commands
 - make dependency on Vrui (for video playback) optional
+- add controls for monitor rotation
+- fix bad pixels at bottom of video monitor
+- sometimes frame stepping doesn't work
 
 vrui frontend:
 - limb editing
@@ -34,7 +37,7 @@ vrui frontend:
 - position-in-sequence labels
 - interface for inserting new transitions
 - graph display
-- update menu entries (e.g. disable "remove keyframe")
+- update menu entries (e.g. disable "remove keyframe" when not at keyframe)
 - write tutorial
 - allow dynamically unmapping tools
 - support desktop mode where cursor is a ray

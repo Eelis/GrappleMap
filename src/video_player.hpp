@@ -38,19 +38,7 @@ namespace GrappleMap
 
 	TimeInVideo videoTimeFromArg(string const &);
 
-	vector<VideoFrame> videoFrames(TimeInVideo const &);
-
-	class PrebufferedVideoPlayer
-	{
-		Threads::TripleBuffer<VideoFrame> & output;
-		vector<VideoFrame> frames;
-		
-		public:
-
-			PrebufferedVideoPlayer(Threads::TripleBuffer<VideoFrame> & output, vector<VideoFrame> frames);
-
-			void seek(unsigned);
-	};
+	vector<VideoFrame> loadVideoFrames(TimeInVideo const &);
 }
 
 #endif

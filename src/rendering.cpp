@@ -190,7 +190,8 @@ void renderWindow(
 	int const width, int const height,
 	OrientedPath const & selection,
 	Style const & style,
-	PlayerDrawer const & playerDrawer)
+	PlayerDrawer const & playerDrawer,
+	function<void()> extraRender)
 {
 	glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_POINT_SMOOTH);
@@ -237,6 +238,8 @@ void renderWindow(
 		grid(style.grid_color, style.grid_size, style.grid_line_width);
 
 		playerDrawer.drawPlayers(position, colors, v.first_person);
+
+		if (extraRender) extraRender();
 
 		if (highlight_joint)
 			drawSelection(

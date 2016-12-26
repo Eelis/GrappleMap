@@ -25,6 +25,7 @@ namespace GrappleMap
 	using std::istream;
 	using std::ostream;
 	using std::ofstream;
+	using std::function;
 	using std::move;
 	using std::cout;
 	using std::cerr;
