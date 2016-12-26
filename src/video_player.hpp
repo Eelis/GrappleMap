@@ -44,12 +44,12 @@ namespace GrappleMap
 	{
 		Threads::TripleBuffer<VideoFrame> & output;
 		vector<VideoFrame> frames;
-		unsigned current = 0;
 		
 		public:
 
 			PrebufferedVideoPlayer(Threads::TripleBuffer<VideoFrame> & output, vector<VideoFrame> frames);
-			void nextFrame();
+
+			void seek(unsigned);
 	};
 }
 

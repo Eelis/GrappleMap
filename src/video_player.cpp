@@ -326,13 +326,13 @@ PrebufferedVideoPlayer::PrebufferedVideoPlayer(Threads::TripleBuffer<VideoFrame>
 	: output(o), frames(std::move(in))
 {}
 
-void PrebufferedVideoPlayer::nextFrame()
+void PrebufferedVideoPlayer::seek(unsigned const i)
 {
+	std::cout << "seeking to " << i << std::endl;
+
 	if (frames.empty()) return;
 
-	if (++current >= frames.size()) current = 0;
-
-	output.startNewValue() = frames[current];
+	output.startNewValue() = frames[i % frames.size()];
 	output.postNewValue();
 }
 

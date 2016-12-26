@@ -83,7 +83,15 @@ struct Application
 	unique_ptr<VideoMonitor> monitor;
 	unique_ptr<VideoPlayer> videoPlayer;
 	unique_ptr<PrebufferedVideoPlayer> pbVideoPlayer;
+	int videoOffset = 0;
 };
+
+void sync_video(Application & app)
+{
+	if (app.pbVideoPlayer)
+		if (auto t = timeInSelection(app.editor))
+			app.pbVideoPlayer->seek(*t * 30 + app.videoOffset); // todo: get fps
+}
 
 void print_status(Application const & w)
 {
@@ -124,6 +132,9 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				case GLFW_KEY_V: // paste
 					if (w.clipboard) w.editor.replace(*w.clipboard);
 					return;
+
+				case GLFW_KEY_KP_ADD: { w.videoOffset += 10; sync_video(w); break; }
+				case GLFW_KEY_KP_SUBTRACT: { w.videoOffset -= 10; sync_video(w); break; }
 
 				default: return;
 			}
@@ -207,6 +218,9 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					break;
 				}
 
+				case GLFW_KEY_KP_ADD: { ++w.videoOffset; sync_video(w); break; }
+				case GLFW_KEY_KP_SUBTRACT: { --w.videoOffset; sync_video(w); break; }
+
 				// new sequence
 /*
 				case GLFW_KEY_N:
@@ -252,6 +266,7 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 	else if (yoffset == 1) advance(w.editor);
 	else return;
 
+	sync_video(w);
 	print_status(w);
 }
 
@@ -506,7 +521,6 @@ int main(int const argc, char const * const * const argv)
 			glfwPollEvents();
 
 			if (w.monitor) w.monitor->frame();
-			if (w.pbVideoPlayer) w.pbVideoPlayer->nextFrame();
 
 			update_camera(window, w);
 
@@ -549,7 +563,12 @@ int main(int const argc, char const * const * const argv)
 				if (auto best_next_pos = determineNextPos(
 						graph, special_joint,
 						w.candidates[special_joint], w.camera, *cursor))
+				{
 					w.editor.setLocation(*best_next_pos);
+					sync_video(w);
+				}
+
+			if (w.editor.playingBack()) sync_video(w);
 
 			if (!w.editor.playingBack() && cursor && w.chosen_joint && w.edit_mode
 				&& glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
