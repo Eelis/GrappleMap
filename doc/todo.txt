@@ -30,7 +30,6 @@ glfw frontend:
 - sometimes video frames seem to appear in duplicate
 - use mouse to enter reorientations
 - edit-dragger doesn't handle mirrored reorientations (i think)
-- exceptions don't seem to get caught
 
 vrui frontend:
 - limb editing

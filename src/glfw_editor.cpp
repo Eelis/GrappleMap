@@ -484,33 +484,32 @@ int main(int const argc, char const * const * const argv)
 	{
 		auto const vm = readArgs(argc, argv);
 		if (!vm) return 0;
-		Application w(*vm);
-		Graph const & graph = w.editor.getGraph();
 
 		if (!glfwInit()) throw std::runtime_error("could not initialize GLFW");
 
-		GLFWwindow * const window = glfwCreateWindow(640, 480, "GrappleMap", nullptr, nullptr);
+		struct GLFWTerminator
+		{ ~GLFWTerminator() { glfwTerminate(); } }
+		glfwTerminator;
 
-		if (!window)
-		{
-			glfwTerminate();
-			throw std::runtime_error("could not create window");
-		}
+		GLFWwindow * const window = glfwCreateWindow(640, 480, "GrappleMap", nullptr, nullptr);
+		if (!window) error("could not create window");
+
+		glfwMakeContextCurrent(window);
+
+		GLExtensionManager glExtMan;
+		glExtMan.makeCurrent(&glExtMan);
+
+		Application w(*vm);
 
 		glfwSetWindowUserPointer(window, &w);
-
 		glfwSetKeyCallback(window, key_callback);
 		glfwSetMouseButtonCallback(window, mouse_button_callback);
 		glfwSetScrollCallback(window, scroll_callback);
 		glfwSetCursorPosCallback(window, cursor_pos_callback);
 
-		glfwMakeContextCurrent(window);
 		glfwSwapInterval(1);
 
 		double lastTime = glfwGetTime();
-
-		GLExtensionManager glExtMan;
-		glExtMan.makeCurrent(&glExtMan);
 
 		if (vm->count("video"))
 		{
@@ -560,14 +559,14 @@ int main(int const argc, char const * const * const argv)
 					// ugh
 
 			w.candidates = closeCandidates(
-				graph, segment(w.editor.getLocation()),
+				w.editor.getGraph(), segment(w.editor.getLocation()),
 				&w.camera, w.editor.lockedToSelection() ? &sel : nullptr);
 
 			auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
 
 			if (cursor && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 				if (auto best_next_pos = determineNextPos(
-						graph, special_joint,
+						w.editor.getGraph(), special_joint,
 						w.candidates[special_joint], w.camera, *cursor))
 				{
 					w.editor.setLocation(*best_next_pos);
@@ -602,8 +601,6 @@ int main(int const argc, char const * const * const argv)
 			w.editor.frame(now - lastTime);
 			lastTime = now;
 		}
-
-		glfwTerminate();
 
 		std::cout << '\n';
 	}
