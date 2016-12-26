@@ -27,7 +27,7 @@ namespace GrappleMap {
 
 typedef GLGeometry::Vertex<GLfloat,2,void,0,void,GLfloat,3> Vertex; // Type for vertices to render the video display screen
 
-void VideoPlayer::xineEventCallback(void* userData,const xine_event_t* event)
+void VideoPlayer::xineEventCallback(void* /*userData*/,const xine_event_t* event)
 	{
 	
 	switch(event->type)
@@ -188,7 +188,7 @@ void VideoPlayer::xineOutputCallback(void* userData,int frameFormat,int frameWid
 	// TODO Vrui::requestUpdate();
 	}
 
-void VideoPlayer::xineOverlayCallback(void * userData, int numOverlays, raw_overlay_t *)
+void VideoPlayer::xineOverlayCallback(void * /*userData*/, int /*numOverlays*/, raw_overlay_t *)
 {
 }
 
