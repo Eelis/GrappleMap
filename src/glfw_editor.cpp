@@ -64,8 +64,8 @@ namespace
 
 struct Application
 {
-	explicit Application(boost::program_options::variables_map const & opts)
-		: editor(opts)
+	explicit Application(boost::program_options::variables_map const & opts, GLFWwindow * w)
+		: editor(opts), window(w)
 	{}
 
 	PlayerJoint closest_joint = {{0}, LeftAnkle};
@@ -84,6 +84,7 @@ struct Application
 	unique_ptr<VideoPlayer> videoPlayer;
 	int videoOffset = 0;
 	vector<VideoFrame> videoFrames;
+	GLFWwindow * const window;
 };
 
 void sync_video(Application & app)
@@ -425,14 +426,14 @@ void do_edit(Application & w, V2 const cursor)
 	w.editor.replace(pos);
 }
 
-void update_camera(GLFWwindow * const window, Application & w)
+void update_camera(Application & w)
 {
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) w.camera.rotateVertical(-0.05);
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) w.camera.rotateVertical(0.05);
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { w.camera.rotateHorizontal(0.03); w.jiggle = pi(); }
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { w.camera.rotateHorizontal(-0.03); w.jiggle = 0; }
-	if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS) w.camera.zoom(-0.05);
-	if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) w.camera.zoom(0.05);
+	if (glfwGetKey(w.window, GLFW_KEY_UP) == GLFW_PRESS) w.camera.rotateVertical(-0.05);
+	if (glfwGetKey(w.window, GLFW_KEY_DOWN) == GLFW_PRESS) w.camera.rotateVertical(0.05);
+	if (glfwGetKey(w.window, GLFW_KEY_LEFT) == GLFW_PRESS) { w.camera.rotateHorizontal(0.03); w.jiggle = pi(); }
+	if (glfwGetKey(w.window, GLFW_KEY_RIGHT) == GLFW_PRESS) { w.camera.rotateHorizontal(-0.03); w.jiggle = 0; }
+	if (glfwGetKey(w.window, GLFW_KEY_HOME) == GLFW_PRESS) w.camera.zoom(-0.05);
+	if (glfwGetKey(w.window, GLFW_KEY_END) == GLFW_PRESS) w.camera.zoom(0.05);
 
 	if (!w.edit_mode && !w.chosen_joint)
 	{
@@ -441,10 +442,10 @@ void update_camera(GLFWwindow * const window, Application & w)
 	}
 }
 
-void do_render(GLFWwindow * const window, Application const & w)
+void do_render(Application const & w)
 {
 	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
+	glfwGetFramebufferSize(w.window, &width, &height);
 
 	PerPlayerJoint<optional<V3>> colors;
 	vector<Viable> viables;
@@ -478,6 +479,92 @@ void do_render(GLFWwindow * const window, Application const & w)
 		[&]{ if (w.monitor) w.monitor->display(); });
 }
 
+double lastTime{};
+unique_ptr<Application> app;
+
+void frame()
+{
+	glfwPollEvents();
+
+	Application & w = *app;
+
+	if (w.monitor) w.monitor->frame();
+
+	update_camera(*app);
+
+	int width, height;
+	glfwGetFramebufferSize(w.window, &width, &height);
+
+	optional<V2> cursor;
+
+	auto & views = w.split_view ? split_view : single_view;
+
+	if (View const * v = main_view(views))
+	{
+		w.camera.setViewportSize(v->fov, v->w * width, v->h * height);
+
+		double xpos, ypos;
+		glfwGetCursorPos(w.window, &xpos, &ypos);
+
+		double x = xpos / width;
+		double y = 1 - (ypos / height);
+
+		if (x >= v->x && x <= v->x + v->w &&
+			y >= v->y && y <= v->y + v->h)
+			cursor = V2{
+				(((x - v->x) / v->w) - 0.5) * 2,
+				(((y - v->y) / v->h) - 0.5) * 2};
+	}
+
+	OrientedPath const
+		tempSel{nonreversed(sequence(w.editor.getLocation()))},
+		& sel = w.editor.getSelection().empty() ? tempSel : w.editor.getSelection();
+			// ugh
+
+	w.candidates = closeCandidates(
+		w.editor.getGraph(), segment(w.editor.getLocation()),
+		&w.camera, w.editor.lockedToSelection() ? &sel : nullptr);
+
+	auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
+
+	if (cursor && glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+		if (auto best_next_pos = determineNextPos(
+				w.editor.getGraph(), special_joint,
+				w.candidates[special_joint], w.camera, *cursor))
+		{
+			w.editor.setLocation(*best_next_pos);
+			sync_video(w);
+		}
+
+	if (w.editor.playingBack()) sync_video(w);
+
+	if (!w.editor.playingBack() && cursor && w.chosen_joint && w.edit_mode
+		&& glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		do_edit(w, *cursor);
+	else if (cursor && !w.chosen_joint)
+	{
+		Position const pos = w.editor.current_position();
+		w.closest_joint = *minimal(
+			playerJoints.begin(), playerJoints.end(),
+			[&](PlayerJoint j) { return norm2(world2xy(w.camera, pos[j]) - *cursor); });
+	}
+
+	if (!w.edit_mode && !w.chosen_joint && !w.editor.playingBack())
+	{
+		V3 c = center(w.editor.current_position());
+		c.y *= 0.7;
+		w.camera.setOffset(c);
+	}
+
+	do_render(w);
+
+	glfwSwapBuffers(w.window);
+
+	double const now = glfwGetTime();
+	w.editor.frame(now - lastTime);
+	lastTime = now;
+}
+
 int main(int const argc, char const * const * const argv)
 {
 	try
@@ -499,9 +586,9 @@ int main(int const argc, char const * const * const argv)
 		GLExtensionManager glExtMan;
 		glExtMan.makeCurrent(&glExtMan);
 
-		Application w(*vm);
+		app.reset(new Application(*vm, window));
 
-		glfwSetWindowUserPointer(window, &w);
+		glfwSetWindowUserPointer(window, app.get());
 		glfwSetKeyCallback(window, key_callback);
 		glfwSetMouseButtonCallback(window, mouse_button_callback);
 		glfwSetScrollCallback(window, scroll_callback);
@@ -509,13 +596,13 @@ int main(int const argc, char const * const * const argv)
 
 		glfwSwapInterval(1);
 
-		double lastTime = glfwGetTime();
+		lastTime = glfwGetTime();
 
 		if (vm->count("video"))
 		{
-			w.monitor.reset(new VideoMonitor);
-			w.videoFrames = loadVideoFrames(videoTimeFromArg((*vm)["video"].as<string>()));
-			sync_video(w);
+			app->monitor.reset(new VideoMonitor);
+			app->videoFrames = loadVideoFrames(videoTimeFromArg((*vm)["video"].as<string>()));
+			sync_video(*app);
 		}
 
 		glEnable(GL_BLEND);
@@ -523,83 +610,7 @@ int main(int const argc, char const * const * const argv)
 
 		while (!glfwWindowShouldClose(window))
 		{
-			glfwPollEvents();
-
-			if (w.monitor) w.monitor->frame();
-
-			update_camera(window, w);
-
-			int width, height;
-			glfwGetFramebufferSize(window, &width, &height);
-
-			optional<V2> cursor;
-
-			auto & views = w.split_view ? split_view : single_view;
-
-			if (View const * v = main_view(views))
-			{
-				w.camera.setViewportSize(v->fov, v->w * width, v->h * height);
-
-				double xpos, ypos;
-				glfwGetCursorPos(window, &xpos, &ypos);
-
-				double x = xpos / width;
-				double y = 1 - (ypos / height);
-
-				if (x >= v->x && x <= v->x + v->w &&
-					y >= v->y && y <= v->y + v->h)
-					cursor = V2{
-						(((x - v->x) / v->w) - 0.5) * 2,
-						(((y - v->y) / v->h) - 0.5) * 2};
-			}
-
-			OrientedPath const
-				tempSel{nonreversed(sequence(w.editor.getLocation()))},
-				& sel = w.editor.getSelection().empty() ? tempSel : w.editor.getSelection();
-					// ugh
-
-			w.candidates = closeCandidates(
-				w.editor.getGraph(), segment(w.editor.getLocation()),
-				&w.camera, w.editor.lockedToSelection() ? &sel : nullptr);
-
-			auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
-
-			if (cursor && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-				if (auto best_next_pos = determineNextPos(
-						w.editor.getGraph(), special_joint,
-						w.candidates[special_joint], w.camera, *cursor))
-				{
-					w.editor.setLocation(*best_next_pos);
-					sync_video(w);
-				}
-
-			if (w.editor.playingBack()) sync_video(w);
-
-			if (!w.editor.playingBack() && cursor && w.chosen_joint && w.edit_mode
-				&& glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-				do_edit(w, *cursor);
-			else if (cursor && !w.chosen_joint)
-			{
-				Position const pos = w.editor.current_position();
-				w.closest_joint = *minimal(
-					playerJoints.begin(), playerJoints.end(),
-					[&](PlayerJoint j) { return norm2(world2xy(w.camera, pos[j]) - *cursor); });
-			}
-
-			if (!w.edit_mode && !w.chosen_joint && !w.editor.playingBack())
-			{
-				V3 c = center(w.editor.current_position());
-				c.y *= 0.7;
-				w.camera.setOffset(c);
-			}
-
-			do_render(window, w);
-
-			glfwSwapBuffers(window);
-
-			double const now = glfwGetTime();
-			w.editor.frame(now - lastTime);
-			lastTime = now;
+			frame();
 		}
 
 		std::cout << '\n';
