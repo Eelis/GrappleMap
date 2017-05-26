@@ -1,4 +1,5 @@
 #include "playerdrawer.hpp"
+#include <GL/glu.h>
 
 namespace GrappleMap {
 

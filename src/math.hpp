@@ -6,22 +6,21 @@
 #include <tuple>
 #include <array>
 #include <cassert>
-#include <GL/glu.h>
 
 namespace GrappleMap {
 
 constexpr double pi() { return 3.141593; }
 
-struct V2 { GLdouble x, y; };
-struct V3 { GLdouble x, y, z; };
+struct V2 { double x, y; };
+struct V3 { double x, y, z; };
 
 inline V3 y0(V2 v) { return {v.x, 0, v.y}; }
 
 struct V4
 {
-	GLdouble x, y, z, w;
+	double x, y, z, w;
 
-	V4(V3 v, GLdouble w)
+	V4(V3 v, double w)
 		: x(v.x), y(v.y), z(v.z), w(w)
 	{}
 };

@@ -1,6 +1,7 @@
 #include "rendering.hpp"
 #include "graph_util.hpp"
 #include "camera.hpp"
+#include <GL/glu.h>
 #ifdef USE_FTGL
 #include <FTGL/ftgl.h>
 #endif
