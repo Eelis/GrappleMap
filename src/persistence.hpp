@@ -5,6 +5,7 @@
 
 namespace GrappleMap
 {
+	Graph loadGraph(std::istream &);
 	Graph loadGraph(string filename);
 	void save(Graph const &, string filename);
 	Path readScene(Graph const &, string filename);

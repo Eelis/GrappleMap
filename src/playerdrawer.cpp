@@ -5,9 +5,11 @@ namespace GrappleMap {
 
 namespace
 {
+	#ifndef EMSCRIPTEN
 	void glNormal(V3 const & v) { ::glNormal3d(v.x, v.y, v.z); }
 	void glVertex(V3 const & v) { ::glVertex3d(v.x, v.y, v.z); }
 	void glColor(V3 v) { ::glColor3d(v.x, v.y, v.z); }
+	#endif
 
 	template<typename F>
 	void fatTriangle(V3 a, double arad, V3 b, double brad, V3 c, double crad, F out)
@@ -97,6 +99,7 @@ namespace
 		out(cdown, bc);
 	}
 
+	#ifndef EMSCRIPTEN
 	void fatTriangle(V3 a, double arad, V3 b, double brad, V3 c, double crad)
 	{
 		glBegin(GL_TRIANGLES);
@@ -114,6 +117,26 @@ namespace
 				p[PlayerJoint{n, x}], jointDefs[x].radius,
 				p[PlayerJoint{n, y}], jointDefs[y].radius,
 				p[PlayerJoint{n, z}], jointDefs[z].radius);
+		}
+	}
+	#endif
+
+	void fatTriangle(V3 color, V3 a, double arad, V3 b, double brad, V3 c, double crad, std::vector<BasicVertex> & out)
+	{
+		fatTriangle(a, arad, b, brad, c, crad, [&](V3f pos, V3f norm)
+			{
+				out.push_back({pos, norm, V4f(color, 1)});
+			});
+	}
+
+	void fatTriangle(Position const & p, Joint const x, Joint y, Joint z, std::vector<BasicVertex> & out)
+	{
+		foreach (n : playerNums())
+		{
+			fatTriangle(playerDefs[n].color,
+				p[PlayerJoint{n, x}], jointDefs[x].radius,
+				p[PlayerJoint{n, y}], jointDefs[y].radius,
+				p[PlayerJoint{n, z}], jointDefs[z].radius, out);
 		}
 	}
 }
@@ -136,13 +159,13 @@ void SphereDrawer::draw(V3 center, double radius, bool const fine, F out) const
 
 	foreach (t : mesh.second)
 	{
-		
 		f(t.vertex[2]);
 		f(t.vertex[1]);
 		f(t.vertex[0]);
 	}
 }
 
+#ifndef EMSCRIPTEN
 void drawSphere(SphereDrawer const & d, V3 center, double radius, bool const fine)
 {
 	glBegin(GL_TRIANGLES);
@@ -150,6 +173,7 @@ void drawSphere(SphereDrawer const & d, V3 center, double radius, bool const fin
 			[&](V3 pos, V3 norm) { glNormal(norm); glVertex(pos); });
 	glEnd();
 }
+#endif
 
 PlayerDrawer::PlayerDrawer()
 {
@@ -159,6 +183,15 @@ PlayerDrawer::PlayerDrawer()
 		angles[i] = std::make_pair(sin(i * s), cos(i * s));
 }
 
+void drawSphere(SphereDrawer const & sd, V4f color, V3 center, double radius, bool const fine, std::vector<BasicVertex> & out)
+{
+	sd.draw(center, radius, fine, [color, &out](V3f pos, V3f norm)
+		{
+			out.push_back({pos, norm, color});
+		});
+}
+
+#ifndef EMSCRIPTEN
 void PlayerDrawer::drawPillar(V3 from, V3 to, double from_radius, double to_radius) const
 {
 	V3 a = normalize(cross(to - from, V3{1,1,1} - from));
@@ -174,17 +207,46 @@ void PlayerDrawer::drawPillar(V3 from, V3 to, double from_radius, double to_radi
 
 		glNormal(a * angles[i+1].first + b * angles[i+1].second);
 		glVertex(from + a * from_radius * angles[i+1].first + b * from_radius * angles[i+1].second);
-
+ 
 		glVertex(from + a * from_radius * angles[i+1].first + b * from_radius * angles[i+1].second);
 		glVertex(to   + a *   to_radius * angles[i+1].first + b *   to_radius * angles[i+1].second);
-
+ 
 		glNormal(a * angles[i].first + b * angles[i].second);
 		glVertex(to   + a *   to_radius * angles[i].first + b *   to_radius * angles[i].second);
 	}
 
 	glEnd();
 }
+#endif
 
+template<typename F>
+void PlayerDrawer::drawPillar(V3 from, V3 to, double from_radius, double to_radius, F out) const
+{
+	V3 a = normalize(cross(to - from, V3{1,1,1} - from));
+	V3 b = normalize(cross(to - from, a));
+
+	for (unsigned i = 0; i != faces; ++i)
+	{
+		V3 normal = a * angles[i].first + b * angles[i].second;
+		V3 normal2 = a * angles[i+1].first + b * angles[i+1].second;
+
+		out(from + a * from_radius * angles[i  ].first + b * from_radius * angles[i  ].second, normal);
+		out(to   + a *   to_radius * angles[i  ].first + b *   to_radius * angles[i  ].second, normal);
+		out(from + a * from_radius * angles[i+1].first + b * from_radius * angles[i+1].second, normal2);
+
+		out(from + a * from_radius * angles[i+1].first + b * from_radius * angles[i+1].second, normal2);
+		out(to   + a *   to_radius * angles[i  ].first + b *   to_radius * angles[i  ].second, normal);
+		out(to   + a *   to_radius * angles[i+1].first + b *   to_radius * angles[i+1].second, normal2);
+	}
+}
+
+void PlayerDrawer::drawPillar(V3 color, V3 from, V3 to, double from_radius, double to_radius, std::vector<BasicVertex> & out) const
+{
+	drawPillar(from, to, from_radius, to_radius,
+		[&out, color](V3f pos, V3f norm){ out.push_back({pos, norm, V4f(color, 1)}); });
+}
+
+#ifndef EMSCRIPTEN
 void PlayerDrawer::drawJoints(Position const & pos,
 	PerPlayerJoint<optional<V3>> const & colors,
 	optional<PlayerNum> const first_person_player) const
@@ -210,7 +272,37 @@ void PlayerDrawer::drawJoints(Position const & pos,
 			pj.joint == RightShoulder || pj.joint == LeftShoulder);
 	}
 }
+#endif
 
+void PlayerDrawer::drawJoints(Position const & pos,
+	PerPlayerJoint<optional<V3>> const & colors,
+	optional<PlayerNum> const first_person_player,
+	std::vector<BasicVertex> & out) const
+{
+	foreach (pj : playerJoints)
+	{
+		if (pj.player == first_person_player && pj.joint == Head) continue;
+
+		auto color = colors[pj];
+
+		double extraBig = 0;
+
+		V3 cc = playerDefs[pj.player].color;
+
+		if (color)
+		{
+			extraBig = 0.005;
+			cc = *color;
+		}
+
+		drawSphere(sphereDrawer, V4f(to_f(cc), 1), pos[pj], jointDefs[pj.joint].radius + extraBig,
+			pj.joint == Head || pj.joint == Core ||
+			pj.joint == RightHip || pj.joint == LeftHip ||
+			pj.joint == RightShoulder || pj.joint == LeftShoulder, out);
+	}
+}
+
+#ifndef EMSCRIPTEN
 void PlayerDrawer::drawLimbs(Position const & pos, optional<PlayerNum> const first_person_player) const
 {
 	foreach (p : playerNums())
@@ -237,19 +329,64 @@ void PlayerDrawer::drawLimbs(Position const & pos, optional<PlayerNum> const fir
 			}
 	}
 }
+#endif
 
+void PlayerDrawer::drawLimbs(Position const & pos, optional<PlayerNum> const first_person_player,
+	vector<BasicVertex> & out) const
+{
+	foreach (p : playerNums())
+	{
+		V3 const color = playerDefs[p].color;
+		Player const & player = pos[p];
+
+		foreach (l : limbs())
+			if (l.visible)
+			{
+				auto const a = l.ends[0], b = l.ends[1];
+
+				if (b == Head && p == first_person_player) continue;
+
+				if (l.midpointRadius)
+				{
+					auto mid = (player[a] + player[b]) / 2.;
+					drawPillar(color, player[a], mid, jointDefs[a].radius, *l.midpointRadius, out);
+					drawPillar(color, mid, player[b], *l.midpointRadius, jointDefs[b].radius, out);
+						// todo: can be done faster than one pillar at a time
+				}
+				else
+					drawPillar(color, player[a], player[b], jointDefs[a].radius, jointDefs[b].radius, out);
+			}
+	}
+}
+
+#ifndef EMSCRIPTEN
 void PlayerDrawer::drawPlayers(Position const & pos,
 	PerPlayerJoint<optional<V3>> const & colors,
 	optional<PlayerNum> const first_person_player) const
 {
 	drawLimbs(pos, first_person_player);
+	
 	drawJoints(pos, colors, first_person_player);
-
 	fatTriangle(pos, LeftHip, Core, RightHip);
 	fatTriangle(pos, LeftShoulder, Neck, RightShoulder);
 	fatTriangle(pos, LeftShoulder, Core, RightShoulder);
 	fatTriangle(pos, LeftAnkle, LeftHeel, LeftToe);
 	fatTriangle(pos, RightAnkle, RightHeel, RightToe);
+}
+#endif
+
+void PlayerDrawer::drawPlayers(Position const & pos,
+	PerPlayerJoint<optional<V3>> const & colors,
+	optional<PlayerNum> const first_person_player, vector<BasicVertex> & out) const
+{
+	drawLimbs(pos, first_person_player, out);
+	
+	drawJoints(pos, colors, first_person_player, out);
+	fatTriangle(pos, LeftHip, Core, RightHip, out);
+	fatTriangle(pos, LeftShoulder, Neck, RightShoulder, out);
+	fatTriangle(pos, LeftShoulder, Core, RightShoulder, out);
+	fatTriangle(pos, LeftAnkle, LeftHeel, LeftToe, out);
+	fatTriangle(pos, RightAnkle, RightHeel, RightToe, out);
 }
 
 }

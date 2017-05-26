@@ -53,6 +53,16 @@ namespace GrappleMap
 		Style const &, PlayerDrawer const &,
 		function<void()> extraRender = {});
 
+	size_t renderWindow(vector<View> const &,
+		vector<Viable> const &, Graph const &, Position const &,
+		Camera, optional<PlayerJoint> highlight_joint,
+		PerPlayerJoint<optional<V3>> colors,
+		int left, int bottom, int width, int height,
+		OrientedPath const &,
+		Style const &, PlayerDrawer const &,
+		function<void()> extraRender,
+		std::vector<BasicVertex> & out);
+
 	void renderScene(Graph const &, Position const &,
 		vector<Viable> const & viables,
 		optional<PlayerJoint> const browse_joint,

@@ -159,7 +159,7 @@ namespace GrappleMap
 	VrApp::VrApp(int argc, char ** argv)
 		: Vrui::Application(argc, argv)
 		, opts(getopts(argc, argv))
-		, editor(opts)
+		, editor(opts["db"].as<string>(), opts["start"].as<string>())
 		, scale(opts["scale"].as<double>())
 		, video_player(opts.count("video")
 			? new VruiXine({"vruixine", opts["video"].as<string>()})

@@ -10,6 +10,7 @@ namespace GrappleMap {
 
 namespace
 {
+	#ifndef EMSCRIPTEN
 	void glNormal(V3 const & v) { ::glNormal3d(v.x, v.y, v.z); }
 	void glVertex(V3 const & v) { ::glVertex3d(v.x, v.y, v.z); }
 	void glTranslate(V3 const & v) { ::glTranslated(v.x, v.y, v.z); }
@@ -22,7 +23,36 @@ namespace
 			center.x, center.y, center.z,
 			up.x, up.y, up.z);
 	}
+	#endif
 
+	void drawLine(V4f color, V4f color2, V3 from, V3 to, std::vector<BasicVertex> & out)
+	{
+		float const radius = 0.005;
+
+		V3f fromf = to_f(from);
+		V3f tof = to_f(to);
+
+		V3f a = normalize(cross(tof - fromf, V3f{1,1,1} - fromf));
+		V3f b = normalize(cross(tof - fromf, a));
+
+		out.push_back({ fromf + a * radius, b, color });
+		out.push_back({ tof   + a * radius, b, color2 }),
+		out.push_back({ tof   - a * radius, b, color2 });
+
+		out.push_back({ tof   - a * radius, b, color2 });
+		out.push_back({ fromf - a * radius, b, color });
+		out.push_back({ fromf + a * radius, b, color });
+
+		out.push_back({ fromf + b * radius, a, color });
+		out.push_back({ tof   + b * radius, a, color2 }),
+		out.push_back({ tof   - b * radius, a, color2 });
+
+		out.push_back({ tof   - b * radius, a, color2 });
+		out.push_back({ fromf - b * radius, a, color });
+		out.push_back({ fromf + b * radius, a, color });
+	}
+
+	#ifndef EMSCRIPTEN
 	void drawSelection(
 		Graph const & g, OrientedPath const & path, PlayerJoint const j,
 		optional<SegmentInSequence> const current_segment,
@@ -39,6 +69,7 @@ namespace
 			glBegin(GL_LINE_STRIP);
 				foreach (p : positions(forget_direction(seq), g))
 				{
+				
 					if (current_segment && to(*current_segment) == *p)
 						glBegin(GL_LINE_STRIP);
 
@@ -49,7 +80,6 @@ namespace
 				}
 			glEnd();
 		}
-
 		#ifdef USE_FTGL
 		if (camera && !style.font.Error())
 			foreach (seq : path)
@@ -70,7 +100,32 @@ namespace
 			glEnd();
 		}
 	}
+	#endif
 
+	void drawSelection(
+		SphereDrawer const & sphereDrawer,
+		Graph const & g, OrientedPath const & path, PlayerJoint const j,
+		optional<SegmentInSequence> const current_segment,
+		Camera const * const camera, Style const & style,
+		vector<BasicVertex> & out)
+	{
+		foreach (sn : path)
+		{
+			foreach (seg : segments(forget_direction(sn), g))
+				drawLine(
+					V4f(V3f{0,1,0},0.6),
+					V4f(V3f{0,1,0},0.6),
+					at(from_pos(seg), j, g),
+					at(to_pos(seg), j, g),
+					out);
+		}
+
+		foreach (seq : path)
+			foreach (v : joint_positions(forget_direction(seq), j, g))
+				drawSphere(sphereDrawer, V4f(V3f{0,1,0}, 0.5), v, 0.02, false, out);
+	}
+
+	#ifndef EMSCRIPTEN
 	void drawViables(
 		Graph const & graph, vector<Viable> const & viables,
 		OrientedPath const & selection,
@@ -97,6 +152,7 @@ namespace
 			else
 			{
 				glBegin(GL_LINE_STRIP);
+
 				foreach (i : PosNum::range(v.begin, v.end))
 				{
 					glColor4f(1, 1, 0, std::max(0.0, 0.3 - v.depth(i) * 0.05));
@@ -120,8 +176,45 @@ namespace
 
 		glEnable(GL_DEPTH_TEST);
 	}
+	#endif
+
+	void drawViables(
+		SphereDrawer const & sphereDrawer,
+		Graph const & graph, vector<Viable> const & viables,
+		OrientedPath const & selection,
+		optional<SegmentInSequence> const current_segment,
+		Camera const * camera, Style const & style,
+		vector<BasicVertex> & out)
+	{
+		foreach (v : viables)
+		{
+			{
+				foreach (seg : SegmentNum::range(SegmentNum{uint_fast8_t(v.begin.index)}, SegmentNum{uint_fast8_t(v.end.index - 1)}))
+					// todo: nasty
+				{
+					auto rs = v.sequence * seg;
+
+					drawLine(
+						V4f(V3f{1, 1, 0}, std::max(0.0, 0.3 - v.depth(from(seg)) * 0.05)),
+						V4f(V3f{1, 1, 0}, std::max(0.0, 0.3 - v.depth(to(seg)) * 0.05)),
+						at(from_pos(rs), v.joint, graph),
+						at(to_pos(rs), v.joint, graph),
+						out);
+				}
+
+				foreach (i : PosNum::range(v.begin, v.end))
+				{
+/* todo:
+					glColor4f(1, 1, 0, std::max(0.0, 0.3 - v.depth(i) * 0.05));
+					glVertex(at(v.sequence * i, v.joint, graph));
+*/
+				}
+			}
+		}
+	}
 }
 
+#ifndef EMSCRIPTEN
 void setupLights()
 {
 	glEnable(GL_LIGHT0);
@@ -158,6 +251,31 @@ void grid(V3 const color, unsigned const size, unsigned const line_width)
 		}
 	glEnd();
 }
+#endif
+
+void grid(V3f const col, unsigned const size, vector<BasicVertex> & out)
+{
+	V4f color(col, 1);
+
+	for (float i = size*-2.; i <= size*2.; ++i)
+	{
+		out.push_back({ {i/2.f+.01f,0,size*-1.f}, {0,1,0}, color });
+		out.push_back({ {i/2.f-.01f,0,size*-1.f}, {0,1,0}, color });
+		out.push_back({ {i/2.f+.01f,0,size* 1.f}, {0,1,0}, color });
+
+		out.push_back({ {i/2.f-.01f,0,size*-1.f}, {0,1,0}, color });
+		out.push_back({ {i/2.f-.01f,0,size* 1.f}, {0,1,0}, color });
+		out.push_back({ {i/2.f+.01f,0,size* 1.f}, {0,1,0}, color });
+
+		out.push_back({ {size*-1.f,0,i/2.f+.01f}, {0,1,0}, color });
+		out.push_back({ {size* 1.f,0,i/2.f+.01f}, {0,1,0}, color });
+		out.push_back({ {size*-1.f,0,i/2.f-.01f}, {0,1,0}, color });
+
+		out.push_back({ {size*-1.f,0,i/2.f-.01f}, {0,1,0}, color });
+		out.push_back({ {size* 1.f,0,i/2.f+.01f}, {0,1,0}, color });
+		out.push_back({ {size* 1.f,0,i/2.f-.01f}, {0,1,0}, color });
+	}
+}
 
 Style::Style()
 {
@@ -179,6 +297,7 @@ Style::Style()
 	}
 #endif
 
+#ifndef EMSCRIPTEN
 void renderWindow(
 	std::vector<View> const & views,
 	vector<Viable> const & viables,
@@ -261,7 +380,57 @@ void renderWindow(
 		}
 	}
 }
+#endif
 
+size_t renderWindow(
+	std::vector<View> const & views,
+	vector<Viable> const & viables,
+	Graph const & graph,
+	Position const & position,
+	Camera camera,
+	optional<PlayerJoint> const highlight_joint,
+	PerPlayerJoint<optional<V3>> colors,
+	int const left, int const bottom,
+	int const width, int const height,
+	OrientedPath const & selection,
+	Style const & style,
+	PlayerDrawer const & playerDrawer,
+	function<void()> extraRender,
+	vector<BasicVertex> & out)
+{
+	size_t num = 0;
+
+	foreach (v : views)
+	{
+		int
+			x = left + v.x * width,
+			y = bottom + v.y * height,
+			w = v.w * width,
+			h = v.h * height;
+
+		camera.setViewportSize(v.fov, w, h);
+
+		grid(to_f(style.grid_color), style.grid_size, out);
+
+		playerDrawer.drawPlayers(position, colors, v.first_person, out);
+
+		if (extraRender) extraRender();
+
+		num = out.size();
+
+		if (highlight_joint)
+			drawSelection(
+				playerDrawer.sphereDrawer,
+				graph, selection, *highlight_joint,
+				boost::none, &camera, style, out);
+
+		drawViables(playerDrawer.sphereDrawer, graph, viables, selection, {}, &camera, style, out);
+	}
+
+	return num;
+}
+
+#ifndef EMSCRIPTEN
 void renderScene(
 	Graph const & graph,
 	Position const & position,
@@ -312,5 +481,6 @@ void renderScene(
 	if (browse_joint) glVertex(position[*browse_joint]);
 	glEnd();
 }
+#endif
 
 }

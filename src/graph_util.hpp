@@ -177,6 +177,11 @@ inline auto positions(Reoriented<SeqNum> const & s, Graph const & g)
 	return positions(g[*s]) | transformed([s](PosNum const p){ return s * p; });
 }
 
+inline auto segments(Reoriented<SeqNum> const & seq, Graph const & g)
+{
+	return segments(g[*seq]) | transformed([seq](SegmentNum seg){ return seq * seg; });
+}
+
 // in/out
 
 Reoriented<Reversible<SeqNum>>

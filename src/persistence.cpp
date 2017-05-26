@@ -141,12 +141,9 @@ namespace
 	}
 }
 
-Graph loadGraph(string const filename)
+Graph loadGraph(std::istream & ff)
 {
 	std::vector<Sequence> edges;
-	std::ifstream ff(filename, std::ios::binary);
-
-	if (!ff) error(filename + ": " + std::strerror(errno));
 
 	ff >> edges;
 
@@ -167,6 +164,14 @@ Graph loadGraph(string const filename)
 	std::cerr << "Loaded " << g.num_nodes() << " nodes and " << g.num_sequences() << " edges." << std::endl;
 
 	return g;
+}
+
+Graph loadGraph(string const filename)
+{
+	std::vector<Sequence> edges;
+	std::ifstream ff(filename, std::ios::binary);
+	if (!ff) error(filename + ": " + std::strerror(errno));
+	return loadGraph(ff);
 }
 
 void save(Graph const & g, string const filename)

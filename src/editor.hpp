@@ -67,6 +67,11 @@ namespace GrappleMap
 	{
 		return bool(position(*e.getLocation()));
 	}
+
+	inline void set_playing(Editor & e, bool b)
+	{
+		if (bool(e.playingBack()) != b) e.toggle_playback();
+	}
 }
 
 #endif

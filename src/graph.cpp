@@ -57,7 +57,7 @@ void Graph::replace(PositionInSequence const pis, Position p, bool const local)
 
 	stored = p;
 
-	std::cerr << "Replaced position " << pis << std::endl;
+//	std::cerr << "Replaced position " << pis << std::endl;
 
 	if (local)
 	{
@@ -69,13 +69,13 @@ void Graph::replace(PositionInSequence const pis, Position p, bool const local)
 	{
 		if (auto reo = is_reoriented(nodes[(*rn)->index].position, p))
 		{
-			std::cerr << "Recognized position as mere reorientation.\n";
+//			std::cerr << "Recognized position as mere reorientation.\n";
 			rn->reorientation = *reo;
 			assert(basicallySame((*this)[*rn], p));
 		}
 		else
 		{
-			std::cerr << "Change to connecting position, updating connected edges.\n";
+//			std::cerr << "Change to connecting position, updating connected edges.\n";
 			nodes[(*rn)->index].position = inverse(rn->reorientation)(p);
 			assert(basicallySame((*this)[*rn], p));
 
