@@ -458,7 +458,7 @@ void do_render(Application const & w)
 		if (w.edit_mode) foreach (j : playerJoints) colors[j] = white;
 		else foreach (j : playerJoints)
 			if (!w.candidates[j].empty())
-				colors[j] = white * 0.4 + playerDefs[j.player].color * 0.6;
+				colors[j] = V3(white) * 0.4 + playerDefs[j.player].color * 0.6;
 
 		colors[special_joint] = yellow;
 

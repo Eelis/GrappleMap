@@ -11,26 +11,62 @@ namespace GrappleMap {
 
 constexpr double pi() { return 3.141593; }
 
+template<typename T>
+struct BasicV3
+{
+	T x, y, z;
+
+	BasicV3() {}
+
+	BasicV3(T x_, T y_, T z_)
+		: x(x_), y(y_), z(z_)
+	{}
+
+	template<typename U>
+	BasicV3(BasicV3<U> const & v)
+		: x(v.x), y(v.y), z(v.z)
+	{
+		// todo: static_assert(std::is_convertible_v<U, T>); (or enable_if)
+	}
+};
+
+using V3f = BasicV3<float>;
+using V3 = BasicV3<double>;
+
 struct V2 { double x, y; };
-struct V3 { double x, y, z; };
+
+inline V3f to_f(V3 v) { return {float(v.x), float(v.y), float(v.z)}; }
 
 inline V3 y0(V2 v) { return {v.x, 0, v.y}; }
 
-struct V4
+template<typename T>
+struct BasicV4
 {
-	double x, y, z, w;
+	T x, y, z, w;
 
-	V4(V3 v, double w)
+	BasicV4() = default;
+
+	BasicV4(T x_, T y_, T z_, T w_)
+		: x(x_), y(y_), z(z_), w(w_)
+	{}
+
+	BasicV4(BasicV3<T> v, T w)
 		: x(v.x), y(v.y), z(v.z), w(w)
 	{}
 };
 
-V3 const
+using V4f = BasicV4<float>;
+using V4 = BasicV4<double>;
+
+V3f const
 	red{1,0,0}, blue{0.1, 0.1, 0.9}, grey{0.2, 0.2, 0.2},
 	yellow{1,1,0}, green{0,1,0}, white{1,1,1}, black{0,0,0};
 
 inline double inner_prod(V2 a, V2 b) { return a.x * b.x + a.y * b.y; }
-inline double inner_prod(V3 a, V3 b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+
+template<typename T>
+inline T inner_prod(BasicV3<T> a, BasicV3<T> b)
+{ return a.x * b.x + a.y * b.y + a.z * b.z; }
 
 using M = std::array<double, 16>;
 
@@ -61,7 +97,8 @@ inline M translate(V3 v)
 		, v.x, v.y, v.z, 1 }};
 }
 
-inline V3 cross(V3 a, V3 b)
+template<typename T>
+inline BasicV3<T> cross(BasicV3<T> a, BasicV3<T> b)
 {
 	return
 		{ a.y * b.z - a.z * b.y
@@ -72,8 +109,9 @@ inline V3 cross(V3 a, V3 b)
 inline V2 xy(V3 v){ return {v.x, v.y}; }
 inline V2 xz(V3 v){ return {v.x, v.z}; }
 inline V2 xy(V4 v){ return {v.x, v.y}; }
-inline V3 xyz(V4 v){ return {v.x, v.y, v.z}; }
 
+template<typename T>
+inline BasicV3<T> xyz(BasicV4<T> v){ return {v.x, v.y, v.z}; }
 
 inline M perspective(double fovy, double aspect, double zNear, double zFar)
 {
@@ -87,18 +125,31 @@ inline M perspective(double fovy, double aspect, double zNear, double zFar)
 }
 
 inline double norm2(V2 v){ return sqrt(inner_prod(v, v)); }
-inline double norm2(V3 v){ return sqrt(inner_prod(v, v)); }
+
+template<typename T>
+inline T norm2(BasicV3<T> v){ return sqrt(inner_prod(v, v)); }
 
 inline V2 operator-(V2 a, V2 b) { return {a.x - b.x, a.y - b.y}; }
-inline V3 operator-(V3 a, V3 b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
+
+template<typename T>
+inline BasicV3<T> operator-(BasicV3<T> a, BasicV3<T> b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
+
 inline V2 operator-(V2 v) { return {-v.x, -v.y}; }
 inline V3 operator-(V3 v) { return {-v.x, -v.y, -v.z}; }
-inline V4 operator-(V4 a, V4 b) { return {{a.x - b.x, a.y - b.y, a.z - b.z}, a.w - b.w}; }
+inline V4 operator-(V4 a, V4 b) { return {a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w}; }
 inline V2 operator+(V2 a, V2 b) { return {a.x + b.x, a.y + b.y}; }
-inline V3 operator+(V3 a, V3 b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
-inline V4 operator+(V4 a, V4 b) { return {{a.x + b.x, a.y + b.y, a.z + b.z}, a.w + b.w}; }
+
+template<typename T>
+inline BasicV3<T> operator+(BasicV3<T> a, BasicV3<T> b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
+
+template<typename T>
+inline BasicV4<T> operator+(BasicV4<T> a, BasicV4<T> b) { return {a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w}; }
+
 inline V2 operator*(V2 v, double s) { return {v.x * s, v.y * s}; }
-inline V3 operator*(V3 v, double s) { return {v.x * s, v.y * s, v.z * s}; }
+
+template<typename T>
+inline BasicV3<T> operator*(BasicV3<T> v, T s) { return {v.x * s, v.y * s, v.z * s}; }
+
 inline V2 & operator+=(V2 & a, V2 b) { return a = a + b; }
 inline V3 & operator+=(V3 & a, V3 b) { return a = a + b; }
 inline V4 & operator+=(V4 & a, V4 b) { return a = a + b; }
@@ -108,28 +159,40 @@ inline V4 & operator-=(V4 & a, V4 b) { return a = a - b; }
 
 
 inline bool operator<(V2 a, V2 b) { return std::make_tuple(a.x, a.y) < std::make_tuple(b.x, b.y); }
-inline bool operator<(V3 a, V3 b) { return std::make_tuple(a.x, a.y, a.z) < std::make_tuple(b.x, b.y, b.z); }
+
+template<typename T>
+inline bool operator<(BasicV3<T> a, BasicV3<T> b) { return std::make_tuple(a.x, a.y, a.z) < std::make_tuple(b.x, b.y, b.z); }
 
 inline bool operator==(V2 a, V2 b) { return a.x == b.x && a.y == b.y; }
 inline bool operator==(V3 a, V3 b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
 
 inline std::ostream & operator<<(std::ostream & o, V2 v)
 { return o << '{' << v.x << ',' << v.y << '}'; }
-inline std::ostream & operator<<(std::ostream & o, V3 v)
+
+template<typename T>
+inline std::ostream & operator<<(std::ostream & o, BasicV3<T> const v)
 { return o << '{' << v.x << ',' << v.y << ',' << v.z << '}'; }
-inline std::ostream & operator<<(std::ostream & o, V4 v)
+
+template<typename T>
+inline std::ostream & operator<<(std::ostream & o, BasicV4<T> const v)
 { return o << '{' << v.x << ',' << v.y << ',' << v.z << ',' << v.w << '}'; }
 
 inline V2 operator/(V2 v, double s) { return {v.x / s, v.y / s}; }
-inline V3 operator/(V3 v, double s) { return {v.x / s, v.y / s, v.z / s}; }
-inline V3 normalize(V3 v){ return v / norm2(v); }
+
+template<typename T>
+inline BasicV3<T> operator/(BasicV3<T> v, T s) { return {v.x / s, v.y / s, v.z / s}; }
+
+template<typename T>
+inline BasicV3<T> normalize(BasicV3<T> v){ return v / norm2(v); }
 
 inline double distance(V3 from, V3 to) { return norm2(to - from); }
 inline double distanceSquared(V2 from, V2 to) { return inner_prod(to - from, to - from); }
 inline double distanceSquared(V3 from, V3 to) { return inner_prod(to - from, to - from); }
 
-inline V3 between(V3 const a, V3 const b) { return (a + b) / 2; }
-inline V2 between(V2 const a, V2 const b) { return (a + b) / 2; }
+template<typename T>
+inline BasicV3<T> between(BasicV3<T> const a, BasicV3<T> const b) { return (a + b) / T(2); }
+
+inline V2 between(V2 const a, V2 const b) { return (a + b) / 2.; }
 
 inline V4 operator*(M const & m, V4 const v) // TODO: formalize
 {

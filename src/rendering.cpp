@@ -290,7 +290,7 @@ void renderScene(
 			if (elem(j, edit_joints)) colors[j] = V3{0, 1, 0};
 
 			if (!colors[j] && !accessibleSegments[j].empty())
-				colors[j] = white * 0.4 + playerDefs[j.player].color * 0.6;
+				colors[j] = V3(white) * 0.4 + playerDefs[j.player].color * 0.6;
 		}
 
 		playerDrawer.drawPlayers(position, colors, {});

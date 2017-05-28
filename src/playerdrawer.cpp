@@ -256,7 +256,7 @@ void PlayerDrawer::drawLimbs(Position const & pos, optional<PlayerNum> const fir
 
 				if (l.midpointRadius)
 				{
-					auto mid = (player[a] + player[b]) / 2;
+					auto mid = (player[a] + player[b]) / 2.;
 					drawPillar(player[a], mid, jointDefs[a].radius, *l.midpointRadius);
 					drawPillar(mid, player[b], *l.midpointRadius, jointDefs[b].radius);
 						// todo: can be done faster than one pillar at a time
