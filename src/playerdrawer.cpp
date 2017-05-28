@@ -9,7 +9,8 @@ namespace
 	void glVertex(V3 const & v) { ::glVertex3d(v.x, v.y, v.z); }
 	void glColor(V3 v) { ::glColor3d(v.x, v.y, v.z); }
 
-	void fatTriangle(V3 a, double arad, V3 b, double brad, V3 c, double crad)
+	template<typename F>
+	void fatTriangle(V3 a, double arad, V3 b, double brad, V3 c, double crad, F out)
 	{
 		auto const
 			ab = normalize(b - a),
@@ -30,117 +31,78 @@ namespace
 			bback = b - fwd * brad,
 			cfwd = c + fwd * crad,
 			cback = c - fwd * crad;
-
 		
+		// front
+		out(afwd, fwd);
+		out(bfwd, fwd);
+		out(cfwd, fwd);
+
+		// front left
+		out(afwd, fwd);
+		out(aleft, ca);
+		out(bleft, -bc);
+
+		out(afwd, fwd);
+		out(bleft, -bc);
+		out(bfwd, fwd);
+
+		// front right
+		out(bfwd, fwd);
+		out(bright, ab);
+		out(cright, -ca);
+
+		out(bfwd, fwd);
+		out(cright, -ca);
+		out(cfwd, fwd);
+
+		// front bottom
+		out(cfwd, fwd);
+		out(cdown, bc);
+		out(adown, -ab);
+
+		out(cfwd, fwd);
+		out(adown, -ab);
+		out(afwd, fwd);
+
+		// back
+		out(cback, -fwd);
+		out(bback, -fwd);
+		out(aback, -fwd);
+
+		// back left
+		out(aback, -fwd);
+		out(bback, -fwd);
+		out(bleft, -bc);
+
+		out(aback, -fwd);
+		out(bleft, -bc);
+		out(aleft, ca);
+
+		// back right
+		out(bback, -fwd);
+		out(cback, -fwd);
+		out(cright, -ca);
+
+		out(bback, -fwd);
+		out(cright, -ca);
+		out(bright, ab);
+
+		// back bottom
+		out(cback, -fwd);
+		out(aback, -fwd);
+		out(adown, -ab);
+
+		out(cback, -fwd);
+		out(adown, -ab);
+		out(cdown, bc);
+	}
+
+	void fatTriangle(V3 a, double arad, V3 b, double brad, V3 c, double crad)
+	{
 		glBegin(GL_TRIANGLES);
-			// front
-			glNormal(fwd);
-			glVertex(afwd);
-			glNormal(fwd);
-			glVertex(bfwd);
-			glNormal(fwd);
-			glVertex(cfwd);
-
-			// front left
-			glNormal(fwd);
-			glVertex(afwd);
-			glNormal(ca);
-			glVertex(aleft);
-			glNormal(-bc);
-			glVertex(bleft);
-
-			glNormal(fwd);
-			glVertex(afwd);
-			glNormal(-bc);
-			glVertex(bleft);
-			glNormal(fwd);
-			glVertex(bfwd);
-
-			// front right
-			glNormal(fwd);
-			glVertex(bfwd);
-			glNormal(ab);
-			glVertex(bright);
-			glNormal(-ca);
-			glVertex(cright);
-
-			glNormal(fwd);
-			glVertex(bfwd);
-			glNormal(-ca);
-			glVertex(cright);
-			glNormal(fwd);
-			glVertex(cfwd);
-
-			// front bottom
-			glNormal(fwd);
-			glVertex(cfwd);
-			glNormal(bc);
-			glVertex(cdown);
-			glNormal(-ab);
-			glVertex(adown);
-
-			glNormal(fwd);
-			glVertex(cfwd);
-			glNormal(-ab);
-			glVertex(adown);
-			glNormal(fwd);
-			glVertex(afwd);
-
-			// back
-			glNormal(-fwd);
-			glVertex(cback);
-			glNormal(-fwd);
-			glVertex(bback);
-			glNormal(-fwd);
-			glVertex(aback);
-
-			// back left
-			glNormal(-fwd);
-			glVertex(aback);
-			glNormal(-fwd);
-			glVertex(bback);
-			glNormal(-bc);
-			glVertex(bleft);
-
-			glNormal(-fwd);
-			glVertex(aback);
-			glNormal(-bc);
-			glVertex(bleft);
-			glNormal(ca);
-			glVertex(aleft);
-
-			// back right
-			glNormal(-fwd);
-			glVertex(bback);
-			glNormal(-fwd);
-			glVertex(cback);
-			glNormal(-ca);
-			glVertex(cright);
-
-			glNormal(-fwd);
-			glVertex(bback);
-			glNormal(-ca);
-			glVertex(cright);
-			glNormal(ab);
-			glVertex(bright);
-
-			// back bottom
-			glNormal(-fwd);
-			glVertex(cback);
-			glNormal(-fwd);
-			glVertex(aback);
-			glNormal(-ab);
-			glVertex(adown);
-
-			glNormal(-fwd);
-			glVertex(cback);
-			glNormal(-ab);
-			glVertex(adown);
-			glNormal(bc);
-			glVertex(cdown);
+			fatTriangle(a, arad, b, brad, c, crad,
+				[&](V3 pos, V3 norm) { glNormal(norm); glVertex(pos); });
 		glEnd();
-
-		// todo: (indexed?) triangle strip
 	}
 
 	void fatTriangle(Position const & p, Joint const x, Joint y, Joint z)
@@ -156,36 +118,45 @@ namespace
 	}
 }
 
-PlayerDrawer::PlayerDrawer()
+SphereDrawer::SphereDrawer()
 	: fine_icomesh{icosphere::make_icosphere(2)}
 	, course_icomesh{icosphere::make_icosphere(1)}
-{
-	double const s = 2 * pi() / faces;
+{}
 
-	for (unsigned i = 0; i != faces + 1; ++i)
-		angles[i] = std::make_pair(sin(i * s), cos(i * s));
-}
-
-void PlayerDrawer::drawSphere(V3 center, double radius, bool const fine) const
+template<typename F>
+void SphereDrawer::draw(V3 center, double radius, bool const fine, F out) const
 {
 	auto const & mesh = fine ? fine_icomesh : course_icomesh;
 
 	auto f = [&](unsigned i)
 		{
 			auto v = mesh.first[i];
-			glNormal(v);
-			glVertex(center + v * radius);
+			out(center + v * radius, v);
 		};
 
+	foreach (t : mesh.second)
+	{
+		
+		f(t.vertex[2]);
+		f(t.vertex[1]);
+		f(t.vertex[0]);
+	}
+}
+
+void drawSphere(SphereDrawer const & d, V3 center, double radius, bool const fine)
+{
 	glBegin(GL_TRIANGLES);
-		foreach (t : mesh.second)
-		{
-			
-			f(t.vertex[2]);
-			f(t.vertex[1]);
-			f(t.vertex[0]);
-		}
+		d.draw(center, radius, fine,
+			[&](V3 pos, V3 norm) { glNormal(norm); glVertex(pos); });
 	glEnd();
+}
+
+PlayerDrawer::PlayerDrawer()
+{
+	double const s = 2 * pi() / faces;
+
+	for (unsigned i = 0; i != faces + 1; ++i)
+		angles[i] = std::make_pair(sin(i * s), cos(i * s));
 }
 
 void PlayerDrawer::drawPillar(V3 from, V3 to, double from_radius, double to_radius) const
@@ -233,7 +204,7 @@ void PlayerDrawer::drawJoints(Position const & pos,
 		}
 		else glColor(playerDefs[pj.player].color);
 
-		drawSphere(pos[pj], jointDefs[pj.joint].radius + extraBig,
+		drawSphere(sphereDrawer, pos[pj], jointDefs[pj.joint].radius + extraBig,
 			pj.joint == Head || pj.joint == Core ||
 			pj.joint == RightHip || pj.joint == LeftHip ||
 			pj.joint == RightShoulder || pj.joint == LeftShoulder);
