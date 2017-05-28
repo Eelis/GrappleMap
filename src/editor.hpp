@@ -22,7 +22,7 @@ namespace GrappleMap
 
 	public:
 
-		explicit Editor(boost::program_options::variables_map const &);
+		explicit Editor(string const & dbFile, string const & startDesc);
 
 		// read
 

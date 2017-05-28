@@ -60,18 +60,16 @@ namespace GrappleMap
 		}
 	}
 
-	Editor::Editor(boost::program_options::variables_map const & programOptions)
-		: dbFile(programOptions["db"].as<string>())
+	Editor::Editor(string const & dbFile, string const & start_desc)
+		: dbFile(dbFile)
 		, graph{loadGraph(dbFile)}
 	{
-		string const start_desc = programOptions["start"].as<string>();
-
 		if (start_desc.find(',') != string::npos)
 		{
 			foreach (x : path_from_desc(start_desc))
 				selection.push_back({x, PositionReorientation{}});
 		}
-		else if (auto start = named_entity(graph, programOptions["start"].as<string>()))
+		else if (auto start = named_entity(graph, start_desc))
 		{
 			if (Step const * step = boost::get<Step>(&*start))
 			{
@@ -207,7 +205,10 @@ namespace GrappleMap
 
 	void Editor::push_undo()
 	{
-		undoStack.emplace(graph, location, selection);
+		#ifndef EMSCRIPTEN
+			undoStack.emplace(graph, location, selection);
+			// todo: eats too much memory for emscripten, need a leaner approach
+		#endif
 	}
 
 	void Editor::branch()

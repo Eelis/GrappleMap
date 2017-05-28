@@ -65,7 +65,8 @@ namespace
 struct Application
 {
 	explicit Application(boost::program_options::variables_map const & opts, GLFWwindow * w)
-		: editor(opts), window(w)
+		: editor(opts["db"].as<string>(), opts["start"].as<string>())
+		, window(w)
 	{}
 
 	PlayerJoint closest_joint = {{0}, LeftAnkle};
