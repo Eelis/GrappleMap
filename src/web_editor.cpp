@@ -575,10 +575,12 @@ void frame()
 
 	if (vertices.size() != non_hud_elems)
 	{
-		glClear(GL_DEPTH_BUFFER_BIT);
+		glDisable(GL_DEPTH_TEST);
 
 		glUniform1f(LightEnabledLoc, 0.0);
 		glDrawArrays(GL_TRIANGLES, non_hud_elems, vertices.size() - non_hud_elems);
+
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	glfwSwapBuffers(w.window);
