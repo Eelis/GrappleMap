@@ -23,8 +23,8 @@ namespace GrappleMap
 		foreach (cand : app.accessibleSegments[*joint])
 		{
 			V3 const
-				rayOrigin = at(from_pos(cand), app.editor.getGraph())[*joint],
-				rayTarget = at(to_pos(cand), app.editor.getGraph())[*joint],
+				rayOrigin = at(from(cand), app.editor.getGraph())[*joint],
+				rayTarget = at(to(cand), app.editor.getGraph())[*joint],
 				rayDir = rayTarget - rayOrigin;
 
 			double c = closest(rayOrigin, rayDir, cursor);

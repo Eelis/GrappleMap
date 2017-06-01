@@ -49,8 +49,8 @@ namespace
 		foreach (candidate : candidates)
 		{
 			V2 const
-				v = world2xy(camera, at(from_pos(candidate), j, graph)),
-				w = world2xy(camera, at(to_pos(candidate), j, graph));
+				v = world2xy(camera, at(from(candidate), j, graph)),
+				w = world2xy(camera, at(to(candidate), j, graph));
 
 			double const howfar = whereBetween(v, w, cursor);
 
@@ -456,16 +456,16 @@ size_t do_render(Application const & w, vector<BasicVertex> & out)
 		colors[special_joint] = yellow;
 
 		viables = determineViables(w.editor.getGraph(),
-			from_pos(segment(w.editor.getLocation())),
+			from(segment(w.editor.getLocation())),
 			special_joint, &w.camera);
 
 		selection = w.editor.getSelection();
 	}
 
 	auto & views = w.split_view ? split_view : single_view;
-
+	
 	return renderWindow(views, viables, w.editor.getGraph(), w.editor.current_position(), w.camera, special_joint,
-		colors, 0, 0, width, height, selection, w.style, w.playerDrawer, []{}, out);
+		colors, 0, 0, width, height, selection, w.editor.getLocation()->segment, w.style, w.playerDrawer, []{}, out);
 }
 
 double lastTime{};

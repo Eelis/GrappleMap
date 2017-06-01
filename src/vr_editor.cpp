@@ -122,7 +122,7 @@ namespace GrappleMap
 			auto add_vias = [&](PlayerJoint const j)
 				{
 					viables += determineViables(editor.getGraph(),
-						from_pos(segment(editor.getLocation())),
+						from(segment(editor.getLocation())),
 						j, nullptr);
 				};
 

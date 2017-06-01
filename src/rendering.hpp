@@ -59,6 +59,7 @@ namespace GrappleMap
 		PerPlayerJoint<optional<V3>> colors,
 		int left, int bottom, int width, int height,
 		OrientedPath const &,
+		SegmentInSequence const current_segment,
 		Style const &, PlayerDrawer const &,
 		function<void()> extraRender,
 		std::vector<BasicVertex> & out);

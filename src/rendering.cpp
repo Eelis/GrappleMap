@@ -27,7 +27,7 @@ namespace
 
 	void drawLine(V4f color, V4f color2, V3 from, V3 to, std::vector<BasicVertex> & out)
 	{
-		float const radius = 0.005;
+		float const radius = 0.0025;
 
 		V3f fromf = to_f(from);
 		V3f tof = to_f(to);
@@ -105,24 +105,36 @@ namespace
 	void drawSelection(
 		SphereDrawer const & sphereDrawer,
 		Graph const & g, OrientedPath const & path, PlayerJoint const j,
-		optional<SegmentInSequence> const current_segment,
+		SegmentInSequence const current_segment,
 		Camera const * const camera, Style const & style,
 		vector<BasicVertex> & out)
 	{
 		foreach (sn : path)
 		{
 			foreach (seg : segments(forget_direction(sn), g))
+			{
+				auto color = (current_segment == *seg ? V3f{0,1,0} : V3f{1,1,1});
 				drawLine(
-					V4f(V3f{0,1,0},0.6),
-					V4f(V3f{0,1,0},0.6),
-					at(from_pos(seg), j, g),
-					at(to_pos(seg), j, g),
+					V4f(color,0.6), V4f(color,0.6),
+					at(from(seg), j, g), at(to(seg), j, g),
 					out);
+			}
 		}
 
 		foreach (seq : path)
-			foreach (v : joint_positions(forget_direction(seq), j, g))
-				drawSphere(sphereDrawer, V4f(V3f{0,1,0}, 0.5), v, 0.02, false, out);
+		{
+			for (Reoriented<PositionInSequence> p : positions(forget_direction(seq), g))
+			{
+				auto const v = at(p, j, g);
+
+				bool const on_current_segment =
+					(*p == from(current_segment) || *p == to(current_segment));
+
+				auto color = on_current_segment ? V3f{0,1,0} : V3f{1,1,1};
+
+				drawSphere(sphereDrawer, V4f(color, 0.5), v, 0.01, false, out);
+			}
+		}
 	}
 
 	#ifndef EMSCRIPTEN
@@ -188,6 +200,7 @@ namespace
 	{
 		foreach (v : viables)
 		{
+			if (!elem(*v.sequence, selection))
 			{
 				foreach (seg : SegmentNum::range(SegmentNum{uint_fast8_t(v.begin.index)}, SegmentNum{uint_fast8_t(v.end.index - 1)}))
 					// todo: nasty
@@ -197,8 +210,8 @@ namespace
 					drawLine(
 						V4f(V3f{1, 1, 0}, std::max(0.0, 0.3 - v.depth(from(seg)) * 0.05)),
 						V4f(V3f{1, 1, 0}, std::max(0.0, 0.3 - v.depth(to(seg)) * 0.05)),
-						at(from_pos(rs), v.joint, graph),
-						at(to_pos(rs), v.joint, graph),
+						at(from(rs), v.joint, graph),
+						at(to(rs), v.joint, graph),
 						out);
 				}
 
@@ -393,6 +406,7 @@ size_t renderWindow(
 	int const left, int const bottom,
 	int const width, int const height,
 	OrientedPath const & selection,
+	SegmentInSequence const current_segment,
 	Style const & style,
 	PlayerDrawer const & playerDrawer,
 	function<void()> extraRender,
@@ -422,9 +436,9 @@ size_t renderWindow(
 			drawSelection(
 				playerDrawer.sphereDrawer,
 				graph, selection, *highlight_joint,
-				boost::none, &camera, style, out);
+				current_segment, &camera, style, out);
 
-		drawViables(playerDrawer.sphereDrawer, graph, viables, selection, {}, &camera, style, out);
+		drawViables(playerDrawer.sphereDrawer, graph, viables, selection, current_segment, &camera, style, out);
 	}
 
 	return num;

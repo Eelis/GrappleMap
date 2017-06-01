@@ -90,8 +90,8 @@ bool viable(Graph const & graph,
 			at(to(*segment), graph)[j]) > 0.003)
 		&&
 		(!camera || distanceSquared(
-			world2xy(*camera, at(from_pos(segment), j, graph)),
-			world2xy(*camera, at(to_pos(segment), j, graph))) > 0.0001);
+			world2xy(*camera, at(from(segment), j, graph)),
+			world2xy(*camera, at(to(segment), j, graph))) > 0.0001);
 }
 
 vector<Viable> determineViables

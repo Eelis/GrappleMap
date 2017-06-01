@@ -93,12 +93,14 @@ namespace GrappleMap
 		return first_pos_in(*s) * s.reorientation;
 	}
 
-	inline Reoriented<PositionInSequence> from_pos(Reoriented<SegmentInSequence> const & s)
+	template<typename T>
+	inline auto from(Reoriented<T> const & s)
 	{
 		return from(*s) * s.reorientation;
 	}
 
-	inline Reoriented<PositionInSequence> to_pos(Reoriented<SegmentInSequence> const & s)
+	template<typename T>
+	inline auto to(Reoriented<T> const & s)
 	{
 		return to(*s) * s.reorientation;
 	}

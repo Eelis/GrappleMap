@@ -44,8 +44,8 @@ namespace
 		foreach (candidate : candidates)
 		{
 			V2 const
-				v = world2xy(camera, at(from_pos(candidate), j, graph)),
-				w = world2xy(camera, at(to_pos(candidate), j, graph));
+				v = world2xy(camera, at(from(candidate), j, graph)),
+				w = world2xy(camera, at(to(candidate), j, graph));
 
 			double const howfar = whereBetween(v, w, cursor);
 
@@ -164,18 +164,19 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				// set position to center
 /*
 				case GLFW_KEY_U:
-					push_undo(w);
-					if (auto nextLoc = next(w.graph, w.location))
-					if (auto prevLoc = prev(w.location))
-					{
-						auto p = between(w.graph[*prevLoc], w.graph[*nextLoc]);
-						for(int i = 0; i != 30; ++i) spring(p);
-						w.graph.replace(w.location, p, true);
-					}
+				{
+					//push_undo(w);
+					Reoriented<SegmentInSequence> loc = segment(w.editor.getLocation());
+					Graph const & graph = w.editor.getGraph();
+					auto fromPos = from(loc);
+					auto toPos = to(loc);
+					auto p = between(at(fromPos, graph), at(toPos, graph));
+					for(int i = 0; i != 30; ++i) spring(p);
+					w.editor.replace(p);
 					break;
+				}
 
 				// set joint to prev/next/center
-
 				case GLFW_KEY_H:
 					if (auto p = prev(w.location))
 					{
@@ -464,7 +465,7 @@ void do_render(Application const & w)
 		colors[special_joint] = yellow;
 
 		viables = determineViables(w.editor.getGraph(),
-			from_pos(segment(w.editor.getLocation())),
+			from(segment(w.editor.getLocation())),
 			special_joint, &w.camera);
 
 		selection = w.editor.getSelection();
