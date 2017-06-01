@@ -40,7 +40,8 @@ namespace GrappleMap
 		// write
 
 		void save();
-		void toggle_selected();
+		void set_selected(SeqNum, bool);
+		void toggle_selected(); // todo: make nonmember
 		void insert_keyframe();
 		void delete_keyframe();
 		void undo();
@@ -53,6 +54,7 @@ namespace GrappleMap
 		void replace_sequence(vector<Position> const &);
 		void frame(double secondsElapsed);
 		void setLocation(Reoriented<Location>);
+		void go_to(PositionInSequence);
 	};
 
 	bool snapToPos(Editor &);

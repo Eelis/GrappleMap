@@ -174,7 +174,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				case GLFW_KEY_M: { mirror_position(w.editor); break; }
 				case GLFW_KEY_P: { w.editor.toggle_playback(); sync_video(w); break; }
 				case GLFW_KEY_L: { w.editor.toggle_lock(!w.editor.lockedToSelection()); break; }
-				case GLFW_KEY_SPACE: { w.editor.toggle_selected(); break; }
+//				case GLFW_KEY_SPACE: { w.editor.toggle_selected(); break; }
 				case GLFW_KEY_INSERT: { w.editor.insert_keyframe(); break; }
 				case GLFW_KEY_DELETE: { w.editor.delete_keyframe(); break; }
 				case GLFW_KEY_I: w.editor.mirror(); break;
@@ -309,16 +309,34 @@ extern "C" // called from javascript
 		std::istringstream iss(s);
 		loadGraph(iss); // todo: use
 	}
-/*
-	void slide_to(int i)
+
+	void update_selection_gui()
 	{
-		auto loc = app->editor.getLocation();
+		Graph const & g = app->editor.getGraph();
 
-		loc->segment.segment.index = i;
+		std::ostringstream script;
+		script << "set_selection([";
+		foreach (seq : app->editor.getSelection())
+		{
+			tojs(**seq, g, script);
+			script << ',';
+		}
+		script << "], [";
 
-		app->editor.setLocation(loc);
+		Reoriented<Reversible<SeqNum>> x = app->editor.getSelection().back();
+		Reoriented<NodeNum> n = to(x, g);
+
+		foreach (o : g[*n].out)
+		{
+			script << '[' << o->index << ',';
+			tojs(g[*o].description, script);
+			script << "],";
+		}
+
+		script << "]);";
+		emscripten_run_script(script.str().c_str());
 	}
-*/
+
 	void gui_command(char const * s)
 	{
 		std::istringstream iss(s);
@@ -338,10 +356,20 @@ extern "C" // called from javascript
 		else if (cmd == "insert_keyframe") app->editor.insert_keyframe();
 		else if (cmd == "delete_keyframe") app->editor.delete_keyframe();
 		else if (cmd == "swap_players") swap_players(app->editor);
+		else if (cmd == "toggle_selected") { /*app->editor.toggle_selected();*/ update_selection_gui(); }
 		else if (cmd == "confine") app->editor.toggle_lock(args[0] == "true");
 		else if (cmd == "confine_interpolation") app->confine_interpolation = (args[0] == "true");
 		else if (cmd == "confine_horizontal") app->confine_horizontal = (args[0] == "true");
 		else if (cmd == "joints_to_edit") app->joints_to_edit = args[0];
+		else if (cmd == "goto")
+			app->editor.go_to(PositionInSequence
+				{ SeqNum{uint32_t(stol(args[0]))}
+				, PosNum{uint8_t(stol(args[1]))} });
+		else if (cmd == "set_selected")
+		{
+			app->editor.set_selected(SeqNum{uint32_t(stol(args[0]))}, args[1] == "true");
+			update_selection_gui();
+		}
 		else if (cmd == "resolution")
 		{
 			int const

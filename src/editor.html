@@ -147,6 +147,10 @@
 			right: 0;
 		}
 
+		div.seq_desc {
+			border: 1px solid black;
+		}
+
 		</style>
 	</head>
 	<body style='margin:0px;padding:0px;height:100%'>
@@ -262,6 +266,13 @@
 							</td>
 						</tr>
 					</table>
+
+					<p><b>Selection:</b></p>
+
+					<div id='selection_display'>
+					</div>
+
+
 					<!--
 					<p><b>Mouse controls:</b></p>
 					<table class='controlhelp' style='margin:0px'>
@@ -379,6 +390,7 @@
 	var browse_controls = document.getElementById('browse_controls');
 	var playback_controls = document.getElementById('playback_controls');
 	var edit_controls = document.getElementById('edit_controls');
+	var selection_display = document.getElementById('selection_display');
 
 	function set_slider(i, n)
 	{
@@ -427,6 +439,81 @@
 	}
 
 	setTimeout(sync_resolution, 1000);
+
+	function gui_commander(cmd)
+	{
+		return function(){ gui_command(cmd); };
+	}
+
+	function set_selection(sel, post_choices)
+	{
+		selection_display.innerHTML = '';
+
+		var list = document.createElement("ul");
+
+		for (var i = 0; i != sel.length; ++i)
+		{
+			var seq = sel[i];
+
+			var item = document.createElement("li");
+
+			item.appendChild(document.createTextNode(seq.id));
+
+			for (var posnum = 0; posnum != seq.frames.length; ++posnum)
+			{
+				var t = document.createElement("a");
+				t.text = "◯";
+				t.onmouseover = gui_commander("goto " + seq.id + " " + posnum);
+
+				item.appendChild(t);
+			}
+
+			if (i == 0 || i == sel.length - 1) // add remove button
+			{
+				var btn = document.createElement("button");
+				btn.appendChild(document.createTextNode("x"));
+				btn.onclick = gui_commander("set_selected " + seq.id);
+				/*
+				btn.addEventListener("click", (function(sn)
+					{ return function(){ gui_command("set_selected " + sn + " false"); }; })(seq.id));*/
+				item.appendChild(btn);
+			}
+
+			item.appendChild(document.createElement("br"));
+
+			var desc = seq.description;
+
+			var descdiv = document.createElement("div");
+			descdiv.className = "seq_desc";
+
+			var first = true;
+
+			for (var j = 0; j <= desc.length - 1; ++j)
+			{
+		//		if (desc[j].startsWith("tags:")) continue;
+		//		if (desc[j].startsWith("properties:")) continue;
+				if (!first) descdiv.appendChild(document.createElement("br"));
+				else first = false;
+				descdiv.appendChild(document.createTextNode(desc[j]));
+			}
+
+			item.appendChild(descdiv);
+			list.appendChild(item);
+		}
+
+		selection_display.appendChild(list);
+
+		post_choices.forEach(function(c)
+			{
+				var btn = document.createElement("button");
+				btn.appendChild(document.createTextNode(c[1][0]));
+				btn.addEventListener("click", (function(sn)
+					{ return function(){ gui_command("set_selected " + sn + " true"); }; })(c[0]));
+				selection_display.appendChild(btn);
+			});
+	}
+
+	function v3(x,y,z) { return 0; }
 
 /*
 	var myblob = new Blob(["dinghmz"], {type:"text/plain"});

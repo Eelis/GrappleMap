@@ -103,6 +103,37 @@ namespace GrappleMap
 			e.setLocation(*x);
 	}
 
+	void Editor::set_selected(SeqNum const sn, bool const b)
+	{
+		if (playback) return;
+
+		if (b)
+		{
+			Reoriented<NodeNum> n = from(selection.front(), graph);
+
+			foreach (s : in_sequences(n, graph))
+				if (**s == sn)
+				{
+					selection.push_front(s);
+					return;
+				}
+
+			n = to(selection.back(), graph);
+
+			foreach (s : out_sequences(n, graph))
+				if (**s == sn)
+				{
+					selection.push_back(s);
+					return;
+				}
+		}
+		else
+		{
+			if (**selection.front() == sn) selection.pop_front();
+			else if (**selection.back() == sn) selection.pop_back();
+		}
+	}
+
 	void Editor::toggle_selected()
 	{
 		if (playback) return;
@@ -317,6 +348,19 @@ namespace GrappleMap
 		if (selectionLock && !elem(l->segment.sequence, selection)) return;
 
 		location = l;
+	}
+
+	void Editor::go_to(PositionInSequence const pis)
+	{
+		if (playback) return;
+
+		foreach (s : selection)
+			if (**s == pis.sequence)
+			{
+				SegmentInSequence const sis{pis.sequence, SegmentNum{pis.position.index}};
+				setLocation(Location{sis, 0} * s.reorientation);
+				return;
+			}
 	}
 
 	bool snapToPos(Editor & e)

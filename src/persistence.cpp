@@ -356,6 +356,30 @@ void tojs(set<string> const & v, std::ostream & js)
 	js << ']';
 }
 
+void tojs(SeqNum const s, Graph const & graph, std::ostream & js)
+{
+	Graph::Edge const & edge = graph[s];
+
+	js << "{id:" << s.index;
+	js << ",from:"; tojs(edge.from, js);
+	js << ",to:"; tojs(edge.to, js);
+	js << ",frames:[";
+	foreach (pos : edge.positions)
+	{
+		tojs(pos, js);
+		js << ',';
+	}
+	js << "],description:";
+	tojs(edge.description, js);
+	js << ",tags:";
+	tojs(tags(edge), js);
+	js << ",properties:";
+	tojs(properties_in_desc(edge.description), js);
+	if (edge.line_nr)
+		js << ",line_nr:" << *edge.line_nr;
+	js << "}";
+}
+
 void tojs(Graph const & graph, std::ostream & js)
 {
 	js << "nodes=[";
@@ -385,26 +409,8 @@ void tojs(Graph const & graph, std::ostream & js)
 	js << "transitions=[";
 	foreach (s : seqnums(graph))
 	{
-		Sequence const & seq = graph[s];
-
-		js << "{id:" << s.index;
-		js << ",from:"; tojs(graph[s].from, js);
-		js << ",to:"; tojs(graph[s].to, js);
-		js << ",frames:[";
-		foreach (pos : seq.positions)
-		{
-			tojs(pos, js);
-			js << ',';
-		}
-		js << "],description:";
-		tojs(seq.description, js);
-		js << ",tags:";
-		tojs(tags(seq), js);
-		js << ",properties:";
-		tojs(properties_in_desc(seq.description), js);
-		if (seq.line_nr)
-			js << ",line_nr:" << *seq.line_nr;
-		js << "},\n";
+		tojs(s, graph, js);
+		js << ",\n";
 	}
 	js << "];\n\n";
 
