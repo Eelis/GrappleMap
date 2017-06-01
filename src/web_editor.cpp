@@ -395,7 +395,7 @@ void do_edit(Application & w, V2 const cursor)
 			r.reorientation.angle = -w.camera.getHorizontalRotation();
 			return compose(reo, r)(V3{1,0,0}); // todo: this is wrong, doesn't take swap_players into account
 		}();
-	V3 const v = apply(reo, pos, *w.chosen_joint);
+	V3 const v = pos[*w.chosen_joint];
 	V2 const joint_xy = world2xy(w.camera, v);
 
 	double const
