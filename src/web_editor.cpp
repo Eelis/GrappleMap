@@ -80,8 +80,7 @@ vector<BasicVertex> vertices;
 struct Application
 {
 	explicit Application(GLFWwindow * w)
-		: editor("GrappleMap.txt", "t1383")
-		, window(w)
+		: window(w)
 	{
 		style.grid_size = 3;
 	}
@@ -92,7 +91,7 @@ struct Application
 	optional<Position> clipboard;
 	bool split_view = false;
 	Camera camera;
-	Editor editor;
+	Editor editor{"GrappleMap.txt", "t1383"};
 	double jiggle = 0;
 	double last_cursor_x = 0, last_cursor_y = 0;
 	Style style;
@@ -100,6 +99,9 @@ struct Application
 	PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> candidates;
 	int videoOffset = 0;
 	GLFWwindow * const window;
+	string joints_to_edit = "single_joint";
+	bool confine_horizontal = false;
+	bool confine_interpolation = false;
 };
 
 void sync_video(Application & app)
@@ -337,6 +339,9 @@ extern "C" // called from javascript
 		else if (cmd == "delete_keyframe") app->editor.delete_keyframe();
 		else if (cmd == "swap_players") swap_players(app->editor);
 		else if (cmd == "confine") app->editor.toggle_lock(args[0] == "true");
+		else if (cmd == "confine_interpolation") app->confine_interpolation = (args[0] == "true");
+		else if (cmd == "confine_horizontal") app->confine_horizontal = (args[0] == "true");
+		else if (cmd == "joints_to_edit") app->joints_to_edit = args[0];
 		else if (cmd == "resolution")
 		{
 			int const
@@ -390,31 +395,64 @@ void do_edit(Application & w, V2 const cursor)
 
 	auto const reo = w.editor.getLocation().reorientation;
 
-	V3 dragger = [&]{
+	V3 hdragger = [&]{
 			PositionReorientation r;
 			r.reorientation.angle = -w.camera.getHorizontalRotation();
 			return compose(reo, r)(V3{1,0,0}); // todo: this is wrong, doesn't take swap_players into account
+		}();
+	V3 vdragger = [&]{
+			PositionReorientation r;
+			r.reorientation.angle = -w.camera.getHorizontalRotation();
+			return compose(reo, r)(V3{0,0,1});
 		}();
 	V3 const v = pos[*w.chosen_joint];
 	V2 const joint_xy = world2xy(w.camera, v);
 
 	double const
-		offx = (cursor.x - joint_xy.x)
-			/ (world2xy(w.camera, v + dragger).x - joint_xy.x),
+		offh = (cursor.x - joint_xy.x)
+			/ (world2xy(w.camera, v + hdragger).x - joint_xy.x),
+		offv = (cursor.y - joint_xy.y)
+			/ (world2xy(w.camera, v + vdragger).y - joint_xy.y),
 		offy = (cursor.y - joint_xy.y)
 			* 0.01 / (world2xy(w.camera, v + V3{0,0.01,0}).y - joint_xy.y);
 
-	auto const rj = apply(reo, *w.chosen_joint);
+	if (reo.mirror) hdragger.x = -hdragger.x;
 
-	auto & joint = pos[rj];
+	auto drag = [&](PlayerJoint j)
+		{
+			auto & joint = pos[j];
 
-	if (reo.mirror) dragger.x = -dragger.x;
+			if (w.confine_horizontal)
+			{
+				joint.x += hdragger.x * offh + vdragger.x * offv;
+				joint.z += hdragger.z * offh + vdragger.z * offv;
+			}
+			else
+			{
+				joint.x += hdragger.x * offh;
+				joint.z += hdragger.z * offh;
+				joint.y += offy;
+			}
+		};
 
-	joint.x += dragger.x * offx;
-	joint.z += dragger.z * offx;
-	joint.y += offy;
+	if (w.joints_to_edit == "single_joint")
+	{
+		PlayerJoint const rj = apply(reo, *w.chosen_joint);
+		drag(rj);
+		spring(pos, rj);
+	}
+	else
+	{
+		foreach(rj : playerJoints)
+		{
+			if (w.joints_to_edit == "whole_player" && rj.player != w.chosen_joint->player)
+				continue;
 
-	spring(pos, rj);
+			drag(rj);
+		}
+
+		spring(pos);
+	}
 
 	w.editor.replace(pos);
 }

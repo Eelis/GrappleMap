@@ -169,12 +169,12 @@
 -->
 		<table id='bigtable' style='width:100%;height:100%;padding:0px;margin:0px;'>
 			<tr>
-				<td style='width:70%px;padding:0px;border:0px none;margin:0px;background:red'>
+				<td style='width:75%px;padding:0px;border:0px none;margin:0px;background:black'>
 		<!--			<div class="spinner" id='spinner'></div> -->
 					<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()">
 					</canvas>
 				</td>
-				<td style='vertical-align:top; padding-left:40px;padding-right:40px;margin:0px;width:30%'>
+				<td style='vertical-align:top; padding-left:40px;padding-right:40px;margin:0px;width:25%'>
 					<span style='text-align:center'>
 						<h1>GrappleMap</h1>
 						<h2>Editor</h2>
@@ -242,17 +242,34 @@
 									<li><button onclick='gui_command("insert_keyframe")'>Insert keyframe</button></li>
 									<li><button onclick='gui_command("delete_keyframe")'>Delete keyframe</button></li>
 									<li><button onclick='gui_command("swap_players")'>Swap players</button></li>
+									<li><p>Manipulate:<br>
+										<input name='joints_to_edit' type='radio' checked
+											onclick='gui_command("joints_to_edit single_joint")'>single joint<br>
+										<input name='joints_to_edit' type='radio'
+										    onclick='gui_command("joints_to_edit whole_player")'>whole player<br>
+										<input name='joints_to_edit' type='radio'
+											onclick='gui_command("joints_to_edit both_players")'>both players
+										</p>
+									</li>
+									<li><p><input type='checkbox'
+										onchange='gui_command("confine_horizontal " + this.checked)'
+										>Confine to horizontal edits</p></li>
+									<li><p><input type='checkbox'
+										onchange='gui_command("confine_interpolation " + this.checked)'
+										>Confine to linear interpolations</p></li>
+									</li>
 								</ul>
 							</td>
 						</tr>
 					</table>
+					<!--
 					<p><b>Mouse controls:</b></p>
 					<table class='controlhelp' style='margin:0px'>
 						<tr><td>Right click + drag joint</td><td>-</td><td>Browse through current transition</td></tr>
 						<tr><td>Left click + drag joint</td><td>-</td><td>Update joint position in keyframe (edit mode only)</td></tr>
 						<tr><td>Middle click + drag anywhere</td><td>-</td><td>Rotate camera</td></tr>
 					</table>
-
+					-->
 					<textarea id="output" rows="4" style='width:100%;display:none'></textarea>
 				</td>
 			</tr>
