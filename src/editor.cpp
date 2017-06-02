@@ -350,6 +350,18 @@ namespace GrappleMap
 		location = l;
 	}
 
+	void Editor::go_to(SegmentInSequence const sis)
+	{
+		if (playback) return;
+
+		foreach (s : selection)
+			if (**s == sis.sequence)
+			{
+				setLocation(Location{sis, 0.5} * s.reorientation);
+				return;
+			}
+	}
+
 	void Editor::go_to(PositionInSequence const pis)
 	{
 		if (playback) return;

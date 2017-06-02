@@ -362,9 +362,9 @@ extern "C" // called from javascript
 		else if (cmd == "confine_horizontal") app->confine_horizontal = (args[0] == "true");
 		else if (cmd == "joints_to_edit") app->joints_to_edit = args[0];
 		else if (cmd == "goto")
-			app->editor.go_to(PositionInSequence
+			app->editor.go_to(SegmentInSequence
 				{ SeqNum{uint32_t(stol(args[0]))}
-				, PosNum{uint8_t(stol(args[1]))} });
+				, SegmentNum{uint8_t(stol(args[1]))} });
 		else if (cmd == "set_selected")
 		{
 			app->editor.set_selected(SeqNum{uint32_t(stol(args[0]))}, args[1] == "true");
@@ -545,6 +545,13 @@ glm::mat4 to_glm(M m)
 		m[12],m[13],m[14],m[15]);
 }
 
+void gui_highlight_segment(SegmentInSequence const sis)
+{
+	std::ostringstream script;
+	script << "highlight_segment(" << sis.sequence.index << "," << sis.segment << ")";
+	emscripten_run_script(script.str().c_str());
+}
+
 void frame()
 {
 	glfwPollEvents();
@@ -593,11 +600,16 @@ void frame()
 	auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
 
 	if (cursor && glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-		if (auto best_next_pos = determineNextPos(
+		if (auto best_next_loc = determineNextPos(
 				w.editor.getGraph(), special_joint,
 				w.candidates[special_joint], w.camera, *cursor))
 		{
-			w.editor.setLocation(*best_next_pos);
+			SegmentInSequence const newseg = (*best_next_loc)->segment;
+
+			if (w.editor.getLocation()->segment != newseg)
+				gui_highlight_segment(newseg);
+
+			w.editor.setLocation(*best_next_loc);
 			sync_video(w);
 		}
 
@@ -652,7 +664,15 @@ void frame()
 	glfwSwapBuffers(w.window);
 
 	double const now = glfwGetTime();
-	w.editor.frame(now - lastTime);
+
+	if (auto loc_before = w.editor.playingBack())
+	{
+		w.editor.frame(now - lastTime);
+
+		auto seg_now = (*w.editor.playingBack())->segment;
+
+		if ((*loc_before)->segment != seg_now) gui_highlight_segment(seg_now);
+	}
 
 	lastTime = now;
 }

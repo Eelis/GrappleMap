@@ -81,9 +81,19 @@ inline bool operator<(SegmentInSequence const a, SegmentInSequence const b)
 	return std::make_tuple(a.sequence, a.segment) < std::make_tuple(b.sequence, b.segment);
 }
 
+inline std::ostream & operator<<(std::ostream & o, SegmentInSequence const sis)
+{
+	return o << "{" << sis.sequence << ", " << sis.segment << "}";
+}
+
 inline std::ostream & operator<<(std::ostream & o, PositionInSequence const pis)
 {
 	return o << "{" << pis.sequence << ", " << pis.position << "}";
+}
+
+inline std::ostream & operator<<(std::ostream & o, Location const l)
+{
+	return o << "{" << l.segment << ", " << l.howFar << "}";
 }
 
 inline bool operator==(PositionInSequence const & a, PositionInSequence const & b)

@@ -118,6 +118,10 @@
 			text-align: right;
 		}
 
+		a.segment {
+			color: white;
+		}
+
 		table.controlhelp td:nth-child(2) {
 			padding-left: 1em;
 			padding-right: 1em;
@@ -147,8 +151,19 @@
 			right: 0;
 		}
 
+		#selection_box {
+			padding: 1em;
+			 padding-left: 1.5em;
+		}
+
 		div.seq_desc {
-			border: 1px solid black;
+			/* border: 1px solid black; */
+			margin: 1em;
+			margin-left: 1em;
+			padding: 0.5em;
+			background: white;
+			color: black;
+
 		}
 
 		</style>
@@ -223,7 +238,7 @@
 						</tr>
 						<tr>
 							<td colspan='3' style='background:palegreen'>
-								todo
+								&nbsp;
 							</td>
 						</tr>
 					</table>
@@ -242,34 +257,47 @@
 						</tr>
 						<tr>
 							<td colspan='3' style='background:lightcoral'>
-								<ul>
-									<li><button onclick='gui_command("insert_keyframe")'>Insert keyframe</button></li>
-									<li><button onclick='gui_command("delete_keyframe")'>Delete keyframe</button></li>
-									<li><button onclick='gui_command("swap_players")'>Swap players</button></li>
-									<li><p>Manipulate:<br>
-										<input name='joints_to_edit' type='radio' checked
-											onclick='gui_command("joints_to_edit single_joint")'>single joint<br>
-										<input name='joints_to_edit' type='radio'
-										    onclick='gui_command("joints_to_edit whole_player")'>whole player<br>
-										<input name='joints_to_edit' type='radio'
-											onclick='gui_command("joints_to_edit both_players")'>both players
-										</p>
-									</li>
-									<li><p><input type='checkbox'
-										onchange='gui_command("confine_horizontal " + this.checked)'
-										>Confine to horizontal edits</p></li>
-									<li><p><input type='checkbox'
-										onchange='gui_command("confine_interpolation " + this.checked)'
-										>Confine to linear interpolations</p></li>
-									</li>
-								</ul>
+								<table>
+									<tr>
+										<td style='vertical-align:top'>
+											<p>
+												Frame:
+												<ul>
+													<li><button onclick='gui_command("insert_keyframe")'>Insert</button></li>
+													<li><button onclick='gui_command("delete_keyframe")'>Delete</button></li>
+													<li><button onclick='gui_command("swap_players")'>Swap players</button></li>
+												</ul>
+											</p>
+										</td>
+										<td>
+											<p>
+												Manipulate:<br>
+												<input name='joints_to_edit' type='radio' checked
+													onclick='gui_command("joints_to_edit single_joint")'> single joint<br>
+												<input name='joints_to_edit' type='radio'
+													onclick='gui_command("joints_to_edit whole_player")'> whole player<br>
+												<input name='joints_to_edit' type='radio'
+													onclick='gui_command("joints_to_edit both_players")'> both players
+											</p>
+											<p>
+												Confine to:<br>
+												<input type='checkbox'
+													onchange='gui_command("confine_horizontal " + this.checked)'> horizontal edits<br>
+												<input type='checkbox'
+													onchange='gui_command("confine_interpolation " + this.checked)'> linear interpolations
+											</p>
+										</td>
+									</tr>
+								</table>
 							</td>
 						</tr>
 					</table>
 
-					<p><b>Selection:</b></p>
+					<div id='selection_box' style='background:gold;padding-top:1em;padding-right:20px;margin-top:1em'>
+						<b>Selection:</b><br><br>
 
-					<div id='selection_display'>
+						<div id='selection_body' style='padding-right:1em;'>
+						</div>
 					</div>
 
 
@@ -390,7 +418,8 @@
 	var browse_controls = document.getElementById('browse_controls');
 	var playback_controls = document.getElementById('playback_controls');
 	var edit_controls = document.getElementById('edit_controls');
-	var selection_display = document.getElementById('selection_display');
+	var selection_body = document.getElementById('selection_body');
+	var the_selection;
 
 	function set_slider(i, n)
 	{
@@ -445,63 +474,75 @@
 		return function(){ gui_command(cmd); };
 	}
 
+	function highlight_segment(seq, seg)
+	{
+		the_selection.forEach(function(selseq)
+			{
+				selseq.indicators.forEach(function(indicator, selseg)
+					{
+						indicator.style.color =
+							(selseq.id == seq && seg == selseg
+								? 'lime'
+								: 'white');
+					});
+			});
+	}
+
 	function set_selection(sel, post_choices)
 	{
-		selection_display.innerHTML = '';
-
-		var list = document.createElement("ul");
+		selection_body.innerHTML = '';
 
 		for (var i = 0; i != sel.length; ++i)
 		{
 			var seq = sel[i];
+			var desc = seq.description;
 
-			var item = document.createElement("li");
-
-			item.appendChild(document.createTextNode(seq.id));
-
-			for (var posnum = 0; posnum != seq.frames.length; ++posnum)
-			{
-				var t = document.createElement("a");
-				t.text = "◯";
-				t.onmouseover = gui_commander("goto " + seq.id + " " + posnum);
-
-				item.appendChild(t);
-			}
+			selection_body.appendChild(document.createTextNode("t" + seq.id + ": " + desc[0] + " "));
 
 			if (i == 0 || i == sel.length - 1) // add remove button
 			{
 				var btn = document.createElement("button");
 				btn.appendChild(document.createTextNode("x"));
 				btn.onclick = gui_commander("set_selected " + seq.id);
-				/*
-				btn.addEventListener("click", (function(sn)
-					{ return function(){ gui_command("set_selected " + sn + " false"); }; })(seq.id));*/
-				item.appendChild(btn);
+				selection_body.appendChild(btn);
 			}
 
-			item.appendChild(document.createElement("br"));
+			selection_body.appendChild(document.createElement("br"));
 
-			var desc = seq.description;
+			seq.indicators = [];
+
+			for (var segnum = 0; segnum != seq.frames.length - 1; ++segnum)
+			{
+				var t = document.createElement("a");
+				t.className = "segment";
+				t.text = "█";
+				t.onmouseover = (function(x, y)
+					{
+						return function()
+							{
+								gui_command("goto " + x + " " + y);
+								highlight_segment(x, y);
+							};
+					})(seq.id, segnum);
+
+				seq.indicators.push(t);
+				selection_body.appendChild(t);
+			}
 
 			var descdiv = document.createElement("div");
 			descdiv.className = "seq_desc";
 
 			var first = true;
 
-			for (var j = 0; j <= desc.length - 1; ++j)
+			for (var j = 1; j <= desc.length - 1; ++j)
 			{
-		//		if (desc[j].startsWith("tags:")) continue;
-		//		if (desc[j].startsWith("properties:")) continue;
 				if (!first) descdiv.appendChild(document.createElement("br"));
 				else first = false;
 				descdiv.appendChild(document.createTextNode(desc[j]));
 			}
 
-			item.appendChild(descdiv);
-			list.appendChild(item);
+			selection_body.appendChild(descdiv);
 		}
-
-		selection_display.appendChild(list);
 
 		post_choices.forEach(function(c)
 			{
@@ -509,8 +550,10 @@
 				btn.appendChild(document.createTextNode(c[1][0]));
 				btn.addEventListener("click", (function(sn)
 					{ return function(){ gui_command("set_selected " + sn + " true"); }; })(c[0]));
-				selection_display.appendChild(btn);
+				selection_body.appendChild(btn);
 			});
+
+		the_selection = sel;
 	}
 
 	function v3(x,y,z) { return 0; }
