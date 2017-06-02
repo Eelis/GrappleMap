@@ -288,16 +288,22 @@ void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int 
 	}
 }
 
+void gui_highlight_segment(SegmentInSequence const sis)
+{
+	std::ostringstream script;
+	script << "highlight_segment(" << sis.sequence.index << "," << sis.segment << ")";
+	emscripten_run_script(script.str().c_str());
+}
+
 void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double yoffset)
 {
 	Application & w = *reinterpret_cast<Application *>(glfwGetWindowUserPointer(glfwWindow));
 
-	if (yoffset == -1) retreat(w.editor);
-	else if (yoffset == 1) advance(w.editor);
+	if (yoffset > 0) retreat(w.editor);
+	else if (yoffset < 0) advance(w.editor);
 	else return;
 
-	sync_video(w);
-	print_status(w);
+	gui_highlight_segment(w.editor.getLocation()->segment);
 }
 
 unique_ptr<Application> app;
@@ -543,13 +549,6 @@ glm::mat4 to_glm(M m)
 		m[ 4],m[ 5],m[ 6],m[ 7],
 		m[ 8],m[ 9],m[10],m[11],
 		m[12],m[13],m[14],m[15]);
-}
-
-void gui_highlight_segment(SegmentInSequence const sis)
-{
-	std::ostringstream script;
-	script << "highlight_segment(" << sis.sequence.index << "," << sis.segment << ")";
-	emscripten_run_script(script.str().c_str());
 }
 
 void frame()
