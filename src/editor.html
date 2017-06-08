@@ -6,6 +6,9 @@
 		<title>GrappleMap Editor</title>
 		<style>
 			body {
+				margin:0px;
+				padding:0px;
+				height:100%
 			}
 
 			.emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
@@ -118,7 +121,11 @@
 			text-align: right;
 		}
 
-		a.segment {
+		a.segment_indicator {
+			color: white;
+		}
+
+		a.position_indicator {
 			color: white;
 		}
 
@@ -168,7 +175,7 @@
 
 		</style>
 	</head>
-	<body style='margin:0px;padding:0px;height:100%'>
+	<body>
 
 
 <!--    <div class="emscripten" id="status">Downloading...</div>-->
@@ -186,19 +193,18 @@
 			<progress value="0" max="100" id="progress" hidden=1></progress>
 		</div>
 -->
-		<table id='bigtable' style='width:100%;height:100%;padding:0px;margin:0px;'>
-			<tr>
-				<td style='width:75%px;padding:0px;border:0px none;margin:0px;background:black'>
+
+		<div style='position:absolute;top:0;left:0;width:75%;padding:0px;border:0px none;margin:0px;background:black'>
 		<!--			<div class="spinner" id='spinner'></div> -->
-					<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()">
-					</canvas>
-				</td>
-				<td style='vertical-align:top; padding-left:40px;padding-right:40px;margin:0px;width:25%'>
+			<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()">
+			</canvas>
+		</div>
+
+		<div style='position:absolute;top:0;left:75%;width:25%px;padding-left:40px;padding-right:40px;margin:0px;height:100%;overflow:auto'>
 					<span style='text-align:center'>
 						<h1>GrappleMap</h1>
 						<h2>Editor</h2>
 					</span>
-<!--		<input type="range" min=0 max=1 step=1 id="slider" oninput='on_slide()' style='width:100%'> -->
 
 					<table id='browse_controls' class='mode_table'>
 						<tr>
@@ -215,9 +221,8 @@
 						<tr>
 							<td colspan='3' style='background:skyblue'>
 								<ul>
-									<li><input type='checkbox' checked onchange='gui_command("confine " + this.checked)'> Confine to selection</li>
+									<li><input type='checkbox' checked onchange='gui_command("confine " + this.checked)'> Confine to path</li>
 									<li><button onclick='gui_command("mirror_view")'>Mirror view</button></li>
-									<li><button onclick='gui_command("toggle_selected")'>Add/remove current transition to/from selection</button></li>
 									<li>Load database: <input type='file' id='fileinput' onchange='loadDB(this.files[0])'></li>
 								</ul>
 							</td>
@@ -289,15 +294,33 @@
 										</td>
 									</tr>
 								</table>
+								Metadata:
+								<textarea id='metadata' rows='6' style='width:100%'>
+								</textarea>
 							</td>
 						</tr>
 					</table>
 
-					<div id='selection_box' style='background:gold;padding-top:1em;padding-right:20px;margin-top:1em'>
-						<b>Selection:</b><br><br>
+					<div id='selection_box' style='background:gold;padding-top:1em;padding-right:20px;margin-top:1em;text-align:center'>
+						<b>Path</b><br><br>
 
-						<div id='selection_body' style='padding-right:1em;'>
+						<div id='selection_body' style='padding-right:1em;text-align:left'>
 						</div>
+
+						<hr>
+
+						<table style='with:100%'>
+							<tr>
+								<td style='width:50%'>
+									Prepend:<br>
+									<div id='pre_selection'></div>
+								</td>
+								<td style='width:50%;background:red'>
+									Append:<br>
+									<div id='post_selection'></div>
+								</td>
+							</tr>
+						</table>
 					</div>
 
 
@@ -310,9 +333,7 @@
 					</table>
 					-->
 					<textarea id="output" rows="4" style='width:100%;display:none'></textarea>
-				</td>
-			</tr>
-		</table>
+		</div>
 
 		<script type='text/javascript'>
 
@@ -432,13 +453,16 @@
 	{
 		var reader = new FileReader();
 
+		console.log(f);
+
 		reader.onload = function(e)
 			{
+				console.log("ok got " + e.target.result.length);
 				var doLoadDB = Module.cwrap('loadDB', null, ['string']);
 				doLoadDB(e.target.result);
 			};
 
-		reader.readAsText(f[0]);
+		reader.readAsText(f);
 	}
 
 	function on_slide()
@@ -474,21 +498,33 @@
 		return function(){ gui_command(cmd); };
 	}
 
-	function highlight_segment(seq, seg)
+	function highlight_segment(seq, seg, pos)
 	{
 		the_selection.forEach(function(selseq)
 			{
-				selseq.indicators.forEach(function(indicator, selseg)
+				if (selseq.id == seq)
+					document.getElementById('metadata').value
+						= selseq.description.join("\n");
+
+				selseq.segment_indicators.forEach(function(indicator, selseg)
 					{
 						indicator.style.color =
-							(selseq.id == seq && seg == selseg
+							(selseq.id == seq && seg == selseg && pos == -1
+								? 'lime'
+								: 'white');
+					});
+
+				selseq.position_indicators.forEach(function(indicator, p)
+					{
+						indicator.style.color =
+							(selseq.id == seq && pos == p
 								? 'lime'
 								: 'white');
 					});
 			});
 	}
 
-	function set_selection(sel, post_choices)
+	function set_selection(sel, post_choices, pre_choices)
 	{
 		selection_body.innerHTML = '';
 
@@ -497,7 +533,8 @@
 			var seq = sel[i];
 			var desc = seq.description;
 
-			selection_body.appendChild(document.createTextNode("t" + seq.id + ": " + desc[0] + " "));
+			selection_body.appendChild(document.createTextNode(desc[0] + " "));
+			// + " (t" + seq.id + ": " + desc[0] + " "));
 
 			if (i == 0 || i == sel.length - 1) // add remove button
 			{
@@ -509,26 +546,50 @@
 
 			selection_body.appendChild(document.createElement("br"));
 
-			seq.indicators = [];
+			seq.segment_indicators = [];
+			seq.position_indicators = [];
 
-			for (var segnum = 0; segnum != seq.frames.length - 1; ++segnum)
+			function add_pos_indicator(posnum)
 			{
 				var t = document.createElement("a");
-				t.className = "segment";
-				t.text = "█";
+				t.className = "position_indicator";
+				t.text = "●";
 				t.onmouseover = (function(x, y)
 					{
 						return function()
 							{
-								gui_command("goto " + x + " " + y);
-								highlight_segment(x, y);
+								gui_command("goto_position " + x + " " + y);
+								highlight_segment(x, y, y);
 							};
-					})(seq.id, segnum);
-
-				seq.indicators.push(t);
+					})(seq.id, posnum);
+				seq.position_indicators.push(t);
 				selection_body.appendChild(t);
 			}
 
+			for (var segnum = 0; segnum != seq.frames.length - 1; ++segnum)
+			{
+				add_pos_indicator(segnum);
+// ▬⬤
+				var t = document.createElement("a");
+				t.className = "segment_indicator";
+				t.text = "➔"; // "▪"; //  "▬"; // "█";
+				t.onmouseover = (function(x, y)
+					{
+						return function()
+							{
+								gui_command("goto_segment " + x + " " + y);
+								highlight_segment(x, y, -1);
+							};
+					})(seq.id, segnum);
+
+				seq.segment_indicators.push(t);
+				selection_body.appendChild(t);
+			}
+
+			add_pos_indicator(seq.frames.length - 1);
+
+			selection_body.appendChild(document.createElement("br"));
+/*
 			var descdiv = document.createElement("div");
 			descdiv.className = "seq_desc";
 
@@ -538,20 +599,41 @@
 			{
 				if (!first) descdiv.appendChild(document.createElement("br"));
 				else first = false;
-				descdiv.appendChild(document.createTextNode(desc[j]));
+			//	descdiv.appendChild(document.createTextNode(desc[j]));
 			}
-
-			selection_body.appendChild(descdiv);
+*/
+			//selection_body.appendChild(descdiv);
 		}
 
-		post_choices.forEach(function(c)
-			{
-				var btn = document.createElement("button");
-				btn.appendChild(document.createTextNode(c[1][0]));
-				btn.addEventListener("click", (function(sn)
-					{ return function(){ gui_command("set_selected " + sn + " true"); }; })(c[0]));
-				selection_body.appendChild(btn);
-			});
+		{
+			var post_div = document.getElementById('post_selection');
+			post_div.innerHTML = "";
+
+			post_choices.forEach(function(c)
+				{
+					var btn = document.createElement("button");
+					btn.appendChild(document.createTextNode(c[1][0]));
+					btn.addEventListener("click", (function(sn)
+						{ return function(){ gui_command("set_selected " + sn + " true"); }; })(c[0]));
+					post_div.appendChild(btn);
+					post_div.appendChild(document.createElement("br"));
+				});
+		}
+
+		{
+			var pre_div = document.getElementById('pre_selection');
+			pre_div.innerHTML = "";
+
+			pre_choices.forEach(function(c)
+				{
+					var btn = document.createElement("button");
+					btn.appendChild(document.createTextNode(c[1][0]));
+					btn.addEventListener("click", (function(sn)
+						{ return function(){ gui_command("set_selected " + sn + " true"); }; })(c[0]));
+					pre_div.appendChild(btn);
+					pre_div.appendChild(document.createElement("br"));
+				});
+		}
 
 		the_selection = sel;
 	}

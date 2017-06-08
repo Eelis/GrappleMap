@@ -47,6 +47,12 @@ public:
 
 	Graph() {}
 
+	Graph & operator=(Graph &&) = default;
+	Graph(Graph &&) = default;
+
+	Graph & operator=(Graph const &) = default;
+	Graph(Graph const &) = default;
+
 	// const access
 
 	Position operator[](ReorientedNode const & n) const

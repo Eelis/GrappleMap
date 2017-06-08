@@ -107,7 +107,13 @@ namespace GrappleMap
 	{
 		if (playback) return;
 
-		if (b)
+		if (selection.empty())
+		{
+			if (!b) return; // done!
+
+			// todo: make singleton selection
+		}
+		else if (b)
 		{
 			Reoriented<NodeNum> n = from(selection.front(), graph);
 
@@ -328,6 +334,18 @@ namespace GrappleMap
 
 			playback.reset(new Playback(graph, selection));
 		}
+	}
+
+	void Editor::load(Graph g)
+	{
+		if (playback) playback.reset();
+
+		// todo: what about dbfile?
+
+		undoStack = decltype(undoStack)();
+		selection.clear();
+
+		graph = std::move(g);
 	}
 
 	void Editor::frame(double const secondsElapsed)

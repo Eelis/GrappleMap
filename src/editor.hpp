@@ -56,6 +56,7 @@ namespace GrappleMap
 		void setLocation(Reoriented<Location>);
 		void go_to(PositionInSequence); // todo: nonmember
 		void go_to(SegmentInSequence); // todo: nonmember
+		void load(Graph g);
 	};
 
 	bool snapToPos(Editor &);

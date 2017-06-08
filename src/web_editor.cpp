@@ -174,7 +174,6 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				case GLFW_KEY_M: { mirror_position(w.editor); break; }
 				case GLFW_KEY_P: { w.editor.toggle_playback(); sync_video(w); break; }
 				case GLFW_KEY_L: { w.editor.toggle_lock(!w.editor.lockedToSelection()); break; }
-//				case GLFW_KEY_SPACE: { w.editor.toggle_selected(); break; }
 				case GLFW_KEY_INSERT: { w.editor.insert_keyframe(); break; }
 				case GLFW_KEY_DELETE: { w.editor.delete_keyframe(); break; }
 				case GLFW_KEY_I: w.editor.mirror(); break;
@@ -288,10 +287,18 @@ void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int 
 	}
 }
 
-void gui_highlight_segment(SegmentInSequence const sis)
+void gui_highlight_segment(Location const & loc)
 {
 	std::ostringstream script;
-	script << "highlight_segment(" << sis.sequence.index << "," << sis.segment << ")";
+	script << "highlight_segment(" << loc.segment.sequence.index << ',' << loc.segment.segment << ',';
+
+	if (auto pos = position(loc))
+		script << int(pos->position.index);
+	else
+		script << "-1";
+	
+	script << ");";
+
 	emscripten_run_script(script.str().c_str());
 }
 
@@ -303,33 +310,28 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 	else if (yoffset < 0) advance(w.editor);
 	else return;
 
-	gui_highlight_segment(w.editor.getLocation()->segment);
+	gui_highlight_segment(*w.editor.getLocation());
 }
 
 unique_ptr<Application> app;
 
-extern "C" // called from javascript
+void update_selection_gui()
 {
-	void loadDB(char const * s)
+	Graph const & g = app->editor.getGraph();
+ 	auto const & selection = app->editor.getSelection();
+
+	std::ostringstream script;
+	script << "set_selection([";
+	foreach (seq : selection)
 	{
-		std::istringstream iss(s);
-		loadGraph(iss); // todo: use
+		tojs(**seq, g, script);
+		script << ',';
 	}
+	script << "],[";
 
-	void update_selection_gui()
+	if (!selection.empty())
 	{
-		Graph const & g = app->editor.getGraph();
-
-		std::ostringstream script;
-		script << "set_selection([";
-		foreach (seq : app->editor.getSelection())
-		{
-			tojs(**seq, g, script);
-			script << ',';
-		}
-		script << "], [";
-
-		Reoriented<Reversible<SeqNum>> x = app->editor.getSelection().back();
+		Reoriented<Reversible<SeqNum>> x = selection.back();
 		Reoriented<NodeNum> n = to(x, g);
 
 		foreach (o : g[*n].out)
@@ -338,9 +340,43 @@ extern "C" // called from javascript
 			tojs(g[*o].description, script);
 			script << "],";
 		}
+	}
 
-		script << "]);";
-		emscripten_run_script(script.str().c_str());
+	script << "],[";
+
+	if (!selection.empty())
+	{
+		Reoriented<Reversible<SeqNum>> x = selection.front();
+		Reoriented<NodeNum> n = from(x, g);
+
+		foreach (i : g[*n].in)
+		{
+			script << '[' << i->index << ',';
+			tojs(g[*i].description, script);
+			script << "],";
+		}
+	}
+
+	script << "]);";
+	emscripten_run_script(script.str().c_str());
+
+	gui_highlight_segment(*app->editor.getLocation());
+}
+
+extern "C" // called from javascript
+{
+	void loadDB(char const * s)
+	{
+		std::istringstream iss(s);
+		Graph g = loadGraph(iss);
+
+		app->editor.load(std::move(g));
+
+		foreach (c : app->candidates.values)
+			foreach (x : c) x.clear();
+
+		app->chosen_joint = none;
+		update_selection_gui();
 	}
 
 	void gui_command(char const * s)
@@ -359,18 +395,29 @@ extern "C" // called from javascript
 			app->edit_mode = (args[0] == "edit");
 		}
 		else if (cmd == "mirror_view") app->editor.mirror();
-		else if (cmd == "insert_keyframe") app->editor.insert_keyframe();
-		else if (cmd == "delete_keyframe") app->editor.delete_keyframe();
+		else if (cmd == "insert_keyframe")
+		{
+			app->editor.insert_keyframe();
+			update_selection_gui();
+		}
+		else if (cmd == "delete_keyframe")
+		{
+			app->editor.delete_keyframe();
+			update_selection_gui();
+		}
 		else if (cmd == "swap_players") swap_players(app->editor);
-		else if (cmd == "toggle_selected") { /*app->editor.toggle_selected();*/ update_selection_gui(); }
 		else if (cmd == "confine") app->editor.toggle_lock(args[0] == "true");
 		else if (cmd == "confine_interpolation") app->confine_interpolation = (args[0] == "true");
 		else if (cmd == "confine_horizontal") app->confine_horizontal = (args[0] == "true");
 		else if (cmd == "joints_to_edit") app->joints_to_edit = args[0];
-		else if (cmd == "goto")
+		else if (cmd == "goto_segment")
 			app->editor.go_to(SegmentInSequence
 				{ SeqNum{uint32_t(stol(args[0]))}
 				, SegmentNum{uint8_t(stol(args[1]))} });
+		else if (cmd == "goto_position")
+			app->editor.go_to(PositionInSequence
+				{ SeqNum{uint32_t(stol(args[0]))}
+				, PosNum{uint8_t(stol(args[1]))} });
 		else if (cmd == "set_selected")
 		{
 			app->editor.set_selected(SeqNum{uint32_t(stol(args[0]))}, args[1] == "true");
@@ -606,7 +653,7 @@ void frame()
 			SegmentInSequence const newseg = (*best_next_loc)->segment;
 
 			if (w.editor.getLocation()->segment != newseg)
-				gui_highlight_segment(newseg);
+				gui_highlight_segment(**best_next_loc);
 
 			w.editor.setLocation(*best_next_loc);
 			sync_video(w);
@@ -668,9 +715,9 @@ void frame()
 	{
 		w.editor.frame(now - lastTime);
 
-		auto seg_now = (*w.editor.playingBack())->segment;
+		auto const loc_now = **w.editor.playingBack();
 
-		if ((*loc_before)->segment != seg_now) gui_highlight_segment(seg_now);
+		if ((*loc_before)->segment != loc_now.segment) gui_highlight_segment(loc_now);
 	}
 
 	lastTime = now;
@@ -831,6 +878,8 @@ int main()
 		sizeof(float) * 10, (void*) (sizeof(float) * 6));
 
 	glUseProgram(program);
+
+	update_selection_gui();
 
 	emscripten_set_main_loop(frame, 0, 0);
 }
