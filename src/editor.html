@@ -531,10 +531,17 @@
 			var seq = sel[i];
 			var desc = seq.description;
 
-			selection_body.appendChild(document.createTextNode(desc[0] + " "));
-			// + " (t" + seq.id + ": " + desc[0] + " "));
+			{
+				var t = document.createElement("a");
+				t.text = desc[0];
+				t.title = "transition " + seq.id;
+				desc.forEach(function(d){ t.title += '\n' + d; });
+				selection_body.appendChild(t);
+			}
 
-			if (i == 0 || i == sel.length - 1) // add remove button
+			selection_body.appendChild(document.createTextNode(' '));
+
+			if (sel.length != 1 && (i == 0 || i == sel.length - 1)) // add remove button
 			{
 				var btn = document.createElement("button");
 				btn.appendChild(document.createTextNode("x"));
@@ -547,11 +554,18 @@
 			seq.segment_indicators = [];
 			seq.position_indicators = [];
 
-			function add_pos_indicator(posnum)
+			function add_pos_indicator(posnum, islast)
 			{
 				var t = document.createElement("a");
 				t.className = "position_indicator";
 				t.text = "●";
+				t.title = "position " + posnum;
+
+				if (posnum == 0)
+					t.title += " (= node " + seq.from.node + ")";
+				else if (islast)
+					t.title += " (= node " + seq.to.node + ")";
+
 				t.onmouseover = (function(x, y)
 					{
 						return function()
@@ -566,11 +580,11 @@
 
 			for (var segnum = 0; segnum != seq.frames.length - 1; ++segnum)
 			{
-				add_pos_indicator(segnum);
-// ▬⬤
+				add_pos_indicator(segnum, false);
 				var t = document.createElement("a");
 				t.className = "segment_indicator";
-				t.text = "➔"; // "▪"; //  "▬"; // "█";
+				t.text = "➔";
+				t.title = "segment " + segnum;
 				t.onmouseover = (function(x, y)
 					{
 						return function()
@@ -584,7 +598,7 @@
 				selection_body.appendChild(t);
 			}
 
-			add_pos_indicator(seq.frames.length - 1);
+			add_pos_indicator(seq.frames.length - 1, true);
 
 			selection_body.appendChild(document.createElement("br"));
 /*
