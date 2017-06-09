@@ -294,17 +294,21 @@ void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int 
 	}
 }
 
-void gui_highlight_segment(Location const & loc)
+using HighlightableLoc = pair<SegmentInSequence, optional<PositionInSequence>>;
+
+HighlightableLoc highlightable_loc(Location const & loc)
+{
+	return {loc.segment, position(loc)};
+}
+
+
+void gui_highlight_segment(HighlightableLoc const loc)
 {
 	std::ostringstream script;
-	script << "highlight_segment(" << loc.segment.sequence.index << ',' << loc.segment.segment << ',';
-
-	if (auto pos = position(loc))
-		script << int(pos->position.index);
-	else
-		script << "-1";
-	
-	script << ");";
+	script
+		<< "highlight_segment(" << loc.first.sequence.index << ',' << loc.first.segment << ','
+		<< (loc.second ? int(loc.second->position.index) : -1)
+		<< ");";
 
 	emscripten_run_script(script.str().c_str());
 }
@@ -317,7 +321,7 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 	else if (yoffset < 0) advance(w.editor);
 	else return;
 
-	gui_highlight_segment(*w.editor.getLocation());
+	gui_highlight_segment(highlightable_loc(*w.editor.getLocation()));
 }
 
 unique_ptr<Application> app;
@@ -367,7 +371,7 @@ void update_selection_gui()
 	script << "]);";
 	emscripten_run_script(script.str().c_str());
 
-	gui_highlight_segment(*app->editor.getLocation());
+	gui_highlight_segment(highlightable_loc(*app->editor.getLocation()));
 }
 
 void loadDB(std::string const & s)
@@ -689,10 +693,10 @@ void frame()
 				w.editor.getGraph(), special_joint,
 				w.candidates[special_joint], w.camera, *cursor))
 		{
-			SegmentInSequence const newseg = (*best_next_loc)->segment;
+			HighlightableLoc const newhl = highlightable_loc(**best_next_loc);
 
-			if (w.editor.getLocation()->segment != newseg)
-				gui_highlight_segment(**best_next_loc);
+			if (highlightable_loc(*app->editor.getLocation()) != newhl)
+				gui_highlight_segment(newhl);
 
 			w.editor.setLocation(*best_next_loc);
 			sync_video(w);
@@ -754,9 +758,10 @@ void frame()
 	{
 		w.editor.frame(now - lastTime);
 
-		auto const loc_now = **w.editor.playingBack();
+		auto const loc_now = highlightable_loc(**w.editor.playingBack());
 
-		if ((*loc_before)->segment != loc_now.segment) gui_highlight_segment(loc_now);
+		if (highlightable_loc(**loc_before) != loc_now)
+			gui_highlight_segment(loc_now);
 	}
 
 	lastTime = now;
