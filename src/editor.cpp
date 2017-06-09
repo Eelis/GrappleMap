@@ -66,6 +66,8 @@ namespace GrappleMap
 
 	void go_to_desc(string const & desc, Editor & editor)
 	{
+		Graph const & graph = editor.getGraph();
+
 		/* todo
 
 		if (desc.find(',') != string::npos)
@@ -73,28 +75,33 @@ namespace GrappleMap
 			foreach (x : path_from_desc(desc))
 				selection.push_back({x, PositionReorientation{}});
 		}
-		else if (auto start = named_entity(graph, desc))
+		else */
+		
+		if (auto start = named_entity(graph, desc))
 		{
+			/*
 			if (Step const * step = boost::get<Step>(&*start))
 			{
 				selection = {{*step, PositionReorientation{}}};
 			}
-			else if (NodeNum const * node = boost::get<NodeNum>(&*start))
+			else*/ if (NodeNum const * node = boost::get<NodeNum>(&*start))
 			{
+				go_to(*node, editor);
+/*
 				auto const & io = graph[*node].in_out;
 				if (io.empty()) error("cannot edit unconnected node");
 				location = {start_loc(io.front(), graph), PositionReorientation{}};
+				*/
 				return;
 
 			}
 			else error("unexpected type of named entity");
 		}
 		else error("no such position/transition");
-
+/*
 		reorient_from(selection, selection.begin(), graph);
 		location = from_loc(first_segment(selection.front(), graph));
-
-		*/
+*/
 	}
 
 	void advance(Editor & e)
@@ -143,6 +150,12 @@ namespace GrappleMap
 			if (**selection.front() == sn) selection.pop_front();
 			else if (**selection.back() == sn) selection.pop_back();
 		}
+	}
+
+	void clear_selection(Editor & e)
+	{
+		while (!e.getSelection().empty())
+			e.set_selected(**e.getSelection().front(), false);
 	}
 /*
 	void Editor::toggle_selected()
@@ -353,6 +366,50 @@ namespace GrappleMap
 		if (selectionLock && !elem(l->segment.sequence, selection)) return;
 
 		location = l;
+	}
+
+	void go_to(SeqNum const seq, Editor & e)
+	{
+		Graph const & g = e.getGraph();
+
+		foreach (s : e.getSelection())
+			if (**s == seq)
+			{
+				e.setLocation(from_loc(first_segment(s, g)));
+			}
+
+		// for other transitions, we cannot ensure a matching
+		// selection orientation, so we clear the selection
+		
+		e.toggle_lock(false);
+		clear_selection(e);
+		e.setLocation({start_loc(seq), PositionReorientation{}});
+	}
+
+	void go_to(NodeNum n, Editor & e)
+	{
+		Graph const & g = e.getGraph();
+		if (g[n].in_out.empty()) error("cannot go to unconnected node");
+
+		foreach (s : e.getSelection())
+			if (n == *g[**s].from)
+			{
+				e.setLocation(from_loc(first_segment(s, g)));
+				return;
+			}
+			else if (n == *g[**s].to)
+			{
+				e.setLocation(to_loc(last_segment(s, g)));
+				return;
+			}
+
+		// for other nodes, we cannot ensure a matching
+		// selection orientation, so we clear the selection
+
+		e.toggle_lock(false);
+		clear_selection(e);
+		auto const & t = g[n].out.empty() ? g[n].in : g[n].out;
+		e.setLocation({start_loc(t.front(), g), PositionReorientation{}});
 	}
 
 	void go_to(SegmentInSequence const sis, Editor & editor)

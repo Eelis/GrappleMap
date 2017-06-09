@@ -11,6 +11,7 @@
 #include "viables.hpp"
 #include "rendering.hpp"
 #include "graph_util.hpp"
+#include "metadata.hpp"
 #include <GLFW/glfw3.h>
 #include <boost/program_options.hpp>
 #include <cmath>
@@ -384,6 +385,31 @@ void loadDB(std::string const & s)
 	update_selection_gui();
 }
 
+void ensure_nonempty_selection()
+{
+	if (app->editor.getSelection().empty())
+		app->editor.set_selected(
+			app->editor.getLocation()->segment.sequence, true);
+
+	app->editor.toggle_lock(true);
+}
+
+void browse_to(string const & desc)
+{
+	if (auto start = named_entity(app->editor.getGraph(), desc))
+	{
+		if (Step const * step = boost::get<Step>(&*start))
+			go_to(**step, app->editor);
+		else if (NodeNum const * node = boost::get<NodeNum>(&*start))
+			go_to(*node, app->editor);
+		else emscripten_run_script("alert('todo');");
+	}
+	else emscripten_run_script("alert('Error: No such thing');");
+
+	ensure_nonempty_selection();
+	update_selection_gui();
+}
+
 void gui_command(std::string const & s)
 {
 	std::istringstream iss(s);
@@ -415,6 +441,7 @@ void gui_command(std::string const & s)
 	else if (cmd == "confine_interpolation") app->confine_interpolation = (args[0] == "true");
 	else if (cmd == "confine_horizontal") app->confine_horizontal = (args[0] == "true");
 	else if (cmd == "joints_to_edit") app->joints_to_edit = args[0];
+	else if (cmd == "browseto") browse_to(args[0]);
 	else if (cmd == "goto_segment")
 		go_to(SegmentInSequence
 			{ SeqNum{uint32_t(stol(args[0]))}

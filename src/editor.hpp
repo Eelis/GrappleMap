@@ -58,6 +58,8 @@ namespace GrappleMap
 		void setLocation(Reoriented<Location>);
 	};
 
+	void go_to(SeqNum, Editor &);
+	void go_to(NodeNum, Editor &);
 	void go_to(PositionInSequence, Editor &);
 	void go_to(SegmentInSequence, Editor &);
 	void go_to_desc(string const & desc, Editor &);

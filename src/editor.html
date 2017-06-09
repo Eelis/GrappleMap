@@ -221,6 +221,7 @@
 						<tr>
 							<td colspan='3' style='background:skyblue'>
 								<ul>
+									<li><button onclick='browseto()'>Go to</button></li>
 									<li><input type='checkbox' checked onchange='gui_command("confine " + this.checked)'> Confine to path</li>
 									<li><button onclick='gui_command("mirror_view")'>Mirror view</button></li>
 									<li>Load database: <input type='file' id='fileinput' onchange='loadDB(this.files[0])'></li>
@@ -480,6 +481,19 @@
 	function gui_commander(cmd)
 	{
 		return function(){ gui_command(cmd); };
+	}
+
+	function browseto()
+	{
+		var desc = prompt(
+			"Specify one of:\n" +
+			"- a position (e.g. 'p34')\n" +
+			"- a transition (e.g. 't1383')\n" +
+			"- a path (e.g. '39,23,45')");
+
+		if (desc == null) return;
+
+		gui_command("browseto " + desc);
 	}
 
 	function highlight_segment(seq, seg, pos)

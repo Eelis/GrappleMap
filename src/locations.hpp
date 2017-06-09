@@ -148,6 +148,21 @@ inline SegmentInSequence segment_from(PositionInSequence const n)
 inline SegmentInSequence segment_to(PositionInSequence const n)
 { return n.sequence * segment_to(n.position); }
 
+inline Location start_loc(SegmentInSequence const & s)
+{
+	return {s, 0};
+}
+
+inline Location start_loc(Reversible<SegmentInSequence> const & s)
+{
+	return {*s, s.reverse ? 1.0 : 0.0};
+}
+
+inline Location start_loc(SeqNum const & s)
+{
+	return start_loc(first_segment(s));
+}
+
 }
 
 #endif
