@@ -442,38 +442,22 @@
 	var selection_body = document.getElementById('selection_body');
 	var the_selection;
 
-	function set_slider(i, n)
-	{
-		console.log("setting slider!");
-		slider.max = n - 2;
-		slider.value = i;
-	}
-
 	function loadDB(f)
 	{
 		var reader = new FileReader();
 
-		console.log(f);
-
 		reader.onload = function(e)
 			{
 				console.log("ok got " + e.target.result.length);
-				var doLoadDB = Module.cwrap('loadDB', null, ['string']);
-				doLoadDB(e.target.result);
+				Module.loadDB(e.target.result);
 			};
 
-		reader.readAsText(f);
-	}
-
-	function on_slide()
-	{
-		var slide_to = Module.cwrap('slide_to', null, ['number']);
-		slide_to(slider.value);
+		reader.readAsArrayBuffer(f);
 	}
 
 	function gui_command(cmd)
 	{
-		Module.cwrap('gui_command', null, ['string'])(cmd);
+		Module.gui_command(cmd);
 	}
 
 	function mode_change(mode)

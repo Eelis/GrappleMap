@@ -81,6 +81,7 @@ namespace GrappleMap
 		friend struct JointBrowser;
 
 		boost::program_options::variables_map opts;
+		std::string dbFile;
 		Editor editor;
 		Style style;
 		PlayerDrawer playerDrawer;

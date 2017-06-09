@@ -60,16 +60,20 @@ namespace GrappleMap
 		}
 	}
 
-	Editor::Editor(string const & dbFile, string const & start_desc)
-		: dbFile(dbFile)
-		, graph{loadGraph(dbFile)}
+	Editor::Editor(Graph g/*, string const & start_desc*/)
+		: graph(std::move(g))
+	{}
+
+	void go_to_desc(string const & desc, Editor & editor)
 	{
-		if (start_desc.find(',') != string::npos)
+		/* todo
+
+		if (desc.find(',') != string::npos)
 		{
-			foreach (x : path_from_desc(start_desc))
+			foreach (x : path_from_desc(desc))
 				selection.push_back({x, PositionReorientation{}});
 		}
-		else if (auto start = named_entity(graph, start_desc))
+		else if (auto start = named_entity(graph, desc))
 		{
 			if (Step const * step = boost::get<Step>(&*start))
 			{
@@ -89,6 +93,8 @@ namespace GrappleMap
 
 		reorient_from(selection, selection.begin(), graph);
 		location = from_loc(first_segment(selection.front(), graph));
+
+		*/
 	}
 
 	void advance(Editor & e)
@@ -109,9 +115,8 @@ namespace GrappleMap
 
 		if (selection.empty())
 		{
-			if (!b) return; // done!
-
-			// todo: make singleton selection
+			if (b && sn == location->segment.sequence)
+				selection = {nonreversed(sequence(location))};
 		}
 		else if (b)
 		{
@@ -139,7 +144,7 @@ namespace GrappleMap
 			else if (**selection.back() == sn) selection.pop_back();
 		}
 	}
-
+/*
 	void Editor::toggle_selected()
 	{
 		if (playback) return;
@@ -182,13 +187,7 @@ namespace GrappleMap
 			selection = {nonreversed(sequence(location))};
 		}
 	}
-
-	void Editor::save()
-	{
-		GrappleMap::save(graph, dbFile);
-		cout << "Saved.\n";
-	}
-
+*/
 	void Editor::mirror()
 	{
 		flip(location.reorientation.mirror);
@@ -336,18 +335,6 @@ namespace GrappleMap
 		}
 	}
 
-	void Editor::load(Graph g)
-	{
-		if (playback) playback.reset();
-
-		// todo: what about dbfile?
-
-		undoStack = decltype(undoStack)();
-		selection.clear();
-
-		graph = std::move(g);
-	}
-
 	void Editor::frame(double const secondsElapsed)
 	{
 		if (playback) playback->frame(secondsElapsed);
@@ -368,27 +355,27 @@ namespace GrappleMap
 		location = l;
 	}
 
-	void Editor::go_to(SegmentInSequence const sis)
+	void go_to(SegmentInSequence const sis, Editor & editor)
 	{
-		if (playback) return;
+		if (editor.playingBack()) return;
 
-		foreach (s : selection)
+		foreach (s : editor.getSelection())
 			if (**s == sis.sequence)
 			{
-				setLocation(Location{sis, 0.5} * s.reorientation);
+				editor.setLocation(Location{sis, 0.5} * s.reorientation);
 				return;
 			}
 	}
 
-	void Editor::go_to(PositionInSequence const pis)
+	void go_to(PositionInSequence const pis, Editor & editor)
 	{
-		if (playback) return;
+		if (editor.playingBack()) return;
 
-		foreach (s : selection)
+		foreach (s : editor.getSelection())
 			if (**s == pis.sequence)
 			{
 				SegmentInSequence const sis{pis.sequence, SegmentNum{pis.position.index}};
-				setLocation(Location{sis, 0} * s.reorientation);
+				editor.setLocation(Location{sis, 0} * s.reorientation);
 				return;
 			}
 	}

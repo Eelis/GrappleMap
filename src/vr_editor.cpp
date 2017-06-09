@@ -76,11 +76,11 @@ namespace GrappleMap
 
 	void VrApp::on_select_button(Misc::CallbackData *)
 	{
-		editor.toggle_selected();
+		// todo: editor.toggle_selected();
 		// todo: (re)sync video
 	}
 
-	void VrApp::on_save_button(Misc::CallbackData *) { editor.save(); }
+	void VrApp::on_save_button(Misc::CallbackData *) { save(editor.getGraph(), dbFile); }
 	void VrApp::on_delete_keyframe_button(Misc::CallbackData *) { editor.delete_keyframe(); video_sync(); }
 	void VrApp::on_undo_button(Misc::CallbackData *) { editor.undo(); video_sync(); }
 	void VrApp::on_mirror_button(Misc::CallbackData *) { editor.mirror(); }
@@ -159,13 +159,15 @@ namespace GrappleMap
 	VrApp::VrApp(int argc, char ** argv)
 		: Vrui::Application(argc, argv)
 		, opts(getopts(argc, argv))
-		, editor(opts["db"].as<string>(), opts["start"].as<string>())
+		, dbFile(opts["db"].as<string>())
+		, editor(loadGraph(dbFile))
 		, scale(opts["scale"].as<double>())
 		, video_player(opts.count("video")
 			? new VruiXine({"vruixine", opts["video"].as<string>()})
 			: nullptr)
 		, editorControlDialog(createEditorControlDialog())
 	{
+		go_to_desc(opts["start"].as<string>(), editor);
 		style.grid_size = 20;
 		Vrui::popupPrimaryWidget(editorControlDialog);
 	}

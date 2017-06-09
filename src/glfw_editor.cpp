@@ -65,10 +65,14 @@ namespace
 struct Application
 {
 	explicit Application(boost::program_options::variables_map const & opts, GLFWwindow * w)
-		: editor(opts["db"].as<string>(), opts["start"].as<string>())
+		: dbFile(opts["db"].as<string>())
+		, editor(loadGraph(dbFile))
 		, window(w)
-	{}
+	{
+		go_to_desc(opts["start"].as<string>(), editor);
+	}
 
+	std::string const dbFile;
 	PlayerJoint closest_joint = {{0}, LeftAnkle};
 	optional<PlayerJoint> chosen_joint;
 	bool edit_mode = false;
@@ -153,7 +157,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				case GLFW_KEY_M: { mirror_position(w.editor); break; }
 				case GLFW_KEY_P: { w.editor.toggle_playback(); sync_video(w); break; }
 				case GLFW_KEY_L: { w.editor.toggle_lock(!w.editor.lockedToSelection()); break; }
-				case GLFW_KEY_SPACE: { w.editor.toggle_selected(); break; }
+				// todo: case GLFW_KEY_SPACE: { w.editor.toggle_selected(); break; }
 				case GLFW_KEY_INSERT: { w.editor.insert_keyframe(); break; }
 				case GLFW_KEY_DELETE: { w.editor.delete_keyframe(); break; }
 				case GLFW_KEY_I: w.editor.mirror(); break;
@@ -245,7 +249,9 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				}
 */
 				case GLFW_KEY_V: flip(w.edit_mode); break;
-				case GLFW_KEY_S: w.editor.save(); break;
+				case GLFW_KEY_S:
+					save(w.editor.getGraph(), w.dbFile);
+					break;
 				case GLFW_KEY_1: flip(w.split_view); break;
 				case GLFW_KEY_B: w.editor.branch(); break;
 			}

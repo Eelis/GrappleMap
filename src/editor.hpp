@@ -10,11 +10,10 @@ namespace GrappleMap
 {
 	class Editor
 	{
-		string const dbFile;
 		Graph graph;
 		std::stack<std::tuple<Graph, Reoriented<Location>, OrientedPath>> undoStack;
 		OrientedPath selection;
-		bool selectionLock = true;
+		bool selectionLock = false;
 		unique_ptr<Playback> playback;
 		Reoriented<Location> location{{SegmentInSequence{{0}, 0}, 0}, {}};
 
@@ -22,7 +21,10 @@ namespace GrappleMap
 
 	public:
 
-		explicit Editor(string const & dbFile, string const & startDesc);
+		explicit Editor(Graph);
+
+		Editor(Editor &&) = default;
+		Editor & operator=(Editor &&) = default;
 
 		// read
 
@@ -39,9 +41,9 @@ namespace GrappleMap
 
 		// write
 
-		void save();
 		void set_selected(SeqNum, bool);
-		void toggle_selected(); // todo: make nonmember
+			/* no-op if the specified sequence is not part of or
+			   connected to the current selection or current sequence */
 		void insert_keyframe();
 		void delete_keyframe();
 		void undo();
@@ -54,10 +56,11 @@ namespace GrappleMap
 		void replace_sequence(vector<Position> const &);
 		void frame(double secondsElapsed);
 		void setLocation(Reoriented<Location>);
-		void go_to(PositionInSequence); // todo: nonmember
-		void go_to(SegmentInSequence); // todo: nonmember
-		void load(Graph g);
 	};
+
+	void go_to(PositionInSequence, Editor &);
+	void go_to(SegmentInSequence, Editor &);
+	void go_to_desc(string const & desc, Editor &);
 
 	bool snapToPos(Editor &);
 	void retreat(Editor &);

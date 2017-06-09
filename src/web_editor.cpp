@@ -1,4 +1,5 @@
 #include <emscripten/emscripten.h>
+#include <emscripten/bind.h>
 #define GLFW_INCLUDE_ES3
 #include <GLES3/gl3.h>
 
@@ -83,6 +84,12 @@ struct Application
 		: window(w)
 	{
 		style.grid_size = 3;
+
+		Location l;
+		l.segment.sequence = SeqNum{1383};
+		editor.setLocation({l, {}});
+		editor.set_selected(l.segment.sequence, true);
+		editor.toggle_lock(true);
 	}
 
 	PlayerJoint closest_joint = {{0}, LeftAnkle};
@@ -91,7 +98,7 @@ struct Application
 	optional<Position> clipboard;
 	bool split_view = false;
 	Camera camera;
-	Editor editor{"GrappleMap.txt", "t1383"};
+	Editor editor{loadGraph("GrappleMap.txt")};
 	double jiggle = 0;
 	double last_cursor_x = 0, last_cursor_y = 0;
 	Style style;
@@ -262,7 +269,6 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 				}
 */
 				case GLFW_KEY_V: flip(w.edit_mode); break;
-				case GLFW_KEY_S: w.editor.save(); break;
 				case GLFW_KEY_1: flip(w.split_view); break;
 				case GLFW_KEY_B: w.editor.branch(); break;
 			}
@@ -363,80 +369,86 @@ void update_selection_gui()
 	gui_highlight_segment(*app->editor.getLocation());
 }
 
-extern "C" // called from javascript
+void loadDB(std::string const & s)
 {
-	void loadDB(char const * s)
+	std::istringstream iss(s);
+
+	app->editor = Editor(loadGraph(iss));
+	app->editor.set_selected(app->editor.getLocation()->segment.sequence, true);
+	app->editor.toggle_lock(true);
+
+	foreach (c : app->candidates.values)
+		foreach (x : c) x.clear();
+
+	app->chosen_joint = none;
+	update_selection_gui();
+}
+
+void gui_command(std::string const & s)
+{
+	std::istringstream iss(s);
+
+	string cmd;
+	iss >> cmd;
+
+	std::istream_iterator<string> i(iss), e;
+	vector<string> args(i, e);
+
+	if (cmd == "mode")
 	{
-		std::istringstream iss(s);
-		Graph g = loadGraph(iss);
-
-		app->editor.load(std::move(g));
-
-		foreach (c : app->candidates.values)
-			foreach (x : c) x.clear();
-
-		app->chosen_joint = none;
+		set_playing(app->editor, args[0] == "playback");
+		app->edit_mode = (args[0] == "edit");
+	}
+	else if (cmd == "mirror_view") app->editor.mirror();
+	else if (cmd == "insert_keyframe")
+	{
+		app->editor.insert_keyframe();
 		update_selection_gui();
 	}
-
-	void gui_command(char const * s)
+	else if (cmd == "delete_keyframe")
 	{
-		std::istringstream iss(s);
-
-		string cmd;
-		iss >> cmd;
-
-		std::istream_iterator<string> i(iss), e;
-		vector<string> args(i, e);
-
-		if (cmd == "mode")
-		{
-			set_playing(app->editor, args[0] == "playback");
-			app->edit_mode = (args[0] == "edit");
-		}
-		else if (cmd == "mirror_view") app->editor.mirror();
-		else if (cmd == "insert_keyframe")
-		{
-			app->editor.insert_keyframe();
-			update_selection_gui();
-		}
-		else if (cmd == "delete_keyframe")
-		{
-			app->editor.delete_keyframe();
-			update_selection_gui();
-		}
-		else if (cmd == "swap_players") swap_players(app->editor);
-		else if (cmd == "confine") app->editor.toggle_lock(args[0] == "true");
-		else if (cmd == "confine_interpolation") app->confine_interpolation = (args[0] == "true");
-		else if (cmd == "confine_horizontal") app->confine_horizontal = (args[0] == "true");
-		else if (cmd == "joints_to_edit") app->joints_to_edit = args[0];
-		else if (cmd == "goto_segment")
-			app->editor.go_to(SegmentInSequence
-				{ SeqNum{uint32_t(stol(args[0]))}
-				, SegmentNum{uint8_t(stol(args[1]))} });
-		else if (cmd == "goto_position")
-			app->editor.go_to(PositionInSequence
-				{ SeqNum{uint32_t(stol(args[0]))}
-				, PosNum{uint8_t(stol(args[1]))} });
-		else if (cmd == "set_selected")
-		{
-			app->editor.set_selected(SeqNum{uint32_t(stol(args[0]))}, args[1] == "true");
-			update_selection_gui();
-		}
-		else if (cmd == "resolution")
-		{
-			int const
-				w = std::stoi(args[0]),
-				h = std::stoi(args[1]);
-
-			if (w > 128 && h > 128)
-				glfwSetWindowSize(app->window, w, h);
-		}
-		else
-		{
-			std::cout << s << "!?\n";
-		}
+		app->editor.delete_keyframe();
+		update_selection_gui();
 	}
+	else if (cmd == "swap_players") swap_players(app->editor);
+	else if (cmd == "confine") app->editor.toggle_lock(args[0] == "true");
+	else if (cmd == "confine_interpolation") app->confine_interpolation = (args[0] == "true");
+	else if (cmd == "confine_horizontal") app->confine_horizontal = (args[0] == "true");
+	else if (cmd == "joints_to_edit") app->joints_to_edit = args[0];
+	else if (cmd == "goto_segment")
+		go_to(SegmentInSequence
+			{ SeqNum{uint32_t(stol(args[0]))}
+			, SegmentNum{uint8_t(stol(args[1]))} },
+			app->editor);
+	else if (cmd == "goto_position")
+		go_to(PositionInSequence
+			{ SeqNum{uint32_t(stol(args[0]))}
+			, PosNum{uint8_t(stol(args[1]))} },
+			app->editor);
+	else if (cmd == "set_selected")
+	{
+		app->editor.set_selected(SeqNum{uint32_t(stol(args[0]))}, args[1] == "true");
+		update_selection_gui();
+	}
+	else if (cmd == "resolution")
+	{
+		int const
+			w = std::stoi(args[0]),
+			h = std::stoi(args[1]);
+
+		if (w > 128 && h > 128)
+			glfwSetWindowSize(app->window, w, h);
+	}
+	else
+	{
+		std::cout << s << "!?\n";
+	}
+}
+
+EMSCRIPTEN_BINDINGS(GrappleMap_engine)
+{
+	emscripten::function("loadDB", &loadDB);
+	emscripten::function("gui_command", &gui_command);
 }
 
 std::vector<View> const
