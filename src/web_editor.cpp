@@ -126,23 +126,6 @@ void sync_video(Application & app)
 	*/
 }
 
-void print_status(Application const & w)
-{
-	SegmentInSequence const s = w.editor.getLocation()->segment;
-	SeqNum const sn = s.sequence;
-
-	Sequence const & seq = w.editor.getGraph()[sn];
-
-	std::cout
-		<< "\r[" << s.segment.index + 1
-		<< '/' << seq.positions.size()-1 << "] "
-		<< seq.description.front() << string(30, ' ') << std::flush;
-
-	emscripten_run_script((
-		"set_slider(" + to_string(s.segment.index)
-		+ "," + to_string(seq.positions.size()) + ");").c_str());
-}
-
 void translate(Application & w, V3 const v)
 {
 	w.editor.push_undo();
@@ -349,7 +332,8 @@ void update_selection_gui()
 		{
 			script << '[' << o->index << ',';
 			tojs(g[*o].description, script);
-			script << "],";
+			NodeNum const m = *to(g, o);
+			script << ',' << m.index << "],"; // todo: also give name
 		}
 	}
 
@@ -364,7 +348,8 @@ void update_selection_gui()
 		{
 			script << '[' << i->index << ',';
 			tojs(g[*i].description, script);
-			script << "],";
+			NodeNum const m = *from(g, i);
+			script << ',' << m.index << "],"; // todo: also give name
 		}
 	}
 
