@@ -116,10 +116,31 @@ namespace GrappleMap
 			e.setLocation(*x);
 	}
 
+	bool Editor::try_extend_selection(SeqNum const sn)
+	{
+		Reoriented<NodeNum> n = from(selection.front(), graph);
+
+		foreach (s : in_sequences(n, graph))
+			if (**s == sn)
+			{
+				selection.push_front(s);
+				return true;
+			}
+
+		n = to(selection.back(), graph);
+
+		foreach (s : out_sequences(n, graph))
+			if (**s == sn)
+			{
+				selection.push_back(s);
+				return true;
+			}
+
+		return false;
+	}
+
 	void Editor::set_selected(SeqNum const sn, bool const b)
 	{
-		if (playback) return;
-
 		if (selection.empty())
 		{
 			if (b && sn == location->segment.sequence)
@@ -127,29 +148,14 @@ namespace GrappleMap
 		}
 		else if (b)
 		{
-			Reoriented<NodeNum> n = from(selection.front(), graph);
-
-			foreach (s : in_sequences(n, graph))
-				if (**s == sn)
-				{
-					selection.push_front(s);
-					return;
-				}
-
-			n = to(selection.back(), graph);
-
-			foreach (s : out_sequences(n, graph))
-				if (**s == sn)
-				{
-					selection.push_back(s);
-					return;
-				}
+			if (!try_extend_selection(sn))
+				return;
 		}
-		else
-		{
-			if (**selection.front() == sn) selection.pop_front();
-			else if (**selection.back() == sn) selection.pop_back();
-		}
+		else if (**selection.front() == sn) selection.pop_front();
+		else if (**selection.back() == sn) selection.pop_back();
+		else return;
+
+		if (playback) start_playback();
 	}
 
 	void clear_selection(Editor & e)
@@ -336,16 +342,18 @@ namespace GrappleMap
 		selectionLock = b;
 	}
 
+	void Editor::start_playback()
+	{
+		playback.reset(new Playback(graph,
+			selection.empty() ?
+				OrientedPath{nonreversed(sequence(location))}
+				: selection));
+	}
+
 	void Editor::toggle_playback()
 	{
 		if (playback) playback.reset();
-		else
-		{
-			if (selection.empty())
-				selection = {nonreversed(sequence(location))};
-
-			playback.reset(new Playback(graph, selection));
-		}
+		else start_playback();
 	}
 
 	void Editor::frame(double const secondsElapsed)

@@ -18,6 +18,8 @@ namespace GrappleMap
 		Reoriented<Location> location{{SegmentInSequence{{0}, 0}, 0}, {}};
 
 		optional<OrientedPath::iterator> currently_in_selection();
+		void start_playback();
+		bool try_extend_selection(SeqNum);
 
 	public:
 

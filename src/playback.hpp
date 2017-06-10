@@ -51,7 +51,7 @@ namespace GrappleMap
 				i->reorientation};
 		}
 
-		Playback(Graph const &, OrientedPath const &);
+		Playback(Graph const &, OrientedPath);
 
 		Position const & getPosition() const { return chaser; }
 

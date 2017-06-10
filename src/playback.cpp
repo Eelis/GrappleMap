@@ -92,8 +92,8 @@ namespace GrappleMap
 			throw runtime_error("no such position/transition: " + config.start);
 	}
 
-	Playback::Playback(Graph const & g, OrientedPath const & p)
-		 : graph(g), path(p)
+	Playback::Playback(Graph const & g, OrientedPath p)
+		 : graph(g), path(std::move(p))
 	{
 		reset();
 		chaser = at(location(), graph);

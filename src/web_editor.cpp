@@ -389,13 +389,13 @@ void loadDB(std::string const & s)
 	update_selection_gui();
 }
 
-void ensure_nonempty_selection()
+void ensure_nonempty_selection(Editor & editor)
 {
-	if (app->editor.getSelection().empty())
-		app->editor.set_selected(
-			app->editor.getLocation()->segment.sequence, true);
+	if (editor.getSelection().empty())
+		editor.set_selected(
+			editor.getLocation()->segment.sequence, true);
 
-	app->editor.toggle_lock(true);
+	editor.toggle_lock(true);
 }
 
 void browse_to(string const & desc)
@@ -410,7 +410,7 @@ void browse_to(string const & desc)
 	}
 	else emscripten_run_script("alert('Error: No such thing');");
 
-	ensure_nonempty_selection();
+	ensure_nonempty_selection(app->editor);
 	update_selection_gui();
 }
 
