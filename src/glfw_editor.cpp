@@ -121,7 +121,7 @@ void print_status(Application const & w)
 void translate(Application & w, V3 const v)
 {
 	w.editor.push_undo();
-	w.editor.replace(w.editor.current_position() + v);
+	w.editor.replace(w.editor.current_position() + v, Graph::NodeModifyPolicy::unintended);
 }
 
 void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int action, int mods)
@@ -142,7 +142,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					return;
 
 				case GLFW_KEY_V: // paste
-					if (w.clipboard) w.editor.replace(*w.clipboard);
+					if (w.clipboard) w.editor.replace(*w.clipboard, Graph::NodeModifyPolicy::local);
 					return;
 
 				case GLFW_KEY_KP_ADD: { w.videoOffset += 10; sync_video(w); break; }
@@ -221,7 +221,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					w.editor.push_undo();
 					Position p = w.editor.current_position();
 					foreach (j : playerJoints) p[j] = yrot(-0.05) * p[j];
-					w.editor.replace(p);
+					w.editor.replace(p, Graph::NodeModifyPolicy::unintended);
 					break;
 				}
 				case GLFW_KEY_KP_7:
@@ -230,7 +230,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					w.editor.push_undo();
 					Position p = w.editor.current_position();
 					foreach (j : playerJoints) p[j] = yrot(0.05) * p[j];
-					w.editor.replace(p);
+					w.editor.replace(p, Graph::NodeModifyPolicy::unintended);
 					break;
 				}
 
@@ -431,7 +431,7 @@ void do_edit(Application & w, V2 const cursor)
 
 	spring(pos, rj);
 
-	w.editor.replace(pos);
+	w.editor.replace(pos, Graph::NodeModifyPolicy::propagate);
 }
 
 void update_camera(Application & w)

@@ -250,18 +250,27 @@ inline V3 at(Reoriented<PositionInSequence> const & s, PlayerJoint const j, Grap
 vector<Reoriented<SegmentInSequence>>
 	neighbours(Reoriented<SegmentInSequence> const &, Graph const &, bool open);
 
-inline optional<Reoriented<NodeNum>> node(Graph const & g, PositionInSequence const pis)
+inline Reoriented<NodeNum> const * node(Graph const & g, PositionInSequence const pis)
 {
-	if (pis.position.index == 0) return g[pis.sequence].from;
-	if (!next(pis, g)) return g[pis.sequence].to;
-	return none;
+	if (pis.position.index == 0) return &g[pis.sequence].from;
+	if (!next(pis, g)) return &g[pis.sequence].to;
+	return nullptr;
 }
 
-inline void replace(Graph & graph, PositionInSequence const pis, PlayerJoint const j, V3 const v, bool const local)
+inline Reoriented<NodeNum> const * node(Graph const & g, Location const loc)
+{
+	if (optional<PositionInSequence> const pis = position(loc))
+		return node(g, *pis);
+	
+	return nullptr;
+}
+
+inline void replace(Graph & graph, PositionInSequence const pis,
+	PlayerJoint const j, V3 const v, Graph::NodeModifyPolicy const policy)
 {
 	Position p = at(pis, graph);
 	p[j] = v;
-	graph.replace(pis, p, local);
+	graph.replace(pis, p, policy);
 }
 
 pair<vector<Position>, Reoriented<NodeNum>> follow(

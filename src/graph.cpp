@@ -6,34 +6,20 @@ void Graph::changed(PositionInSequence const pis)
 {
 	Edge & edge = edges.at(pis.sequence.index);
 
-	if (pis.position.index == 0)
+	if (ReorientedNode * const rn = node(pis))
 	{
-		Reoriented<NodeNum> const new_from = find_or_add(edge.positions.front());
-		NodeNum const old_from = *edge.from;
+		Reoriented<NodeNum> const newn = find_or_add(edge.positions[pis.position.index]);
 
-		edge.from = new_from;
+		NodeNum const oldn = **rn;
 
-		if (*new_from != old_from)
+		*rn = newn;
+
+		if (*newn != oldn)
 		{
-			std::cerr << "Front of sequence is now a different node." << std::endl;
+			std::cerr << "End of sequence is now a different node." << std::endl;
 
-			compute_in_out(old_from);
-			compute_in_out(*new_from);
-		}
-	}
-	else if (!next(pis, *this))
-	{
-		Reoriented<NodeNum> const new_to = find_or_add(edge.positions.back());
-		NodeNum const old_to = *edge.to;
-
-		edge.to = new_to;
-
-		if (*new_to != old_to)
-		{
-			std::cerr << "Back of sequence is now a different node." << std::endl;
-
-			compute_in_out(old_to);
-			compute_in_out(*new_to);
+			compute_in_out(oldn);
+			compute_in_out(*newn);
 		}
 	}
 }
@@ -47,48 +33,71 @@ ReorientedNode * Graph::node(PositionInSequence const pis)
 	return nullptr;
 }
 
-void Graph::replace(PositionInSequence const pis, Position p, bool const local)
+void Graph::replace(PositionInSequence const pis, Position p, NodeModifyPolicy const policy)
 {
 	apply_limits(p);
 
-	Position & stored = edges.at(pis.sequence.index).positions.at(pis.position.index);
+	Edge & edge = edges.at(pis.sequence.index);
+	Position & stored = edge.positions.at(pis.position.index);
 
 	if (stored == p) return;
-
-	stored = p;
-
-//	std::cerr << "Replaced position " << pis << std::endl;
-
-	if (local)
-	{
-		changed(pis);
-		return;
-	}
 
 	if (ReorientedNode * const rn = node(pis))
 	{
 		if (auto reo = is_reoriented(nodes[(*rn)->index].position, p))
 		{
 //			std::cerr << "Recognized position as mere reorientation.\n";
+			stored = p;
 			rn->reorientation = *reo;
 			assert(basicallySame((*this)[*rn], p));
 		}
-		else
+		else switch (policy)
 		{
-//			std::cerr << "Change to connecting position, updating connected edges.\n";
-			nodes[(*rn)->index].position = inverse(rn->reorientation)(p);
-			assert(basicallySame((*this)[*rn], p));
-
-			foreach (e : edges)
+			case NodeModifyPolicy::propagate:
 			{
-				if (*e.from == **rn)
-					e.positions.front() = (*this)[e.from];
+	//			std::cerr << "Change to connecting position, updating connected edges.\n";
+				stored = p;
+				nodes[(*rn)->index].position = inverse(rn->reorientation)(p);
+				assert(basicallySame((*this)[*rn], p));
 
-				if (*e.to == **rn)
-					e.positions.back() = (*this)[e.to];
+				foreach (e : edges)
+				{
+					if (*e.from == **rn)
+						e.positions.front() = (*this)[e.from];
+
+					if (*e.to == **rn)
+						e.positions.back() = (*this)[e.to];
+				}
+				break;
+			}
+			case NodeModifyPolicy::local:
+			{
+				stored = p;
+
+				Reoriented<NodeNum> const newn = find_or_add(p);
+
+				NodeNum const oldn = **rn;
+
+				*rn = newn;
+
+				if (*newn != oldn)
+				{
+					std::cerr << "End of sequence is now a different node." << std::endl;
+
+					compute_in_out(oldn);
+					compute_in_out(*newn);
+				}
+
+				break;
+			}
+			case NodeModifyPolicy::unintended:
+			{
+				assert(!"accidental attempt at non-reorienting edit of connecting position");
+				break;
 			}
 		}
 	}
+	else stored = p;
 }
 
 void Graph::split_segment(Location const loc)

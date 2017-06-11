@@ -235,7 +235,7 @@ namespace GrappleMap
 		e.push_undo();
 		auto p = e.current_position();
 		GrappleMap::swap_players(p);
-		e.replace(p);
+		e.replace(p, Graph::NodeModifyPolicy::unintended);
 	}
 
 	void mirror_position(Editor & e)
@@ -244,7 +244,7 @@ namespace GrappleMap
 
 		e.push_undo();
 		auto p = e.current_position();
-		e.replace(mirror(p));
+		e.replace(mirror(p), Graph::NodeModifyPolicy::unintended);
 	}
 
 	void Editor::insert_keyframe()
@@ -312,7 +312,7 @@ namespace GrappleMap
 
 			foreach (p : positions(graph, seq))
 			{
-				graph.replace(p, inverse(location.reorientation)(*i), false);
+				graph.replace(p, inverse(location.reorientation)(*i), Graph::NodeModifyPolicy::propagate);
 				++i;
 			}
 
@@ -320,7 +320,7 @@ namespace GrappleMap
 		}
 	}
 
-	void Editor::replace(Position const new_pos)
+	void Editor::replace(Position const new_pos, Graph::NodeModifyPolicy const policy)
 	{
 		if (optional<PositionInSequence> const pp = position(*location))
 		{
@@ -331,7 +331,7 @@ namespace GrappleMap
 				// reorientations for the selection involves finding a path to there
 				// from where the edit took place)
 
-				graph.replace(*pp, inverse(location.reorientation)(new_pos), false);
+				graph.replace(*pp, inverse(location.reorientation)(new_pos), policy);
 				reorient_from(selection, *i, graph);
 			}
 		}

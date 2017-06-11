@@ -62,7 +62,7 @@ namespace GrappleMap
 
 			Position p = editor.current_position();
 			for(int i = 0; i != 30; ++i) spring(p);
-			editor.replace(p);
+			editor.replace(p, Graph::NodeModifyPolicy::propagate);
 
 			closest_joint = GrappleMap::closest_joint(
 				editor.current_position(),
@@ -119,7 +119,7 @@ namespace GrappleMap
 			else new_pos[j] = joint_pos;
 
 			spring(new_pos, j);
-			editor.replace(new_pos);
+			editor.replace(new_pos, Graph::NodeModifyPolicy::propagate);
 		}
 	}
 

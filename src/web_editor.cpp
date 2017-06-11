@@ -110,6 +110,7 @@ struct Application
 	string joints_to_edit = "single_joint";
 	bool confine_horizontal = false;
 	bool confine_interpolation = false;
+	bool confine_local_edits = true;
 };
 
 void sync_video(Application & app)
@@ -129,7 +130,7 @@ void sync_video(Application & app)
 void translate(Application & w, V3 const v)
 {
 	w.editor.push_undo();
-	w.editor.replace(w.editor.current_position() + v);
+	w.editor.replace(w.editor.current_position() + v, Graph::NodeModifyPolicy::unintended);
 }
 
 void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int action, int mods)
@@ -150,7 +151,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					return;
 
 				case GLFW_KEY_V: // paste
-					if (w.clipboard) w.editor.replace(*w.clipboard);
+					if (w.clipboard) w.editor.replace(*w.clipboard, Graph::NodeModifyPolicy::local);
 					return;
 
 				case GLFW_KEY_KP_ADD: { w.videoOffset += 10; sync_video(w); break; }
@@ -225,7 +226,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					w.editor.push_undo();
 					Position p = w.editor.current_position();
 					foreach (j : playerJoints) p[j] = yrot(-0.05) * p[j];
-					w.editor.replace(p);
+					w.editor.replace(p, Graph::NodeModifyPolicy::unintended);
 					break;
 				}
 				case GLFW_KEY_KP_7:
@@ -234,7 +235,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					w.editor.push_undo();
 					Position p = w.editor.current_position();
 					foreach (j : playerJoints) p[j] = yrot(0.05) * p[j];
-					w.editor.replace(p);
+					w.editor.replace(p, Graph::NodeModifyPolicy::unintended);
 					break;
 				}
 
@@ -429,6 +430,7 @@ void gui_command(std::string const & s)
 	else if (cmd == "confine") app->editor.toggle_lock(args[0] == "true");
 	else if (cmd == "confine_interpolation") app->confine_interpolation = (args[0] == "true");
 	else if (cmd == "confine_horizontal") app->confine_horizontal = (args[0] == "true");
+	else if (cmd == "confine_local_edits") app->confine_local_edits = (args[0] == "true");
 	else if (cmd == "joints_to_edit") app->joints_to_edit = args[0];
 	else if (cmd == "browseto") browse_to(args[0]);
 	else if (cmd == "goto_segment")
@@ -563,7 +565,12 @@ void do_edit(Application & w, V2 const cursor)
 		spring(pos);
 	}
 
-	w.editor.replace(pos);
+	if (!node(w.editor.getGraph(), *w.editor.getLocation()))
+		w.editor.replace(pos, Graph::NodeModifyPolicy::unintended);
+	else if (!w.confine_local_edits)
+		w.editor.replace(pos, Graph::NodeModifyPolicy::propagate);
+	else if (w.joints_to_edit == "both_players" && w.confine_horizontal)
+		w.editor.replace(pos, Graph::NodeModifyPolicy::unintended);
 }
 
 void update_camera(Application & w)

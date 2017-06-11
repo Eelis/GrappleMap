@@ -102,7 +102,7 @@ namespace GrappleMap
 		{
 			auto p = between(at(*prevLoc, g), at(*nextLoc, g));
 			for(int i = 0; i != 30; ++i) spring(p);
-			editor.replace(p);
+			editor.replace(p, Graph::NodeModifyPolicy::propagate);
 		}
 	}
 
