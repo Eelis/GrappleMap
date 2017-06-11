@@ -5,6 +5,7 @@ namespace GrappleMap {
 void Graph::changed(PositionInSequence const pis)
 {
 	Edge & edge = edges.at(pis.sequence.index);
+	edge.dirty = true;
 
 	if (ReorientedNode * const rn = node(pis))
 	{
@@ -40,6 +41,8 @@ void Graph::replace(PositionInSequence const pis, Position p, NodeModifyPolicy c
 	Edge & edge = edges.at(pis.sequence.index);
 	Position & stored = edge.positions.at(pis.position.index);
 
+	auto apply = [&]{ stored = p; edge.dirty = true; };
+
 	if (stored == p) return;
 
 	if (ReorientedNode * const rn = node(pis))
@@ -47,7 +50,7 @@ void Graph::replace(PositionInSequence const pis, Position p, NodeModifyPolicy c
 		if (auto reo = is_reoriented(nodes[(*rn)->index].position, p))
 		{
 //			std::cerr << "Recognized position as mere reorientation.\n";
-			stored = p;
+			apply();
 			rn->reorientation = *reo;
 			assert(basicallySame((*this)[*rn], p));
 		}
@@ -56,23 +59,31 @@ void Graph::replace(PositionInSequence const pis, Position p, NodeModifyPolicy c
 			case NodeModifyPolicy::propagate:
 			{
 	//			std::cerr << "Change to connecting position, updating connected edges.\n";
-				stored = p;
-				nodes[(*rn)->index].position = inverse(rn->reorientation)(p);
+				apply();
+				Node & node = nodes[(*rn)->index];
+				node.position = inverse(rn->reorientation)(p);
+				node.dirty = true;
 				assert(basicallySame((*this)[*rn], p));
 
 				foreach (e : edges)
 				{
 					if (*e.from == **rn)
+					{
 						e.positions.front() = (*this)[e.from];
+						e.dirty = true;
+					}
 
 					if (*e.to == **rn)
+					{
 						e.positions.back() = (*this)[e.to];
+						e.dirty = true;
+					}
 				}
 				break;
 			}
 			case NodeModifyPolicy::local:
 			{
-				stored = p;
+				apply();
 
 				Reoriented<NodeNum> const newn = find_or_add(p);
 
@@ -97,53 +108,45 @@ void Graph::replace(PositionInSequence const pis, Position p, NodeModifyPolicy c
 			}
 		}
 	}
-	else stored = p;
+	else apply();
 }
 
 void Graph::split_segment(Location const loc)
 {
-	auto & positions =  edges.at(loc.segment.sequence.index).positions;
+	Edge & edge = edges.at(loc.segment.sequence.index);
+	edge.dirty = true;
+	auto & positions = edge.positions;
 	Position const p = at(loc, *this);
 	positions.insert(positions.begin() + loc.segment.segment.index + 1, p);
 }
 
 void Graph::clone(PositionInSequence const pis) // todo: remove
 {
-	auto & positions =  edges.at(pis.sequence.index).positions;
+	Edge & edge = edges.at(pis.sequence.index);
+	edge.dirty = true;
+	auto & positions = edge.positions;
 	Position const p = positions.at(pis.position.index);
 	positions.insert(positions.begin() + pis.position.index, p);
 }
 
-void Graph::insert_sequences(vector<Sequence> && v) // for bulk, more efficient than individually
-{
-	foreach (s : v)
-	{
-		ReorientedNode const
-			from = find_or_add(s.positions.front()),
-			to = find_or_add(s.positions.back());
-		edges.push_back(Edge{from, to, std::move(s)});
-	}
-
-	foreach (n : nodenums(*this))
-		compute_in_out(n);
-}
-
-void Graph::set(optional<SeqNum> const num, optional<Sequence> const seq)
+void Graph::set(optional<SeqNum> const num, optional<Sequence> seq)
 {
 	if (seq)
 	{
-		Edge e{
-			find_or_add(seq->positions.front()),
-			find_or_add(seq->positions.back()),
-			*seq};
+		ReorientedNode const
+			from = find_or_add(seq->positions.front()),
+			to = find_or_add(seq->positions.back());
+
+		Edge e{from, to, move(*seq)};
+		e.dirty = true;
 
 		if (num)
-			edges[num->index] = e;
+			edges[num->index] = move(e);
 		else
-			edges.push_back(e);
+			edges.push_back(move(e));
 
-		compute_in_out(*e.from);
-		compute_in_out(*e.to);
+		compute_in_out(*from);
+		compute_in_out(*to);
 	}
 	else if (num)
 	{
@@ -187,7 +190,8 @@ Reoriented<NodeNum> Graph::find_or_add(Position const & p)
 	if (auto m = is_reoriented_node(p))
 		return *m;
 
-	nodes.push_back(Node{p, vector<string>(), {}, {}, {}, {}});
+	nodes.emplace_back(NamedPosition{p, vector<string>(), {}});
+		// no need for dirty flag because these won't be persisted anyway
 
 	NodeNum const nn{uint16_t(nodes.size() - 1)};
 
@@ -228,6 +232,23 @@ void Graph::compute_in_out(NodeNum const n)
 			if (*to_ == n) node.out.push_back({s, true});
 		}
 	}
+}
+
+Graph::Graph(vector<NamedPosition> pp, vector<Sequence> ss)
+{
+	foreach(p : pp)
+		nodes.emplace_back(move(p));
+
+	foreach (s : ss)
+	{
+		ReorientedNode const
+			from = find_or_add(s.positions.front()),
+			to = find_or_add(s.positions.back());
+		edges.push_back(Edge{from, to, move(s)});
+	}
+
+	foreach (n : nodenums(*this))
+		compute_in_out(n);
 }
 
 }

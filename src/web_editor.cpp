@@ -297,6 +297,26 @@ void gui_highlight_segment(HighlightableLoc const loc)
 	emscripten_run_script(script.str().c_str());
 }
 
+void update_modified(Graph const & g)
+{
+	static string last; // todo: gross
+
+	std::ostringstream script;
+	script << "update_modified([";
+	foreach(n : nodenums(g)) if (g[n].dirty) script << n.index << ',';
+	script << "],[";
+	foreach(s : seqnums(g)) if (g[s].dirty) script << s.index << ',';
+	script << "]);";
+
+	string now = script.str();
+
+	if (last != now)
+	{
+		last = move(now);
+		emscripten_run_script(last.c_str());
+	}
+}
+
 void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double yoffset)
 {
 	Application & w = *reinterpret_cast<Application *>(glfwGetWindowUserPointer(glfwWindow));
@@ -420,13 +440,19 @@ void gui_command(std::string const & s)
 	{
 		app->editor.insert_keyframe();
 		update_selection_gui();
+		update_modified(app->editor.getGraph());
 	}
 	else if (cmd == "delete_keyframe")
 	{
 		app->editor.delete_keyframe();
 		update_selection_gui();
+		update_modified(app->editor.getGraph());
 	}
-	else if (cmd == "swap_players") swap_players(app->editor);
+	else if (cmd == "swap_players")
+	{
+		swap_players(app->editor);
+		update_modified(app->editor.getGraph());
+	}
 	else if (cmd == "confine") app->editor.toggle_lock(args[0] == "true");
 	else if (cmd == "confine_interpolation") app->confine_interpolation = (args[0] == "true");
 	else if (cmd == "confine_horizontal") app->confine_horizontal = (args[0] == "true");
@@ -436,11 +462,13 @@ void gui_command(std::string const & s)
 	{
 		app->editor.prepend_new(NodeNum{uint16_t(stoi(args[0]))});
 		update_selection_gui();
+		update_modified(app->editor.getGraph());
 	}
 	else if (cmd == "append_new")
 	{
 		app->editor.append_new(NodeNum{uint16_t(stoi(args[0]))});
 		update_selection_gui();
+		update_modified(app->editor.getGraph());
 	}
 	else if (cmd == "browseto") browse_to(args[0]);
 	else if (cmd == "goto_segment")
@@ -616,6 +644,8 @@ void do_edit(Application & w, V2 const cursor)
 		w.editor.replace(pos, Graph::NodeModifyPolicy::propagate);
 	else if (w.joints_to_edit == "both_players" && w.confine_horizontal)
 		w.editor.replace(pos, Graph::NodeModifyPolicy::unintended);
+
+	update_modified(w.editor.getGraph());
 }
 
 void update_camera(Application & w)

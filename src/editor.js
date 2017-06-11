@@ -148,6 +148,18 @@ function browseto()
 	if (desc != null) gui_command("browseto " + desc);
 }
 
+function update_modified(nodes, edges)
+{
+	var things = [];
+	nodes.forEach(function(n){ things.push('p' + n); });
+	edges.forEach(function(e){ things.push('t' + e); });
+
+	var div = document.getElementById('info_modified');
+	div.innerHTML = "";
+	div.appendChild(document.createTextNode("Modified: " + things.join(", ")));
+	div.style.display = things.length != 0 ? 'block' : 'none';
+}
+
 function highlight_segment(seq, seg, pos)
 {
 	the_selection.forEach(function(selseq, i)

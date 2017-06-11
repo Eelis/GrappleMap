@@ -211,7 +211,17 @@ div.selection_display {
 	padding-top:1em;
 	margin: auto;
 	margin-top: 1em;
-	margin-bottom: 2em;
+	margin-bottom: 1em;
+}
+
+div#info_modified {
+	border: 2px dashed red;
+	width: 60%;
+	margin: auto;
+	margin-top: 1em;
+	margin-bottom: 1em;
+	padding: 0.2em;
+	display: none;
 }
 
 a.position_indicator {

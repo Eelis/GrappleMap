@@ -143,23 +143,23 @@ namespace
 
 Graph loadGraph(std::istream & ff)
 {
-	std::vector<Sequence> edges;
+	vector<Sequence> edges;
 
 	ff >> edges;
 
 	// nodes have been read as sequences of size 1
 
-	Graph g;
+	vector<NamedPosition> pp;
 
 	for (auto i = edges.begin(); i != edges.end(); )
 		if (i->positions.size() == 1)
 		{
-			g.insert_node(i->positions.front(), i->description, i->line_nr);
+			pp.push_back(NamedPosition{i->positions.front(), i->description, i->line_nr});
 			i = edges.erase(i);
 		}
 		else ++i;
 
-	g.insert_sequences(std::move(edges));
+	Graph g(move(pp), move(edges));
 
 	std::cerr << "Loaded " << g.num_nodes() << " nodes and " << g.num_sequences() << " edges." << std::endl;
 
@@ -168,7 +168,7 @@ Graph loadGraph(std::istream & ff)
 
 Graph loadGraph(string const filename)
 {
-	std::vector<Sequence> edges;
+	vector<Sequence> edges;
 	std::ifstream ff(filename, std::ios::binary);
 	if (!ff) error(filename + ": " + std::strerror(errno));
 	return loadGraph(ff);

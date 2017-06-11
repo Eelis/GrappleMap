@@ -5,20 +5,28 @@
 
 namespace GrappleMap {
 
+struct NamedPosition
+{
+	Position position;
+	vector<string> description;
+	optional<unsigned> line_nr;
+};
+
 struct Graph
 {
 	enum class NodeModifyPolicy { propagate, local, unintended };
 
-	struct Node
+	struct Node: NamedPosition
 	{
-		Position position;
-		vector<string> description;
-		optional<unsigned> line_nr;
 		vector<Reversible<SeqNum>> in, out;
 			// only bidirectional transitions appear as reversed seqs here
 		vector<Reversible<SeqNum>> in_out;
 			// reverse means ends in node, non-reverse means starts in node
 			// transitions only appear in their primary direction here
+
+		bool dirty = false;
+
+		explicit Node(NamedPosition p): NamedPosition(move(p)) {}
 	};
 
 	struct Edge: Sequence
@@ -26,6 +34,8 @@ struct Graph
 		ReorientedNode from, to;
 			// invariant: g[from] == sequence.positions.front()
 			// invariant: g[to] == sequences.positions.back()
+
+		bool dirty = false;
 
 		Edge(ReorientedNode f, ReorientedNode t, Sequence s)
 			: Sequence(std::move(s)), from(f), to(t)
@@ -47,7 +57,7 @@ private:
 
 public:
 
-	Graph() {}
+	Graph(vector<NamedPosition>, vector<Sequence>);
 
 	Graph & operator=(Graph &&) = default;
 	Graph(Graph &&) = default;
@@ -69,14 +79,6 @@ public:
 	uint16_t num_nodes() const { return nodes.size(); }
 
 	// mutation
-
-	void insert_node(Position pos, vector<string> desc, optional<unsigned> line)
-	{
-		nodes.emplace_back(Node{pos, desc, line, {}, {}, {}});
-		compute_in_out(NodeNum{NodeNum::underlying_type(nodes.size() - 1)});
-	}
-
-	void insert_sequences(vector<Sequence> &&); // for bulk, more efficient than individually with set()
 
 	void replace(PositionInSequence, Position, NodeModifyPolicy);
 	void clone(PositionInSequence);
