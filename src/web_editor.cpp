@@ -313,44 +313,42 @@ void update_selection_gui()
  	auto const & selection = app->editor.getSelection();
 
 	std::ostringstream script;
+
+	auto node_with_desc = [&](NodeNum const m)
+		{
+			script << "{node:" << m.index;
+			script << ",description:";
+			tojs(g[m].description, script);
+			script << '}';
+		};
+
+	auto seq_with_nodes = [&](SeqNum const sn)
+		{
+			Graph::Edge const & edge = g[sn];
+
+			script << "{id:" << sn.index;
+			script << ",from:"; node_with_desc(*edge.from);
+			script << ",to:"; node_with_desc(*edge.to);
+			script << ",frames:" << edge.positions.size();
+			script << ",description:";
+			tojs(edge.description, script);
+			if (edge.line_nr)
+				script << ",line_nr:" << *edge.line_nr;
+			script << "},";
+		};
+
 	script << "set_selection([";
-	foreach (seq : selection)
-	{
-		tojs(**seq, g, script);
-		script << ',';
-	}
+	foreach (seq : selection) seq_with_nodes(**seq);
 	script << "],[";
-
+	// post choices:
 	if (!selection.empty())
-	{
-		Reoriented<Reversible<SeqNum>> x = selection.back();
-		Reoriented<NodeNum> n = to(x, g);
-
-		foreach (o : g[*n].out)
-		{
-			script << '[' << o->index << ',';
-			tojs(g[*o].description, script);
-			NodeNum const m = *to(g, o);
-			script << ',' << m.index << "],"; // todo: also give name
-		}
-	}
-
+		foreach (o : g[*to(selection.back(), g)].out)
+			seq_with_nodes(*o);
 	script << "],[";
-
+	// pre choices:
 	if (!selection.empty())
-	{
-		Reoriented<Reversible<SeqNum>> x = selection.front();
-		Reoriented<NodeNum> n = from(x, g);
-
-		foreach (i : g[*n].in)
-		{
-			script << '[' << i->index << ',';
-			tojs(g[*i].description, script);
-			NodeNum const m = *from(g, i);
-			script << ',' << m.index << "],"; // todo: also give name
-		}
-	}
-
+		foreach (i : g[*from(selection.front(), g)].in)
+			seq_with_nodes(*i);
 	script << "]);";
 	emscripten_run_script(script.str().c_str());
 

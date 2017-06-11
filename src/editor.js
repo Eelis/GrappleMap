@@ -212,12 +212,17 @@ function highlight_segment(seq, seg, pos)
 					if (i != 0)
 					{
 						var prev = the_selection[i-1];
-						hl = hl || (prev.id == seq && p == 0 && pos == prev.frames.length - 1);
+						hl = hl || (prev.id == seq && p == 0 && pos == prev.frames - 1);
 					}
 
 					indicator.style.color = (hl ? 'lime' : 'black');
 				});
 		});
+}
+
+function spaces_for_newlines(s)
+{
+	return s.replace(/\\n/g, ' ');
 }
 
 function add_pos_indicator(seqindex, posnum, islast)
@@ -229,10 +234,19 @@ function add_pos_indicator(seqindex, posnum, islast)
 	t.text = (posnum == 0 || islast ? "█" : "o");
 	t.title = "position " + posnum;
 
-	if (posnum == 0)
-		t.title += " (= node " + seq.from.node + ")";
-	else if (islast)
-		t.title += " (= node " + seq.to.node + ")";
+	var namedPos = (posnum == 0 ? seq.from : (islast ? seq.to : null));
+
+	if (namedPos != null)
+	{
+		t.title = 'p' + namedPos.node;
+		var first = true;
+		namedPos.description.forEach(function(line)
+			{
+				if (first) { first = false; t.title += ': '; }
+				else t.title += '\n';
+				t.title += spaces_for_newlines(line);
+			});
+	}
 
 	t.onmouseover = (function(x, y)
 		{
@@ -280,10 +294,13 @@ function make_transition_cell(i)
 
 	{
 		var t = document.createElement("a");
-		t.text = (i + 1) + ". " + desc[0];
-		t.title = "t" + seq.id;
-		for (var j = 1; j < desc.length; ++j)
-			t.title += '\n' + desc[j];
+		t.text = (i + 1) + ". " + spaces_for_newlines(desc[0]);
+		t.title = 't' + seq.id + ': ';
+		for (var j = 0; j < desc.length; ++j)
+		{
+			if (j != 0) t.title += '\n';
+			t.title += spaces_for_newlines(desc[j]);
+		}
 		cell.appendChild(t);
 	}
 
@@ -312,10 +329,13 @@ function set_selection(sel, post_choices, pre_choices)
 		{
 			var btn = document.createElement("button");
 			btn.style.width = '55%';
-			btn.title = "from " + c[2];
-			btn.appendChild(document.createTextNode(c[1][0]));
+			btn.title = "from: " +
+				(c.from.description.length != 0
+				 ? spaces_for_newlines(c.from.description[0]) + " (p" + c.from.node + ")"
+				 : "p" + c.from.node);
+			btn.appendChild(document.createTextNode(spaces_for_newlines(c.description[0])));
 			btn.addEventListener("click", (function(sn)
-				{ return function(){ gui_command("set_selected " + sn + " true"); }; })(c[0]));
+				{ return function(){ gui_command("set_selected " + sn + " true"); }; })(c.id));
 			selection_body.appendChild(btn);
 			selection_body.appendChild(document.createElement("br"));
 		});
@@ -350,7 +370,7 @@ function set_selection(sel, post_choices, pre_choices)
 
 		var pre = document.createElement("pre");
 
-		if (seq.frames.length == 2)
+		if (seq.frames == 2)
 		{
 			pre.appendChild(add_pos_indicator(i, 0, false));
 			pre.appendChild(document.createTextNode("\n"));
@@ -358,9 +378,9 @@ function set_selection(sel, post_choices, pre_choices)
 		}
 		else
 		{
-			var width = Math.floor(seq.frames.length / 2);
+			var width = Math.floor(seq.frames / 2);
 
-			pre.appendChild(add_seg_indicator(i, width - 1, "┏" + (seq.frames.length % 2 == 1 ? hyphen : "")));
+			pre.appendChild(add_seg_indicator(i, width - 1, "┏" + (seq.frames % 2 == 1 ? hyphen : "")));
 
 			for (var j = width - 1; j >= 0; --j)
 			{
@@ -371,16 +391,16 @@ function set_selection(sel, post_choices, pre_choices)
 			}
 
 			pre.appendChild(document.createTextNode("\n"));
-			pre.appendChild(add_seg_indicator(i, width - 1, "┗" + (seq.frames.length % 2 == 1 ? "" : hyphen)));
+			pre.appendChild(add_seg_indicator(i, width - 1, "┗" + (seq.frames % 2 == 1 ? "" : hyphen)));
 
-			for (var j = width; j < seq.frames.length - 1; ++j)
+			for (var j = width; j < seq.frames - 1; ++j)
 			{
 				pre.appendChild(add_pos_indicator(i, j, false));
-				if (j < seq.frames.length - 2)
+				if (j < seq.frames - 2)
 					pre.appendChild(add_seg_indicator(i, j, hyphen));
 			}
 
-			pre.appendChild(add_seg_indicator(i, seq.frames.length - 2, "┓"));
+			pre.appendChild(add_seg_indicator(i, seq.frames - 2, "┓"));
 		}
 
 		var cell = document.createElement("td");
@@ -397,7 +417,7 @@ function set_selection(sel, post_choices, pre_choices)
 
 	{
 		var pre = document.createElement("pre");
-		pre.appendChild(add_pos_indicator(sel.length - 1, sel[sel.length - 1].frames.length - 1, true));
+		pre.appendChild(add_pos_indicator(sel.length - 1, sel[sel.length - 1].frames - 1, true));
 		pre.appendChild(document.createTextNode("\n┃"));
 
 		var cell0 = document.createElement("td");
@@ -415,10 +435,13 @@ function set_selection(sel, post_choices, pre_choices)
 		{
 			var btn = document.createElement("button");
 			btn.style.width = '55%';
-			btn.title = "to " + c[2];
-			btn.appendChild(document.createTextNode(c[1][0]));
+			btn.title = "to: " +
+				(c.to.description.length != 0
+				 ? spaces_for_newlines(c.to.description[0]) + " (t" + c.to.node + ")"
+				 : 't' + c.to.node);
+			btn.appendChild(document.createTextNode(spaces_for_newlines(c.description[0])));
 			btn.addEventListener("click", (function(sn)
-				{ return function(){ gui_command("set_selected " + sn + " true"); }; })(c[0]));
+				{ return function(){ gui_command("set_selected " + sn + " true"); }; })(c.id));
 			selection_body.appendChild(btn);
 			selection_body.appendChild(document.createElement("br"));
 		});

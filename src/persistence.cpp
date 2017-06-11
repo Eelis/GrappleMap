@@ -335,11 +335,9 @@ void tojs(ReorientedNode const & n, std::ostream & js)
 void tojs(vector<string> const & v, std::ostream & js)
 {
 	js << '[';
-	bool first = true;
 	foreach(s : v)
 	{
-		if (first) first = false; else js << ',';
-		js << '\'' << replace_all(s, "'", "\\'") << '\'';
+		js << '\'' << replace_all(replace_all(s, "\\", "\\\\"), "'", "\\'") << "',";
 	}
 	js << ']';
 }
