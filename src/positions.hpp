@@ -47,9 +47,9 @@ inline Position between(Position const & a, Position const & b, double s = 0.5 /
 
 inline bool basicallySame(Position const & a, Position const & b)
 {
-	double u = 0;
-	foreach (j : playerJoints) u += distanceSquared(a[j], b[j]);
-	return u < 0.03;
+	foreach (j : playerJoints)
+		if (distanceSquared(a[j], b[j]) > 0.0016) return false;
+	return true;
 }
 
 template<typename... A>
