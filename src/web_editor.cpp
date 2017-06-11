@@ -111,6 +111,7 @@ struct Application
 	bool confine_horizontal = false;
 	bool confine_interpolation = false;
 	bool confine_local_edits = true;
+	bool transform_rotate = false;
 };
 
 void sync_video(Application & app)
@@ -215,30 +216,6 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					}
 					break;
 */
-				case GLFW_KEY_KP_4: translate(w, V3{-translation, 0, 0}); break;
-				case GLFW_KEY_KP_6: translate(w, V3{translation, 0, 0}); break;
-				case GLFW_KEY_KP_8: translate(w, V3{0, 0, -translation}); break;
-				case GLFW_KEY_KP_2: translate(w, V3{0, 0, translation}); break;
-
-				case GLFW_KEY_KP_9:
-				{
-					if (w.editor.playingBack()) return;
-					w.editor.push_undo();
-					Position p = w.editor.current_position();
-					foreach (j : playerJoints) p[j] = yrot(-0.05) * p[j];
-					w.editor.replace(p, Graph::NodeModifyPolicy::unintended);
-					break;
-				}
-				case GLFW_KEY_KP_7:
-				{
-					if (w.editor.playingBack()) return;
-					w.editor.push_undo();
-					Position p = w.editor.current_position();
-					foreach (j : playerJoints) p[j] = yrot(0.05) * p[j];
-					w.editor.replace(p, Graph::NodeModifyPolicy::unintended);
-					break;
-				}
-
 				case GLFW_KEY_KP_ADD: { ++w.videoOffset; sync_video(w); break; }
 				case GLFW_KEY_KP_SUBTRACT: { --w.videoOffset; sync_video(w); break; }
 
@@ -463,6 +440,7 @@ void gui_command(std::string const & s)
 	else if (cmd == "confine_horizontal") app->confine_horizontal = (args[0] == "true");
 	else if (cmd == "confine_local_edits") app->confine_local_edits = (args[0] == "true");
 	else if (cmd == "joints_to_edit") app->joints_to_edit = args[0];
+	else if (cmd == "transform") app->transform_rotate = (args[0] == "rotate");
 	else if (cmd == "prepend_new")
 	{
 		app->editor.prepend_new(NodeNum{uint16_t(stoi(args[0]))});
@@ -555,6 +533,31 @@ void cursor_pos_callback(GLFWwindow * const window, double const xpos, double co
 
 		w.camera.rotateVertical((newcur.y - w.cursor->y) * speed);
 		w.camera.rotateHorizontal((newcur.x - w.cursor->x) * speed);
+	}
+
+	if (w.cursor && w.edit_mode && w.transform_rotate && !w.editor.playingBack()
+		&& glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+	{
+		auto const mat = yrot(newcur.x - w.cursor->x);
+
+		Position p = w.editor.current_position();
+
+		foreach (j : playerJoints)
+		{
+			if (w.joints_to_edit == "whole_player" && j.player != w.chosen_joint->player)
+				continue;
+			
+			p[j] = mat * p[j];
+		}
+
+		if (!node(w.editor.getGraph(), *w.editor.getLocation()))
+			w.editor.replace(p, Graph::NodeModifyPolicy::unintended);
+		else if (!w.confine_local_edits)
+			w.editor.replace(p, Graph::NodeModifyPolicy::propagate);
+		else if (w.joints_to_edit == "both_players")
+			w.editor.replace(p, Graph::NodeModifyPolicy::unintended);
+
+		update_modified(w.editor.getGraph());
 	}
 
 	w.cursor = newcur;
@@ -762,6 +765,7 @@ void frame()
 	if (w.editor.playingBack()) sync_video(w);
 
 	if (!w.editor.playingBack() && w.cursor && w.chosen_joint && w.edit_mode
+		&& !w.transform_rotate
 		&& glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		do_edit(w, *w.cursor);
 
