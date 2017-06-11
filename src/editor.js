@@ -148,16 +148,23 @@ function browseto()
 	if (desc != null) gui_command("browseto " + desc);
 }
 
+var changed_things = [];
+
+function is_dirty()
+{
+	return changed_things.length != 0;
+}
+
 function update_modified(nodes, edges)
 {
-	var things = [];
-	nodes.forEach(function(n){ things.push('p' + n); });
-	edges.forEach(function(e){ things.push('t' + e); });
+	changed_things = [];
+	nodes.forEach(function(n){ changed_things.push('p' + n); });
+	edges.forEach(function(e){ changed_things.push('t' + e); });
 
 	var div = document.getElementById('info_modified');
 	div.innerHTML = "";
-	div.appendChild(document.createTextNode("Modified: " + things.join(", ")));
-	div.style.display = things.length != 0 ? 'block' : 'none';
+	div.appendChild(document.createTextNode("Modified: " + changed_things.join(", ")));
+	div.style.display = is_dirty() ? 'block' : 'none';
 }
 
 function highlight_segment(seq, seg, pos)
@@ -421,3 +428,15 @@ function v3(x,y,z) { return 0; }
 	a.text        = "Download DB";
 	document.body.appendChild(a);
 */
+
+window.addEventListener("beforeunload", function(e)
+	{
+		if (!is_dirty()) return undefined;
+
+		var confirmationMessage =
+			'It looks like you have been editing. ' +
+			'If you leave before saving, your changes will be lost.';
+
+		(e || window.event).returnValue = confirmationMessage; // Gecko + IE
+		return confirmationMessage; // Gecko + Webkit, Safari, Chrome etc.
+	});
