@@ -436,6 +436,11 @@ void gui_command(std::string const & s)
 		app->edit_mode = (args[0] == "edit");
 	}
 	else if (cmd == "mirror_view") app->editor.mirror();
+	else if (cmd == "mirror_frame")
+	{
+		mirror_position(app->editor);
+		update_modified(app->editor.getGraph());
+	}
 	else if (cmd == "insert_keyframe")
 	{
 		app->editor.insert_keyframe();
