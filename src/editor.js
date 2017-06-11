@@ -163,7 +163,26 @@ function update_modified(nodes, edges)
 
 	var div = document.getElementById('info_modified');
 	div.innerHTML = "";
-	div.appendChild(document.createTextNode("Modified: " + changed_things.join(", ")));
+	div.appendChild(document.createTextNode("Modified: "));
+
+	var first = true;
+
+	changed_things.forEach(function(thing)
+		{
+			if (first) first = false;
+			else div.appendChild(document.createTextNode(", "));
+
+			var a = document.createElement("a");
+			a.text = thing;
+			// todo: title
+			a.href = "";
+			a.addEventListener("click", function(e){
+					e.preventDefault();
+					gui_command("browseto " + thing);
+				});
+			div.appendChild(a);
+		});
+
 	div.style.display = is_dirty() ? 'block' : 'none';
 }
 

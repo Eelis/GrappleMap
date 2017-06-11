@@ -412,10 +412,19 @@ namespace GrappleMap
 	{
 		Graph const & g = e.getGraph();
 
+		OrientedPath const & sel = e.getSelection();
+
+		if (!sel.empty() &&
+			(*g[seq].to == *from(g, *sel.front()) ||
+			 *g[seq].from == *to(g, *sel.back())))
+			e.set_selected(seq, true);
+			// todo: also try reverse
+
 		foreach (s : e.getSelection())
 			if (**s == seq)
 			{
 				e.setLocation(from_loc(first_segment(s, g)));
+				return;
 			}
 
 		// for other transitions, we cannot ensure a matching
