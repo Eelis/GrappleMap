@@ -320,6 +320,40 @@ namespace GrappleMap
 		}
 	}
 
+	void Editor::append_new(NodeNum const to)
+	{
+		if (selection.empty()) return;
+
+		Sequence seq;
+		seq.description = {"new"};
+		seq.positions =
+			{ graph[**selection.back()].positions.back()
+			, graph[to].position };
+			// todo: not for reverse steps
+		seq.detailed = false;
+		seq.bidirectional = false;
+
+		SeqNum const new_seq = insert(graph, seq);
+		set_selected(new_seq, true);
+	}
+
+	void Editor::prepend_new(NodeNum const src)
+	{
+		if (selection.empty()) return;
+
+		Sequence seq;
+		seq.description = {"new"};
+		seq.positions =
+			{ graph[src].position
+			, graph[**selection.front()].positions.front() };
+			// todo: not for reverse steps
+		seq.detailed = false;
+		seq.bidirectional = false;
+
+		SeqNum const new_seq = insert(graph, seq);
+		set_selected(new_seq, true);
+	}
+
 	void Editor::replace(Position const new_pos, Graph::NodeModifyPolicy const policy)
 	{
 		if (optional<PositionInSequence> const pp = position(*location))

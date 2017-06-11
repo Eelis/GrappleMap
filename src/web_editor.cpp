@@ -432,6 +432,16 @@ void gui_command(std::string const & s)
 	else if (cmd == "confine_horizontal") app->confine_horizontal = (args[0] == "true");
 	else if (cmd == "confine_local_edits") app->confine_local_edits = (args[0] == "true");
 	else if (cmd == "joints_to_edit") app->joints_to_edit = args[0];
+	else if (cmd == "prepend_new")
+	{
+		app->editor.prepend_new(NodeNum{uint16_t(stoi(args[0]))});
+		update_selection_gui();
+	}
+	else if (cmd == "append_new")
+	{
+		app->editor.append_new(NodeNum{uint16_t(stoi(args[0]))});
+		update_selection_gui();
+	}
 	else if (cmd == "browseto") browse_to(args[0]);
 	else if (cmd == "goto_segment")
 		go_to(SegmentInSequence

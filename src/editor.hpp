@@ -54,6 +54,8 @@ namespace GrappleMap
 		void toggle_lock(bool);
 		void toggle_playback();
 		void push_undo();
+		void append_new(NodeNum to);
+		void prepend_new(NodeNum from);
 		void replace(Position, Graph::NodeModifyPolicy);
 		void replace_sequence(vector<Position> const &);
 		void frame(double secondsElapsed);

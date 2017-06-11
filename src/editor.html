@@ -2,7 +2,6 @@
 <html lang="en-us">
 	<head>
 		<meta charset="utf-8">
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>GrappleMap Editor</title>
 		<link rel='stylesheet' type='text/css' href='editor.css'/>
 	</head>
@@ -31,9 +30,7 @@
 		</div>
 
 		<div class='sidebar'>
-			<span>
-				<h1>GrappleMap Editor</h1>
-			</span>
+			<h1>GrappleMap Editor</h1>
 
 			<div class='selection_display'>
 				<div style='margin-bottom:1em'><b>Path</b></div>
@@ -98,20 +95,27 @@
 				</tr>
 				<tr>
 					<td colspan='3' style='background:lightcoral'>
-						<table>
+						<table style='margin:auto'>
 							<tr>
 								<td style='vertical-align:top'>
-									<p>
-										Frame:
-										<ul>
-											<li><button onclick='gui_command("insert_keyframe")'>Insert</button></li>
-											<li><button onclick='gui_command("delete_keyframe")'>Delete</button></li>
-											<li><button onclick='gui_command("swap_players")'>Swap players</button></li>
-										</ul>
-									</p>
+									Transition:<br>
+									<ul style='padding-top:0;margin-top:0;padding-left:1.5em;'>
+										<li><button onclick='prepend_new()'>Prepend New</button></li>
+										<li><button onclick='append_new()'>Append New</button></li>
+									</ul>
+									Frame:<br>
+									<ul style='padding-top:0;margin-top:0;padding-left:1.5em;'>
+										<li><button onclick='gui_command("insert_keyframe")'>Insert</button></li>
+										<li><button onclick='gui_command("delete_keyframe")'>Delete</button></li>
+										<li><button onclick='gui_command("swap_players")'>Swap players</button></li>
+									</ul>
+									<p>Transform:<br>
+									<input name='transform' type='radio' checked
+										onclick='gui_command("transform translate")'> translate<br>
+									<input name='transform' type='radio'
+										onclick='gui_comamnd("transform rotate")'> rotate
 								</td>
-								<td>
-									<p>
+								<td style='vertical-align:top'>
 										Manipulate:<br>
 										<input name='joints_to_edit' type='radio' checked
 											onclick='gui_command("joints_to_edit single_joint")'> single joint<br>

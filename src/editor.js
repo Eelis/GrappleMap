@@ -145,9 +145,7 @@ function browseto()
 		"- a transition (e.g. 't1383')\n" +
 		"- a path (e.g. '39,23,45')");
 
-	if (desc == null) return;
-
-	gui_command("browseto " + desc);
+	if (desc != null) gui_command("browseto " + desc);
 }
 
 function highlight_segment(seq, seg, pos)
@@ -386,6 +384,18 @@ function set_selection(sel, post_choices, pre_choices)
 			selection_body.appendChild(btn);
 			selection_body.appendChild(document.createElement("br"));
 		});
+}
+
+function prepend_new()
+{
+	var destination = prompt("Source position? (e.g. '34')");
+	if (destination != null) gui_command("prepend_new " + destination);
+}
+
+function append_new()
+{
+	var destination = prompt("Destination position? (e.g. '34')");
+	if (destination != null) gui_command("append_new " + destination);
 }
 
 function v3(x,y,z) { return 0; }
