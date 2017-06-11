@@ -220,10 +220,8 @@ namespace GrappleMap
 		{
 			push_undo();
 
-			if (auto const new_pos = graph.erase(*p))
-			{
-				//todo: location.position = *new_pos;
-			}
+			if (optional<PosNum> const new_pos = graph.erase(*p))
+				go_to(PositionInSequence{p->sequence, *new_pos}, *this);
 			else undoStack.pop();
 		}
 	}
