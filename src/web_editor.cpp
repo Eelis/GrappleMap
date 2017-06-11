@@ -101,7 +101,7 @@ struct Application
 	Camera camera;
 	Editor editor{loadGraph("GrappleMap.txt")};
 	double jiggle = 0;
-	double last_cursor_x = 0, last_cursor_y = 0;
+	optional<V2> cursor;
 	Style style;
 	PlayerDrawer playerDrawer;
 	PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> candidates;
@@ -497,17 +497,52 @@ void cursor_pos_callback(GLFWwindow * const window, double const xpos, double co
 {
 	Application & w = *reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
 
-	if (w.last_cursor_x != 0 && w.last_cursor_y != 0 &&
-		glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_3) == GLFW_PRESS)
-	{
-		double const speed = 0.002;
+	int width, height;
+	glfwGetFramebufferSize(w.window, &width, &height);
 
-		w.camera.rotateVertical((ypos - w.last_cursor_y) * -speed);
-		w.camera.rotateHorizontal((xpos - w.last_cursor_x) * speed);
+	auto & views = w.split_view ? split_view : single_view;
+
+	View const * v = main_view(views);
+	if (!v) return;
+	
+	double const
+		x = xpos / width,
+		y = 1 - (ypos / height);
+
+	if (!(x >= v->x && x <= v->x + v->w &&
+		  y >= v->y && y <= v->y + v->h)) return;
+
+	V2 const newcur{
+		(((x - v->x) / v->w) - 0.5) * 2,
+		(((y - v->y) / v->h) - 0.5) * 2};
+
+	if (w.cursor && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_3) == GLFW_PRESS)
+	{
+		double const speed = 1;
+
+		w.camera.rotateVertical((newcur.y - w.cursor->y) * speed);
+		w.camera.rotateHorizontal((newcur.x - w.cursor->x) * speed);
 	}
 
-	w.last_cursor_x = xpos;
-	w.last_cursor_y = ypos;
+	w.cursor = newcur;
+
+	if (!w.editor.playingBack() &&
+		glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_LEFT) != GLFW_PRESS &&
+		glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_3) != GLFW_PRESS &&
+		!w.chosen_joint)
+	{
+		Position const pos = w.editor.current_position();
+		w.closest_joint = *minimal(
+			playerJoints.begin(), playerJoints.end(),
+			[&](PlayerJoint j) { return norm2(world2xy(w.camera, pos[j]) - newcur); });
+	}
+}
+
+void cursor_enter_callback(GLFWwindow * const window, int const entered)
+{
+	Application & w = *reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+
+    if (!entered) w.cursor = boost::none;
 }
 
 void do_edit(Application & w, V2 const cursor)
@@ -658,26 +693,11 @@ void frame()
 	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	optional<V2> cursor;
-
 	auto & views = w.split_view ? split_view : single_view;
 
 	if (View const * v = main_view(views))
-	{
 		w.camera.setViewportSize(v->fov, v->w * width, v->h * height);
-
-		double xpos, ypos;
-		glfwGetCursorPos(w.window, &xpos, &ypos);
-
-		double x = xpos / width;
-		double y = 1 - (ypos / height);
-
-		if (x >= v->x && x <= v->x + v->w &&
-			y >= v->y && y <= v->y + v->h)
-			cursor = V2{
-				(((x - v->x) / v->w) - 0.5) * 2,
-				(((y - v->y) / v->h) - 0.5) * 2};
-	}
+			// todo: only do when viewport size actually changes?
 
 	OrientedPath const
 		tempSel{nonreversed(sequence(w.editor.getLocation()))},
@@ -690,10 +710,10 @@ void frame()
 
 	auto const special_joint = w.chosen_joint ? *w.chosen_joint : w.closest_joint;
 
-	if (cursor && glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+	if (w.cursor && glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 		if (auto best_next_loc = determineNextPos(
 				w.editor.getGraph(), special_joint,
-				w.candidates[special_joint], w.camera, *cursor))
+				w.candidates[special_joint], w.camera, *w.cursor))
 		{
 			HighlightableLoc const newhl = highlightable_loc(**best_next_loc);
 
@@ -706,16 +726,9 @@ void frame()
 
 	if (w.editor.playingBack()) sync_video(w);
 
-	if (!w.editor.playingBack() && cursor && w.chosen_joint && w.edit_mode
+	if (!w.editor.playingBack() && w.cursor && w.chosen_joint && w.edit_mode
 		&& glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-		do_edit(w, *cursor);
-	else if (cursor && !w.chosen_joint)
-	{
-		Position const pos = w.editor.current_position();
-		w.closest_joint = *minimal(
-			playerJoints.begin(), playerJoints.end(),
-			[&](PlayerJoint j) { return norm2(world2xy(w.camera, pos[j]) - *cursor); });
-	}
+		do_edit(w, *w.cursor);
 
 	if (!w.edit_mode && !w.chosen_joint && !w.editor.playingBack())
 	{
@@ -864,6 +877,7 @@ int main()
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetCursorPosCallback(window, cursor_pos_callback);
+	glfwSetCursorEnterCallback(window, cursor_enter_callback);
 
 	glClearColor(0.f, 0.f, 0.f, 0.0f);
 
