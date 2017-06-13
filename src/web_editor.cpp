@@ -240,9 +240,8 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					break;
 				}
 */
-				case GLFW_KEY_V: flip(w.edit_mode); break;
-				case GLFW_KEY_1: flip(w.split_view); break;
-				case GLFW_KEY_B: w.editor.branch(); break;
+//				case GLFW_KEY_V: flip(w.edit_mode); break;
+//				case GLFW_KEY_1: flip(w.split_view); break;
 			}
 	}
 }
@@ -553,6 +552,13 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 	emscripten::function("set_selected", +[](uint32_t const seq, bool const b)
 	{
 		app->editor.set_selected(SeqNum{seq}, b);
+ 		update_selection_gui();
+	});
+
+	emscripten::function("split_seq", +[]
+	{
+		app->editor.branch();
+		update_modified(app->editor.getGraph());
  		update_selection_gui();
 	});
 }
