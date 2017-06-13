@@ -469,14 +469,14 @@ function update_selection()
 
 function prepend_new()
 {
-	var destination = prompt("Source position? (e.g. '34')");
-	if (destination != null) Module.prepend_new(destination);
+	var src = prompt("Source position? (e.g. '34')");
+	if (src != null) Module.prepend_new(+src);
 }
 
 function append_new()
 {
 	var destination = prompt("Destination position? (e.g. '34')");
-	if (destination != null) Module.append_new(destination);
+	if (destination != null) Module.append_new(+destination);
 }
 
 function save_seq_metadata()
