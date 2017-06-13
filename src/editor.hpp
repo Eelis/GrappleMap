@@ -11,7 +11,7 @@ namespace GrappleMap
 	class Editor
 	{
 		Graph graph;
-		std::stack<std::tuple<Graph, Reoriented<Location>, OrientedPath>> undoStack;
+		std::stack<std::tuple<Reoriented<Location>, OrientedPath>> undoStack;
 		OrientedPath selection;
 		bool selectionLock = false;
 		unique_ptr<Playback> playback;

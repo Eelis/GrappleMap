@@ -134,6 +134,9 @@ void translate(Application & w, V3 const v)
 	w.editor.replace(w.editor.current_position() + v, Graph::NodeModifyPolicy::unintended);
 }
 
+void update_selection_gui();
+void update_modified(Graph const &);
+
 void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int action, int mods)
 {
 	Application& w = *reinterpret_cast<Application *>(glfwGetWindowUserPointer(glfwWindow));
@@ -145,8 +148,14 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 		if (mods & GLFW_MOD_CONTROL)
 			switch (key)
 			{
-				case GLFW_KEY_Z: w.editor.undo(); return;
-
+				case GLFW_KEY_Z:
+				{
+					w.editor.undo();
+					update_selection_gui();
+					update_modified(w.editor.getGraph());
+					return;
+				}
+/*
 				case GLFW_KEY_C: // copy
 					w.clipboard = w.editor.current_position(); // todo: store non-reoriented position instead?
 					return;
@@ -157,7 +166,7 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 
 				case GLFW_KEY_KP_ADD: { w.videoOffset += 10; sync_video(w); break; }
 				case GLFW_KEY_KP_SUBTRACT: { w.videoOffset -= 10; sync_video(w); break; }
-
+*/
 				default: return;
 			}
 		else

@@ -258,10 +258,8 @@ namespace GrappleMap
 
 	void Editor::push_undo()
 	{
-		#ifndef EMSCRIPTEN
-			undoStack.emplace(graph, location, selection);
-			// todo: eats too much memory for emscripten, need a leaner approach
-		#endif
+		undoStack.emplace(location, selection);
+		graph.rewind_point();
 	}
 
 	void Editor::branch()
@@ -285,8 +283,9 @@ namespace GrappleMap
 	{
 		if (undoStack.empty()) return;
 
-		std::tie(graph, location, selection) = undoStack.top();
+		std::tie(location, selection) = undoStack.top();
 		undoStack.pop();
+		graph.rewind();
 	}
 
 	optional<OrientedPath::iterator> Editor::currently_in_selection()

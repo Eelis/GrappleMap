@@ -2,6 +2,7 @@
 #define GRAPPLEMAP_GRAPH_HPP
 
 #include "reoriented.hpp"
+#include "rewindable.hpp"
 
 namespace GrappleMap {
 
@@ -11,6 +12,11 @@ struct NamedPosition
 	vector<string> description;
 	optional<unsigned> line_nr;
 };
+
+inline Position & follow(Sequence & s, PosNum p) // todo: move
+{
+	return s.positions[p.index];
+}
 
 struct Graph
 {
@@ -40,12 +46,26 @@ struct Graph
 		Edge(ReorientedNode f, ReorientedNode t, Sequence s)
 			: Sequence(std::move(s)), from(f), to(t)
 		{}
+
+		friend Position & follow(Edge & s, PosNum p)
+			// todo: should not be necessary since we have the one for Sequence...
+		{
+			return s.positions[p.index];
+		}
 	};
 
 private:
 
-	vector<Node> nodes;
-	vector<Edge> edges;
+	struct Data
+	{
+		vector<Node> nodes;
+		vector<Edge> edges;
+
+		friend Node & follow(Data & d, NodeNum n) { return d.nodes[n.index]; }
+		friend Edge & follow(Data & d, SeqNum s) { return d.edges[s.index]; }
+	};
+
+	Rewindable<Data> data;
 
 	optional<ReorientedNode> is_reoriented_node(Position const &) const;
 
@@ -53,7 +73,11 @@ private:
 
 	void changed(PositionInSequence);
 	void compute_in_out(NodeNum);
-	ReorientedNode * node(PositionInSequence);
+
+	optional<Rewindable<Data>::OnPath<SeqNum, Reoriented<NodeNum> Edge::*>>
+		node(PositionInSequence);
+
+	void mark_dirty(SeqNum);
 
 public:
 
@@ -69,19 +93,18 @@ public:
 
 	Position operator[](ReorientedNode const & n) const
 	{
-		return n.reorientation(nodes[n->index].position);
+		return n.reorientation(data->nodes[n->index].position);
 	}
 
-	Node const & operator[](NodeNum const n) const { return nodes[n.index]; }
-	Edge const & operator[](SeqNum const s) const { return edges[s.index]; }
+	Node const & operator[](NodeNum const n) const { return data->nodes[n.index]; }
+	Edge const & operator[](SeqNum const s) const { return data->edges[s.index]; }
 
-	uint16_t num_sequences() const { return edges.size(); }
-	uint16_t num_nodes() const { return nodes.size(); }
+	uint16_t num_sequences() const { return data->edges.size(); }
+	uint16_t num_nodes() const { return data->nodes.size(); }
 
 	// mutation
 
 	void replace(PositionInSequence, Position, NodeModifyPolicy);
-	void clone(PositionInSequence);
 	optional<PosNum> erase(PositionInSequence); // invalidates posnums
 
 	void split_segment(Location);
@@ -91,6 +114,9 @@ public:
 		// no sequence means erase
 		// neither means noop
 		// both means replace
+
+	void rewind_point() { data.rewind_point(); }
+	void rewind() { data.rewind(); }
 };
 
 }
