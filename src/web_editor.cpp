@@ -551,7 +551,19 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 	
 	emscripten::function("set_selected", +[](uint32_t const seq, bool const b)
 	{
-		app->editor.set_selected(SeqNum{seq}, b);
+		SeqNum const sn{seq};
+
+		Editor & editor = app->editor;
+		Graph const & graph = editor.getGraph();
+		OrientedPath const & selection = editor.getSelection();
+
+		app->editor.set_selected(sn, b);
+
+		if (auto pos = position(editor.getLocation()))
+		if (auto node = node_at(graph, **pos))
+			if (!selection.empty() && *node == *from(graph, *selection.front()))
+				editor.setLocation(from_loc(first_segment(selection.front(), graph)));
+
  		update_selection_gui();
 	});
 
