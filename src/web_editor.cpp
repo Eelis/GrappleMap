@@ -274,13 +274,10 @@ HighlightableLoc highlightable_loc(Location const & loc)
 
 void gui_highlight_segment(HighlightableLoc const loc)
 {
-	std::ostringstream script;
-	script
-		<< "highlight_segment(" << loc.first.sequence.index << ',' << loc.first.segment << ','
-		<< (loc.second ? int(loc.second->position.index) : -1)
-		<< ");";
-
-	emscripten_run_script(script.str().c_str());
+	EM_ASM_({ highlight_segment($0, $1, $2); }
+		, loc.first.sequence.index
+		, loc.first.segment.index
+		, (loc.second ? int(loc.second->position.index) : -1));
 }
 
 void update_modified(Graph const & g)
