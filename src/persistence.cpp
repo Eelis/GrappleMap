@@ -177,15 +177,19 @@ Graph loadGraph(string const filename)
 void save(Graph const & g, string const filename)
 {
 	std::ofstream f(filename, std::ios::binary);
+	save(g, f);
+}
 
+void save(Graph const & g, std::ostream & o)
+{
 	foreach(n : nodenums(g))
 		if (!g[n].description.empty())
 		{
-			foreach (l : g[n].description) f << l << '\n';
-			f << g[n].position;
+			foreach (l : g[n].description) o << l << '\n';
+			o << g[n].position;
 		}
 
-	foreach(s : seqnums(g)) f << g[s];
+	foreach(s : seqnums(g)) o << g[s];
 }
 
 Path readScene(Graph const & graph, string const filename)

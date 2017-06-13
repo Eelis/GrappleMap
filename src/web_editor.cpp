@@ -361,21 +361,6 @@ void update_selection_gui()
 	gui_highlight_segment(highlightable_loc(*app->editor.getLocation()));
 }
 
-void loadDB(std::string const & s)
-{
-	std::istringstream iss(s);
-
-	app->editor = Editor(loadGraph(iss));
-	app->editor.set_selected(app->editor.getLocation()->segment.sequence, true);
-	app->editor.toggle_lock(true);
-
-	foreach (c : app->candidates.values)
-		foreach (x : c) x.clear();
-
-	app->chosen_joint = none;
-	update_selection_gui();
-}
-
 void ensure_nonempty_selection(Editor & editor)
 {
 	if (editor.getSelection().empty())
@@ -385,116 +370,151 @@ void ensure_nonempty_selection(Editor & editor)
 	editor.toggle_lock(true);
 }
 
-void browse_to(string const & desc)
+EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 {
-	if (auto start = named_entity(app->editor.getGraph(), desc))
+	emscripten::function("loadDB", +[](std::string const & s)
 	{
-		if (Step const * step = boost::get<Step>(&*start))
-			go_to(**step, app->editor);
-		else if (NodeNum const * node = boost::get<NodeNum>(&*start))
-			go_to(*node, app->editor);
-		else emscripten_run_script("alert('todo');");
-	}
-	else emscripten_run_script("alert('Error: No such thing');");
+		std::istringstream iss(s);
 
-	ensure_nonempty_selection(app->editor);
-	update_selection_gui();
-}
+		app->editor = Editor(loadGraph(iss));
+		app->editor.set_selected(app->editor.getLocation()->segment.sequence, true);
+		app->editor.toggle_lock(true);
 
-void gui_command(std::string const & s)
-{
-	std::istringstream iss(s);
+		foreach (c : app->candidates.values)
+			foreach (x : c) x.clear();
 
-	string cmd;
-	iss >> cmd;
+		app->chosen_joint = none;
+		update_selection_gui();
+	});
 
-	std::istream_iterator<string> i(iss), e;
-	vector<string> args(i, e);
-
-	if (cmd == "mode")
+	emscripten::function("getDB", +[]
 	{
-		set_playing(app->editor, args[0] == "playback");
-		app->edit_mode = (args[0] == "edit");
-	}
-	else if (cmd == "mirror_view") app->editor.mirror();
-	else if (cmd == "mirror_frame")
-	{
-		mirror_position(app->editor);
-		update_modified(app->editor.getGraph());
-	}
-	else if (cmd == "insert_keyframe")
+		std::ostringstream oss;
+		save(app->editor.getGraph(), oss);
+		return oss.str();
+	});
+
+	emscripten::function("insert_keyframe", +[]
 	{
 		app->editor.insert_keyframe();
 		update_selection_gui();
 		update_modified(app->editor.getGraph());
-	}
-	else if (cmd == "delete_keyframe")
+	});
+
+	emscripten::function("delete_keyframe", +[]
 	{
 		app->editor.delete_keyframe();
 		update_selection_gui();
 		update_modified(app->editor.getGraph());
-	}
-	else if (cmd == "swap_players")
+	});
+
+	emscripten::function("swap_players", +[]
 	{
 		swap_players(app->editor);
 		update_modified(app->editor.getGraph());
-	}
-	else if (cmd == "confine") app->editor.toggle_lock(args[0] == "true");
-	else if (cmd == "confine_interpolation") app->confine_interpolation = (args[0] == "true");
-	else if (cmd == "confine_horizontal") app->confine_horizontal = (args[0] == "true");
-	else if (cmd == "confine_local_edits") app->confine_local_edits = (args[0] == "true");
-	else if (cmd == "joints_to_edit") app->joints_to_edit = args[0];
-	else if (cmd == "transform") app->transform_rotate = (args[0] == "rotate");
-	else if (cmd == "prepend_new")
-	{
-		app->editor.prepend_new(NodeNum{uint16_t(stoi(args[0]))});
-		update_selection_gui();
-		update_modified(app->editor.getGraph());
-	}
-	else if (cmd == "append_new")
-	{
-		app->editor.append_new(NodeNum{uint16_t(stoi(args[0]))});
-		update_selection_gui();
-		update_modified(app->editor.getGraph());
-	}
-	else if (cmd == "browseto") browse_to(args[0]);
-	else if (cmd == "goto_segment")
-		go_to(SegmentInSequence
-			{ SeqNum{uint32_t(stol(args[0]))}
-			, SegmentNum{uint8_t(stol(args[1]))} },
-			app->editor);
-	else if (cmd == "goto_position")
-		go_to(PositionInSequence
-			{ SeqNum{uint32_t(stol(args[0]))}
-			, PosNum{uint8_t(stol(args[1]))} },
-			app->editor);
-	else if (cmd == "set_selected")
-	{
-		app->editor.set_selected(SeqNum{uint32_t(stol(args[0]))}, args[1] == "true");
-		update_selection_gui();
-	}
-	else if (cmd == "resolution")
-	{
-		int const
-			w = std::stoi(args[0]),
-			h = std::stoi(args[1]);
+	});
 
+	emscripten::function("prepend_new", +[](uint16_t const n)
+	{
+		app->editor.prepend_new(NodeNum{n});
+		update_selection_gui();
+		update_modified(app->editor.getGraph());
+	});
+
+	emscripten::function("append_new", +[](uint16_t const n)
+	{
+		app->editor.append_new(NodeNum{n});
+		update_selection_gui();
+		update_modified(app->editor.getGraph());
+	});
+
+	emscripten::function("browseto", +[](string const & desc)
+	{
+		if (auto start = named_entity(app->editor.getGraph(), desc))
+		{
+			if (Step const * step = boost::get<Step>(&*start))
+				go_to(**step, app->editor);
+			else if (NodeNum const * node = boost::get<NodeNum>(&*start))
+				go_to(*node, app->editor);
+			else emscripten_run_script("alert('todo');");
+		}
+		else emscripten_run_script("alert('Error: No such thing');");
+
+		ensure_nonempty_selection(app->editor);
+		update_selection_gui();
+	});
+
+	emscripten::function("goto_segment", +[](uint32_t const seq, uint16_t const seg)
+	{
+		go_to(SegmentInSequence{SeqNum{seq}, SegmentNum{uint8_t(seg)}}, app->editor);
+	});
+
+	emscripten::function("goto_position", +[](uint32_t const seq, uint16_t const pos)
+	{
+		go_to(PositionInSequence{SeqNum{seq}, PosNum{uint8_t(pos)}}, app->editor);
+	});
+
+	emscripten::function("mirror_view", +[]
+	{
+		app->editor.mirror();
+	});
+
+	emscripten::function("mirror_frame", +[]
+	{
+		mirror_position(app->editor);
+		update_modified(app->editor.getGraph());
+	});
+
+	emscripten::function("confine", +[](bool const b)
+	{
+		app->editor.toggle_lock(b);
+	});
+
+	emscripten::function("mode", +[](string const & m)
+	{
+		set_playing(app->editor, m == "playback");
+		app->edit_mode = (m == "edit");
+	});
+
+	emscripten::function("confine_interpolation", +[](bool const b)
+	{
+		app->confine_interpolation = b;
+	});
+
+	emscripten::function("confine_horizontal", +[](bool const b)
+	{
+		app->confine_horizontal = b;
+	});
+
+	emscripten::function("confine_local_edits", +[](bool const b)
+	{
+		app->confine_local_edits = b;
+	});
+
+	emscripten::function("joints_to_edit", +[](string const & s)
+	{
+		app->joints_to_edit = s;
+	});
+
+	emscripten::function("transform", +[](string const & s)
+	{
+		app->transform_rotate = (s == "rotate");
+	});
+
+	emscripten::function("resolution", +[](int w, int h)
+	{
 		if (w > 128 && h > 128)
 			glfwSetWindowSize(app->window, w, h);
-	}
-	else
+	});
+	
+	emscripten::function("set_selected", +[](uint32_t const seq, bool const b)
 	{
-		std::cout << s << "!?\n";
-	}
+		app->editor.set_selected(SeqNum{seq}, b);
+ 		update_selection_gui();
+	});
 }
 
-EMSCRIPTEN_BINDINGS(GrappleMap_engine)
-{
-	emscripten::function("loadDB", &loadDB);
-	emscripten::function("gui_command", &gui_command);
-}
-
-std::vector<View> const
+vector<View> const
 	single_view
 		{ {0, 0, 1, 1, none, 60} },
 	split_view

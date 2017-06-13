@@ -104,15 +104,8 @@ var the_selection;
 function loadDB(f)
 {
 	var reader = new FileReader();
-
 	reader.onload = function(e) { Module.loadDB(e.target.result); };
-
 	reader.readAsArrayBuffer(f);
-}
-
-function gui_command(cmd)
-{
-	Module.gui_command(cmd);
 }
 
 function mode_change(mode)
@@ -121,21 +114,16 @@ function mode_change(mode)
 	playback_controls.style.display = (mode == 'playback' ? 'table' : 'none');
 	edit_controls.style.display = (mode == 'edit' ? 'table' : 'none');
 
-	gui_command('mode ' + mode);
+	Module.mode(mode);
 }
 
 function sync_resolution()
 {
-	gui_command("resolution " + canvas.clientWidth + " " + canvas.clientHeight);
+	Module.resolution(canvas.clientWidth, canvas.clientHeight);
 	setTimeout(sync_resolution, 1000);
 }
 
 setTimeout(sync_resolution, 1000);
-
-function gui_commander(cmd)
-{
-	return function(){ gui_command(cmd); };
-}
 
 function browseto()
 {
@@ -145,7 +133,7 @@ function browseto()
 		"- a transition (e.g. 't1383')\n" +
 		"- a path (e.g. '39,23,45')");
 
-	if (desc != null) gui_command("browseto " + desc);
+	if (desc != null) Module.browseto(desc);
 }
 
 var changed_things = [];
@@ -178,7 +166,7 @@ function update_modified(nodes, edges)
 			a.href = "";
 			a.addEventListener("click", function(e){
 					e.preventDefault();
-					gui_command("browseto " + thing);
+					Module.browseto(thing);
 				});
 			div.appendChild(a);
 		});
@@ -252,7 +240,7 @@ function add_pos_indicator(seqindex, posnum, islast)
 		{
 			return function()
 				{
-					gui_command("goto_position " + x + " " + y);
+					Module.goto_position(x, y);
 					highlight_segment(x, y, y);
 				};
 		})(seq.id, posnum);
@@ -273,7 +261,7 @@ function add_seg_indicator(seqindex, segnum, txt)
 		{
 			return function()
 				{
-					gui_command("goto_segment " + x + " " + y);
+					Module.goto_segment(x, y);
 					highlight_segment(x, y, -1);
 				};
 		})(seq.id, segnum);
@@ -309,7 +297,7 @@ function make_transition_cell(i)
 		var btn = document.createElement("button");
 		btn.style.marginLeft = "0.7em";
 		btn.appendChild(document.createTextNode("x"));
-		btn.onclick = gui_commander("set_selected " + seq.id);
+		btn.onclick = function(x){ return function(){ Module.set_selected(x, false); }; }(seq.id);
 		cell.appendChild(btn);
 	}
 
@@ -335,7 +323,7 @@ function set_selection(sel, post_choices, pre_choices)
 				 : "p" + c.from.node);
 			btn.appendChild(document.createTextNode(spaces_for_newlines(c.description[0])));
 			btn.addEventListener("click", (function(sn)
-				{ return function(){ gui_command("set_selected " + sn + " true"); }; })(c.id));
+				{ return function(){ Module.set_selected(sn, true); }; })(c.id));
 			selection_body.appendChild(btn);
 			selection_body.appendChild(document.createElement("br"));
 		});
@@ -441,7 +429,7 @@ function set_selection(sel, post_choices, pre_choices)
 				 : 't' + c.to.node);
 			btn.appendChild(document.createTextNode(spaces_for_newlines(c.description[0])));
 			btn.addEventListener("click", (function(sn)
-				{ return function(){ gui_command("set_selected " + sn + " true"); }; })(c.id));
+				{ return function(){ Module.set_selected(sn, true); }; })(c.id));
 			selection_body.appendChild(btn);
 			selection_body.appendChild(document.createElement("br"));
 		});
@@ -450,13 +438,13 @@ function set_selection(sel, post_choices, pre_choices)
 function prepend_new()
 {
 	var destination = prompt("Source position? (e.g. '34')");
-	if (destination != null) gui_command("prepend_new " + destination);
+	if (destination != null) Module.prepend_new(destination);
 }
 
 function append_new()
 {
 	var destination = prompt("Destination position? (e.g. '34')");
-	if (destination != null) gui_command("append_new " + destination);
+	if (destination != null) Module.append_new(destination);
 }
 
 function v3(x,y,z) { return 0; }

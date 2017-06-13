@@ -107,34 +107,34 @@
 									</ul>
 									Frame:<br>
 									<ul style='padding-top:0;margin-top:0;padding-left:1.5em;'>
-										<li><button onclick='gui_command("insert_keyframe")'>Insert</button></li>
-										<li><button onclick='gui_command("delete_keyframe")'>Delete</button></li>
-										<li><button onclick='gui_command("swap_players")'>Swap players</button></li>
-										<li><button onclick='gui_command("mirror_frame")'>Mirror</button></li>
+										<li><button onclick='Module.insert_keyframe()'>Insert</button></li>
+										<li><button onclick='Module.insert_delete_keyframe()'>Delete</button></li>
+										<li><button onclick='Module.swap_players()'>Swap players</button></li>
+										<li><button onclick='Module.mirror_frame()'>Mirror</button></li>
 									</ul>
 									<p>Transform:<br>
 									<input name='transform' type='radio' checked
-										onclick='gui_command("transform translate")'> translate<br>
+										onclick='Module.transform("translate")'> translate<br>
 									<input name='transform' type='radio'
-										onclick='gui_command("transform rotate")'> rotate
+										onclick='Module.transform("rotate")'> rotate
 								</td>
 								<td style='vertical-align:top'>
 										Manipulate:<br>
 										<input name='joints_to_edit' type='radio' checked
-											onclick='gui_command("joints_to_edit single_joint")'> single joint<br>
+											onclick='Module.joints_to_edit("single_joint")'> single joint<br>
 										<input name='joints_to_edit' type='radio'
-											onclick='gui_command("joints_to_edit whole_player")'> whole player<br>
+											onclick='Module.joints_to_edit("whole_player")'> whole player<br>
 										<input name='joints_to_edit' type='radio'
-											onclick='gui_command("joints_to_edit both_players")'> both players
+											onclick='Module.joints_to_edit("both_players")'> both players
 									</p>
 									<p>
 										Confine to:<br>
 										<input type='checkbox'
-											onchange='gui_command("confine_horizontal " + this.checked)'> horizontal edits<br>
+											onchange='Module.confine_horizontal(this.checked)'> horizontal edits<br>
 										<input type='checkbox'
-											onchange='gui_command("confine_interpolation " + this.checked)'> linear interpolations<br>
+											onchange='Module.confine_interpolation(this.checked)'> linear interpolations<br>
 										<input type='checkbox' checked
-											onchange='gui_command("confine_local_edits " + this.checked)'> local edits
+											onchange='Module.confine_local_edits(this.checked)'> local edits
 									</p>
 								</td>
 							</tr>

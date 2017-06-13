@@ -8,6 +8,7 @@ namespace GrappleMap
 	Graph loadGraph(std::istream &);
 	Graph loadGraph(string filename);
 	void save(Graph const &, string filename);
+	void save(Graph const &, std::ostream &);
 	Path readScene(Graph const &, string filename);
 	void todot(Graph const &, std::ostream &, std::map<NodeNum, bool /* highlight */> const &, char heading);
 	void tojs(vector<string> const &, std::ostream &);
