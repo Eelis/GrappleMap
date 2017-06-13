@@ -107,6 +107,8 @@ function loadDB(f)
 	var reader = new FileReader();
 	reader.onload = function(e) { Module.loadDB(e.target.result); };
 	reader.readAsArrayBuffer(f);
+
+	document.getElementById('save_link').download = f.name + ".new";
 }
 
 function mode_change(mode)
