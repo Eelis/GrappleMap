@@ -31,12 +31,25 @@ optional<SeqNum> erase_sequence(Graph & g, SeqNum const sn)
 
 void split_at(Graph & g, PositionInSequence const pis)
 {
-	if (node(g, pis)) throw runtime_error("cannot split node");
+	if (node(g, pis))
+	{
+		std::cerr << "Split action ignored because not at intermediate position." << std::endl;
+		return;
+	}
 
 	Sequence a = g[pis.sequence], b = a;
+
+	if (!b.description.empty()) b.description.front() += " (cont'd)";
 	
 	a.positions.erase(a.positions.begin() + pis.position.index + 1, a.positions.end());
 	b.positions.erase(b.positions.begin(), b.positions.begin() + pis.position.index);
+
+	if (is_reoriented(a.positions.front(), a.positions.back())
+		|| is_reoriented(b.positions.front(), b.positions.back()))
+	{
+		std::cerr << "Split action ignored because would have created transition from position to itself." << std::endl;
+		return;
+	}
 
 	g.set(pis.sequence, a);
 	g.set(none, b);

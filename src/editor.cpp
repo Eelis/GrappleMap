@@ -220,9 +220,11 @@ namespace GrappleMap
 		{
 			if (!selection.empty() && node_at(graph, *p) &&
 				(p->position.index != 0 || **selection.front() != p->sequence) &&
-				(p->position.index == 0 || **selection.back() != p->sequence)) return;
-				// We don't allow deleting nodes from the middle of
-				// the selection, because the selection would break.
+				(p->position.index == 0 || **selection.back() != p->sequence))
+			{
+				std::cerr << "Keyframe delete action ignored because it would break selection." << std::endl;
+				return;
+			}
 
 			push_undo();
 
@@ -230,11 +232,16 @@ namespace GrappleMap
 				go_to(PositionInSequence{p->sequence, *new_pos}, *this);
 			else undoStack.pop();
 		}
+		else std::cerr << "Keyframe delete action ignored because not currently at keyframe." << std::endl;
 	}
 
 	void swap_players(Editor & e)
 	{
-		if (!position(*e.getLocation())) return;
+		if (!position(*e.getLocation()))
+		{
+			std::cerr << "Player swap action ignored because not currently at keyframe." << std::endl;
+			return;
+		}
 
 		e.push_undo();
 		auto p = e.current_position();
@@ -244,7 +251,11 @@ namespace GrappleMap
 
 	void mirror_position(Editor & e)
 	{
-		if (!position(*e.getLocation())) return;
+		if (!position(*e.getLocation()))
+		{
+			std::cerr << "Position mirror action ignored because not currently at keyframe." << std::endl;
+			return;
+		}
 
 		e.push_undo();
 		auto p = e.current_position();
@@ -277,12 +288,16 @@ namespace GrappleMap
 			try
 			{
 				split_at(graph, *pp);
+
+				// todo: update selection
 			}
 			catch (exception const & e)
 			{
 				cerr << "could not branch: " << e.what() << '\n';
 			}
 		}
+		else std::cerr << "Branch action ignored because not currently at key frame. "
+			"If you really want to branch here, insert a key frame here first." << std::endl;
 	}
 
 	void Editor::undo()

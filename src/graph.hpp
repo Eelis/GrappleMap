@@ -41,6 +41,8 @@ struct Graph
 			// invariant: g[from] == sequence.positions.front()
 			// invariant: g[to] == sequences.positions.back()
 
+		// invariant: *from != *to (no identity transitions)
+
 		bool dirty = false;
 
 		Edge(ReorientedNode f, ReorientedNode t, Sequence s)
@@ -71,7 +73,6 @@ private:
 
 	ReorientedNode find_or_add(Position const &);
 
-	void changed(PositionInSequence);
 	void compute_in_out(NodeNum);
 
 	optional<Rewindable<Data>::OnPath<SeqNum, Reoriented<NodeNum> Edge::*>>

@@ -13,6 +13,7 @@ struct Sequence
 	vector<string> description;
 	vector<Position> positions;
 		// invariant: .size()>=2
+		// invariant: !is_reoriented(positions.front(), positions.back())
 	optional<unsigned> line_nr;
 	bool detailed, bidirectional;
 

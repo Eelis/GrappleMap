@@ -4,30 +4,6 @@
 
 namespace GrappleMap {
 
-void Graph::changed(PositionInSequence const pis)
-{
-	data[pis.sequence][&Edge::dirty] = true;
-
-	Edge const & edge = data->edges.at(pis.sequence.index);
-
-	if (auto rn = node(pis))
-	{
-		Reoriented<NodeNum> const newn = find_or_add(edge.positions[pis.position.index]);
-
-		NodeNum const oldn = ***rn;
-
-		*rn = newn;
-
-		if (*newn != oldn)
-		{
-			std::cerr << "End of sequence is now a different node." << std::endl;
-
-			compute_in_out(oldn);
-			compute_in_out(*newn);
-		}
-	}
-}
-
 optional<Rewindable<Graph::Data>::OnPath<SeqNum, Reoriented<NodeNum> Graph::Edge::*>>
 	Graph::node(PositionInSequence const pis)
 {
@@ -145,7 +121,13 @@ void Graph::set(optional<SeqNum> const num, optional<Sequence> seq)
 {
 	if (seq)
 	{
-		ReorientedNode const
+		if (is_reoriented(seq->positions.front(), seq->positions.back()))
+		{
+			std::cerr << "Transition must not end where it starts." << std::endl;
+			return;
+		}
+
+		Reoriented<NodeNum> const
 			from = find_or_add(seq->positions.front()),
 			to = find_or_add(seq->positions.back());
 
@@ -169,23 +151,48 @@ void Graph::set(optional<SeqNum> const num, optional<Sequence> seq)
 	}
 }
 
-optional<PosNum> Graph::erase(PositionInSequence const pis)
+optional<PosNum> Graph::erase(PositionInSequence pis)
 {
 	auto const & edge = data->edges.at(pis.sequence.index);
 
 	if (edge.positions.size() == 2)
 	{
-		std::cerr << "Cannot erase either of last two elements in sequence." << std::endl;
+		std::cerr << "Erase action ignored because last two frames in sequence cannot be erased." << std::endl;
+		return none;
+	}
+
+	if ((pis.position.index == 0
+			&& is_reoriented(edge.positions[1], edge.positions.back()))
+		|| (pis.position == last_pos(edge)
+			&& is_reoriented(*std::next(edge.positions.rbegin()), edge.positions.front())))
+	{
+		std::cerr << "Erase action ignored because erasing frame would create transition from position to itself." << std::endl;
 		return none;
 	}
 
 	data[pis.sequence][&Edge::positions].erase(pis.position.index);
+	data[pis.sequence][&Edge::dirty] = true;
 
-	auto const pos = std::min(pis.position, last_pos((*this)[pis.sequence]));
+	pis.position = std::min(pis.position, last_pos(edge));
 
-	changed({pis.sequence, pos});
+	if (auto rn = node(pis))
+	{
+		Reoriented<NodeNum> const newn = find_or_add(edge.positions[pis.position.index]);
 
-	return pos;
+		NodeNum const oldn = ***rn;
+
+		*rn = newn;
+
+		if (*newn != oldn)
+		{
+			std::cerr << "End of sequence is now a different node." << std::endl;
+
+			compute_in_out(oldn);
+			compute_in_out(*newn);
+		}
+	}
+
+	return pis.position;
 }
 
 optional<Reoriented<NodeNum>> Graph::is_reoriented_node(Position const & p) const
@@ -279,7 +286,6 @@ void Graph::set_description(NodeNum n, string const & d)
 {
 	data[n][&Node::description] = lines(d);
 	data[n][&Node::dirty] = true;
-
 }
 
 void Graph::set_description(SeqNum s, string const & d)

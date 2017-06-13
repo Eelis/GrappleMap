@@ -159,11 +159,7 @@ Graph loadGraph(std::istream & ff)
 		}
 		else ++i;
 
-	Graph g(move(pp), move(edges));
-
-	std::cerr << "Loaded " << g.num_nodes() << " nodes and " << g.num_sequences() << " edges." << std::endl;
-
-	return g;
+	return Graph(move(pp), move(edges));
 }
 
 Graph loadGraph(string const filename)
