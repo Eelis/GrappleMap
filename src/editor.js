@@ -6,6 +6,7 @@
         preRun: [],
         postRun: [],
         print: (function() {
+          return;
           var element = document.getElementById('output');
           if (element) element.value = ''; // clear browser cache
           return function(text) {
@@ -456,17 +457,25 @@ function append_new()
 	if (destination != null) Module.append_new(destination);
 }
 
+function rotate_item_clicked()
+{
+	Module.transform("rotate");
+
+	if (document.getElementById('single_joint').checked)
+		document.getElementById('both_players').click();
+			// because rotating a single joint doesn't make much sense
+}
+
+function single_joint_clicked()
+{
+	Module.joints_to_edit("single_joint");
+
+	if (document.getElementById('rotate_item').checked)
+		document.getElementById('translate_item').click();
+			// also because rotating a single joint doesn't make much sense
+}
+
 function v3(x,y,z) { return 0; }
-
-/*
-	var myblob = new Blob(["dinghmz"], {type:"text/plain"});
-
-	var fileURL = URL.createObjectURL(myblob);
-    var a         = document.createElement('a');
-	a.href        = fileURL; 
-	a.text        = "Download DB";
-	document.body.appendChild(a);
-*/
 
 window.addEventListener("beforeunload", function(e)
 	{

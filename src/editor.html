@@ -113,18 +113,18 @@
 										<li><button onclick='Module.mirror_frame()'>Mirror</button></li>
 									</ul>
 									<p>Transform:<br>
-									<input name='transform' type='radio' checked
+									<input id='translate_item' name='transform' type='radio' checked
 										onclick='Module.transform("translate")'> translate<br>
-									<input name='transform' type='radio'
-										onclick='Module.transform("rotate")'> rotate
+									<input id='rotate_item' name='transform' type='radio'
+										onclick='rotate_item_clicked()'> rotate
 								</td>
 								<td style='vertical-align:top'>
 										Manipulate:<br>
-										<input name='joints_to_edit' type='radio' checked
-											onclick='Module.joints_to_edit("single_joint")'> single joint<br>
+										<input id='single_joint' name='joints_to_edit' type='radio' checked
+											onclick='single_joint_clicked()'> single joint<br>
 										<input name='joints_to_edit' type='radio'
 											onclick='Module.joints_to_edit("whole_player")'> whole player<br>
-										<input name='joints_to_edit' type='radio'
+										<input id='both_players' name='joints_to_edit' type='radio'
 											onclick='Module.joints_to_edit("both_players")'> both players
 									</p>
 									<p>
@@ -161,7 +161,7 @@
 					</table>
 					-->
 
-			<textarea id="output" rows="4" style='width:100%;display:none'></textarea>
+			<!--<textarea id="output" rows="4" style='width:100%;display:none'></textarea>-->
 		</div>
 
 		<script src='editor.js'></script>
