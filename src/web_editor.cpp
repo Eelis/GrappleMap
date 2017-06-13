@@ -312,53 +312,42 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 	gui_highlight_segment(highlightable_loc(*w.editor.getLocation()));
 }
 
+template<typename T>
+emscripten::val tojsval(vector<T> const & v)
+{
+	auto a = emscripten::val::array();
+	int i = 0;
+	foreach (x : v) a.set(i++, x);
+	return a;
+}
+
+emscripten::val tojsval(NodeNum const n, Graph const & g)
+{
+	auto v = emscripten::val::object();
+	v.set("node", n.index);
+	v.set("description", tojsval(g[n].description));
+	return v;
+}
+
+emscripten::val tojsval(SeqNum const sn, Graph const & g)
+{
+	Graph::Edge const & edge = g[sn];
+
+	auto v = emscripten::val::object();
+	v.set("id", sn.index);
+	v.set("from", tojsval(*edge.from, g));
+	v.set("to", tojsval(*edge.to, g));
+	v.set("frames", edge.positions.size());
+	v.set("description", tojsval(edge.description));
+	if (edge.line_nr) v.set("line_nr", *edge.line_nr);
+	return v;
+}
+
 unique_ptr<Application> app;
 
 void update_selection_gui()
 {
-	Graph const & g = app->editor.getGraph();
- 	auto const & selection = app->editor.getSelection();
-
-	std::ostringstream script;
-
-	auto node_with_desc = [&](NodeNum const m)
-		{
-			script << "{node:" << m.index;
-			script << ",description:";
-			tojs(g[m].description, script);
-			script << '}';
-		};
-
-	auto seq_with_nodes = [&](SeqNum const sn)
-		{
-			Graph::Edge const & edge = g[sn];
-
-			script << "{id:" << sn.index;
-			script << ",from:"; node_with_desc(*edge.from);
-			script << ",to:"; node_with_desc(*edge.to);
-			script << ",frames:" << edge.positions.size();
-			script << ",description:";
-			tojs(edge.description, script);
-			if (edge.line_nr)
-				script << ",line_nr:" << *edge.line_nr;
-			script << "},";
-		};
-
-	script << "set_selection([";
-	foreach (seq : selection) seq_with_nodes(**seq);
-	script << "],[";
-	// post choices:
-	if (!selection.empty())
-		foreach (o : g[*to(selection.back(), g)].out)
-			seq_with_nodes(*o);
-	script << "],[";
-	// pre choices:
-	if (!selection.empty())
-		foreach (i : g[*from(selection.front(), g)].in)
-			seq_with_nodes(*i);
-	script << "]);";
-	emscripten_run_script(script.str().c_str());
-
+	EM_ASM({ update_selection(); });
 	gui_highlight_segment(highlightable_loc(*app->editor.getLocation()));
 }
 
@@ -397,6 +386,37 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 		return convert.from_bytes(oss.str());
 
 		// Goddamn wstring seems to be the only way to preserve fancy chars...
+	});
+
+	emscripten::function("get_selection", +[]
+	{
+		auto a = emscripten::val::array();
+		int i = 0;
+		foreach (seq : app->editor.getSelection())
+			a.set(i++, tojsval(**seq, app->editor.getGraph()));
+		return a;
+	});
+
+	emscripten::function("get_pre_choices", +[]
+	{
+		Graph const & g = app->editor.getGraph();
+		auto const & selection = app->editor.getSelection();
+		vector<emscripten::val> items;
+		if (!selection.empty())
+			foreach (i : g[*from(selection.front(), g)].in)
+				items.push_back(tojsval(*i, g));
+		return tojsval(items);
+	});
+
+	emscripten::function("get_post_choices", +[]
+	{
+		Graph const & g = app->editor.getGraph();
+		auto const & selection = app->editor.getSelection();
+		vector<emscripten::val> items;
+		if (!selection.empty())
+			foreach (o : g[*to(selection.back(), g)].out)
+				items.push_back(tojsval(*o, g));
+		return tojsval(items);
 	});
 
 	emscripten::function("insert_keyframe", +[]
@@ -441,9 +461,9 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 				go_to(**step, app->editor);
 			else if (NodeNum const * node = boost::get<NodeNum>(&*start))
 				go_to(*node, app->editor);
-			else emscripten_run_script("alert('todo');");
+			else EM_ASM({ alert('todo'); });
 		}
-		else emscripten_run_script("alert('Error: No such thing');");
+		else EM_ASM({ alert('Error: No such thing'); });
 
 		ensure_nonempty_selection(app->editor);
 		update_selection_gui();

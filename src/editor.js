@@ -316,8 +316,12 @@ function make_transition_cell(i)
 	return cell;
 }
 
-function set_selection(sel, post_choices, pre_choices)
+function update_selection()
 {
+	var sel = Module.get_selection();
+	var post_choices = Module.get_post_choices();
+	var pre_choices = Module.get_pre_choices();
+
 	the_selection = sel;
 
 	selection_body.innerHTML = '';
