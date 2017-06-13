@@ -18,6 +18,7 @@
 #include <numeric>
 #include <iomanip>
 #include <algorithm>
+#include <codecvt>
 #include <iterator>
 #include <stack>
 #include <glm/glm.hpp>
@@ -389,9 +390,13 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 
 	emscripten::function("getDB", +[]
 	{
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
+
 		std::ostringstream oss;
 		save(app->editor.getGraph(), oss);
-		return oss.str();
+		return convert.from_bytes(oss.str());
+
+		// Goddamn wstring seems to be the only way to preserve fancy chars...
 	});
 
 	emscripten::function("insert_keyframe", +[]

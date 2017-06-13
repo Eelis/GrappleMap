@@ -125,6 +125,15 @@ function sync_resolution()
 
 setTimeout(sync_resolution, 1000);
 
+function make_save_link()
+{
+	var fileURL = URL.createObjectURL(new Blob([Module.getDB()], {type:"text/plain"}));
+
+	var link = document.getElementById('save_link');
+	link.href = fileURL;
+	link.click();
+}
+
 function browseto()
 {
 	var desc = prompt(
