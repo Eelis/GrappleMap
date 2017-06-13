@@ -218,6 +218,12 @@ namespace GrappleMap
 	{
 		if (optional<PositionInSequence> const p = position(*location))
 		{
+			if (!selection.empty() && node_at(graph, *p) &&
+				(p->position.index != 0 || **selection.front() != p->sequence) &&
+				(p->position.index == 0 || **selection.back() != p->sequence)) return;
+				// We don't allow deleting nodes from the middle of
+				// the selection, because the selection would break.
+
 			push_undo();
 
 			if (optional<PosNum> const new_pos = graph.erase(*p))
