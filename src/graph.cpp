@@ -1,4 +1,6 @@
 #include "graph_util.hpp"
+#include "metadata.hpp"
+#include <boost/algorithm/string/split.hpp>
 
 namespace GrappleMap {
 
@@ -264,6 +266,29 @@ Graph::Graph(vector<NamedPosition> pp, vector<Sequence> ss)
 		compute_in_out(n);
 
 	data.forget_past();
+}
+
+vector<string> lines(string const & s)
+{
+	vector<string> v;
+	boost::algorithm::split(v, s, [](char c){ return c == '\n'; });
+	return v;
+}
+
+void Graph::set_description(NodeNum n, string const & d)
+{
+	data[n][&Node::description] = lines(d);
+	data[n][&Node::dirty] = true;
+
+}
+
+void Graph::set_description(SeqNum s, string const & d)
+{
+	auto const v = lines(d);
+	data[s][&Edge::description] = v;
+	data[s][&Edge::dirty] = true;
+	data[s][&Edge::detailed] = (properties_in_desc(v).count("detailed") != 0);
+	data[s][&Edge::bidirectional] = (properties_in_desc(v).count("bidirectional") != 0);
 }
 
 }

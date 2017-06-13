@@ -173,13 +173,13 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 		else
 			switch (key)
 			{
-				case GLFW_KEY_X: { swap_players(w.editor); break; }
-				case GLFW_KEY_M: { mirror_position(w.editor); break; }
-				case GLFW_KEY_P: { w.editor.toggle_playback(); sync_video(w); break; }
-				case GLFW_KEY_L: { w.editor.toggle_lock(!w.editor.lockedToSelection()); break; }
-				case GLFW_KEY_INSERT: { w.editor.insert_keyframe(); break; }
-				case GLFW_KEY_DELETE: { w.editor.delete_keyframe(); break; }
-				case GLFW_KEY_I: w.editor.mirror(); break;
+//				case GLFW_KEY_X: { swap_players(w.editor); break; }
+//				case GLFW_KEY_M: { mirror_position(w.editor); break; }
+//				case GLFW_KEY_P: { w.editor.toggle_playback(); sync_video(w); break; }
+//				case GLFW_KEY_L: { w.editor.toggle_lock(!w.editor.lockedToSelection()); break; }
+//				case GLFW_KEY_INSERT: { w.editor.insert_keyframe(); break; }
+//				case GLFW_KEY_DELETE: { w.editor.delete_keyframe(); break; }
+//				case GLFW_KEY_I: w.editor.mirror(); break;
 
 
 				// set position to center
@@ -477,6 +477,24 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 	emscripten::function("goto_position", +[](uint32_t const seq, uint16_t const pos)
 	{
 		go_to(PositionInSequence{SeqNum{seq}, PosNum{uint8_t(pos)}}, app->editor);
+	});
+
+	emscripten::function("set_node_desc", +[](string const & desc)
+	{
+		if (auto pis = position(app->editor.getLocation()))
+			if (auto n = node_at(app->editor.getGraph(), **pis))
+			{
+				app->editor.set_description(*n, desc);
+				update_selection_gui();
+				update_modified(app->editor.getGraph());
+			}
+	});
+
+	emscripten::function("set_seq_desc", +[](string const & desc)
+	{
+		app->editor.set_description(app->editor.getLocation()->segment.sequence, desc);
+		update_selection_gui();
+		update_modified(app->editor.getGraph());
 	});
 
 	emscripten::function("mirror_view", +[]

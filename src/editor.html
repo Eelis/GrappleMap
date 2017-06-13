@@ -56,8 +56,8 @@
 					<td colspan='3' style='background:skyblue'>
 						<ul>
 							<li><button onclick='browseto()'>Go to</button></li>
-							<li><input type='checkbox' checked onchange='gui_command("confine " + this.checked)'> Confine to path</li>
-							<li><button onclick='gui_command("mirror_view")'>Mirror view</button></li>
+							<li><input type='checkbox' checked onchange='Module.confine(this.checked)'> Confine to path</li>
+							<li><button onclick='Module.mirror_view()'>Mirror view</button></li>
 							<li>Load database: <input type='file' id='fileinput' onchange='loadDB(this.files[0])'></li>
 						</ul>
 					</td>
@@ -145,8 +145,11 @@
 								</td>
 							</tr>
 						</table>
-						Metadata:
-						<textarea id='metadata' rows='6' style='width:100%;white-space:nowrap'>
+						Transition metadata (<button onclick='save_seq_metadata()'>save</button>):<br>
+						<textarea id='seq_metadata' rows='6' style='width:100%;white-space:nowrap'>
+						</textarea>
+						Position metadata (<button onclick='save_node_metadata()'>save</button>):<br>
+						<textarea id='node_metadata' rows='6' style='width:100%;white-space:nowrap'>
 						</textarea>
 					</td>
 				</tr>

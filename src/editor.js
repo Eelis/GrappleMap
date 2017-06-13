@@ -105,10 +105,14 @@ var the_selection;
 function loadDB(f)
 {
 	var reader = new FileReader();
-	reader.onload = function(e) { Module.loadDB(e.target.result); };
+	reader.onload = function(e)
+		{
+			Module.loadDB(e.target.result);
+			document.getElementById('save_link').download = f.name + ".new";
+			update_modified([], []);
+		};
 	reader.readAsArrayBuffer(f);
 
-	document.getElementById('save_link').download = f.name + ".new";
 }
 
 function mode_change(mode)
@@ -188,11 +192,23 @@ function update_modified(nodes, edges)
 
 function highlight_segment(seq, seg, pos)
 {
+	var seq_meta = document.getElementById('seq_metadata');
+	var node_meta = document.getElementById('node_metadata');
+
+	seq_meta.value = "";
+	node_meta.value = "";
+
 	the_selection.forEach(function(selseq, i)
 		{
 			if (selseq.id == seq)
-				document.getElementById('metadata').value
-					= selseq.description.join("\n");
+			{
+				seq_meta.value = selseq.description.join("\n");
+
+				if (pos == 0)
+					node_meta.value = selseq.from.description.join("\n");
+				else if (pos == selseq.frames - 1)
+					node_meta.value = selseq.to.description.join("\n");
+			}
 
 			selseq.segment_indicators.forEach(function(indicators, selseg)
 				{
@@ -461,6 +477,16 @@ function append_new()
 {
 	var destination = prompt("Destination position? (e.g. '34')");
 	if (destination != null) Module.append_new(destination);
+}
+
+function save_seq_metadata()
+{
+	Module.set_seq_desc(document.getElementById('seq_metadata').value);
+}
+
+function save_node_metadata()
+{
+	Module.set_node_desc(document.getElementById('node_metadata').value);
 }
 
 function rotate_item_clicked()

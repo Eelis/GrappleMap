@@ -60,6 +60,8 @@ namespace GrappleMap
 		void replace_sequence(vector<Position> const &);
 		void frame(double secondsElapsed);
 		void setLocation(Reoriented<Location>);
+		void set_description(NodeNum, string const &);
+		void set_description(SeqNum, string const &);
 	};
 
 	void go_to(SeqNum, Editor &);

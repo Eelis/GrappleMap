@@ -117,6 +117,9 @@ public:
 
 	void rewind_point() { data.rewind_point(); }
 	void rewind() { data.rewind(); }
+
+	void set_description(NodeNum, string const &);
+	void set_description(SeqNum, string const &);
 };
 
 }

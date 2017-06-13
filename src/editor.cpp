@@ -392,6 +392,16 @@ namespace GrappleMap
 		if (playback) playback->frame(secondsElapsed);
 	}
 
+	void Editor::set_description(NodeNum n, string const & d)
+	{
+		graph.set_description(n, d);
+	}
+
+	void Editor::set_description(SeqNum s, string const & d)
+	{
+		graph.set_description(s, d);
+	}
+
 	optional<Reoriented<Location>> Editor::playingBack() const
 	{
 		if (playback) return playback->location();
