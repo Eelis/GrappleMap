@@ -1,4 +1,4 @@
-# GrappleMap Editor
+# GrappleMap Native Editor Manual
 
 ## 1. Viewing transitions
 
