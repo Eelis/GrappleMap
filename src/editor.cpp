@@ -510,8 +510,7 @@ namespace GrappleMap
 		foreach (s : editor.getSelection())
 			if (**s == pis.sequence)
 			{
-				SegmentInSequence const sis{pis.sequence, SegmentNum{pis.position.index}};
-				editor.setLocation(Location{sis, 0} * s.reorientation);
+				editor.setLocation(pos_loc(pis, editor.getGraph()) * s.reorientation);
 				return;
 			}
 	}

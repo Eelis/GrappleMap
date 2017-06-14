@@ -25,6 +25,22 @@ inline PosNum last_pos(Sequence const & s)
 	return {PosNum::underlying_type(s.positions.size() - 1)};
 }
 
+inline Location pos_loc(PositionInSequence const pis, Graph const & g)
+{
+	Sequence const & seq = g[pis.sequence];
+
+	if (pis.position == last_pos(seq))
+		return Location
+			{ SegmentInSequence
+			  { pis.sequence
+			  , SegmentNum{uint8_t(pis.position.index-1)} }, 1};
+	else
+		return Location
+			{ SegmentInSequence
+			  { pis.sequence
+			  , SegmentNum{pis.position.index} }, 0 };
+}
+
 inline PositionInSequence last_pos_in(SeqNum const s, Graph const & g)
 {
 	return s * last_pos(g[s]);
