@@ -9,7 +9,7 @@ files, which contain only two things:
 * positions (= a pose + some metadata)
 * transitions (= 2 or more poses + some metadata)
 
-On startup, a built-in database is used, but another database file can also be loaded.
+On startup, the GrappleMap database is used, but another database file can also be loaded.
 
 ## 2. Browsing and Playback
 
