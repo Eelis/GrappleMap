@@ -155,11 +155,9 @@ function make_save_link()
 
 function browseto()
 {
-	var desc = prompt(
-		"Specify one of:\n" +
-		"- a position (e.g. 'p34')\n" +
-		"- a transition (e.g. 't1383')\n" +
-		"- a path (e.g. '39,23,45')");
+	var desc = prompt("Specify one of:\n" +
+		"- a position (e.g. 'p34' or 'staredown')\n" +
+		"- a transition (e.g. 't1383' or 'imanari roll')");
 
 	if (desc != null) Module.browseto(desc);
 }
