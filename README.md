@@ -15,7 +15,7 @@ in addition to the search and position pages includes the following web applicat
 - [explorer](http://eel.is/GrappleMap/explorer/)
 - [editor](http://eel.is/GrappleMap/editor/)
 
-In addition, there is an old native editor, a VR interface (currently only on Linux),
+In addition, there is an old native editor, a [VR interface](https://www.youtube.com/watch?v=MAeBgGZ1GdM) (currently only on Linux),
 and some utilities for making videos of
 scripted or randomly generated matches, like this one:
 
