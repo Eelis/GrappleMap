@@ -100,6 +100,8 @@ var browse_controls = document.getElementById('browse_controls');
 var playback_controls = document.getElementById('playback_controls');
 var edit_controls = document.getElementById('edit_controls');
 var selection_body = document.getElementById('selection_body');
+var seq_metadata = document.getElementById('seq_metadata');
+var node_metadata = document.getElementById('node_metadata');
 var the_selection;
 
 function loadDB(f)
@@ -112,7 +114,6 @@ function loadDB(f)
 			update_modified([], []);
 		};
 	reader.readAsArrayBuffer(f);
-
 }
 
 function mode_change(mode)
@@ -120,6 +121,16 @@ function mode_change(mode)
 	browse_controls.style.display = (mode == 'browse' ? 'table' : 'none');
 	playback_controls.style.display = (mode == 'playback' ? 'table' : 'none');
 	edit_controls.style.display = (mode == 'edit' ? 'table' : 'none');
+
+	document.getElementById('node_metadata_save_button').style.display =
+		(mode == 'edit' ? 'inline' : 'none');
+	document.getElementById('seq_metadata_save_button').style.display =
+		(mode == 'edit' ? 'inline' : 'none');
+
+	seq_metadata.style.background = (mode == 'edit' ? 'white' : "#CA65E3");
+	node_metadata.style.background = (mode == 'edit' ? 'white' : "#CA65E3");
+	seq_metadata.readOnly = (mode != 'edit');
+	node_metadata.readOnly = (mode != 'edit');
 
 	Module.mode(mode);
 }
@@ -131,6 +142,7 @@ function sync_resolution()
 }
 
 setTimeout(sync_resolution, 1000);
+	// todo: do this when module was loaded
 
 function make_save_link()
 {
@@ -192,22 +204,33 @@ function update_modified(nodes, edges)
 
 function highlight_segment(seq, seg, pos)
 {
-	var seq_meta = document.getElementById('seq_metadata');
-	var node_meta = document.getElementById('node_metadata');
+	var node_num_box = document.getElementById('node_num_box');
+	var seq_num_box = document.getElementById('seq_num_box');
 
-	seq_meta.value = "";
-	node_meta.value = "";
+	var found_seq = false;
+	var found_node = false;
 
 	the_selection.forEach(function(selseq, i)
 		{
 			if (selseq.id == seq)
 			{
-				seq_meta.value = selseq.description.join("\n");
+				found_seq = true;
+
+				var desc = selseq.description.join("\n");
+				if (seq_metadata.value != desc) seq_metadata.value = desc;
 
 				if (pos == 0)
-					node_meta.value = selseq.from.description.join("\n");
+				{
+					node_num_box.innerHTML = 'p' + selseq.from.node;
+					node_metadata.value = selseq.from.description.join("\n");
+					found_node = true;
+				}
 				else if (pos == selseq.frames - 1)
-					node_meta.value = selseq.to.description.join("\n");
+				{
+					node_num_box.innerHTML = 'p' + selseq.to.node;
+					node_metadata.value = selseq.to.description.join("\n");
+					found_node = true;
+				}
 			}
 
 			selseq.segment_indicators.forEach(function(indicators, selseg)
@@ -234,6 +257,17 @@ function highlight_segment(seq, seg, pos)
 					indicator.style.color = (hl ? 'lime' : 'black');
 				});
 		});
+
+	if (!found_seq && seq_metadata.value != "") seq_metadata.value = "";
+
+	var seqlabel = 't' + seq;
+	if (seq_num_box.innerHTML != seqlabel) seq_num_box.innerHTML = seqlabel;
+
+	if (!found_node)
+	{
+		if (node_metadata.value != "") node_metadata.value = "";
+		if (node_num_box.innerHTML != "") node_num_box.innerHTML = "";
+	}
 }
 
 function spaces_for_newlines(s)

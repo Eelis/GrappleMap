@@ -214,6 +214,17 @@ div.selection_display {
 	margin-bottom: 1em;
 }
 
+div.metadata_box {
+	width: 90%;
+	background: mediumorchid;
+	padding: 0;
+	padding-bottom:1em;
+	padding-top:1em;
+	margin: auto;
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
 div#info_modified {
 	border: 2px dashed red;
 	width: 60%;

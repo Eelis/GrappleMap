@@ -54,7 +54,7 @@
 				</tr>
 				<tr>
 					<td colspan='3' style='background:skyblue'>
-						<ul>
+						<ul style='margin:0'>
 							<li><button onclick='browseto()'>Go to</button></li>
 							<li><input type='checkbox' checked onchange='Module.confine(this.checked)'> Confine to path</li>
 							<li><button onclick='Module.mirror_view()'>Mirror view</button></li>
@@ -97,7 +97,7 @@
 				</tr>
 				<tr>
 					<td colspan='3' style='background:lightcoral'>
-						<table style='margin:auto'>
+						<table style='margin:auto;border-spacing:0'>
 							<tr>
 								<td style='vertical-align:top'>
 									Transition:<br>
@@ -113,12 +113,13 @@
 										<li><button onclick='Module.swap_players()'>Swap players</button></li>
 										<li><button onclick='Module.mirror_frame()'>Mirror</button></li>
 									</ul>
-									<p>Transform:<br>
+									Transform:<br>
 									<input id='translate_item' name='transform' type='radio' checked
 										onclick='Module.transform("translate")'> translate<br>
 									<input id='rotate_item' name='transform' type='radio'
-										onclick='rotate_item_clicked()'> rotate
+										onclick='rotate_item_clicked()'> rotate<br>
 								</td>
+								<td style='width:1em'></td>
 								<td style='vertical-align:top'>
 										Manipulate:<br>
 										<input id='single_joint' name='joints_to_edit' type='radio' checked
@@ -146,12 +147,6 @@
 								</td>
 							</tr>
 						</table>
-						Transition metadata (<button onclick='save_seq_metadata()'>save</button>):<br>
-						<textarea id='seq_metadata' rows='6' style='width:100%;white-space:nowrap'>
-						</textarea>
-						Position metadata (<button onclick='save_node_metadata()'>save</button>):<br>
-						<textarea id='node_metadata' rows='6' style='width:100%;white-space:nowrap'>
-						</textarea>
 					</td>
 				</tr>
 			</table>
@@ -166,6 +161,34 @@
 					-->
 
 			<!--<textarea id="output" rows="4" style='width:100%;display:none'></textarea>-->
+
+			<div class='metadata_box'>
+				<div style='margin-bottom:1em'><b>Metadata</b></div>
+				Transition <span style='font-weight:bold' id='seq_num_box'>t###</span>:
+				<button
+					style='margin-left:1em;display:none'
+					id='seq_metadata_save_button'
+					onclick='save_seq_metadata()'>
+					save
+				</button><br>
+				<textarea readonly rows='4'
+					id='seq_metadata'
+					style='width:90%;white-space:pre;background:#CA65E3'>
+				</textarea>
+				<br><br>
+				Position <span style='font-weight:bold' id='node_num_box'>p###</span>:
+				<button
+					style='margin-left:1em;display:none'
+					id='node_metadata_save_button'
+					onclick='save_node_metadata()'>
+					save
+				</button>
+				<br>
+				<textarea readonly rows='4'
+					id='node_metadata'
+					style='width:90%;white-space:pre;background:#CA65E3'>
+				</textarea>
+			</div>
 		</div>
 
 		<script src='editor.js'></script>
