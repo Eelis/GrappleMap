@@ -100,7 +100,6 @@ composer:
 
 new tools:
 - diff, to visualize changes made to transitions
-- transition editor in browser (looks like webassembly is coming soon)
 
 misc:
 - mobile-friendly versions of things
@@ -115,3 +114,24 @@ binary packages:
 - unrecognized options turn into hard crashes on win32, so it looks like exception handling isn't working
 - generate apple stuff
 - get ftgl to work (or something else for text)
+
+web editor:
+- integrate into build system
+- 1st person view
+- moving mouse off canvas while buttons pressed badly handled
+- improve camera positioning, maybe slow centering while in edit mode
+- button for undo, because ctrl-z is already used for text undo in metadata fields
+- redo
+- draw connecting nodes distinctly
+- see if updating the metadata boxes can be done with less stuttering if
+  it's done as updating in a fixed-width div instead of with innerHTML
+- disable splittrans/deleteframe/etc buttons when unavailable
+- drag&drop db file selection
+- blending/antialiasing/smoothing
+- maybe make lines camera-facing so they need fewer triangles
+- more lights
+- interpolated confinement
+- random path button
+- only respond to e.g. arrow keys when not focused on textarea
+- fix selection when branching inside it
+- handle reverse steps correctly in indicators and elsewhere

@@ -172,24 +172,8 @@ casual, and a long time ago. I basically have no martial arts credentials whatso
 Absolutely! There is *way* too much grappling technique for me to do this by myself,
 so nothing would please me more than to see the GrappleMap become a collaborative effort.
 
-The transition editor is minimalistic but gets the job done, is easy to build on Linux,
-and a cross-compiled Windows package can be found [here](http://eel.is/GrappleMap/windows-packages/).
-It is certainly my intention to make the tools usable by non-techies, though collaboration
-through Github does involve version control, and editing the database text
-file does require a decent text editor... Eventually I'll probably make the editor either
-a Qt application, or make it run in the browser, or both. In any case, documentation
-for the editor is [here](https://github.com/Eelis/GrappleMap/blob/master/doc/editing.md).
-
-Note that unless you work on one of the areas where GrappleMap coverage is still
-very sparse (such as takedowns or leg locks), adding content will not merely be a matter
-of *adding* transitions, but will also very likely involve reworking or tweaking
-existing transitions and positions, to reflect a more refined understanding of the
-different angles, dynamics, and controls around the area in question. But that is to be expected:
-every part of the map is fair game for refinement at all times.
-
-Anyway, I hang out in #grapplemap on Freenode IRC. Do [drop by](https://webchat.freenode.net/) or mail me at grapplemap@contacts.eelis.net, I'll gladly help people get going.
-
+Fire up the [editor](http://eel.is/GrappleMap/editor/), read its [manual](https://github.com/Eelis/GrappleMap/blob/master/doc/web-editor.md), and have a go. If you get stuck, [drop by](https://webchat.freenode.net/) in #grapplemap on Freenode IRC or mail me at grapplemap@contacts.eelis.net.
 
 ### Can I help improve the software/website?
 
-Absolutely! For ideas for things you could work on, see the [todo list](todo.txt).
+Absolutely! For ideas for things you could work on, see the [todo list](doc/todo.txt).
