@@ -11,9 +11,17 @@ The GrappleMap is:
 The main interface for the database is the [website](http://eel.is/GrappleMap/), which
 in addition to the search and position pages includes the following web applications:
 
-- [composer](http://eel.is/GrappleMap/composer/)
-- [explorer](http://eel.is/GrappleMap/explorer/)
-- [editor](http://eel.is/GrappleMap/editor/)
+- [Composer](http://eel.is/GrappleMap/composer/):
+
+ ![screenshot](http://eel.is/GrappleMap-extra/composer.png)
+
+- [Explorer](http://eel.is/GrappleMap/explorer/):
+
+ ![screenshot](http://eel.is/GrappleMap-extra/explorer.png)
+
+- [Editor](http://eel.is/GrappleMap/editor/):
+
+ ![screenshot](http://eel.is/GrappleMap-extra/editor.png)
 
 In addition, there is an old native editor, a [VR interface](https://www.youtube.com/watch?v=MAeBgGZ1GdM) (currently only on Linux),
 and some utilities for making videos of
