@@ -246,6 +246,21 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 	}
 }
 
+using HighlightableLoc = pair<SegmentInSequence, optional<PositionInSequence>>;
+
+HighlightableLoc highlightable_loc(Location const & loc)
+{
+	return {loc.segment, position(loc)};
+}
+
+void gui_highlight_segment(HighlightableLoc const loc)
+{
+	EM_ASM_({ highlight_segment($0, $1, $2); }
+		, loc.first.sequence.index
+		, loc.first.segment.index
+		, (loc.second ? int(loc.second->position.index) : -1));
+}
+
 void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int const action, int /*mods*/)
 {
 	Application & w = *reinterpret_cast<Application *>(glfwGetWindowUserPointer(glfwWindow));
@@ -260,24 +275,10 @@ void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int 
 	else if (action == GLFW_RELEASE)
 	{
 		w.chosen_joint = none;
-		snapToPos(w.editor);
+
+		if (snapToPos(w.editor))
+			gui_highlight_segment(highlightable_loc(*w.editor.getLocation()));
 	}
-}
-
-using HighlightableLoc = pair<SegmentInSequence, optional<PositionInSequence>>;
-
-HighlightableLoc highlightable_loc(Location const & loc)
-{
-	return {loc.segment, position(loc)};
-}
-
-
-void gui_highlight_segment(HighlightableLoc const loc)
-{
-	EM_ASM_({ highlight_segment($0, $1, $2); }
-		, loc.first.sequence.index
-		, loc.first.segment.index
-		, (loc.second ? int(loc.second->position.index) : -1));
 }
 
 void update_modified(Graph const & g)
