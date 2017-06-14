@@ -25,10 +25,10 @@ in addition to the search and position pages includes the following web applicat
 
 In addition, there is an old native editor, a [VR interface](https://www.youtube.com/watch?v=MAeBgGZ1GdM) (currently only on Linux),
 and some utilities for making videos of
-scripted or randomly generated matches, like this one:
+scripted or randomly generated matches, like these:
 
 [![demo](https://img.youtube.com/vi/sdygmrlm-ck/0.jpg)](https://www.youtube.com/watch?v=sdygmrlm-ck)
-
+[![blenderdemo](https://img.youtube.com/vi/rC7zTBMPj1Y/0.jpg)](https://www.youtube.com/watch?v=rC7zTBMPj1Y)
 
 ## FAQ
 
