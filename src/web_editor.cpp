@@ -737,6 +737,13 @@ void do_edit(Application & w, V2 const cursor)
 		w.editor.replace(pos, Graph::NodeModifyPolicy::propagate);
 	else if (w.joints_to_edit == "both_players" && w.confine_horizontal)
 		w.editor.replace(pos, Graph::NodeModifyPolicy::unintended);
+	else
+	{
+		std::cerr << "Ignoring edit because unless non-local editing is enabled, "
+			"only rotations and horizontally constrained translations to both "
+			"players simultaneously are allowed for connecting nodes." << std::endl;
+		return;
+	}
 
 	update_modified(w.editor.getGraph());
 }
