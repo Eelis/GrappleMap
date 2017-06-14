@@ -39,9 +39,9 @@ are always local. Edits to the first or last frame in a transition
 (i.e. one that is at a connecting position) are only local if they are mere
 reorientations.
 
-A _mere reorientation_ is defined as a rotation, a mirror operation,
-a mere swapping of the players, or a simultaneous horizontal move
-of all of the two players' joints.
+A _mere reorientation_ is defined as a mirror operation,
+a player swap, or a rotation or horizontal
+translation of all of the two players' joints simultaneously.
 
 ### Identity transitions
 
