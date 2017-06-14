@@ -102,14 +102,24 @@
 								<td style='vertical-align:top'>
 									Transition:<br>
 									<ul style='padding-top:0;margin-top:0;padding-left:1.5em;'>
-										<li><button onclick='Module.split_seq()'>Split</button></li>
-										<li><button onclick='prepend_new()'>Prepend New</button></li>
-										<li><button onclick='append_new()'>Append New</button></li>
+										<li><button
+											title='Split the current transition at current keyframe, which becomes a connecting node between the two resulting transitions. Does nothing if not currently positioned at intermediate keyframe.'
+											onclick='Module.split_seq()'>Split</button></li>
+										<li><button
+											title='Create a new transition that ends at the start of the current path and starts from a chosen position.'
+											onclick='prepend_new()'>Prepend New</button></li>
+										<li><button
+											title='Create a new transition that starts from the end end of the current path and ends at a chosen position.'
+											onclick='append_new()'>Append New</button></li>
 									</ul>
 									Frame:<br>
 									<ul style='padding-top:0;margin-top:0;padding-left:1.5em;'>
-										<li><button onclick='Module.insert_keyframe()'>Insert</button></li>
-										<li><button onclick='Module.delete_keyframe()'>Delete</button></li>
+										<li><button
+											title='Insert a new keyframe at the current position.'
+											onclick='Module.insert_keyframe()'>Insert</button></li>
+										<li><button
+											title='Delete current keyframe from current transition, possibly disconnecting the latter from a connecting node.'
+											onclick='Module.delete_keyframe()'>Delete</button></li>
 										<li><button onclick='Module.swap_players()'>Swap players</button></li>
 										<li><button onclick='Module.mirror_frame()'>Mirror</button></li>
 									</ul>

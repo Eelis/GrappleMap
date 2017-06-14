@@ -284,7 +284,7 @@ function add_pos_indicator(seqindex, posnum, islast)
 	var t = document.createElement("a");
 	t.className = "position_indicator";
 	t.text = (posnum == 0 || islast ? "█" : "o");
-	t.title = "position " + posnum;
+	t.title = "frame " + posnum;
 
 	var namedPos = (posnum == 0 ? seq.from : (islast ? seq.to : null));
 
