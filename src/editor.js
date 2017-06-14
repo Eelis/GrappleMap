@@ -42,6 +42,8 @@
           return canvas;
         })(),
         setStatus: function(text) {
+          if (text == "") emscripten_loaded();
+          // todo: this is surely not the proper way to notice that emscripten is done loading
         /*
           if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
           if (text === Module.setStatus.text) return;
@@ -141,8 +143,10 @@ function sync_resolution()
 	setTimeout(sync_resolution, 1000);
 }
 
-setTimeout(sync_resolution, 1000);
-	// todo: do this when module was loaded
+function emscripten_loaded()
+{
+	sync_resolution();
+}
 
 function make_save_link()
 {
