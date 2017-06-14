@@ -120,7 +120,6 @@ web editor:
 - 1st person view
 - moving mouse off canvas while buttons pressed badly handled
 - improve camera positioning, maybe slow centering while in edit mode
-- button for undo, because ctrl-z is already used for text undo in metadata fields
 - redo
 - draw connecting nodes distinctly
 - see if updating the metadata boxes can be done with less stuttering if

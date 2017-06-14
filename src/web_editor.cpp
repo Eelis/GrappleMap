@@ -80,6 +80,14 @@ GLint vpos_location, vcol_location, norm_location;
 
 vector<BasicVertex> vertices;
 
+vector<View> const
+	external_view
+		{ {0, 0, 1, 1, none, 60} },
+	player0_view
+		{ {0, 0, 1, 1, player0, 60} },
+	player1_view
+		{ {0, 0, 1, 1, player1, 60} };
+
 struct Application
 {
 	explicit Application(GLFWwindow * w)
@@ -98,7 +106,6 @@ struct Application
 	optional<PlayerJoint> chosen_joint;
 	bool edit_mode = false;
 	optional<Position> clipboard;
-	bool split_view = false;
 	Camera camera;
 	Editor editor{loadGraph("GrappleMap.txt")};
 	double jiggle = 0;
@@ -113,138 +120,15 @@ struct Application
 	bool confine_interpolation = false;
 	bool confine_local_edits = true;
 	bool transform_rotate = false;
+
+	vector<View> const & views() const
+	{
+		return external_view; // player0_view;
+	}
 };
-
-void sync_video(Application & app)
-{
-	/*
-	SegmentInSequence const s = app.editor.getLocation()->segment;
-	SeqNum const sn = s.sequence;
-
-	Sequence const & seq = app.editor.getGraph()[sn];
-
-	emscripten_run_script((
-		"set_slider(" + to_string(s.segment.index)
-		+ "," + to_string(seq.positions.size()) + ");").c_str());
-	*/
-}
-
-void translate(Application & w, V3 const v)
-{
-	w.editor.push_undo();
-	w.editor.replace(w.editor.current_position() + v, Graph::NodeModifyPolicy::unintended);
-}
 
 void update_selection_gui();
 void update_modified(Graph const &);
-
-void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int action, int mods)
-{
-	Application& w = *reinterpret_cast<Application *>(glfwGetWindowUserPointer(glfwWindow));
-
-	double const translation = mods & GLFW_MOD_SHIFT ? 0.2 : 0.02;
-
-	if (action == GLFW_PRESS)
-	{
-		if (mods & GLFW_MOD_CONTROL)
-			switch (key)
-			{
-				case GLFW_KEY_Z:
-				{
-					w.editor.undo();
-					update_selection_gui();
-					update_modified(w.editor.getGraph());
-					return;
-				}
-/*
-				case GLFW_KEY_C: // copy
-					w.clipboard = w.editor.current_position(); // todo: store non-reoriented position instead?
-					return;
-
-				case GLFW_KEY_V: // paste
-					if (w.clipboard) w.editor.replace(*w.clipboard, Graph::NodeModifyPolicy::local);
-					return;
-
-				case GLFW_KEY_KP_ADD: { w.videoOffset += 10; sync_video(w); break; }
-				case GLFW_KEY_KP_SUBTRACT: { w.videoOffset -= 10; sync_video(w); break; }
-*/
-				default: return;
-			}
-		else
-			switch (key)
-			{
-//				case GLFW_KEY_X: { swap_players(w.editor); break; }
-//				case GLFW_KEY_M: { mirror_position(w.editor); break; }
-//				case GLFW_KEY_P: { w.editor.toggle_playback(); sync_video(w); break; }
-//				case GLFW_KEY_L: { w.editor.toggle_lock(!w.editor.lockedToSelection()); break; }
-//				case GLFW_KEY_INSERT: { w.editor.insert_keyframe(); break; }
-//				case GLFW_KEY_DELETE: { w.editor.delete_keyframe(); break; }
-//				case GLFW_KEY_I: w.editor.mirror(); break;
-
-
-				// set position to center
-/*
-				case GLFW_KEY_U:
-					push_undo(w);
-					if (auto nextLoc = next(w.graph, w.location))
-					if (auto prevLoc = prev(w.location))
-					{
-						auto p = between(w.graph[*prevLoc], w.graph[*nextLoc]);
-						for(int i = 0; i != 30; ++i) spring(p);
-						w.graph.replace(w.location, p, true);
-					}
-					break;
-
-				// set joint to prev/next/center
-
-				case GLFW_KEY_H:
-					if (auto p = prev(w.location))
-					{
-						push_undo(w);
-						auto const j = apply(w.reorientation, w.closest_joint);
-						replace(w.graph, w.location, j, w.graph[*p][j], false);
-					}
-					break;
-				case GLFW_KEY_K:
-					if (auto p = next(w.graph, w.location))
-					{
-						push_undo(w);
-						auto const j = apply(w.reorientation, w.closest_joint);
-						replace(w.graph, w.location, j, w.graph[*p][j], false);
-					}
-					break;
-				case GLFW_KEY_J:
-					if (auto prevLoc = prev(w.location))
-					if (auto nextLoc = next(w.graph, w.location))
-					{
-						push_undo(w);
-						Position p = w.graph[w.location];
-						auto const j = apply(w.reorientation, w.closest_joint);
-						p[j] = (w.graph[*prevLoc][j] + w.graph[*nextLoc][j]) / 2;
-						for(int i = 0; i != 30; ++i) spring(p);
-						w.graph.replace(w.location, p, false);
-					}
-					break;
-*/
-				case GLFW_KEY_KP_ADD: { ++w.videoOffset; sync_video(w); break; }
-				case GLFW_KEY_KP_SUBTRACT: { --w.videoOffset; sync_video(w); break; }
-
-				// new sequence
-/*
-				case GLFW_KEY_N:
-				{
-					push_undo(w);
-					auto const p = w.graph[w.location];
-					w.location.sequence = insert(w.graph, Sequence{{"new"}, {p, p}, none});
-					w.location.position.index = 0;
-					break;
-				}
-*/
-//				case GLFW_KEY_V: flip(w.edit_mode); break;
-//				case GLFW_KEY_1: flip(w.split_view); break;
-			}
-	}
-}
 
 using HighlightableLoc = pair<SegmentInSequence, optional<PositionInSequence>>;
 
@@ -550,6 +434,13 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 			glfwSetWindowSize(app->window, w, h);
 	});
 	
+	emscripten::function("undo", +[]
+	{
+		app->editor.undo();
+		update_selection_gui();
+		update_modified(app->editor.getGraph());
+	});
+
 	emscripten::function("set_selected", +[](uint32_t const seq, bool const b)
 	{
 		SeqNum const sn{seq};
@@ -576,14 +467,6 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 	});
 }
 
-vector<View> const
-	single_view
-		{ {0, 0, 1, 1, none, 60} },
-	split_view
-		{ {0, 0, .5, 1, none, 90}
-		, {.5, .5, .5, .5, player0, 75}
-		, {.5, 0, .5, .5, player1, 75} };
-
 View const * main_view(std::vector<View> const & vv)
 {
 	foreach (v : vv) if (!v.first_person) return &v;
@@ -597,7 +480,7 @@ void cursor_pos_callback(GLFWwindow * const window, double const xpos, double co
 	int width, height;
 	glfwGetFramebufferSize(w.window, &width, &height);
 
-	auto & views = w.split_view ? split_view : single_view;
+	auto & views = w.views();
 
 	View const * v = main_view(views);
 	if (!v) return;
@@ -792,9 +675,7 @@ size_t do_render(Application const & w, vector<BasicVertex> & out)
 		selection = w.editor.getSelection();
 	}
 
-	auto & views = w.split_view ? split_view : single_view;
-	
-	return renderWindow(views, viables, w.editor.getGraph(), w.editor.current_position(), w.camera, special_joint,
+	return renderWindow(w.views(), viables, w.editor.getGraph(), w.editor.current_position(), w.camera, special_joint,
 		colors, 0, 0, width, height, selection, w.editor.getLocation()->segment, w.style, w.playerDrawer, []{}, out);
 }
 
@@ -824,7 +705,7 @@ void frame()
 	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	auto & views = w.split_view ? split_view : single_view;
+	auto & views = w.views();
 
 	if (View const * v = main_view(views))
 		w.camera.setViewportSize(v->fov, v->w * width, v->h * height);
@@ -852,10 +733,7 @@ void frame()
 				gui_highlight_segment(newhl);
 
 			w.editor.setLocation(*best_next_loc);
-			sync_video(w);
 		}
-
-	if (w.editor.playingBack()) sync_video(w);
 
 	if (!w.editor.playingBack() && w.cursor && w.chosen_joint && w.edit_mode
 		&& !w.transform_rotate
@@ -1005,7 +883,6 @@ int main()
 	app.reset(new Application(window));
 
 	glfwSetWindowUserPointer(window, app.get());
-	glfwSetKeyCallback(window, key_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetCursorPosCallback(window, cursor_pos_callback);
