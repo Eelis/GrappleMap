@@ -7,6 +7,8 @@ body {
 .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
 /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
 
+a{text-decoration:none}
+
 canvas.emscripten {
 	border: 0px none;
 	margin: 0px;

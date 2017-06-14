@@ -194,7 +194,7 @@ namespace
 		html
 			<< html5head("GrappleMap: Index")
 			<< "<body style='vertical-align:top;text-align:center'>"
-			<< "<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>"
+			<< "<h1><a href='https://github.com/Eelis/GrappleMap/'>GrappleMap</a></h1>"
 			<< "<video autoplay loop><source src='random.mp4' type='video/mp4'></video>"
 			<< "<br><br><h1>Index</h1><hr>"
 			<< "<table><tr><td style='vertical-align:top;padding:50px'>"
@@ -603,7 +603,7 @@ namespace
 				320, 240, ctx.mkimg.WhiteBg, 'p' + to_string(ctx.n.index));
 
 			ctx.html
-				<< "<h1><a href='https://github.com/Eelis/GrappleMap/blob/master/doc/FAQ.md'>GrappleMap</a></h1>"
+				<< "<h1><a href='https://github.com/Eelis/GrappleMap/'>GrappleMap</a></h1>"
 				<< "<h1>" << nlbr(desc(ctx.graph[ctx.n])) << "</h1>"
 				<< "<br><br>"
 				<< img(position_image_title(ctx.graph, ctx.n),
