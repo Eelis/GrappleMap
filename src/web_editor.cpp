@@ -74,7 +74,7 @@ GLuint program;
 GLint mvp_location;
 GLuint ViewMatrixID;
 GLuint ModelMatrixID;
-GLuint LightID, LightEnabledLoc;
+GLuint LightEnabledLoc;
 GLuint vertex_buffer, vertex_shader, fragment_shader;
 GLint vpos_location, vcol_location, norm_location;
 
@@ -820,9 +820,6 @@ void frame()
 	glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
 
-	glm::vec3 lightPos = glm::vec3(4,4,4);
-	glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
-
 	glUniform1f(LightEnabledLoc, 1.0);
 	glDrawArrays(GL_TRIANGLES, 0, non_hud_elems);
 
@@ -992,7 +989,6 @@ int main()
 	mvp_location = glGetUniformLocation(program, "MVP");
 	ViewMatrixID = glGetUniformLocation(program, "V");
 	ModelMatrixID = glGetUniformLocation(program, "M");
-	LightID = glGetUniformLocation(program, "LightPosition_worldspace");
 	LightEnabledLoc = glGetUniformLocation(program, "LightEnabled");
 
 	glEnableVertexAttribArray(vpos_location);
