@@ -6,6 +6,9 @@
 proofs/deps
 src/grapplemap-*
 src/tags
+src/grapplemap_editor.data
+src/grapplemap_editor.js
+src/grapplemap_editor.js.mem
 GrappleMap
 vidframes
 DejaVuSans.ttf
