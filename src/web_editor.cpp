@@ -568,77 +568,120 @@ void cursor_enter_callback(GLFWwindow * const window, int const entered)
     if (!entered) w.cursor = boost::none;
 }
 
-void do_edit(Application & w, V2 const cursor)
+void do_edit(Application & app, V2 const cursor)
 {
-	Position pos = w.editor.current_position();
+	Position pos = app.editor.current_position();
 
-	auto const reo = w.editor.getLocation().reorientation;
+	if (app.confine_interpolation)
+	{
+		Graph const & graph = app.editor.getGraph();
 
-	V3 hdragger = [&]{
-			PositionReorientation r;
-			r.reorientation.angle = -w.camera.getHorizontalRotation();
-			return r(V3{1,0,0});
-		}();
-	V3 vdragger = [&]{
-			PositionReorientation r;
-			r.reorientation.angle = -w.camera.getHorizontalRotation();
-			return r(V3{0,0,1});
-		}();
-		// todo: rewrite these sensibly
-
-	V3 const v = pos[*w.chosen_joint];
-	V2 const joint_xy = world2xy(w.camera, v);
-
-	double const
-		offh = (cursor.x - joint_xy.x)
-			/ (world2xy(w.camera, v + hdragger).x - joint_xy.x),
-		offv = (cursor.y - joint_xy.y)
-			/ (world2xy(w.camera, v + vdragger).y - joint_xy.y),
-		offy = (cursor.y - joint_xy.y)
-			* 0.01 / (world2xy(w.camera, v + V3{0,0.01,0}).y - joint_xy.y);
-
-	auto drag = [&](PlayerJoint j)
+		if (auto p = position(app.editor.getLocation()))
+		if (auto prev_pos = prev(*p))
+		if (auto next_pos = next(*p, graph))
 		{
-			auto & joint = pos[j];
+			Position const
+				prevv = at(*prev_pos, graph),
+				nextv = at(*next_pos, graph);
+		
+			double const howfar = whereBetween(
+				world2xy(app.camera, prevv[*app.chosen_joint]),
+				world2xy(app.camera, nextv[*app.chosen_joint]),
+				cursor);
 
-			if (w.confine_horizontal)
+			auto drag = [&](PlayerJoint j)
+				{
+					pos[j] = prevv[j] + (nextv[j] - prevv[j]) * howfar;
+				};
+
+			if (app.joints_to_edit == "single_joint")
 			{
-				joint.x += hdragger.x * offh + vdragger.x * offv;
-				joint.z += hdragger.z * offh + vdragger.z * offv;
+				drag(*app.chosen_joint);
+				spring(pos, *app.chosen_joint);
 			}
 			else
 			{
-				joint.x += hdragger.x * offh;
-				joint.z += hdragger.z * offh;
-				joint.y += offy;
-			}
-		};
+				foreach(rj : playerJoints)
+				{
+					if (app.joints_to_edit == "whole_player" && rj.player != app.chosen_joint->player)
+						continue;
 
-	if (w.joints_to_edit == "single_joint")
-	{
-		PlayerJoint const rj = *w.chosen_joint;
-		drag(*w.chosen_joint);
-		spring(pos, *w.chosen_joint);
+					drag(rj);
+				}
+
+				spring(pos);
+			}
+		}
 	}
 	else
 	{
-		foreach(rj : playerJoints)
+		auto const reo = app.editor.getLocation().reorientation;
+
+		V3 hdragger = [&]{
+				PositionReorientation r;
+				r.reorientation.angle = -app.camera.getHorizontalRotation();
+				return r(V3{1,0,0});
+			}();
+		V3 vdragger = [&]{
+				PositionReorientation r;
+				r.reorientation.angle = -app.camera.getHorizontalRotation();
+				return r(V3{0,0,1});
+			}();
+			// todo: rewrite these sensibly
+
+		V3 const v = pos[*app.chosen_joint];
+		V2 const joint_xy = world2xy(app.camera, v);
+
+		double const
+			offh = (cursor.x - joint_xy.x)
+				/ (world2xy(app.camera, v + hdragger).x - joint_xy.x),
+			offv = (cursor.y - joint_xy.y)
+				/ (world2xy(app.camera, v + vdragger).y - joint_xy.y),
+			offy = (cursor.y - joint_xy.y)
+				* 0.01 / (world2xy(app.camera, v + V3{0,0.01,0}).y - joint_xy.y);
+
+		auto drag = [&](PlayerJoint j)
+			{
+				auto & joint = pos[j];
+
+				if (app.confine_horizontal)
+				{
+					joint.x += hdragger.x * offh + vdragger.x * offv;
+					joint.z += hdragger.z * offh + vdragger.z * offv;
+				}
+				else
+				{
+					joint.x += hdragger.x * offh;
+					joint.z += hdragger.z * offh;
+					joint.y += offy;
+				}
+			};
+
+		if (app.joints_to_edit == "single_joint")
 		{
-			if (w.joints_to_edit == "whole_player" && rj.player != w.chosen_joint->player)
-				continue;
-
-			drag(rj);
+			drag(*app.chosen_joint);
+			spring(pos, *app.chosen_joint);
 		}
+		else
+		{
+			foreach(rj : playerJoints)
+			{
+				if (app.joints_to_edit == "whole_player" && rj.player != app.chosen_joint->player)
+					continue;
 
-		spring(pos);
+				drag(rj);
+			}
+
+			spring(pos);
+		}
 	}
 
-	if (!node(w.editor.getGraph(), *w.editor.getLocation()))
-		w.editor.replace(pos, Graph::NodeModifyPolicy::unintended);
-	else if (!w.confine_local_edits)
-		w.editor.replace(pos, Graph::NodeModifyPolicy::propagate);
-	else if (w.joints_to_edit == "both_players" && w.confine_horizontal)
-		w.editor.replace(pos, Graph::NodeModifyPolicy::unintended);
+	if (!node(app.editor.getGraph(), *app.editor.getLocation()))
+		app.editor.replace(pos, Graph::NodeModifyPolicy::unintended);
+	else if (!app.confine_local_edits)
+		app.editor.replace(pos, Graph::NodeModifyPolicy::propagate);
+	else if (app.joints_to_edit == "both_players" && app.confine_horizontal)
+		app.editor.replace(pos, Graph::NodeModifyPolicy::unintended);
 	else
 	{
 		std::cerr << "Ignoring edit because unless non-local editing is enabled, "
@@ -647,7 +690,7 @@ void do_edit(Application & w, V2 const cursor)
 		return;
 	}
 
-	update_modified(w);
+	update_modified(app);
 }
 
 void update_camera(Application & w)
