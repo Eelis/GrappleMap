@@ -2,14 +2,14 @@
 
 set -e
 
-(cd src && scons -Q noX)
+(cd src && scons -Q noX && ./build_em.sh)
 
 outputbase=.
 output=$outputbase/GrappleMap
 
 echo "Creating $output/."
 
-mkdir -p $output/{composer,search,explorer,position}
+mkdir -p $output/{composer,search,explorer,position,editor}
 mkdir -p $output/images/{gifframes,store}
 
 function download
@@ -37,6 +37,8 @@ cp src/search.js $output/
 cp src/explorer.html $output/explorer/index.html
 cp src/explorer.js $output/explorer/
 cp src/example-drills.html $output/
+cp src/editor.html $output/editor/index.html
+cp src/editor.{css,js} src/grapplemap_editor.* $output/editor/
 
 echo "Converting database to javascript."
 src/grapplemap-dbtojs --output_dir=$output
