@@ -35,7 +35,7 @@ void main()
 	EyeDirection_cameraspace = vec3(0,0,0) - vertexPosition_cameraspace;
 
 	LightPosition_worldspace[0] = vec3(4,4,4);
-	LightPosition_worldspace[1] = vec3(-4,-4,-4);
+	LightPosition_worldspace[1] = vec3(-4,4,-4);
 
 	// Vector that goes from the vertex to the light, in camera space. M is omitted because it's identity.
 	vec3 LightPosition0_cameraspace = ( V * vec4(LightPosition_worldspace[0],1)).xyz;

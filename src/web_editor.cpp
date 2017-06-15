@@ -104,7 +104,7 @@ struct Application
 	explicit Application(GLFWwindow * w)
 		: window(w)
 	{
-		style.grid_size = 3;
+		style.grid_size = 4;
 
 		Location l;
 		l.segment.sequence = SeqNum{1383};
