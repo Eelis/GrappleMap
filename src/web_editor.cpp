@@ -559,13 +559,15 @@ void do_edit(Application & w, V2 const cursor)
 	V3 hdragger = [&]{
 			PositionReorientation r;
 			r.reorientation.angle = -w.camera.getHorizontalRotation();
-			return compose(reo, r)(V3{1,0,0}); // todo: this is wrong, doesn't take swap_players into account
+			return r(V3{1,0,0});
 		}();
 	V3 vdragger = [&]{
 			PositionReorientation r;
 			r.reorientation.angle = -w.camera.getHorizontalRotation();
-			return compose(reo, r)(V3{0,0,1});
+			return r(V3{0,0,1});
 		}();
+		// todo: rewrite these sensibly
+
 	V3 const v = pos[*w.chosen_joint];
 	V2 const joint_xy = world2xy(w.camera, v);
 
@@ -576,8 +578,6 @@ void do_edit(Application & w, V2 const cursor)
 			/ (world2xy(w.camera, v + vdragger).y - joint_xy.y),
 		offy = (cursor.y - joint_xy.y)
 			* 0.01 / (world2xy(w.camera, v + V3{0,0.01,0}).y - joint_xy.y);
-
-	if (reo.mirror) hdragger.x = -hdragger.x;
 
 	auto drag = [&](PlayerJoint j)
 		{
@@ -598,9 +598,9 @@ void do_edit(Application & w, V2 const cursor)
 
 	if (w.joints_to_edit == "single_joint")
 	{
-		PlayerJoint const rj = apply(reo, *w.chosen_joint);
-		drag(rj);
-		spring(pos, rj);
+		PlayerJoint const rj = *w.chosen_joint;
+		drag(*w.chosen_joint);
+		spring(pos, *w.chosen_joint);
 	}
 	else
 	{
