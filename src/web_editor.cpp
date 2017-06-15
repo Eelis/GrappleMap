@@ -88,6 +88,17 @@ vector<View> const
 	player1_view
 		{ {0, 0, 1, 1, player1, 60} };
 
+struct Dirty
+{
+	vector<uint32_t> nodes;
+	vector<uint32_t> edges;
+};
+
+bool operator!=(Dirty const & a, Dirty const & b)
+{
+	return a.nodes != b.nodes || a.edges != b.edges;
+}
+
 struct Application
 {
 	explicit Application(GLFWwindow * w)
@@ -120,6 +131,7 @@ struct Application
 	bool confine_interpolation = false;
 	bool confine_local_edits = true;
 	bool transform_rotate = false;
+	Dirty dirty;
 
 	vector<View> const & views() const
 	{
@@ -128,7 +140,7 @@ struct Application
 };
 
 void update_selection_gui();
-void update_modified(Graph const &);
+void update_modified(Application const &);
 
 using HighlightableLoc = pair<SegmentInSequence, optional<PositionInSequence>>;
 
@@ -165,23 +177,21 @@ void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int 
 	}
 }
 
-void update_modified(Graph const & g)
+void update_modified(Application & app)
 {
-	static string last; // todo: gross
+	Graph const & g = app.editor.getGraph();
 
-	std::ostringstream script;
-	script << "update_modified([";
-	foreach(n : nodenums(g)) if (g[n].dirty) script << n.index << ',';
-	script << "],[";
-	foreach(s : seqnums(g)) if (g[s].dirty) script << s.index << ',';
-	script << "]);";
+	Dirty d;
+	d.nodes.reserve(app.dirty.nodes.size() + 5);
+	d.edges.reserve(app.dirty.edges.size() + 5);
 
-	string now = script.str();
+	foreach(n : nodenums(g)) if (g[n].dirty) d.nodes.push_back(n.index);
+	foreach(s : seqnums(g)) if (g[s].dirty) d.edges.push_back(s.index);
 
-	if (last != now)
+	if (app.dirty != d)
 	{
-		last = move(now);
-		emscripten_run_script(last.c_str());
+		app.dirty = move(d);
+		EM_ASM({ update_modified(); });
 	}
 }
 
@@ -303,38 +313,46 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 		return tojsval(items);
 	});
 
+	emscripten::function("get_dirty", +[]
+	{
+		auto d = emscripten::val::object();
+		d.set("nodes", tojsval(app->dirty.nodes));
+		d.set("edges", tojsval(app->dirty.edges));
+		return d;
+	});
+
 	emscripten::function("insert_keyframe", +[]
 	{
 		app->editor.insert_keyframe();
 		update_selection_gui();
-		update_modified(app->editor.getGraph());
+		update_modified(*app);
 	});
 
 	emscripten::function("delete_keyframe", +[]
 	{
 		app->editor.delete_keyframe();
 		update_selection_gui();
-		update_modified(app->editor.getGraph());
+		update_modified(*app);
 	});
 
 	emscripten::function("swap_players", +[]
 	{
 		swap_players(app->editor);
-		update_modified(app->editor.getGraph());
+		update_modified(*app);
 	});
 
 	emscripten::function("prepend_new", +[](uint16_t const n)
 	{
 		app->editor.prepend_new(NodeNum{n});
 		update_selection_gui();
-		update_modified(app->editor.getGraph());
+		update_modified(*app);
 	});
 
 	emscripten::function("append_new", +[](uint16_t const n)
 	{
 		app->editor.append_new(NodeNum{n});
 		update_selection_gui();
-		update_modified(app->editor.getGraph());
+		update_modified(*app);
 	});
 
 	emscripten::function("browseto", +[](string const & desc)
@@ -370,7 +388,7 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 			{
 				app->editor.set_description(*n, desc);
 				update_selection_gui();
-				update_modified(app->editor.getGraph());
+				update_modified(*app);
 			}
 	});
 
@@ -378,7 +396,7 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 	{
 		app->editor.set_description(app->editor.getLocation()->segment.sequence, desc);
 		update_selection_gui();
-		update_modified(app->editor.getGraph());
+		update_modified(*app);
 	});
 
 	emscripten::function("mirror_view", +[]
@@ -389,7 +407,7 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 	emscripten::function("mirror_frame", +[]
 	{
 		mirror_position(app->editor);
-		update_modified(app->editor.getGraph());
+		update_modified(*app);
 	});
 
 	emscripten::function("confine", +[](bool const b)
@@ -438,7 +456,7 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 	{
 		app->editor.undo();
 		update_selection_gui();
-		update_modified(app->editor.getGraph());
+		update_modified(*app);
 	});
 
 	emscripten::function("set_selected", +[](uint32_t const seq, bool const b)
@@ -462,7 +480,7 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 	emscripten::function("split_seq", +[]
 	{
 		app->editor.branch();
-		update_modified(app->editor.getGraph());
+		update_modified(*app);
  		update_selection_gui();
 	});
 }
@@ -526,7 +544,7 @@ void cursor_pos_callback(GLFWwindow * const window, double const xpos, double co
 		else if (w.joints_to_edit == "both_players")
 			w.editor.replace(p, Graph::NodeModifyPolicy::unintended);
 
-		update_modified(w.editor.getGraph());
+		update_modified(w);
 	}
 
 	w.cursor = newcur;
@@ -629,7 +647,7 @@ void do_edit(Application & w, V2 const cursor)
 		return;
 	}
 
-	update_modified(w.editor.getGraph());
+	update_modified(w);
 }
 
 void update_camera(Application & w)

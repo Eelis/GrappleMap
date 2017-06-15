@@ -166,18 +166,20 @@ function browseto()
 	if (desc != null) Module.browseto(desc);
 }
 
-var changed_things = [];
+var dirty = {nodes:[], edges:[]};
 
 function is_dirty()
 {
-	return changed_things.length != 0;
+	return dirty.nodes.length != 0 || dirty.edges.length != 0;
 }
 
-function update_modified(nodes, edges)
+function update_modified()
 {
-	changed_things = [];
-	nodes.forEach(function(n){ changed_things.push('p' + n); });
-	edges.forEach(function(e){ changed_things.push('t' + e); });
+	dirty = Module.get_dirty();
+
+	var changed_things = [];
+	dirty.nodes.forEach(function(n){ changed_things.push('p' + n); });
+	dirty.edges.forEach(function(e){ changed_things.push('t' + e); });
 
 	var div = document.getElementById('info_modified');
 	div.innerHTML = "";
