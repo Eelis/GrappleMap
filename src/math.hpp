@@ -73,19 +73,19 @@ using M = std::array<double, 16>;
 inline M yrot(double a) // formalized
 {
 	return
-		{ cos(a), 0, -sin(a), 0
+		{{ cos(a), 0, -sin(a), 0
 		, 0, 1, 0, 0
 		, sin(a), 0, cos(a), 0
-		, 0, 0, 0, 1 };
+		, 0, 0, 0, 1 }};
 }
 
 inline M xrot(double a)
 {
 	return
-		{ 1, 0, 0, 0
+		{{ 1, 0, 0, 0
 		, 0, cos(a), -sin(a), 0
 		, 0, sin(a), cos(a), 0
-		, 0, 0, 0, 1 };
+		, 0, 0, 0, 1 }};
 }
 
 inline M translate(V3 v)
@@ -118,10 +118,10 @@ inline M perspective(double fovy, double aspect, double zNear, double zFar)
 	auto f = 1/tan(fovy*pi()/360);
 
 	return
-		{ f/aspect, 0, 0, 0
+		{{ f/aspect, 0, 0, 0
 		, 0, f, 0, 0
 		, 0, 0, (zFar+zNear)/(zNear-zFar), -1
-		, 0, 0, 2*zFar*zNear/(zNear-zFar), 0 };
+		, 0, 0, 2*zFar*zNear/(zNear-zFar), 0 }};
 }
 
 inline double norm2(V2 v){ return sqrt(inner_prod(v, v)); }

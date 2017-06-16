@@ -31,7 +31,7 @@ constexpr uint32_t joint_count = sizeof(joints) / sizeof(Joint);
 constexpr PlayerNum player0 = PlayerNum{0};
 constexpr PlayerNum player1 = PlayerNum{1};
 
-inline array<PlayerNum, 2> playerNums() { return {player0, player1}; }
+inline array<PlayerNum, 2> playerNums() { return {{player0, player1}}; }
 
 inline char playerCode(PlayerNum const p){ return "tb"[p.index]; }
 
@@ -126,38 +126,38 @@ struct Limb
 inline auto & limbs()
 {
 	static const Limb a[] =
-		{ {{LeftToe,      LeftHeel    }, 0.23, {},    true }
-		, {{LeftToe,      LeftAnkle   }, 0.18, {},    false}
-		, {{LeftHeel,     LeftAnkle   }, 0.09, {},    false}
-		, {{LeftAnkle,    LeftKnee    }, 0.43, 0.055, true }
-		, {{LeftKnee,     LeftHip     }, 0.43, 0.085, true }
-		, {{LeftHip,      Core        }, 0.27, {},    false}
-		, {{Core,         LeftShoulder}, 0.37, {},    false}
-		, {{LeftShoulder, LeftElbow   }, 0.29, {},    true }
-		, {{LeftElbow,    LeftWrist   }, 0.26, 0.03,  true }
-		, {{LeftWrist,    LeftHand    }, 0.08, {},    true }
-		, {{LeftHand,     LeftFingers }, 0.08, {},    true }
-		, {{LeftWrist,    LeftFingers }, 0.14, {},    false}
+		{ {{{LeftToe,      LeftHeel    }}, 0.23, {},    true }
+		, {{{LeftToe,      LeftAnkle   }}, 0.18, {},    false}
+		, {{{LeftHeel,     LeftAnkle   }}, 0.09, {},    false}
+		, {{{LeftAnkle,    LeftKnee    }}, 0.43, 0.055, true }
+		, {{{LeftKnee,     LeftHip     }}, 0.43, 0.085, true }
+		, {{{LeftHip,      Core        }}, 0.27, {},    false}
+		, {{{Core,         LeftShoulder}}, 0.37, {},    false}
+		, {{{LeftShoulder, LeftElbow   }}, 0.29, {},    true }
+		, {{{LeftElbow,    LeftWrist   }}, 0.26, 0.03,  true }
+		, {{{LeftWrist,    LeftHand    }}, 0.08, {},    true }
+		, {{{LeftHand,     LeftFingers }}, 0.08, {},    true }
+		, {{{LeftWrist,    LeftFingers }}, 0.14, {},    false}
 
-		, {{RightToe,      RightHeel    }, 0.23, {},    true }
-		, {{RightToe,      RightAnkle   }, 0.18, {},    false}
-		, {{RightHeel,     RightAnkle   }, 0.09, {},    false}
-		, {{RightAnkle,    RightKnee    }, 0.43, 0.055, true }
-		, {{RightKnee,     RightHip     }, 0.43, 0.085, true }
-		, {{RightHip,      Core         }, 0.27, {},    false}
-		, {{Core,          RightShoulder}, 0.37, {},    false}
-		, {{RightShoulder, RightElbow   }, 0.29, {},    true }
-		, {{RightElbow,    RightWrist   }, 0.27, 0.03,  true }
-		, {{RightWrist,    RightHand    }, 0.08, {},    true }
-		, {{RightHand,     RightFingers }, 0.08, {},    true }
-		, {{RightWrist,    RightFingers }, 0.14, {},    false}
+		, {{{RightToe,      RightHeel    }}, 0.23, {},    true }
+		, {{{RightToe,      RightAnkle   }}, 0.18, {},    false}
+		, {{{RightHeel,     RightAnkle   }}, 0.09, {},    false}
+		, {{{RightAnkle,    RightKnee    }}, 0.43, 0.055, true }
+		, {{{RightKnee,     RightHip     }}, 0.43, 0.085, true }
+		, {{{RightHip,      Core         }}, 0.27, {},    false}
+		, {{{Core,          RightShoulder}}, 0.37, {},    false}
+		, {{{RightShoulder, RightElbow   }}, 0.29, {},    true }
+		, {{{RightElbow,    RightWrist   }}, 0.27, 0.03,  true }
+		, {{{RightWrist,    RightHand    }}, 0.08, {},    true }
+		, {{{RightHand,     RightFingers }}, 0.08, {},    true }
+		, {{{RightWrist,    RightFingers }}, 0.14, {},    false}
 
 		//, {{LeftShoulder, RightShoulder}, 0.34, 0.1, false}
-		, {{LeftHip, RightHip}, 0.23, {},  false}
+		, {{{LeftHip, RightHip}}, 0.23, {},  false}
 
-		, {{LeftShoulder, Neck}, 0.175, {}, false}
-		, {{RightShoulder, Neck}, 0.175, {}, false}
-		, {{Neck, Head}, 0.165, 0.05, true}
+		, {{{LeftShoulder, Neck}}, 0.175, {}, false}
+		, {{{RightShoulder, Neck}}, 0.175, {}, false}
+		, {{{Neck, Head}}, 0.165, 0.05, true}
 
 		};
 

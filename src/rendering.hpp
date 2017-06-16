@@ -13,7 +13,7 @@ struct GLFWwindow;
 
 namespace GrappleMap
 {
-	struct Camera;
+	class Camera;
 	struct Graph;
 
 	struct View

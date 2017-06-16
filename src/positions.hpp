@@ -129,11 +129,6 @@ PositionReorientation compose(PositionReorientation, PositionReorientation);
 
 optional<PositionReorientation> is_reoriented(Position const &, Position);
 
-inline bool operator==(PositionReorientation const & a, PositionReorientation const & b)
-{
-	return a.reorientation == b.reorientation && a.swap_players == b.swap_players && a.mirror == b.mirror;
-}
-
 inline V2 heading(Position const & p) // formalized
 {
 	return xz(p[player1][Core] - p[player0][Core]);

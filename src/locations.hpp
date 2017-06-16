@@ -66,7 +66,7 @@ using Step = Reversible<SeqNum>;
 
 inline std::ostream & operator<<(std::ostream & o, NodeNum const n)
 {
-	return o << "node" << n;
+	return o << "p" << n.index;
 }
 
 inline bool operator==(SegmentInSequence const a, SegmentInSequence const b)

@@ -15,7 +15,7 @@ namespace GrappleMap
 		OrientedPath selection;
 		bool selectionLock = false;
 		unique_ptr<Playback> playback;
-		Reoriented<Location> location{{SegmentInSequence{{0}, 0}, 0}, {}};
+		Reoriented<Location> location{{SegmentInSequence{{0}, {0}}, 0}, {}};
 
 		optional<OrientedPath::iterator> currently_in_selection();
 		void start_playback();

@@ -23,10 +23,10 @@ namespace icosphere
 				, {Z,X,N}, {-Z,X, N}, {Z,-X,N}, {-Z,-X, N} };
 
 			static vector<Triangle> const triangles =
-				{ {0,4,1},{0,9,4},{9,5,4},{4,5,8},{4,8,1}
-				, {8,10,1},{8,3,10},{5,3,8},{5,2,3},{2,7,3}
-				, {7,10,3},{7,6,10},{7,11,6},{11,0,6},{0,1,6}
-				, {6,1,10},{9,0,11},{9,11,2},{9,2,5},{7,2,11} };
+				{ {{0,4,1}},{{0,9,4}},{{9,5,4}},{{4,5,8}},{{4,8,1}}
+				, {{8,10,1}},{{8,3,10}},{{5,3,8}},{{5,2,3}},{{2,7,3}}
+				, {{7,10,3}},{{7,6,10}},{{7,11,6}},{{11,0,6}},{{0,1,6}}
+				, {{6,1,10}},{{9,0,11}},{{9,11,2}},{{9,2,5}},{{7,2,11}} };
 		}
 
 		using Lookup = std::map<std::pair<Index, Index>, Index>;
@@ -63,10 +63,10 @@ namespace icosphere
 					each.vertex[edge], each.vertex[(edge+1)%3]);
 				}
 
-				result.push_back({each.vertex[0], mid[0], mid[2]});
-				result.push_back({each.vertex[1], mid[1], mid[0]});
-				result.push_back({each.vertex[2], mid[2], mid[1]});
-				result.push_back({mid[0], mid[1], mid[2]});
+				result.push_back({{each.vertex[0], mid[0], mid[2]}});
+				result.push_back({{each.vertex[1], mid[1], mid[0]}});
+				result.push_back({{each.vertex[2], mid[2], mid[1]}});
+				result.push_back({{mid[0], mid[1], mid[2]}});
 			}
 
 			return result;

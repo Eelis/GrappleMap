@@ -62,7 +62,7 @@ namespace
 			double const score = distanceSquared(ultimate, cursor);
 
 			if (!best || score < best->score)
-				best = Best{Location{*candidate, howfar}, candidate.reorientation, score};
+				best = Best{{Location{*candidate, howfar}, candidate.reorientation}, score};
 		}
 
 		if (!best) return boost::none;
@@ -615,8 +615,6 @@ void do_edit(Application & app, V2 const cursor)
 	}
 	else
 	{
-		auto const reo = app.editor.getLocation().reorientation;
-
 		V3 hdragger = [&]{
 				PositionReorientation r;
 				r.reorientation.angle = -app.camera.getHorizontalRotation();
@@ -850,7 +848,7 @@ void frame()
 	lastTime = now;
 }
 
-void output_error(int error, const char * msg)
+void output_error(int /*error*/, const char * msg)
 {
     fprintf(stderr, "Error: %s\n", msg);
 }

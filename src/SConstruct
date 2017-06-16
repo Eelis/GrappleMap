@@ -12,7 +12,7 @@ env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -D
 # debugging:
 #env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -g')
 
-emscripten_compile_flags = '-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3 -s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3 -s TOTAL_MEMORY=134217728'
+emscripten_compile_flags = '-Wall -Wextra -Wno-dollar-in-identifier-extension -Wno-vla-extension -pedantic -std=c++1y -DNDEBUG -O3 -s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3 -s TOTAL_MEMORY=134217728'
 
 em_env = Environment(
 	ENV=os.environ,

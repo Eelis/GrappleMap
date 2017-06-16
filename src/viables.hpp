@@ -7,7 +7,7 @@
 namespace GrappleMap
 {
 	struct Graph;
-	struct Camera;
+	class Camera;
 
 	struct Viable
 	{
