@@ -38,7 +38,7 @@ cp src/explorer.html $output/explorer/index.html
 cp src/explorer.js $output/explorer/
 cp src/example-drills.html $output/
 cp src/editor.html $output/editor/index.html
-cp src/editor.{css,js} src/grapplemap_editor.* $output/editor/
+cp src/editor.{css,js} src/grapplemap_editor.{data,js,js.mem} $output/editor/
 
 echo "Converting database to javascript."
 src/grapplemap-dbtojs --output_dir=$output
