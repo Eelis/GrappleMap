@@ -531,6 +531,9 @@ function rotate_item_clicked()
 {
 	Module.transform("rotate");
 
+	var icb = document.getElementById('interpolate_checkbox');
+	if (icb.checked) icb.click();
+
 	if (document.getElementById('single_joint').checked)
 		document.getElementById('both_players').click();
 			// because rotating a single joint doesn't make much sense

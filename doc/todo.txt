@@ -133,5 +133,4 @@ web editor:
 - fix selection when branching inside it
 - handle reverse steps correctly in indicators and elsewhere
 - in display of modified things, distinguish between added and changed things
-- automatically turn off interpolation when selecting rotation
 - document zoom keys or add gui element
