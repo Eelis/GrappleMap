@@ -108,6 +108,7 @@ struct Application
 		: window(w)
 	{
 		style.grid_size = 4;
+		style.grid_color = V3{.25, .25, .25};
 
 		Location l;
 		l.segment.sequence = SeqNum{1383};
