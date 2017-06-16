@@ -18,6 +18,13 @@ inline Position & follow(Sequence & s, PosNum p) // todo: move
 	return s.positions[p.index];
 }
 
+enum Modified
+{
+	original,
+	modified,
+	added
+};
+
 struct Graph
 {
 	enum class NodeModifyPolicy { propagate, local, unintended };
@@ -30,7 +37,7 @@ struct Graph
 			// reverse means ends in node, non-reverse means starts in node
 			// transitions only appear in their primary direction here
 
-		bool dirty = false;
+		Modified modified = original;
 
 		explicit Node(NamedPosition p): NamedPosition(move(p)) {}
 	};
@@ -43,7 +50,7 @@ struct Graph
 
 		// invariant: *from != *to (no identity transitions)
 
-		bool dirty = false;
+		Modified modified = original;
 
 		Edge(ReorientedNode f, ReorientedNode t, Sequence s)
 			: Sequence(std::move(s)), from(f), to(t)
@@ -78,6 +85,7 @@ private:
 	optional<Rewindable<Data>::OnPath<SeqNum, Reoriented<NodeNum> Edge::*>>
 		node(PositionInSequence);
 
+	void mark_dirty(NodeNum);
 	void mark_dirty(SeqNum);
 
 public:

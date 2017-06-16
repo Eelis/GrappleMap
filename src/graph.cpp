@@ -12,6 +12,9 @@ optional<Rewindable<Graph::Data>::OnPath<SeqNum, Reoriented<NodeNum> Graph::Edge
 	return {};
 }
 
+
+
+
 void Graph::replace(PositionInSequence const pis, Position p, NodeModifyPolicy const policy)
 {
 	apply_limits(p);
@@ -21,7 +24,7 @@ void Graph::replace(PositionInSequence const pis, Position p, NodeModifyPolicy c
 	auto apply = [&]{
 			auto edge = data[pis.sequence];
 			edge[pis.position] = p;
-			edge[&Edge::dirty] = true;
+			mark_dirty(pis.sequence);
 		};
 
 
@@ -39,7 +42,7 @@ void Graph::replace(PositionInSequence const pis, Position p, NodeModifyPolicy c
 				auto && node = data[**rn];
 
 				node[&Node::position] = inverse(rn->reorientation)(p);
-				node[&Node::dirty] = true;
+				mark_dirty(**rn);
 
 				assert(basicallySame((*this)[*rn], p));
 
@@ -50,13 +53,13 @@ void Graph::replace(PositionInSequence const pis, Position p, NodeModifyPolicy c
 					if (*we->from == **rn)
 					{
 						we[&Edge::positions][0] = (*this)[we->from];
-						we[&Edge::dirty] = true;
+						mark_dirty(s);
 					}
 
 					if (*we->to == **rn)
 					{
 						we[&Edge::positions][we->positions.size() - 1] = (*this)[we->to];
-						we[&Edge::dirty] = true;
+						mark_dirty(s);
 					}
 				}
 
@@ -104,9 +107,16 @@ void Graph::replace(PositionInSequence const pis, Position p, NodeModifyPolicy c
 	else apply();
 }
 
+void Graph::mark_dirty(NodeNum const n)
+{
+	if (*data[n][&Node::modified] == original)
+		data[n][&Node::modified] = modified;
+}
+
 void Graph::mark_dirty(SeqNum const seq)
 {
-	data[seq][&Edge::dirty] = true;
+	if (*data[seq][&Edge::modified] == original)
+		data[seq][&Edge::modified] = modified;
 }
 
 void Graph::split_segment(Location const loc)
@@ -132,12 +142,17 @@ void Graph::set(optional<SeqNum> const num, optional<Sequence> seq)
 			to = find_or_add(seq->positions.back());
 
 		Edge e{from, to, move(*seq)};
-		e.dirty = true;
 
 		if (num)
+		{
+			e.modified = modified;
 			data[*num] = move(e);
+		}
 		else
+		{
+			e.modified = added;
 			data[&Data::edges].push_back(move(e));
+		}
 
 		compute_in_out(*from);
 		compute_in_out(*to);
@@ -171,7 +186,7 @@ optional<PosNum> Graph::erase(PositionInSequence pis)
 	}
 
 	data[pis.sequence][&Edge::positions].erase(pis.position.index);
-	data[pis.sequence][&Edge::dirty] = true;
+	mark_dirty(pis.sequence);
 
 	pis.position = std::min(pis.position, last_pos(edge));
 
@@ -284,17 +299,19 @@ vector<string> lines(string const & s)
 
 void Graph::set_description(NodeNum n, string const & d)
 {
-	data[n][&Node::description] = lines(d);
-	data[n][&Node::dirty] = true;
+	auto x = data[n][&Node::description];
+	bool const was_empty = x->empty();
+	x = lines(d);
+	data[n][&Node::modified] = (was_empty ? added : modified);
 }
 
 void Graph::set_description(SeqNum s, string const & d)
 {
 	auto const v = lines(d);
 	data[s][&Edge::description] = v;
-	data[s][&Edge::dirty] = true;
 	data[s][&Edge::detailed] = (properties_in_desc(v).count("detailed") != 0);
 	data[s][&Edge::bidirectional] = (properties_in_desc(v).count("bidirectional") != 0);
+	mark_dirty(s);
 }
 
 }

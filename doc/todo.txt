@@ -131,6 +131,5 @@ web editor:
 - only respond to e.g. arrow keys when not focused on textarea
 - fix selection when branching inside it
 - handle reverse steps correctly in indicators and elsewhere
-- in display of modified things, distinguish between added and changed things
 - document zoom keys or add gui element
 - make mouse/rotation speed configurable
