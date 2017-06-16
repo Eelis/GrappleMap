@@ -12,6 +12,15 @@ env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -D
 # debugging:
 #env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -g')
 
+emscripten_compile_flags = '-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3 -s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3 -s TOTAL_MEMORY=134217728'
+
+em_env = Environment(
+	ENV=os.environ,
+	CC='emcc', CXX='em++',
+	CCFLAGS=emscripten_compile_flags,
+	OBJSUFFIX=".web.o",
+	LINKFLAGS=emscripten_compile_flags + ' --bind --preload-file triangle.vertexshader --preload-file triangle.fragmentshader --preload-file ../GrappleMap.txt@GrappleMap.txt')
+
 common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp'])
 rendering = env.Object(['rendering.cpp', 'playerdrawer.cpp'])
 images = env.Object('images.cpp')
@@ -31,4 +40,6 @@ mkpospages    = env.Program('grapplemap-mkpospages', ['mkpospages.cpp', images, 
 mkvid      =env.Program('grapplemap-mkvid', ['makevideo.cpp', images, rendering, common],
 				LIBS = ['OSMesa', 'GLU', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system', 'ftgl'])
 
-env.Alias('noX', [dbtojs, mkpospages, mkvid]);
+em_editor = em_env.Program('grapplemap_editor.js', ['web_editor.cpp', 'graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp', 'rendering.cpp', 'playerdrawer.cpp'])
+
+env.Alias('noX', [dbtojs, mkpospages, mkvid, em_editor]);

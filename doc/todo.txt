@@ -116,7 +116,6 @@ binary packages:
 - get ftgl to work (or something else for text)
 
 web editor:
-- integrate into build system
 - 1st person view
 - moving mouse off canvas while buttons pressed badly handled
 - improve camera positioning, maybe slow centering while in edit mode
@@ -134,3 +133,4 @@ web editor:
 - handle reverse steps correctly in indicators and elsewhere
 - in display of modified things, distinguish between added and changed things
 - document zoom keys or add gui element
+- make mouse/rotation speed configurable

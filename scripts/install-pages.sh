@@ -2,7 +2,7 @@
 
 set -e
 
-(cd src && scons -Q noX && ./build_em.sh)
+(cd src && scons -j4 -Q noX)
 
 outputbase=.
 output=$outputbase/GrappleMap
