@@ -145,7 +145,6 @@ struct Application
 };
 
 void update_selection_gui();
-void update_modified(Application const &);
 
 using HighlightableLoc = pair<SegmentInSequence, optional<PositionInSequence>>;
 
@@ -182,7 +181,7 @@ void mouse_button_callback(GLFWwindow * const glfwWindow, int const button, int 
 	}
 }
 
-void update_modified(Application & app)
+void update_modified(Application & app, bool const force = false)
 {
 	Graph const & g = app.editor.getGraph();
 
@@ -208,7 +207,7 @@ void update_modified(Application & app)
 			default: break;
 		}
 
-	if (app.dirty != d)
+	if (force || app.dirty != d)
 	{
 		app.dirty = move(d);
 		EM_ASM({ update_modified(); });
@@ -420,7 +419,7 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 			{
 				app->editor.set_description(*n, desc);
 				update_selection_gui();
-				update_modified(*app);
+				update_modified(*app, true);
 			}
 	});
 
@@ -428,7 +427,7 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 	{
 		app->editor.set_description(app->editor.getLocation()->segment.sequence, desc);
 		update_selection_gui();
-		update_modified(*app);
+		update_modified(*app, true);
 	});
 
 	emscripten::function("mirror_view", +[]
