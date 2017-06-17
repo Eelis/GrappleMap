@@ -302,7 +302,8 @@ void Graph::set_description(NodeNum n, string const & d)
 	auto x = data[n][&Node::description];
 	bool const was_empty = x->empty();
 	x = lines(d);
-	data[n][&Node::modified] = (was_empty ? added : modified);
+	if (data[n][&Node::modified] != added)
+		data[n][&Node::modified] = (was_empty ? added : modified);
 }
 
 void Graph::set_description(SeqNum s, string const & d)
