@@ -141,3 +141,5 @@ web editor:
 - clipboard
 - expand documentation
 - synchronized video playback
+- increase modification tracking granularity: show which individual positions inside transitions were changed
+- prevent the same transition from appearing twice in the path

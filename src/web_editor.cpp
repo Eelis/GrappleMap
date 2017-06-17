@@ -90,16 +90,16 @@ vector<View> const
 
 struct Dirty
 {
-	vector<uint32_t> nodes_added, nodes_modified;
-	vector<uint32_t> edges_added, edges_modified;
+	vector<NodeNum> nodes_added, nodes_changed;
+	vector<SeqNum> edges_added, edges_changed;
 };
 
 bool operator!=(Dirty const & a, Dirty const & b)
 {
 	return a.nodes_added != b.nodes_added
-		|| a.nodes_modified != b.nodes_modified
+		|| a.nodes_changed != b.nodes_changed
 		|| a.edges_added != b.edges_added
-		|| a.edges_modified != b.edges_modified;
+		|| a.edges_changed != b.edges_changed;
 }
 
 struct Application
@@ -189,22 +189,22 @@ void update_modified(Application & app)
 	Dirty d;
 	d.nodes_added.reserve(app.dirty.nodes_added.size() + 5);
 	d.edges_added.reserve(app.dirty.edges_added.size() + 5);
-	d.nodes_modified.reserve(app.dirty.nodes_modified.size() + 5);
-	d.edges_modified.reserve(app.dirty.edges_modified.size() + 5);
+	d.nodes_changed.reserve(app.dirty.nodes_changed.size() + 5);
+	d.edges_changed.reserve(app.dirty.edges_changed.size() + 5);
 
 	foreach(n : nodenums(g))
 		switch (g[n].modified)
 		{
-			case modified: d.nodes_modified.push_back(n.index); break;
-			case added: d.nodes_added.push_back(n.index); break;
+			case modified: d.nodes_changed.push_back(n); break;
+			case added: d.nodes_added.push_back(n); break;
 			default: break;
 		}
 
 	foreach(s : seqnums(g))
 		switch (g[s].modified)
 		{
-			case modified: d.edges_modified.push_back(s.index); break;
-			case added: d.edges_added.push_back(s.index); break;
+			case modified: d.edges_changed.push_back(s); break;
+			case added: d.edges_added.push_back(s); break;
 			default: break;
 		}
 
@@ -335,11 +335,21 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 
 	emscripten::function("get_dirty", +[]
 	{
+		Graph const & g = app->editor.getGraph();
+
+		vector<emscripten::val>
+			nodes_added, nodes_changed, edges_added, edges_changed;
+
+		foreach(n : app->dirty.nodes_added) nodes_added.push_back(tojsval(n, g));
+		foreach(n : app->dirty.nodes_changed) nodes_changed.push_back(tojsval(n, g));
+		foreach(s : app->dirty.edges_added) edges_added.push_back(tojsval(s, g));
+		foreach(s : app->dirty.edges_changed) edges_changed.push_back(tojsval(s, g));
+
 		auto d = emscripten::val::object();
-		d.set("nodes_added", tojsval(app->dirty.nodes_added));
-		d.set("edges_added", tojsval(app->dirty.edges_added));
-		d.set("nodes_modified", tojsval(app->dirty.nodes_modified));
-		d.set("edges_modified", tojsval(app->dirty.edges_modified));
+		d.set("nodes_added", tojsval(nodes_added));
+		d.set("edges_added", tojsval(edges_added));
+		d.set("nodes_changed", tojsval(nodes_changed));
+		d.set("edges_changed", tojsval(edges_changed));
 		return d;
 	});
 
