@@ -178,30 +178,15 @@
 
 			<div class='metadata_box'>
 				<div style='margin-bottom:1em'><b>Metadata</b></div>
-				Transition <span style='font-weight:bold' id='seq_num_box'>t###</span>:
-				<button
-					style='margin-left:1em;display:none'
-					id='seq_metadata_save_button'
-					onclick='save_seq_metadata()'>
-					save
-				</button><br>
-				<textarea readonly rows='4'
-					id='seq_metadata'
+				<div style='margin-bottom:0.5em' id='num_box'></div>
+				<textarea readonly rows='6'
+					id='metadata'
 					style='width:90%;white-space:pre;background:#CA65E3'>
 				</textarea>
-				<br><br>
-				Position <span style='font-weight:bold' id='node_num_box'>p###</span>:
 				<button
 					style='margin-left:1em;display:none'
-					id='node_metadata_save_button'
-					onclick='save_node_metadata()'>
-					save
-				</button>
-				<br>
-				<textarea readonly rows='4'
-					id='node_metadata'
-					style='width:90%;white-space:pre;background:#CA65E3'>
-				</textarea>
+					id='metadata_save_button'
+					onclick='save_metadata()'>Save</button>
 			</div>
 		</div>
 
