@@ -136,6 +136,7 @@ struct Application
 	bool confine_local_edits = true;
 	bool transform_rotate = false;
 	Dirty dirty;
+	bool ignore_keyboard = false;
 
 	vector<View> const & views() const
 	{
@@ -431,6 +432,11 @@ EMSCRIPTEN_BINDINGS(GrappleMap_engine)
 		update_modified(*app);
 	});
 
+	emscripten::function("ignore_keyboard", +[](bool const b)
+	{
+		app->ignore_keyboard = b;
+	});
+
 	emscripten::function("confine", +[](bool const b)
 	{
 		app->editor.toggle_lock(b);
@@ -714,12 +720,15 @@ void do_edit(Application & app, V2 const cursor)
 
 void update_camera(Application & w)
 {
-	if (glfwGetKey(w.window, GLFW_KEY_UP) == GLFW_PRESS) w.camera.rotateVertical(-0.05);
-	if (glfwGetKey(w.window, GLFW_KEY_DOWN) == GLFW_PRESS) w.camera.rotateVertical(0.05);
-	if (glfwGetKey(w.window, GLFW_KEY_LEFT) == GLFW_PRESS) { w.camera.rotateHorizontal(0.03); w.jiggle = pi(); }
-	if (glfwGetKey(w.window, GLFW_KEY_RIGHT) == GLFW_PRESS) { w.camera.rotateHorizontal(-0.03); w.jiggle = 0; }
-	if (glfwGetKey(w.window, GLFW_KEY_HOME) == GLFW_PRESS) w.camera.zoom(-0.05);
-	if (glfwGetKey(w.window, GLFW_KEY_END) == GLFW_PRESS) w.camera.zoom(0.05);
+	if (!w.ignore_keyboard)
+	{
+		if (glfwGetKey(w.window, GLFW_KEY_UP) == GLFW_PRESS) w.camera.rotateVertical(-0.05);
+		if (glfwGetKey(w.window, GLFW_KEY_DOWN) == GLFW_PRESS) w.camera.rotateVertical(0.05);
+		if (glfwGetKey(w.window, GLFW_KEY_LEFT) == GLFW_PRESS) { w.camera.rotateHorizontal(0.03); w.jiggle = pi(); }
+		if (glfwGetKey(w.window, GLFW_KEY_RIGHT) == GLFW_PRESS) { w.camera.rotateHorizontal(-0.03); w.jiggle = 0; }
+		if (glfwGetKey(w.window, GLFW_KEY_HOME) == GLFW_PRESS) w.camera.zoom(-0.05);
+		if (glfwGetKey(w.window, GLFW_KEY_END) == GLFW_PRESS) w.camera.zoom(0.05);
+	}
 
 	if (!w.edit_mode && !w.chosen_joint)
 	{

@@ -181,6 +181,8 @@
 				<div style='margin-bottom:0.5em' id='num_box'></div>
 				<textarea readonly rows='6'
 					id='metadata'
+					onfocus='Module.ignore_keyboard(true);'
+					onblur='Module.ignore_keyboard(false);'
 					style='width:90%;white-space:pre;background:#CA65E3'>
 				</textarea>
 				<button

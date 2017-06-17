@@ -128,8 +128,16 @@ web editor:
 - blending/antialiasing/smoothing
 - maybe make lines camera-facing so they need fewer triangles
 - random path button
-- only respond to e.g. arrow keys when not focused on textarea
 - fix selection when branching inside it
 - handle reverse steps correctly in indicators and elsewhere
 - document zoom keys or add gui element
 - make mouse/rotation speed configurable
+- if confine is true and position is at sequence being removed from selection, move current position
+- visually indicate when multiple joints are being manipulated
+- when naming previously unnamed position, rearrange position numbers as if db were reloaded
+- make testcase for glfwInit breaking backspace in textarea and report
+- figure out how to stop canvas from getting /any/ keyboard input when other gui elements are focused
+- proper approach to shortcut keys
+- clipboard
+- expand documentation
+- synchronized video playback
