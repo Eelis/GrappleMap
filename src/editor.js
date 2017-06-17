@@ -157,7 +157,8 @@ function browseto()
 {
 	var desc = prompt("Specify one of:\n" +
 		"- a position (e.g. 'p34' or 'staredown')\n" +
-		"- a transition (e.g. 't1383' or 'imanari roll')");
+		"- a transition (e.g. 't1383' or 'imanari roll')\n" +
+		"- a line (e.g. 'l31432')")
 
 	if (desc != null) Module.browseto(desc);
 }

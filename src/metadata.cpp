@@ -93,9 +93,28 @@ namespace GrappleMap
 		return none;
 	}
 
+	namespace
+	{
+		optional<uint32_t> line_desc(string s)
+		{
+			return (s.size() < 2 || s.front() != 'l'
+				|| !std::all_of(s.begin() + 1, s.end(), (int(*)(int)) std::isdigit)
+					? optional<uint32_t>()
+					: std::stoul(s.substr(1)));
+		}
+	}
+
 	optional<NamedEntity> named_entity(Graph const & g, string const & s)
 	{
 		if (s == "last-trans") return NamedEntity(nonreversed(SeqNum{g.num_sequences() - 1u}));
+
+		if (auto const line = line_desc(s))
+		{
+			foreach(n : nodenums(g))
+				if (g[n].line_nr == *line) return NamedEntity(n);
+			foreach(s : seqnums(g))
+				if (g[s].line_nr == *line) return NamedEntity(nonreversed(s));
+		}
 
 		if (auto step = step_by_desc(g, s)) return NamedEntity{*step};
 
