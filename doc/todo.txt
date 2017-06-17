@@ -138,7 +138,6 @@ web editor:
 - figure out how to stop canvas from getting /any/ keyboard input when other gui elements are focused
 - proper approach to shortcut keys
 - clipboard
-- expand documentation
 - synchronized video playback
 - increase modification tracking granularity: show which individual positions inside transitions were changed
 - prevent the same transition from appearing twice in the path

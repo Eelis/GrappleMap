@@ -2,8 +2,8 @@
 
 ## 1. Introduction
 
-The [GrappleMap editor](http://eel.is/GrappleMap/editor) is essentially a character animation
-program specialized for networks of grappling positions. It operates on GrappleMap database
+The [GrappleMap editor](http://eel.is/GrappleMap/editor) is a simple character animation
+program for networks of grappling positions. It operates on GrappleMap database
 files, which contain only two things:
 
 * positions (= a pose + some metadata)
@@ -58,7 +58,24 @@ step until A→A' is not an identity transition.
 
 ### Metadata
 
-Todo.
+Metadata for a transition or position is one or more lines of text, the first
+line of which is the name.
+
+A line beginning with "tags:" lists tags, while a line beginning with
+"properties:" lists properties. The following properties are currently defined:
+
+- "top" / "bottom"
+
+  The editor does not care about these at all, but they are used in the other
+  interfaces.
+
+- "bidirectional"
+
+  As the name suggests.
+
+- "detailed"
+
+  Doubles the keyframe density from 5 keyframes per second to 10. The increased control over timing and joint paths that this enables can make detailed transitions look significantly better, but they are a little bit more work to edit. A good approach is to start with a regular transition, and only make it detailed if it turns out to be necessary.
 
 ### Double-checking and contributing changes
 
