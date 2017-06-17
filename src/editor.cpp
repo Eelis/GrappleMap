@@ -287,9 +287,21 @@ namespace GrappleMap
 
 			try
 			{
-				split_at(graph, *pp);
+				if (auto newseq = split_at(graph, *pp))
+				{
+					if (location->howFar == 0)
+					{
+						--location->segment.segment.index;
+						location->howFar = 1;
+					}
 
-				// todo: update selection
+					if (auto opt_iter = currently_in_selection())
+					{
+						selection.insert(std::next(*opt_iter), {nonreversed(*newseq), {}});
+							// todo: reverse if appropriate
+						reorient_from(selection, *currently_in_selection(), graph);
+					}
+				}
 			}
 			catch (exception const & e)
 			{

@@ -29,12 +29,12 @@ optional<SeqNum> erase_sequence(Graph & g, SeqNum const sn)
 	return SeqNum{sn.index == 0 ? 0 : sn.index - 1};
 }
 
-void split_at(Graph & g, PositionInSequence const pis)
+optional<SeqNum> split_at(Graph & g, PositionInSequence const pis)
 {
 	if (node(g, pis))
 	{
 		std::cerr << "Split action ignored because not at intermediate position." << std::endl;
-		return;
+		return boost::none;
 	}
 
 	Sequence a = g[pis.sequence], b = a;
@@ -48,11 +48,13 @@ void split_at(Graph & g, PositionInSequence const pis)
 		|| is_reoriented(b.positions.front(), b.positions.back()))
 	{
 		std::cerr << "Split action ignored because would have created transition from position to itself." << std::endl;
-		return;
+		return boost::none;
 	}
 
 	g.set(pis.sequence, a);
 	g.set(none, b);
+
+	return SeqNum{g.num_sequences() - 1u};
 }
 
 pair<vector<Position>, ReorientedNode> follow(Graph const & g, ReorientedNode const & n, SeqNum const s, unsigned const frames_per_pos)

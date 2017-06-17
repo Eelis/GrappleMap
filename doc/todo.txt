@@ -128,7 +128,6 @@ web editor:
 - blending/antialiasing/smoothing
 - maybe make lines camera-facing so they need fewer triangles
 - random path button
-- fix selection when branching inside it
 - handle reverse steps correctly in indicators and elsewhere
 - document zoom keys or add gui element
 - make mouse/rotation speed configurable

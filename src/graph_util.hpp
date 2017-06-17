@@ -13,7 +13,7 @@ inline SeqNum::range seqnums(Graph const & g) { return {SeqNum{0}, SeqNum{g.num_
 
 SeqNum insert(Graph &, Sequence const &);
 optional<SeqNum> erase_sequence(Graph &, SeqNum);
-void split_at(Graph &, PositionInSequence);
+optional<SeqNum> split_at(Graph &, PositionInSequence);
 
 // first/last/next/prev/end/from/to
 
