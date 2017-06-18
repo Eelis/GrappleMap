@@ -426,11 +426,21 @@ namespace
 		return distanceSquared(p[player0][Core], p[player1][Core]);
 	}
 
+	void progress(size_t items_done, size_t items)
+	{
+		cout
+			<< string(4, '\b')
+			<< std::setw(3) << std::right << items_done * 100 / items
+			<< '%' << std::flush;
+	}
+
 	void write_transition_gifs(ImageMaker & mkimg, Graph const & g, string const output_dir)
 	{
+		cout << "Writing " << g.num_sequences() << " * 8 standalone transition gifs...   0%";
+
 		foreach (sn : seqnums(g))
 		{
-			cout << '.' << std::flush;
+			progress(sn.index, g.num_sequences());
 
 			auto const props = properties(g[sn]);
 
@@ -648,8 +658,6 @@ namespace
 		void write_it(ImageMaker & mkimg, Graph const & graph, NodeNum const n,
 			string const output_dir, string const image_url)
 		{
-			cout << ' ' << n.index << std::flush;
-
 			set<NodeNum> nodes{n};
 
 			auto const pos = graph[n].position;
@@ -767,10 +775,8 @@ int main(int const argc, char const * const * const argv)
 
 		ImageMaker mkimg(graph);
 
-		cout << "\nFirst up, transition gifs:";
+		cout << '\n';
 		write_transition_gifs(mkimg, graph, output_dir);
-
-		cout << "\nNext up, position pages:\n";
 
 		ofstream(output_dir + "/config.js")
 			<< "image_url='"
@@ -779,11 +785,17 @@ int main(int const argc, char const * const * const argv)
 					: "images/")
 			<< "';";
 
+		cout << "Writing " << graph.num_nodes() << " position pages...   0%";
+
 		foreach (n : nodenums(graph))
+		{
+			progress(n.index, graph.num_nodes());
+
 			position_page::write_it(mkimg, graph, n, output_dir,
 				config->image_url
 					? *(config->image_url)
 					: "../images/");
+		}
 
 		cout << '\n';
 	}
