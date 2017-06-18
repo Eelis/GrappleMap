@@ -244,7 +244,7 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 		NodeNum const n = p.first;
 		bool const highlight = p.second;
 
-		o	<< n.index << " [";
+		o	<< 'p' << n.index << " [";
 
 		if (highlight) o << "style=filled fillcolor=lightgreen";
 
