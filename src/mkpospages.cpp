@@ -754,6 +754,11 @@ int main(int const argc, char const * const * const argv)
 
 		string const output_dir = config->output_dir + "/GrappleMap/";
 
+		boost::filesystem::create_directory(config->output_dir + "/GrappleMap");
+		boost::filesystem::create_directory(output_dir + "/position");
+		boost::filesystem::create_directory(output_dir + "/images");
+		boost::filesystem::create_directory(output_dir + "/images/store");
+
 		Graph const graph = loadGraph(config->db);
 
 		write_lists(graph, output_dir);
