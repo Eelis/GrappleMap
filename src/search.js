@@ -11,6 +11,7 @@ var svg;
 var force;
 var paged_positions;
 var paged_transitions;
+var db;
 
 function node_has_tag(node, tag)
 {
@@ -25,8 +26,8 @@ function trans_has_tag(trans, tag)
 function trans_kinda_has_tag(trans, tag)
 {
 	return (trans_has_tag(trans, tag) ||
-		(node_has_tag(nodes[trans.from.node], tag)
-		&& node_has_tag(nodes[trans.to.node], tag)));
+		(node_has_tag(db.nodes[trans.from.node], tag)
+		&& node_has_tag(db.nodes[trans.to.node], tag)));
 }
 
 function node_is_selected(node)
@@ -36,7 +37,7 @@ function node_is_selected(node)
 			return false;
 
 	for (var i = 0; i != substrs.length; ++i)
-		if (node.description.indexOf(substrs[i]) == -1 &&
+		if (node.description.join(" ").indexOf(substrs[i]) == -1 &&
 			!any_has_substr(node.tags, substrs[i]))
 			return false;
 
@@ -61,7 +62,7 @@ function trans_is_selected(trans)
 
 
 	for (var i = 0; i != substrs.length; ++i)
-		if (!any_has_substr(trans.description, substrs[i]) &&
+		if (!any_has_substr(trans.description.join(" "), substrs[i]) && // todo: correct description?
 			!any_has_substr(trans.tags, substrs[i]))
 			return false;
 
@@ -78,12 +79,12 @@ function tag_refines(tag)
 		trans_in: 0,
 		trans_out: 0 };
 
-	nodes.forEach(function(n){
+	db.nodes.forEach(function(n){
 		if (node_is_selected(n))
 			if (node_has_tag(n, tag)) ++r.nodes_in; else ++r.nodes_out;
 	});
 
-	transitions.forEach(function(trans){
+	db.transitions.forEach(function(trans){
 		if (trans_is_selected(trans))
 		{
 			if (trans_kinda_has_tag(trans, tag))
@@ -111,8 +112,8 @@ function remove_tag(t)
 function on_query_changed()
 {
 	selected_nodes = [];
-	for (var n = 0; n != nodes.length; ++n)
-		if (node_is_selected(nodes[n]))
+	for (var n = 0; n != db.nodes.length; ++n)
+		if (node_is_selected(db.nodes[n]))
 			selected_nodes.push(n);
 
 	if (selected_nodes.length != 0)
@@ -234,7 +235,7 @@ function refinements(b)
 
 	var sst = sorted_selected_tags();
 
-	tags.forEach(function(t)
+	db.tags.forEach(function(t)
 	{
 		var r = tag_refines(t);
 		if (sst[b ? 1 : 0].indexOf(t) == -1
@@ -317,15 +318,13 @@ function add_paged_elems(target, page_size)
 
 function position_image_title(n)
 {
-	return n.description.replace('\n', ' ');
+	return n.description.join("\n").replace(/\\n/g, ' '); // ?
 }
 
 function transition_image_title(t)
 {
-	var s = '';
-	t.description.forEach(function(l) { s += l.replace('\n', ' ') + "\n"; });
-
-	return s + "(t" + t.id + " @ line " + t.line_nr + ")";
+	return t.description.join('\n').replace(/\\n/g, ' ')
+		+ "(t" + t.id + " @ line " + t.line_nr + ")";
 }
 
 function update_position_pics()
@@ -342,7 +341,7 @@ function update_position_pics()
 
 			var img = document.createElement("img");
 			img.src = image_url + "/p" + n + vc + "320x240.png";
-			img.setAttribute('title', position_image_title(nodes[n]));
+			img.setAttribute('title', position_image_title(db.nodes[n]));
 			link.appendChild(img);
 
 			target.appendChild(link);
@@ -352,8 +351,8 @@ function update_position_pics()
 function update_transition_pics()
 {
 	var selected_edges = [];
-	for (var n = 0; n != transitions.length; ++n)
-		if (trans_is_selected(transitions[n]))
+	for (var n = 0; n != db.transitions.length; ++n)
+		if (trans_is_selected(db.transitions[n]))
 			selected_edges.push(n);
 
 	document.getElementById('trans_count_label').innerHTML = selected_edges.length;
@@ -365,7 +364,7 @@ function update_transition_pics()
 
 			var img = document.createElement("img");
 			img.src = image_url + "/t" + e + "200x150" + view_code(view) + ".gif";
-			img.setAttribute('title', transition_image_title(transitions[e]));
+			img.setAttribute('title', transition_image_title(db.transitions[e]));
 			link.appendChild(img);
 
 			target.appendChild(link);
@@ -389,9 +388,9 @@ function prepare_graph(frugal, ignore_selected_transitions)
 		return i;
 	}
 
-	for (var i = 0; i != transitions.length; ++i)
+	for (var i = 0; i != db.transitions.length; ++i)
 	{
-		var t = transitions[i];
+		var t = db.transitions[i];
 
 		var color = "black";
 		if (t.properties.indexOf("top") != -1) color = "red";
@@ -400,8 +399,8 @@ function prepare_graph(frugal, ignore_selected_transitions)
 		function frugal_op(x, y) { return frugal ? (x && y) : (x || y); }
 
 		if ((!ignore_selected_transitions && trans_is_selected(t))
-			|| frugal_op(node_is_selected(nodes[t.to.node]),
-			             node_is_selected(nodes[t.from.node])))
+			|| frugal_op(node_is_selected(db.nodes[t.to.node]),
+			             node_is_selected(db.nodes[t.from.node])))
 			G.links.push(
 				{ source: addnode(t.from.node)
 				, target: addnode(t.to.node)
@@ -411,7 +410,7 @@ function prepare_graph(frugal, ignore_selected_transitions)
 	}
 
 	for (var i = 0; i != nn.length; ++i)
-		G.nodes.push(nodes[nn[i]]);
+		G.nodes.push(db.nodes[nn[i]]);
 
 	return G;
 }
@@ -492,7 +491,7 @@ function goto_explorer()
 function set_selected_node(n)
 {
 	selected_node = n;
-	targetpos = thepos = last_keyframe = nodes[selected_node].position;
+	targetpos = thepos = last_keyframe = db.nodes[selected_node].position;
 	queued_frames = [];
 }
 
@@ -519,57 +518,46 @@ function on_substrs()
 	on_query_changed();
 }
 
-window.addEventListener('DOMContentLoaded',
-	function()
+function emscripten_loaded()
+{
+	loadAndPrepDB();
+
+	var s = window.location.href;
+	var qmark = s.lastIndexOf('?');
+	if (qmark != -1)
 	{
-		transitions.forEach(function(t)
-			{
-				t.desc_lines = t.description[0].split('\n');
+		var arg = s.substr(qmark + 1);
+
+		arg.split(",").forEach(function(a){
+				if (a[0] == "-")
+					selected_tags.push([a.substr(1), false]);
+				else
+					selected_tags.push([a, true]);
 			});
+	}
 
-		nodes.forEach(function(n)
-			{
-				n.desc_lines = n.description.split('\n');
-				n.x = Math.random() * 1000;
-				n.y = Math.random() * 1000;
-			});
+	thepos = last_keyframe = db.nodes[0].position;
 
-		var s = window.location.href;
-		var qmark = s.lastIndexOf('?');
-		if (qmark != -1)
-		{
-			var arg = s.substr(qmark + 1);
+	paged_positions = add_paged_elems(document.getElementById('position_pics'), 9);
+	paged_transitions = add_paged_elems(document.getElementById('transition_pics'), 12);
 
-			arg.split(",").forEach(function(a){
-					if (a[0] == "-")
-						selected_tags.push([a.substr(1), false]);
-					else
-						selected_tags.push([a, true]);
-				});
-		}
+	canvas = document.getElementById('renderCanvas');
+	engine = new BABYLON.Engine(canvas, true);
 
-		thepos = last_keyframe = nodes[0].position;
+	makeScene(thepos);
 
-		paged_positions = add_paged_elems(document.getElementById('position_pics'), 9);
-		paged_transitions = add_paged_elems(document.getElementById('transition_pics'), 12);
+	make_graph();
 
-		canvas = document.getElementById('renderCanvas');
-		engine = new BABYLON.Engine(canvas, true);
+	scene.activeCamera = externalCamera;
 
-		makeScene(thepos);
+	update_view_controls();
 
-		make_graph();
+	on_query_changed();
 
-		scene.activeCamera = externalCamera;
+	window.addEventListener('resize', function() { engine.resize(); });
 
-		update_view_controls();
-
-		on_query_changed();
-
-		window.addEventListener('resize', function() { engine.resize(); });
-
-		tick_graph(svg);
-	});
+	tick_graph(svg);
+}
 
 function on_view_change()
 {
@@ -584,3 +572,28 @@ function on_mirror_button_clicked()
 	reo.mirror = !reo.mirror;
 }
 
+var Module = {
+	preRun: [],
+	postRun: [],
+	print: (function() { return; })(),
+	printErr: function(text) {
+		if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+		if (0) // XXX disabled for safety typeof dump == 'function') {
+			dump(text + '\n'); // fast, straight to the real console
+		else
+			console.error(text);
+	},
+	setStatus: function(text) {
+		console.log("status: " + text);
+		if (text == "") emscripten_loaded();
+		// todo: this is surely not the proper way to notice that emscripten is done loading
+	},
+	monitorRunDependencies: function(left) {}
+};
+
+window.onerror = function(event)
+	{
+		Module.setStatus = function(text) {
+				if (text) Module.printErr('[post-exception status] ' + text);
+			};
+	};

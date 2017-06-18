@@ -414,15 +414,15 @@ function copy_reo(r)
 function step_to(s)
 {
 	return s.reverse
-		? transitions[s.transition].from
-		: transitions[s.transition].to;
+		? db.transitions[s.transition].from
+		: db.transitions[s.transition].to;
 }
 
 function step_from(s)
 {
 	return s.reverse
-		? transitions[s.transition].to
-		: transitions[s.transition].from;
+		? db.transitions[s.transition].to
+		: db.transitions[s.transition].from;
 }
 
 function randInt(n)
@@ -432,7 +432,7 @@ function randInt(n)
 
 function random_node()
 {
-	return randInt(nodes.length);
+	return randInt(db.nodes.length);
 }
 
 function random_path(min_frames)
@@ -443,7 +443,7 @@ function random_path(min_frames)
 
 	while (frames < min_frames)
 	{
-		var choices = nodes[node].outgoing;
+		var choices = db.nodes[node].outgoing;
 
 		if (choices.length == 0)
 		{
@@ -458,7 +458,7 @@ function random_path(min_frames)
 		if (steps.length == 0 || steps[steps.length - 1].transition != step.transition)
 		{
 			steps.push(step);
-			frames += transitions[step.transition].frames.length;
+			frames += db.transitions[step.transition].frames.length;
 
 			node = step_to(step).node;
 			continue;
@@ -538,7 +538,7 @@ function grow(start, pred)
 	{
 		var item = queue.pop();
 
-		neighbours(nodes[item]).forEach(
+		neighbours(db.nodes[item]).forEach(
 			function(n)
 			{
 				if (yes.indexOf(n) == -1 && no.indexOf(n) == -1)
@@ -550,4 +550,45 @@ function grow(start, pred)
 	}
 
 	return yes;
+}
+
+function position_v3(pos)
+{
+	pos.forEach(function(player){
+		for (var i = 0; i != player.length; ++i)
+		{
+			player[i] = v3(player[i].x, player[i].y, player[i].z);
+		}
+	});
+}
+
+function reo_v3(reo)
+{
+	reo.offset = v3(reo.offset.x, reo.offset.y, reo.offset.z);
+}
+
+function loadAndPrepDB()
+{
+	db = Module.loadDB();
+
+	db.transitions.forEach(function(t)
+		{
+			t.desc_lines = t.description[0].split('\\n');
+			t.frames.forEach(position_v3);
+			reo_v3(t.to.reo);
+			reo_v3(t.from.reo);
+		});
+
+	db.nodes.forEach(function(n)
+		{
+			if (n.description.length == 0)
+				n.desc_lines = "?";
+			else
+				n.desc_lines = n.description[0].split('\\n');
+
+			position_v3(n.position);
+
+			n.x = Math.random() * 1000;
+			n.y = Math.random() * 1000;
+		});
 }

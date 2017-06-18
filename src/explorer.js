@@ -57,14 +57,14 @@ function node_selection_changed()
 	{
 		if (nn.indexOf(n) == -1)
 		{
-			G.nodes.push(nodes[n]);
+			G.nodes.push(db.nodes[n]);
 			nn.push(n);
 		}
 	}
 
 	selected_nodes.forEach(addnode);
 
-	transitions.forEach(function(t)
+	db.transitions.forEach(function(t)
 		{
 			if (document.getElementById('edit_mode_checkbox').checked &&
 				(selected_nodes.indexOf(t.to.node) != -1 ||
@@ -75,9 +75,9 @@ function node_selection_changed()
 			}
 		});
 
-	for (var i = 0; i != transitions.length; ++i)
+	for (var i = 0; i != db.transitions.length; ++i)
 	{
-		var t = transitions[i];
+		var t = db.transitions[i];
 
 		var color = "black";
 		if (t.properties.indexOf("top") != -1) color = "red";
@@ -89,8 +89,8 @@ function node_selection_changed()
 			addnode(t.to.node);
 
 			G.links.push(
-				{ source: nodes[t.from.node]
-				, target: nodes[t.to.node]
+				{ source: db.nodes[t.from.node]
+				, target: db.nodes[t.to.node]
 				, id: i
 				, color: color
 				});
@@ -139,14 +139,14 @@ function node_clicked(d)
 function query_for(n)
 {
 	var q = n.tags.join(",");
-	n.discriminators.forEach(function(d){ q += ",-" + d; });
+	//n.discriminators.forEach(function(d){ q += ",-" + d; });
 	return q;
 }
 
 function update_links()
 {
 	document.getElementById('search_link').href =
-		"../index.html?" + query_for(nodes[selected_node]);
+		"../index.html?" + query_for(db.nodes[selected_node]);
 
 	document.getElementById('composer_link').href =
 		"../composer/index.html?p" + selected_node;
@@ -178,60 +178,48 @@ function updateCamera()
 	firstPersonCamera.position = thepos[pl][Head];
 }
 
-window.addEventListener('DOMContentLoaded',
-	function()
+function emscripten_loaded()
+{
+	loadAndPrepDB();
+
+	var s = window.location.href;
+	var qmark = s.lastIndexOf('?');
+	if (qmark != -1)
 	{
-		transitions.forEach(function(t)
+		var arg = s.substr(qmark + 1);
+
+		arg.split(",").forEach(function(a)
 			{
-				t.desc_lines = t.description[0].split('\n');
+				selected_nodes.push(parseInt(a));
 			});
 
-		nodes.forEach(function(n)
-			{
-				n.desc_lines = n.description.split('\n');
-				n.x = Math.random() * 1000;
-				n.y = Math.random() * 1000;
-			});
+		selected_node = selected_nodes[0];
+	}
+	else
+	{
+		selected_node = randInt(db.nodes.length);
+		selected_nodes = [selected_node];
+	}
 
-		var s = window.location.href;
-		var qmark = s.lastIndexOf('?');
-		if (qmark != -1)
-		{
-			var arg = s.substr(qmark + 1);
+	thepos = last_keyframe = keyframe = db.nodes[selected_node].position;
 
-			arg.split(",").forEach(function(a)
-				{
-					selected_nodes.push(parseInt(a));
-				});
+	canvas = document.getElementById('renderCanvas');
+	engine = new BABYLON.Engine(canvas, true);
 
-			selected_node = selected_nodes[0];
-		}
-		else
-		{
-			selected_node = randInt(nodes.length);
-			selected_nodes = [selected_node];
-		}
+	makeScene(keyframe);
 
-		thepos = last_keyframe = keyframe = nodes[selected_node].position;
+	update_links();
+	make_graph();
 
-		canvas = document.getElementById('renderCanvas');
-		engine = new BABYLON.Engine(canvas, true);
+	auto_enable_edit_mode();
+	node_selection_changed();
 
-		makeScene(keyframe);
+	tick_graph(svg);
 
-		update_links();
-		make_graph();
+	scene.activeCamera = externalCamera;
 
-		auto_enable_edit_mode();
-		node_selection_changed();
-
-		tick_graph(svg);
-
-		scene.activeCamera = externalCamera;
-
-		window.addEventListener('resize', function() { engine.resize(); });
-	});
-
+	window.addEventListener('resize', function() { engine.resize(); });
+}
 
 function on_view_change()
 {
@@ -239,3 +227,22 @@ function on_view_change()
 
 	scene.activeCamera = (vv == "external" ? externalCamera : firstPersonCamera);
 }
+
+var Module = {
+	preRun: [],
+	postRun: [],
+	print: (function() { return; })(),
+	printErr: function(text) {
+		if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+		if (0) // XXX disabled for safety typeof dump == 'function') {
+			dump(text + '\n'); // fast, straight to the real console
+		else
+			console.error(text);
+	},
+	setStatus: function(text) {
+		console.log("status: " + text);
+		if (text == "") emscripten_loaded();
+		// todo: this is surely not the proper way to notice that emscripten is done loading
+	},
+	monitorRunDependencies: function(left) {}
+};

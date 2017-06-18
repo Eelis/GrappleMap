@@ -14,14 +14,22 @@ env.ParseConfig('pkg-config --cflags --libs ImageMagick++')
 # debugging:
 #env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -g')
 
-emscripten_compile_flags = '-Wall -Wextra -Wno-dollar-in-identifier-extension -Wno-vla-extension -pedantic -std=c++1y -DNDEBUG -O3 -s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3 -s TOTAL_MEMORY=134217728'
+emscripten_compile_flags = '-Wall -Wextra -Wno-dollar-in-identifier-extension -Wno-vla-extension -pedantic -std=c++1y -DNDEBUG -O3 -s TOTAL_MEMORY=134217728'
+emscripten_gfx_flags = '-s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3'
 
 em_env = Environment(
 	ENV=os.environ,
 	CC='emcc', CXX='em++',
-	CCFLAGS=emscripten_compile_flags,
+	CCFLAGS=emscripten_compile_flags + ' ' + emscripten_gfx_flags,
 	OBJSUFFIX=".web.o",
-	LINKFLAGS=emscripten_compile_flags + ' --bind --preload-file triangle.vertexshader --preload-file triangle.fragmentshader --preload-file ../GrappleMap.txt@GrappleMap.txt')
+	LINKFLAGS=emscripten_compile_flags + ' ' + emscripten_gfx_flags + ' --bind --preload-file triangle.vertexshader --preload-file triangle.fragmentshader --preload-file ../GrappleMap.txt@GrappleMap.txt')
+
+em_nogfx = Environment(
+	ENV=os.environ,
+	CC='emcc', CXX='em++',
+	CCFLAGS=emscripten_compile_flags,
+	OBJSUFFIX=".webnogfx.o",
+	LINKFLAGS=emscripten_compile_flags + ' --bind --preload-file ../GrappleMap.txt@GrappleMap.txt')
 
 common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp'])
 rendering = env.Object(['rendering.cpp', 'playerdrawer.cpp'])
@@ -44,4 +52,6 @@ mkvid      =env.Program('grapplemap-mkvid', ['makevideo.cpp', images, rendering,
 
 em_editor = em_env.Program('grapplemap_editor.js', ['web_editor.cpp', 'graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp', 'rendering.cpp', 'playerdrawer.cpp'])
 
-env.Alias('noX', [dbtojs, mkpospages, mkvid, em_editor]);
+db_loader = em_nogfx.Program('grapplemap_db_loader.js', ['web_db_loader.cpp', 'graph.cpp', 'graph_util.cpp', 'positions.cpp', 'persistence.cpp', 'paths.cpp', 'metadata.cpp'])
+
+env.Alias('noX', [dbtojs, mkpospages, mkvid, em_editor, db_loader]);

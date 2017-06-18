@@ -116,7 +116,6 @@ function mouse_over_position(d)
 {
 	d3.select("#infos").selectAll(".node_info").style("display", function(dd)
 		{
-			console.log(dd + " == " + d + " ?");
 			return (dd == d ? "inline" : "none");
 		});
 
@@ -146,16 +145,16 @@ function make_svg_graph_elems(svg, G, force)
 		s	.append("text")
 			.attr("class", "link_label")
 			.attr("y", function(d){
-				return transitions[d.id].desc_lines.length > 1 ? -5 : 0; })
+				return db.transitions[d.id].desc_lines.length > 1 ? -5 : 0; })
 			.text(function(d){
-				var l = transitions[d.id].desc_lines[0];
+				var l = db.transitions[d.id].desc_lines[0];
 				return (l != "..." ? l : ""); });
 
 		s	.append("text")
 			.attr("class", "link_label")
 			.attr("y", 13)
 			.text(function(d){
-				var l = transitions[d.id].desc_lines;
+				var l = db.transitions[d.id].desc_lines;
 				return (l.length > 1 ? l[1] : ''); });
 	}
 
@@ -176,7 +175,7 @@ function make_svg_graph_elems(svg, G, force)
 		.attr("class", "node_info")
 		.style("display", "none")
 		.html(function(d){
-				var n = nodes[d.id];
+				var n = db.nodes[d.id];
 				return n.description + "<br>" +
 					"tags: " + n.tags.join(", ") + "<br>" +
 					"(p" + d.id + ")"; // todo: line #
@@ -187,7 +186,7 @@ function make_svg_graph_elems(svg, G, force)
 		.attr("class", "link_info")
 		.style("display", "none")
 		.html(function(d){
-				var trans = transitions[d.id];
+				var trans = db.transitions[d.id];
 				return trans.description.join("<br>") +
 					"<br>(t" + d.id + " @ line " + trans.line_nr + ")";
 			});
@@ -243,7 +242,7 @@ function try_move(candidate)
 {
 	var foundit = false;
 
-	var n = nodes[selected_node];
+	var n = db.nodes[selected_node];
 
 	function queue_frame(f, frameid)
 	{
@@ -258,7 +257,7 @@ function try_move(candidate)
 
 	n.outgoing.forEach(function(s)
 		{
-			var t = transitions[s.transition];
+			var t = db.transitions[s.transition];
 			if (!foundit && !s.reverse && step_to(s).node == candidate)
 			{
 				foundit = true;
@@ -276,7 +275,7 @@ function try_move(candidate)
 
 	n.incoming.forEach(function(s)
 		{
-			var t = transitions[s.transition];
+			var t = db.transitions[s.transition];
 			if (!foundit && !s.reverse && step_from(s).node == candidate)
 			{
 				foundit = true;

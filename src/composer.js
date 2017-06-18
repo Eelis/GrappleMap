@@ -22,7 +22,7 @@ function seq_index_to_frame_index(s)
 {
 	var r = 0;
 	for (var i = 0; i != s; ++i)
-		r += transitions[steps[i].transition].frames.length - 1;
+		r += db.transitions[steps[i].transition].frames.length - 1;
 	return r;
 }
 
@@ -34,7 +34,7 @@ function frame_index_to_seq(f)
 
 	for (var s = 0; s != steps.length; ++s)
 	{
-		var l = transitions[steps[s].transition].frames.length;
+		var l = db.transitions[steps[s].transition].frames.length;
 		if (f < l) return [s, f];
 		f -= l - 1;
 	}
@@ -142,15 +142,15 @@ function refreshPreChoices()
 	var elem = document.getElementById("pre_choices");
 	elem.innerHTML = "";
 
-	var choices = nodes[start_node].incoming;
+	var choices = db.nodes[start_node].incoming;
 	document.getElementById("pre_choices_label").style.display =
 		choices.length == 0 ? 'none' : 'inline';
 
 	choices.forEach(function(step)
 		{
 			elem.appendChild(drillButton(
-				nodes[step_from(step).node].description,
-				transitions[step.transition].description[0],
+				db.nodes[step_from(step).node].description[0].replace(/\\n/g, ' '),
+				db.transitions[step.transition].description[0].replace(/\\n/g, ' '),
 				function(c){ return function(){
 					steps = [c].concat(steps);
 					start_node = step_from(c).node;
@@ -174,15 +174,15 @@ function refreshPostChoices()
 		? start_node
 		: step_to(steps[steps.length - 1]).node;
 
-	var choices = nodes[end_node].outgoing;
+	var choices = db.nodes[end_node].outgoing;
 	document.getElementById("post_choices_label").style.display =
 		choices.length == 0 ? 'none' : 'inline';
 
 	choices.forEach(function(step)
 		{
 			elem.appendChild(drillButton(
-				transitions[step.transition].description[0],
-				nodes[step_to(step).node].description,
+				db.transitions[step.transition].description[0].replace(/\\n/g, ' '),
+				db.nodes[step_to(step).node].description[0].replace(/\\n/g, ' '),
 				function(c){ return function(){
 					steps.push(c);
 					resetFrames();
@@ -196,7 +196,7 @@ function node_link(node)
 {
 	var link = document.createElement("a");
 	link.href = "../position/" + node + "e.html";
-	link.text = nodes[node].description;
+	link.text = db.nodes[node].description[0].replace(/\\n/g, ' ');
 	return link;
 }
 
@@ -263,20 +263,20 @@ function refreshDrill()
 		controls.appendChild(bullet);
 
 		var seq = steps[i].transition;
-		var desc = transitions[seq].description;
+		var desc = db.transitions[seq].description;
 		var seqLabel = document.createElement("a");
-		seqLabel.text = (i+1) + ". \u00a0" + desc[0];
+		seqLabel.text = (i+1) + ". \u00a0" + desc[0].replace(/\\n/g, ' ');
 
 		if (info_mode)
 		{
 			seqLabel.text += " (";
 
-			transitions[seq].properties.forEach(
+			db.transitions[seq].properties.forEach(
 				function(p) { seqLabel.text += p + ", "; });
 
 			seqLabel.text += "t" + seq;
-			if (transitions[seq].line_nr)
-				seqLabel.text += "@" + transitions[seq].line_nr;
+			if (db.transitions[seq].line_nr)
+				seqLabel.text += "@" + db.transitions[seq].line_nr;
 			seqLabel.text += ")";
 		}
 
@@ -316,10 +316,10 @@ function refreshDrill()
 			descdiv.style.marginLeft = "100px";
 			descdiv.style.marginTop = "0px";
 
-			if (transitions[seq].tags.length != 0)
+			if (db.transitions[seq].tags.length != 0)
 			{
 				descdiv.appendChild(document.createTextNode("tags:"));
-				transitions[seq].tags.forEach(function(t)
+				db.transitions[seq].tags.forEach(function(t)
 					{
 						descdiv.appendChild(document.createTextNode(" "));
 						descdiv.appendChild(tag_link(t));
@@ -435,7 +435,7 @@ function tick()
 
 			++frame_in_seq;
 
-			var last_frame_in_seq = transitions[steps[seqindex].transition].frames.length - 1;
+			var last_frame_in_seq = db.transitions[steps[seqindex].transition].frames.length - 1;
 			if (seqindex == steps.length - 1) last_frame_in_seq += 6;
 
 			if (frame_in_seq >= last_frame_in_seq)
@@ -471,7 +471,7 @@ function follow(steps, mirror)
 	for (var i = 0; i != steps.length; ++i)
 	{
 		var step = steps[i];
-		var trans = transitions[step.transition];
+		var trans = db.transitions[step.transition];
 		var newframes = trans.frames;
 
 		if (r.length != 0) r.pop();
@@ -528,7 +528,7 @@ function resetFrames()
 {
 	if (steps.length == 0)
 	{
-		var p = nodes[start_node].position;
+		var p = db.nodes[start_node].position;
 
 		var r = {
 				mirror: mirror_view,
@@ -546,8 +546,8 @@ function resetFrames()
 
 	var dianodes=[];
 	steps.forEach(function(s){
-			dianodes.push(transitions[s.transition].from.node);
-			dianodes.push(transitions[s.transition].to.node);
+			dianodes.push(db.transitions[s.transition].from.node);
+			dianodes.push(db.transitions[s.transition].to.node);
 		});
 
 	if (steps.length == 0) dianodes.push(start_node);
@@ -597,52 +597,79 @@ function double_frames(frames)
 	return r;
 }
 
-window.addEventListener('DOMContentLoaded',
-	function()
-	{
-		transitions.forEach(function(t)
-			{
-				if (t.properties.indexOf("detailed") == -1)
-					t.frames = double_frames(t.frames);
-			});
+function emscripten_loaded()
+{
+	loadAndPrepDB();
 
-		var s = window.location.href;
-		var qmark = s.lastIndexOf('?');
-		if (qmark != -1)
+	db.transitions.forEach(function(t)
 		{
-			arg = s.substr(qmark + 1);
+			if (t.properties.indexOf("detailed") == -1)
+				t.frames = double_frames(t.frames);
+		});
 
-			if (arg[0] == 'p')
-			{
-				start_node = arg.substr(1);
-				steps = [];
-			}
-			else
-			{
-				steps = decode_steps(arg);
-				start_node = step_from(steps[0]).node;
-			}
+	var s = window.location.href;
+	var qmark = s.lastIndexOf('?');
+	if (qmark != -1)
+	{
+		arg = s.substr(qmark + 1);
 
-			resetFrames();
-			frame = -1;
-			k = 0;
-			thepos = ideal_pos();
-
-			refreshDrill();
-			refreshPreChoices();
-			refreshPostChoices();
+		if (arg[0] == 'p')
+		{
+			start_node = arg.substr(1);
+			steps = [];
 		}
 		else
 		{
-			random_drill();
+			steps = decode_steps(arg);
+			start_node = step_from(steps[0]).node;
 		}
 
-		canvas = document.getElementById('renderCanvas');
-		engine = new BABYLON.Engine(canvas, true);
+		resetFrames();
+		frame = -1;
+		k = 0;
+		thepos = ideal_pos();
 
-		makeScene(thepos);
+		refreshDrill();
+		refreshPreChoices();
+		refreshPostChoices();
+	}
+	else
+	{
+		random_drill();
+	}
 
-		on_view_change();
-		
-		window.addEventListener('resize', function() { engine.resize(); });
-	});
+	canvas = document.getElementById('renderCanvas');
+	engine = new BABYLON.Engine(canvas, true);
+
+	makeScene(thepos);
+
+	on_view_change();
+	
+	window.addEventListener('resize', function() { engine.resize(); });
+}
+
+var Module = {
+	preRun: [],
+	postRun: [],
+	print: (function() { return; })(),
+	printErr: function(text) {
+		if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+		if (0) // XXX disabled for safety typeof dump == 'function') {
+			dump(text + '\n'); // fast, straight to the real console
+		else
+			console.error(text);
+	},
+	setStatus: function(text) {
+		console.log("status: " + text);
+		if (text == "") emscripten_loaded();
+		// todo: this is surely not the proper way to notice that emscripten is done loading
+	},
+	monitorRunDependencies: function(left) {}
+};
+
+window.onerror = function(event)
+	{
+		Module.setStatus = function(text) {
+				if (text) Module.printErr('[post-exception status] ' + text);
+			};
+	};

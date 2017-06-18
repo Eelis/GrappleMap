@@ -39,9 +39,13 @@ cp src/explorer.js $output/explorer/
 cp src/example-drills.html $output/
 cp src/editor.html $output/editor/index.html
 cp src/editor.{css,js} src/grapplemap_editor.{data,js,js.mem} $output/editor/
+cp src/grapplemap_db_loader.{data,js,js.mem} $output/
+cp src/grapplemap_db_loader.{data,js,js.mem} $output/composer/
+cp src/grapplemap_db_loader.{data,js,js.mem} $output/explorer/
+	# todo: copying this thrice is stupid but i dunno how to make the relative paths work otherwise
 
-echo "Converting database to javascript."
-src/grapplemap-dbtojs --output_dir=$output
+#echo "Converting database to javascript."
+#src/grapplemap-dbtojs --output_dir=$output
 
 echo -e "\nFor the position pages with pictures/gifs, run:\n"
 echo -e "  src/grapplemap-mkpospages --output_dir=${outputbase}\n"
