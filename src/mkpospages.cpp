@@ -79,7 +79,7 @@ namespace
 			("help,h",
 				"show this help")
 			("output_dir",
-				po::value<string>()->default_value("."),
+				po::value<string>()->default_value("./GrappleMap"),
 				"output directory")
 			("image_url",
 				po::value<string>())
@@ -764,7 +764,7 @@ int main(int const argc, char const * const * const argv)
 		optional<Config> const config = config_from_args(argc, argv);
 		if (!config) return 0;
 
-		string const output_dir = config->output_dir + "/GrappleMap/";
+		string const output_dir = config->output_dir;
 
 		boost::filesystem::create_directory(config->output_dir + "/GrappleMap");
 		boost::filesystem::create_directory(output_dir + "/position");

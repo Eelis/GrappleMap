@@ -4,8 +4,7 @@ set -e
 
 (cd src && scons -j4 -Q noX)
 
-outputbase=.
-output=$outputbase/GrappleMap
+output=./GrappleMap
 
 echo "Creating $output/."
 
@@ -48,4 +47,4 @@ cp src/grapplemap_db_loader.{data,js,js.mem} $output/explorer/
 #src/grapplemap-dbtojs --output_dir=$output
 
 echo -e "\nFor the position pages with pictures/gifs, run:\n"
-echo -e "  src/grapplemap-mkpospages --output_dir=${outputbase}\n"
+echo -e "  src/grapplemap-mkpospages --output_dir=${output}\n"
