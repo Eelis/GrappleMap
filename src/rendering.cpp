@@ -15,6 +15,7 @@ namespace
 	void glVertex(V3 const & v) { ::glVertex3d(v.x, v.y, v.z); }
 	void glTranslate(V3 const & v) { ::glTranslated(v.x, v.y, v.z); }
 	void glColor(V3 v) { ::glColor3d(v.x, v.y, v.z); }
+	#endif
 
 	void gluLookAt(V3 eye, V3 center, V3 up)
 	{
@@ -23,7 +24,6 @@ namespace
 			center.x, center.y, center.z,
 			up.x, up.y, up.z);
 	}
-	#endif
 
 	void drawLine(V4f color, V4f color2, V3 from, V3 to, std::vector<BasicVertex> & out)
 	{
