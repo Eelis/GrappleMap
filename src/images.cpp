@@ -179,6 +179,8 @@ vector<Magick::Image> ImageMaker::make_frames(
 			{}, // default colors
 			column * aawidth, row * aaheight, aawidth, aaheight,
 			style, playerDrawer);
+
+		if (no_anim) break;
 	}
 
 	glFlush();
@@ -218,6 +220,8 @@ vector<Magick::Image> ImageMaker::make_frames(
 
 		pixcache.sync();
 		frames.push_back(move(img));
+
+		if (no_anim) break;
 	}
 
 	return frames;

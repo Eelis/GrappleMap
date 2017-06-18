@@ -144,6 +144,8 @@ class ImageMaker
 
 public:
 
+	bool no_anim = false;
+
 	ImageMaker(Graph const &);
 
 	ImageMaker(ImageMaker const &) = delete;

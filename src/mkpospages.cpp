@@ -60,6 +60,7 @@ namespace
 		string db;
 		string output_dir;
 		optional<string> image_url;
+		bool no_anim;
 	};
 
 	template<typename T>
@@ -82,6 +83,8 @@ namespace
 				"output directory")
 			("image_url",
 				po::value<string>())
+			("no_anim",
+				po::value<bool>()->default_value(false))
 			("db",
 				po::value<string>()->default_value("GrappleMap.txt"),
 				"database file");
@@ -103,7 +106,8 @@ namespace
 		return Config
 			{ vm["db"].as<string>()
 			, vm["output_dir"].as<string>()
-			, opt_arg<string>(vm, "image_url") };
+			, opt_arg<string>(vm, "image_url")
+			, vm["no_anim"].as<bool>() };
 	}
 
 	vector<Position> frames_for_sequence(Graph const & graph, SeqNum const seqNum)
@@ -774,6 +778,8 @@ int main(int const argc, char const * const * const argv)
 		write_todo(graph, output_dir);
 
 		ImageMaker mkimg(graph);
+
+		mkimg.no_anim = config->no_anim;
 
 		cout << '\n';
 		write_transition_gifs(mkimg, graph, output_dir);
