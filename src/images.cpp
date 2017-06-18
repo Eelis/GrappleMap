@@ -33,19 +33,18 @@ auto hash_value(Position const & p) { return boost::hash_value(p.values); }
 
 namespace
 {
-
 	void make_gif(
 		string const output_dir,
 		string const filename,
 		unsigned const delay,
-		std::function<vector<string>(string)> make_frames)
+		std::function<vector<string>(string)> mk_frames)
 	{
 		if (!boost::filesystem::exists(output_dir + "/" + filename))
 		{
 			string const gif_frames_dir = output_dir + "/gifframes/";
 
 			string command = "convert -depth 8 -delay " + to_string(delay) + " -loop 0 ";
-			foreach (f : make_frames(gif_frames_dir)) command += gif_frames_dir + f + ' ';
+			foreach (f : mk_frames(gif_frames_dir)) command += gif_frames_dir + f + ' ';
 			command += output_dir + "/" + filename;
 
 			if (std::system(command.c_str()) != 0)
@@ -78,13 +77,13 @@ void ImageMaker::png(
 	unsigned const width, unsigned const height,
 	string const path, V3 const bg_color,
 	vector<View> const & view,
-	unsigned const grid_size, unsigned const grid_line_width) const
+	unsigned const grid_size, unsigned const grid_line_width)
 {
 	if (boost::filesystem::exists(path)) return;
 
 	vector<boost::gil::rgb8_pixel_t> buf(width*2 * height*2);
 
-	if (!OSMesaMakeCurrent(ctx, buf.data(), GL_UNSIGNED_BYTE, width*2, height*2))
+	if (!OSMesaMakeCurrent(ctx.context, buf.data(), GL_UNSIGNED_BYTE, width*2, height*2))
 		error("OSMesaMakeCurrent");
 
 	Style style;
@@ -139,19 +138,104 @@ void ImageMaker::png(
 	}
 }
 
+vector<Magick::Image> ImageMaker::make_frames(
+	vector<pair<Position, Camera>> const & pcs,
+	size_t const delay,
+	unsigned const width, unsigned const height,
+	V3 const bg_color,
+	View const & view)
+{
+	size_t const
+		n = pcs.size(),
+		columns = 10,
+		rows = n / columns + 1,
+		aawidth = width * 2,
+		aaheight = height * 2,
+		fullwidth = columns * aawidth,
+		fullheight = rows * aaheight;
+
+	vector<boost::gil::rgb8_pixel_t> buf(fullwidth * fullheight);
+
+	if (!OSMesaMakeCurrent(ctx.context, buf.data(), GL_UNSIGNED_BYTE, fullwidth, fullheight))
+		error("OSMesaMakeCurrent");
+
+	Style style;
+	style.grid_size = 2;
+	style.grid_line_width = 2;
+	style.grid_color = bg_color * .8;
+	style.background_color = bg_color;
+
+	PlayerDrawer playerDrawer;
+
+	for (size_t i = 0; i != n; ++i)
+	{
+		size_t const
+			row = i / columns,
+			column = i % columns;
+
+		renderBasic(
+			view,
+			graph, pcs[i].first, pcs[i].second,
+			{}, // default colors
+			column * aawidth, row * aaheight, aawidth, aaheight,
+			style, playerDrawer);
+	}
+
+	glFlush();
+	glFinish();
+
+	vector<Magick::Image> frames;
+
+	for (size_t i = 0; i != n; ++i)
+	{
+		Magick::Image img(Magick::Geometry(width, height), "white");
+		img.animationDelay(delay);
+		img.modifyImage();
+		Magick::Pixels pixcache(img);
+		Magick::PixelPacket * pixels = pixcache.get(0, 0, width, height);
+
+		size_t const
+			row = i / columns,
+			column = i % columns;
+
+		auto xy = [&](unsigned x, unsigned y)
+			{
+				return buf[(row * aaheight + y) * (columns * aawidth) + (column * aawidth + x)];
+			};
+
+		for (unsigned x = 0; x != width; ++x)
+		for (unsigned y = 0; y != height; ++y)
+		{
+			auto rgb0 = xy(x*2,y*2);
+			auto rgb1 = xy(x*2,y*2+1);
+			auto rgb2 = xy(x*2+1,y*2);
+			auto rgb3 = xy(x*2+1,y*2+1);
+			Magick::PixelPacket & pix = pixels[(height - 1 - y) * width + x];
+			pix.blue  = (rgb0[0] + rgb1[0] + rgb2[0] + rgb3[0]) << (8 - 2);
+			pix.green = (rgb0[1] + rgb1[1] + rgb2[1] + rgb3[1]) << (8 - 2);
+			pix.red   = (rgb0[2] + rgb1[2] + rgb2[2] + rgb3[2]) << (8 - 2);
+		}
+
+		pixcache.sync();
+		frames.push_back(move(img));
+	}
+
+	return frames;
+}
+
 void ImageMaker::png(
 	pair<Position, Camera> const * pos_b,
 	pair<Position, Camera> const * pos_e,
 	unsigned const width, unsigned const height,
 	string const path, V3 const bg_color,
 	vector<View> const & view,
-	unsigned const grid_size, unsigned const grid_line_width) const
+	unsigned const grid_size, unsigned const grid_line_width)
 {
 	if (boost::filesystem::exists(path)) return;
 
 	vector<boost::gil::rgb8_pixel_t> buf(width*2 * height*2);
 
-	if (!OSMesaMakeCurrent(ctx, buf.data(), GL_UNSIGNED_BYTE, width*2, height*2))
+	if (!OSMesaMakeCurrent(ctx.context, buf.data(), GL_UNSIGNED_BYTE, width*2, height*2))
 		error("OSMesaMakeCurrent");
 
 	Style style;
@@ -212,7 +296,7 @@ void ImageMaker::png(
 	double const angle,
 	double const ymax,
 	string const filename,
-	unsigned const width, unsigned const height, V3 const bg_color) const
+	unsigned const width, unsigned const height, V3 const bg_color)
 {
 	if (boost::filesystem::exists(filename)) return;
 
@@ -231,7 +315,7 @@ string ImageMaker::png(
 	double const ymax,
 	ImageView const view,
 	unsigned const width, unsigned const height,
-	BgColor const bg_color, string const base_linkname) const
+	BgColor const bg_color, string const base_linkname)
 {
 	string const attrs = code(view) + to_string(width) + 'x' + to_string(height);
 
@@ -267,10 +351,16 @@ string ImageMaker::png(
 	return filename;
 }
 
+void ImageMaker::add_job(string const & path, std::function<vector<Magick::Image>()> mk_frames)
+{
+	if (!boost::filesystem::exists(path))
+		gif_generators.add_job(GifGenerationJob{path, mk_frames()});
+}
+
 string ImageMaker::rotation_gif(
 	string const output_dir, Position p, ImageView const view,
 	unsigned const width, unsigned const height, BgColor const bg_color,
-	string const base_linkname) const
+	string const base_linkname)
 {
 	if (view.mirror) p = mirror(p);
 
@@ -284,18 +374,24 @@ string ImageMaker::rotation_gif(
 
 	double const ymax = std::max(.8, std::max(p[player0][Head].y, p[player1][Head].y));
 
-	make_gif(output_dir, gif_filename, 8, [&](string const gif_frames_dir)
+	add_job(output_dir + "/" + gif_filename, [&]
 		{
-			vector<string> frames;
+			vector<pair<Position, Camera>> pcs;
 
 			for (auto i = 0; i < 360; i += 5)
 			{
-				string const frame_filename = base_filename + "-" + to_string(i) + "-" + to_string(bg_color) + ".png";
-				png(p, i/180.*pi(), ymax, gif_frames_dir + "/" + frame_filename, width, height, color(bg_color));
-				frames.push_back(frame_filename);
+				double angle = i/180.*pi();
+
+				Camera camera;
+				camera.hardSetOffset({0, ymax - 0.57, 0});
+				camera.zoom(0.55);
+				camera.rotateHorizontal(angle);
+				camera.rotateVertical((ymax - 0.6)/2);
+
+				pcs.emplace_back(p, camera);
 			}
 
-			return frames;
+			return make_frames(pcs, 8, width, height, color(bg_color), {0, 0, 1, 1, none, 45});
 		});
 
 	unlink((output_dir + "/" + linkname).c_str());
@@ -310,7 +406,7 @@ string ImageMaker::gif(
 	vector<Position> const & frames,
 	ImageView const view,
 	unsigned const width, unsigned const height,
-	BgColor const bg_color, string const base_linkname) const
+	BgColor const bg_color, string const base_linkname)
 {
 	string const attrs = to_string(width) + 'x' + to_string(height) + code(view);
 
@@ -318,25 +414,38 @@ string ImageMaker::gif(
 		= "store/" + to_string(boost::hash_value(frames))
 		+ attrs + '-' + to_string(bg_color) + ".gif";
 
-	make_gif(output_dir, filename, 3, [&](string const gif_frames_dir)
-		{
-			vector<double> ymaxes;
-			foreach (pos : frames)
-				ymaxes.push_back(std::max(.8, std::max(pos[player0][Head].y, pos[player1][Head].y)));
-			for (int i = 0; i != 10; ++i)
-				ymaxes = smoothen_v(ymaxes);
-
-			vector<string> v;
-			int i = 0;
-			foreach (pos : frames)
+	if (view.heading)
+		add_job(output_dir + "/" + filename, [&]
 			{
-				v.push_back(
-					png(gif_frames_dir, pos, ymaxes[i], view, width, height, bg_color,
-						"" /* no symlink */));
-				++i;
-			}
-			return v;
-		});
+				vector<double> ymaxes;
+				foreach (pos : frames)
+					ymaxes.push_back(std::max(.8, std::max(pos[player0][Head].y, pos[player1][Head].y)));
+				for (int i = 0; i != 10; ++i)
+					ymaxes = smoothen_v(ymaxes);
+
+				vector<pair<Position, Camera>> pcs;
+
+				int i = 0;
+				foreach (pos : frames)
+				{
+					auto qos = pos;
+					if (view.mirror) qos = mirror(pos);
+
+					double ymax = ymaxes[i];
+
+					Camera camera;
+					camera.hardSetOffset({0, ymax - 0.57, 0});
+					camera.zoom(0.55);
+					camera.rotateHorizontal(angle(*view.heading));
+					camera.rotateVertical((ymax - 0.6)/2);
+
+					pcs.emplace_back(qos, camera);
+
+					++i;
+				}
+
+				return make_frames(pcs, 3, width, height, color(bg_color), {0, 0, 1, 1, none, 45});
+			});
 
 	if (base_linkname.empty())
 		error("gifs must have name for symlink");
@@ -354,7 +463,7 @@ string ImageMaker::gifs(
 	string const output_dir,
 	vector<Position> const & frames,
 	unsigned const width, unsigned const height,
-	BgColor const bg_color, string const base_linkname) const
+	BgColor const bg_color, string const base_linkname)
 {
 	string const
 		attrs = to_string(width) + 'x' + to_string(height) + '-' + to_string(bg_color),
@@ -368,27 +477,35 @@ string ImageMaker::gifs(
 			filename = "store/" + base_filename + suffix,
 			linkname = output_dir + "/" + ext_linkbase + suffix;
 
-		make_gif(output_dir, filename, 3, [&](string const gif_frames_dir)
-			{
-				vector<string> v;
-
-				vector<double> ymaxes;
-				foreach (pos : frames)
-					ymaxes.push_back(std::max(.8, std::max(pos[player0][Head].y, pos[player1][Head].y)));
-				for (int i = 0; i != 10; ++i)
-					ymaxes = smoothen_v(ymaxes);
-
-				int i = 0;
-				foreach (pos : frames)
+		if (view.heading)
+			add_job(output_dir + "/" + filename, [&]
 				{
-					v.push_back(
-						png(gif_frames_dir, pos, ymaxes[i], view, width, height, bg_color,
-							"" /* no symlink */));
-					++i;
-				}
+					vector<double> ymaxes;
+					foreach (pos : frames)
+						ymaxes.push_back(std::max(.8, std::max(pos[player0][Head].y, pos[player1][Head].y)));
+					for (int i = 0; i != 10; ++i)
+						ymaxes = smoothen_v(ymaxes);
 
-				return v;
-			});
+					vector<pair<Position, Camera>> pcs;
+
+					int i = 0;
+					foreach (pos : frames)
+					{
+						double ymax = ymaxes[i];
+
+						Camera camera;
+						camera.hardSetOffset({0, ymax - 0.57, 0});
+						camera.zoom(0.55);
+						camera.rotateHorizontal(angle(*view.heading));
+						camera.rotateVertical((ymax - 0.6)/2);
+
+						pcs.emplace_back(pos, camera);
+
+						++i;
+					}
+
+					return make_frames(pcs, 3, width, height, color(bg_color), {0, 0, 1, 1, none, 45});
+				});
 
 		unlink(linkname.c_str());
 		if (symlink(filename.c_str(), linkname.c_str()))
@@ -401,13 +518,14 @@ string ImageMaker::gifs(
 ImageMaker::ImageMaker(Graph const & g)
 	: graph(g)
 	, ctx(OSMesaCreateContextExt(OSMESA_RGB, 16, 0, 16, nullptr))
+	, gif_generators(8)
 {
-	if (!ctx) error("OSMeseCreateContextExt failed");
+	if (!ctx.context) error("OSMeseCreateContextExt failed");
 }
 
-ImageMaker::~ImageMaker()
+void process(GifGenerationJob & job)
 {
-	OSMesaDestroyContext(ctx);
+	Magick::writeImages(job.frames.begin(), job.frames.end(), job.path);
 }
 
 }

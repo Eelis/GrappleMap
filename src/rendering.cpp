@@ -310,6 +310,62 @@ Style::Style()
 	}
 #endif
 
+void renderBasic(
+	View const & v,
+	Graph const & graph,
+	Position const & position,
+	Camera camera,
+	PerPlayerJoint<optional<V3>> colors,
+	int const left, int const bottom,
+	int const width, int const height,
+	Style const & style,
+	PlayerDrawer const & playerDrawer)
+{
+	glEnable(GL_SCISSOR_TEST);
+	glEnable(GL_POINT_SMOOTH);
+
+	int
+		x = left + v.x * width,
+		y = bottom + v.y * height,
+		w = v.w * width,
+		h = v.h * height;
+
+	glViewport(x, y, w, h);
+	glScissor(x, y, w, h);
+
+	camera.setViewportSize(v.fov, w, h);
+
+	glClearColor(style.background_color.x, style.background_color.y, style.background_color.z, 0);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glEnable(GL_COLOR_MATERIAL);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadMatrixd(camera.projection().data());
+
+	glMatrixMode(GL_MODELVIEW);
+
+	if (v.first_person)
+	{
+		auto const & p = position[*v.first_person];
+
+		glLoadIdentity();
+		gluLookAt(p[Head], (p[LeftHand] + p[RightHand]) / 2., p[Head] - p[Neck]);
+	}
+	else
+		glLoadMatrixd(camera.model_view().data());
+
+	setupLights();
+
+	glEnable(GL_DEPTH);
+	glEnable(GL_DEPTH_TEST);
+
+	grid(style.grid_color, style.grid_size, style.grid_line_width);
+
+	playerDrawer.drawPlayers(position, colors, v.first_person);
+}
+
 #ifndef EMSCRIPTEN
 void renderWindow(
 	std::vector<View> const & views,
@@ -326,51 +382,10 @@ void renderWindow(
 	PlayerDrawer const & playerDrawer,
 	function<void()> extraRender)
 {
-	glEnable(GL_SCISSOR_TEST);
-	glEnable(GL_POINT_SMOOTH);
-
 	foreach (v : views)
 	{
-		int
-			x = left + v.x * width,
-			y = bottom + v.y * height,
-			w = v.w * width,
-			h = v.h * height;
-
-		glViewport(x, y, w, h);
-		glScissor(x, y, w, h);
-
-		camera.setViewportSize(v.fov, w, h);
-
-		glClearColor(style.background_color.x, style.background_color.y, style.background_color.z, 0);
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glEnable(GL_COLOR_MATERIAL);
-
-		glMatrixMode(GL_PROJECTION);
-		glLoadMatrixd(camera.projection().data());
-
-		glMatrixMode(GL_MODELVIEW);
-
-		if (v.first_person)
-		{
-			auto const & p = position[*v.first_person];
-
-			glLoadIdentity();
-			gluLookAt(p[Head], (p[LeftHand] + p[RightHand]) / 2., p[Head] - p[Neck]);
-		}
-		else
-			glLoadMatrixd(camera.model_view().data());
-
-		setupLights();
-
-		glEnable(GL_DEPTH);
-		glEnable(GL_DEPTH_TEST);
-
-		grid(style.grid_color, style.grid_size, style.grid_line_width);
-
-		playerDrawer.drawPlayers(position, colors, v.first_person);
+		renderBasic(v, graph, position, camera, colors,
+			left, bottom, width, height, style, playerDrawer);
 
 		if (extraRender) extraRender();
 

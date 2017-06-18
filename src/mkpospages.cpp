@@ -345,7 +345,7 @@ namespace
 	}
 
 	void transition_gif(
-		ImageMaker const & mkimg,
+		ImageMaker & mkimg,
 		string const output_dir,
 		vector<Position> frames,
 		ImageView const v,
@@ -356,7 +356,7 @@ namespace
 	}
 
 	string transition_gifs(
-		ImageMaker const & mkimg,
+		ImageMaker & mkimg,
 		string const output_dir,
 		vector<Position> frames,
 		ImageMaker::BgColor const bg_color,
@@ -426,7 +426,7 @@ namespace
 		return distanceSquared(p[player0][Core], p[player1][Core]);
 	}
 
-	void write_transition_gifs(ImageMaker const & mkimg, Graph const & g, string const output_dir)
+	void write_transition_gifs(ImageMaker & mkimg, Graph const & g, string const output_dir)
 	{
 		foreach (sn : seqnums(g))
 		{
@@ -471,7 +471,7 @@ namespace
 		
 		struct Context
 		{
-			ImageMaker const & mkimg;
+			ImageMaker & mkimg;
 			std::ostream & html;
 			Graph const & graph;
 			NodeNum n;
@@ -645,7 +645,7 @@ namespace
 				<< make_svg(ctx.graph, m, hc, ctx.output_dir) << "</body></html>";
 		}
 
-		void write_it(ImageMaker const & mkimg, Graph const & graph, NodeNum const n,
+		void write_it(ImageMaker & mkimg, Graph const & graph, NodeNum const n,
 			string const output_dir, string const image_url)
 		{
 			cout << ' ' << n.index << std::flush;
@@ -759,9 +759,12 @@ int main(int const argc, char const * const * const argv)
 		write_lists(graph, output_dir);
 		write_todo(graph, output_dir);
 
-		ImageMaker const mkimg(graph);
+		ImageMaker mkimg(graph);
 
+		cout << "\nFirst up, transition gifs:";
 		write_transition_gifs(mkimg, graph, output_dir);
+
+		cout << "\nNext up, position pages:\n";
 
 		ofstream(output_dir + "/config.js")
 			<< "image_url='"
