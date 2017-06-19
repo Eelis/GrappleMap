@@ -132,7 +132,7 @@ class ImageMaker
 	Graph const & graph;
 	OSMesaContextPtr ctx;
 	GVC_t *gvc = gvContext();
-	std::unordered_set<string> stored_initially;
+	std::unordered_set<string> stored_initially, linked_initially;
 
 	void png(
 		Position pos, double angle, double ymax, string filename,
@@ -152,17 +152,26 @@ class ImageMaker
 		string const & linkname,
 		std::function<vector<Magick::Image>()>);
 
+	void png(
+		pair<Position, Camera> const * pos_beg,
+		pair<Position, Camera> const * pos_end,
+		unsigned width, unsigned height,
+		string path, V3 bg_color,
+		vector<View> const &, unsigned grid_size = 2, unsigned grid_line_width = 2);
+
+	void png(
+		Position,
+		Camera const &,
+		unsigned width, unsigned height,
+		string path, V3 bg_color,
+		vector<View> const &, unsigned grid_size = 2, unsigned grid_line_width = 2);
+
 public:
 
 	void store(
 			string const & filename,
 			string const & linkname,
 			std::function<void()> make_dst);
-
-	bool exists(fs::path const & p) const
-	{
-		return stored_initially.find(p.filename().native()) != stored_initially.end();
-	}
 
 	string const res_dir;
 
@@ -196,20 +205,6 @@ public:
 			default: abort();
 		}
 	}
-
-	void png(
-		Position,
-		Camera const &,
-		unsigned width, unsigned height,
-		string path, V3 bg_color,
-		vector<View> const &, unsigned grid_size = 2, unsigned grid_line_width = 2);
-
-	void png(
-		pair<Position, Camera> const * pos_beg,
-		pair<Position, Camera> const * pos_end,
-		unsigned width, unsigned height,
-		string path, V3 bg_color,
-		vector<View> const &, unsigned grid_size = 2, unsigned grid_line_width = 2);
 
 	void png(
 		Position, double ymax, ImageView,

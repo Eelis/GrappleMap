@@ -618,7 +618,7 @@ namespace
 
 			oss << "<td style='text-align:center;vertical-align:top'>";
 			write_heading(ctx, oss);
-			write_view_controls(oss, ctx.view, to_string(ctx.n.index));
+			write_view_controls(oss, ctx.view, "p" + to_string(ctx.n.index));
 			write_tag_list(ctx, oss);
 			write_nav_links(ctx, oss);
 			oss << "</td>";

@@ -33,25 +33,6 @@ auto hash_value(Position const & p) { return boost::hash_value(p.values); }
 
 namespace
 {
-	void make_gif(
-		string const output_dir,
-		string const filename,
-		unsigned const delay,
-		std::function<vector<string>(string)> mk_frames)
-	{
-		if (!boost::filesystem::exists(output_dir + "/" + filename))
-		{
-			string const gif_frames_dir = output_dir + "/gifframes/";
-
-			string command = "convert -depth 8 -delay " + to_string(delay) + " -loop 0 ";
-			foreach (f : mk_frames(gif_frames_dir)) command += gif_frames_dir + f + ' ';
-			command += output_dir + "/" + filename;
-
-			if (std::system(command.c_str()) != 0)
-				throw std::runtime_error("command failed: " + command);
-		}
-	}
-
 	vector<double> smoothen_v(vector<double> const & v)
 	{
 		vector<double> r;
@@ -79,8 +60,6 @@ void ImageMaker::png(
 	vector<View> const & view,
 	unsigned const grid_size, unsigned const grid_line_width)
 {
-	if (exists(path)) return;
-
 	vector<boost::gil::rgb8_pixel_t> buf(width*2 * height*2);
 
 	if (!OSMesaMakeCurrent(ctx.context, buf.data(), GL_UNSIGNED_BYTE, width*2, height*2))
@@ -235,8 +214,6 @@ void ImageMaker::png(
 	vector<View> const & view,
 	unsigned const grid_size, unsigned const grid_line_width)
 {
-	if (exists(path)) return;
-
 	vector<boost::gil::rgb8_pixel_t> buf(width*2 * height*2);
 
 	if (!OSMesaMakeCurrent(ctx.context, buf.data(), GL_UNSIGNED_BYTE, width*2, height*2))
@@ -302,8 +279,6 @@ void ImageMaker::png(
 	string const path,
 	unsigned const width, unsigned const height, V3 const bg_color)
 {
-	if (exists(path)) return;
-
 	Camera camera;
 	camera.hardSetOffset({0, ymax - 0.57, 0});
 	camera.zoom(0.55);
@@ -329,8 +304,12 @@ void ImageMaker::store(
 	string const & linkname,
 	std::function<void()> write_file)
 {
-	if (exists(filename)) return;
-	
+	bool const
+		file_exists = elem(filename, stored_initially),
+		link_exists = elem(linkname, linked_initially);
+
+	if (file_exists && link_exists) return;
+
 	string const link_target = "store/" + filename;
 	string const link_path = res_dir + "/" + linkname;
 
@@ -338,7 +317,7 @@ void ImageMaker::store(
 	if (symlink(link_target.c_str(), link_path.c_str()))
 		perror("symlink");
 
-	write_file();
+	if (!file_exists) write_file();
 }
 
 void ImageMaker::png(
@@ -348,57 +327,30 @@ void ImageMaker::png(
 	unsigned const width, unsigned const height,
 	BgColor const bg_color, string const base_linkname)
 {
-	string const attrs = code(view) + to_string(width) + 'x' + to_string(height);
+	string const
+		attrs = code(view) + to_string(width) + 'x' + to_string(height),
+		filename = to_string(hash_value(pos)) + attrs + '-' + to_string(bg_color) + ".png",
+		linkname = base_linkname + attrs + ".png";
 
-	string filename =
-		to_string(hash_value(pos))
-		+ attrs
-		+ '-' + to_string(bg_color) + ".png";
-
-	if (base_linkname.empty())
+	store(filename, linkname, [&]
 	{
-		if (!exists(filename))
+		if (view.mirror) pos = mirror(pos);
+
+		string const path = res_dir + "/store/" + filename;
+
+		if (view.heading)
 		{
-			if (view.mirror) pos = mirror(pos);
-
-			string const path = res_dir + "/" + filename;
-
-			if (view.heading)
-			{
-				png(pos, angle(*view.heading), ymax, path, width, height, color(bg_color));
-			}
-			else if (view.player)
-			{
-				Camera camera;
-
-				png(pos, camera, width, height, path, color(bg_color),
-					{{0, 0, 1, 1, *view.player, 80}});
-			}
-			else abort();
+			png(pos, angle(*view.heading), ymax, path, width, height, color(bg_color));
 		}
-	}
-	else
-	{
-		store(filename, base_linkname + attrs + ".png", [&]
+		else if (view.player)
 		{
-			if (view.mirror) pos = mirror(pos);
+			Camera camera;
 
-			string const path = res_dir + "/store/" + filename;
-
-			if (view.heading)
-			{
-				png(pos, angle(*view.heading), ymax, path, width, height, color(bg_color));
-			}
-			else if (view.player)
-			{
-				Camera camera;
-
-				png(pos, camera, width, height, path, color(bg_color),
-					{{0, 0, 1, 1, *view.player, 80}});
-			}
-			else abort();
-		});
-	}
+			png(pos, camera, width, height, path, color(bg_color),
+				{{0, 0, 1, 1, *view.player, 80}});
+		}
+		else abort();
+	});
 }
 
 string ImageMaker::rotation_gif(
@@ -557,7 +509,12 @@ ImageMaker::ImageMaker(Graph const & g, string rd)
 	for (fs::directory_iterator i(res_dir + "/store"), e; i != e; ++i)
 		stored_initially.insert(fs::path(*i).filename().native());
 
-	cout << "Found " << stored_initially.size() << " existing items in store.\n";
+	for (fs::directory_iterator i(res_dir), e; i != e; ++i)
+		if (is_symlink(*i))
+			linked_initially.insert(fs::path(*i).filename().native());
+
+	cout << "Found " << stored_initially.size() << " existing items and "
+		<< linked_initially.size() << " existing links in store.\n";
 
 	if (!ctx.context) error("OSMeseCreateContextExt failed");
 }

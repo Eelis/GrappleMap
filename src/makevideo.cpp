@@ -128,7 +128,7 @@ int main(int const argc, char const * const * const argv)
 
 				std::ostringstream fn;
 				fn << "vidframes/frame" << std::setw(5) << std::setfill('0') << frameindex << ".png";
-
+/* todo:
 				mkImg.png(pos, camera, width, height, fn.str(),
 					white, // background
 //					{{0, 0, 1, 1, none, 50}}, // view
@@ -136,7 +136,7 @@ int main(int const argc, char const * const * const argv)
 					20, // grid size
 					4 // grid line width
 					);
-
+*/
 				++frameindex;
 			}
 

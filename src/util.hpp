@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <unordered_set>
 #include <boost/optional.hpp>
 #include <boost/program_options.hpp>
 #include <boost/range.hpp>
@@ -22,6 +23,7 @@ namespace GrappleMap
 	using std::string;
 	using std::vector;
 	using std::set;
+	using std::unordered_set;
 	using std::map;
 	using std::istream;
 	using std::ostream;
@@ -123,6 +125,12 @@ namespace GrappleMap
 
 	template<typename T, typename U>
 	bool elem(T const & x, set<U> const & s)
+	{
+		return s.find(x) != s.end();
+	}
+
+	template<typename T, typename U>
+	bool elem(T const & x, unordered_set<U> const & s)
 	{
 		return s.find(x) != s.end();
 	}
