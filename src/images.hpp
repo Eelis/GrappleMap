@@ -8,8 +8,10 @@
 #include <Magick++.h>
 #include <future>
 #include <queue>
+#include <unordered_set>
 #include <thread>
 #include <mutex>
+#include <boost/filesystem.hpp>
 
 template<typename Data>
 class concurrent_queue
@@ -102,9 +104,11 @@ class ThreadPool
 
 namespace GrappleMap {
 
+namespace fs = boost::filesystem;
+
 struct GifGenerationJob
 {
-	string path;
+	fs::path path;
 	vector<Magick::Image> frames;
 };
 
@@ -126,6 +130,7 @@ class ImageMaker
 {
 	Graph const & graph;
 	OSMesaContextPtr ctx;
+	std::unordered_set<string> stored_initially;
 
 	void png(
 		Position pos, double angle, double ymax, string filename,
@@ -140,13 +145,18 @@ class ImageMaker
 
 	ThreadPool<GifGenerationJob> gif_generators;
 
-	void add_job(string const & path, std::function<vector<Magick::Image>()> make_frames);
+	bool exists(fs::path const & p) const
+	{
+		return stored_initially.find(p.filename().native()) != stored_initially.end();
+	}
+
+	void add_job(fs::path const & path, std::function<vector<Magick::Image>()> make_frames);
 
 public:
 
 	bool no_anim = false;
 
-	ImageMaker(Graph const &);
+	explicit ImageMaker(Graph const &, std::unordered_set<string> stored_initially = {});
 
 	ImageMaker(ImageMaker const &) = delete;
 	ImageMaker & operator=(ImageMaker const &) = delete;

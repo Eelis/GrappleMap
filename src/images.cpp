@@ -79,7 +79,7 @@ void ImageMaker::png(
 	vector<View> const & view,
 	unsigned const grid_size, unsigned const grid_line_width)
 {
-	if (boost::filesystem::exists(path)) return;
+	if (exists(path)) return;
 
 	vector<boost::gil::rgb8_pixel_t> buf(width*2 * height*2);
 
@@ -235,7 +235,7 @@ void ImageMaker::png(
 	vector<View> const & view,
 	unsigned const grid_size, unsigned const grid_line_width)
 {
-	if (boost::filesystem::exists(path)) return;
+	if (exists(path)) return;
 
 	vector<boost::gil::rgb8_pixel_t> buf(width*2 * height*2);
 
@@ -299,10 +299,10 @@ void ImageMaker::png(
 	Position const pos,
 	double const angle,
 	double const ymax,
-	string const filename,
+	string const path,
 	unsigned const width, unsigned const height, V3 const bg_color)
 {
-	if (boost::filesystem::exists(filename)) return;
+	if (exists(path)) return;
 
 	Camera camera;
 	camera.hardSetOffset({0, ymax - 0.57, 0});
@@ -310,7 +310,14 @@ void ImageMaker::png(
 	camera.rotateHorizontal(angle);
 	camera.rotateVertical((ymax - 0.6)/2);
 
-	png(pos, camera, width, height, filename, bg_color, {{0, 0, 1, 1, none, 45}});
+	png(pos, camera, width, height, path, bg_color, {{0, 0, 1, 1, none, 45}});
+}
+
+void resymlink(string const & dst, string const & src)
+{
+	unlink(src.c_str());
+	if (symlink(dst.c_str(), src.c_str()))
+		perror("symlink");
 }
 
 string ImageMaker::png(
@@ -328,36 +335,37 @@ string ImageMaker::png(
 		+ attrs
 		+ '-' + to_string(bg_color) + ".png";
 
-	if (!base_linkname.empty()) filename = "store/" + filename;
+	string const relpath = base_linkname.empty() ? filename : "store/" + filename;
 
-	if (view.mirror) pos = mirror(pos);
-
-	if (view.heading)
-		png(pos, angle(*view.heading), ymax, output_dir + "/" + filename, width, height, color(bg_color));
-	else if (view.player)
+	if (!exists(filename))
 	{
-		Camera camera;
+		if (view.mirror) pos = mirror(pos);
 
-		png(pos, camera, width, height, output_dir + "/" + filename, color(bg_color),
-			{{0, 0, 1, 1, *view.player, 80}});
+		string const path = output_dir + "/" + relpath;
+
+		if (!base_linkname.empty())
+			resymlink(relpath, output_dir + "/" + base_linkname + attrs + ".png");
+
+		if (view.heading)
+		{
+			png(pos, angle(*view.heading), ymax, path, width, height, color(bg_color));
+		}
+		else if (view.player)
+		{
+			Camera camera;
+
+			png(pos, camera, width, height, path, color(bg_color),
+				{{0, 0, 1, 1, *view.player, 80}});
+		}
+		else abort();
 	}
-	else abort();
 
-	if (!base_linkname.empty())
-	{
-		string const linkname = output_dir + "/" + base_linkname + attrs + ".png";
-
-		unlink(linkname.c_str());
-		if (symlink(filename.c_str(), linkname.c_str()))
-			perror("symlink");
-	}
-
-	return filename;
+	return relpath;
 }
 
-void ImageMaker::add_job(string const & path, std::function<vector<Magick::Image>()> mk_frames)
+void ImageMaker::add_job(fs::path const & path, std::function<vector<Magick::Image>()> mk_frames)
 {
-	if (!boost::filesystem::exists(path))
+	if (!exists(path))
 		gif_generators.add_job(GifGenerationJob{path, mk_frames()});
 }
 
@@ -380,6 +388,8 @@ string ImageMaker::rotation_gif(
 
 	add_job(output_dir + "/" + gif_filename, [&]
 		{
+			resymlink(gif_filename, output_dir + "/" + linkname);
+
 			vector<pair<Position, Camera>> pcs;
 
 			for (auto i = 0; i < 360; i += 5)
@@ -398,10 +408,6 @@ string ImageMaker::rotation_gif(
 			return make_frames(pcs, 8, width, height, color(bg_color), {0, 0, 1, 1, none, 45});
 		});
 
-	unlink((output_dir + "/" + linkname).c_str());
-	if (symlink(gif_filename.c_str(), (output_dir + "/" + linkname).c_str()))
-		perror("symlink");
-
 	return linkname;
 }
 
@@ -412,15 +418,22 @@ string ImageMaker::gif(
 	unsigned const width, unsigned const height,
 	BgColor const bg_color, string const base_linkname)
 {
+	if (base_linkname.empty())
+		error("gifs must have name for symlink");
+
 	string const attrs = to_string(width) + 'x' + to_string(height) + code(view);
 
 	string filename
 		= "store/" + to_string(boost::hash_value(frames))
 		+ attrs + '-' + to_string(bg_color) + ".gif";
 
+	string const linkname = output_dir + "/" + base_linkname + attrs + ".gif";
+
 	if (view.heading)
 		add_job(output_dir + "/" + filename, [&]
 			{
+				resymlink(filename, linkname);
+
 				vector<double> ymaxes;
 				foreach (pos : frames)
 					ymaxes.push_back(std::max(.8, std::max(pos[player0][Head].y, pos[player1][Head].y)));
@@ -451,15 +464,6 @@ string ImageMaker::gif(
 				return make_frames(pcs, 3, width, height, color(bg_color), {0, 0, 1, 1, none, 45});
 			});
 
-	if (base_linkname.empty())
-		error("gifs must have name for symlink");
-
-	string const linkname = output_dir + "/" + base_linkname + attrs + ".gif";
-
-	unlink(linkname.c_str());
-	if (symlink(filename.c_str(), linkname.c_str()))
-		perror("symlink");
-
 	return linkname;
 }
 
@@ -484,6 +488,8 @@ string ImageMaker::gifs(
 		if (view.heading)
 			add_job(output_dir + "/" + filename, [&]
 				{
+					resymlink(filename, linkname);
+
 					vector<double> ymaxes;
 					foreach (pos : frames)
 						ymaxes.push_back(std::max(.8, std::max(pos[player0][Head].y, pos[player1][Head].y)));
@@ -510,18 +516,15 @@ string ImageMaker::gifs(
 
 					return make_frames(pcs, 3, width, height, color(bg_color), {0, 0, 1, 1, none, 45});
 				});
-
-		unlink(linkname.c_str());
-		if (symlink(filename.c_str(), linkname.c_str()))
-			perror("symlink");
 	}
 
 	return ext_linkbase;
 }
 
-ImageMaker::ImageMaker(Graph const & g)
+ImageMaker::ImageMaker(Graph const & g, std::unordered_set<string> stor_init)
 	: graph(g)
 	, ctx(OSMesaCreateContextExt(OSMESA_RGB, 16, 0, 16, nullptr))
+	, stored_initially(stor_init)
 	, gif_generators(8)
 {
 	if (!ctx.context) error("OSMeseCreateContextExt failed");
@@ -529,7 +532,7 @@ ImageMaker::ImageMaker(Graph const & g)
 
 void process(GifGenerationJob & job)
 {
-	Magick::writeImages(job.frames.begin(), job.frames.end(), job.path);
+	Magick::writeImages(job.frames.begin(), job.frames.end(), job.path.native());
 }
 
 }

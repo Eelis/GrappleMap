@@ -13,6 +13,7 @@
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 
 namespace GrappleMap
@@ -161,6 +162,14 @@ namespace GrappleMap
 	}
 
 	inline void flip(bool & b) { b = !b; }
+
+	inline void progress(size_t items_done, size_t items)
+	{
+		cout
+			<< string(4, '\b')
+			<< std::setw(3) << std::right << items_done * 100 / items
+			<< '%' << std::flush;
+	}
 }
 
 #endif

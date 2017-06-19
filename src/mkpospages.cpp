@@ -12,6 +12,7 @@
 #include "images.hpp"
 #include "metadata.hpp"
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -36,7 +37,6 @@ inline std::size_t hash_value(V3 const v) // todo: put elsewhere
 
 #include <boost/gil/extension/io/png_io.hpp>
 #include <boost/gil/gil_all.hpp>
-#include <boost/filesystem.hpp>
 
 namespace
 {
@@ -430,14 +430,6 @@ namespace
 		return distanceSquared(p[player0][Core], p[player1][Core]);
 	}
 
-	void progress(size_t items_done, size_t items)
-	{
-		cout
-			<< string(4, '\b')
-			<< std::setw(3) << std::right << items_done * 100 / items
-			<< '%' << std::flush;
-	}
-
 	void write_transition_gifs(ImageMaker & mkimg, Graph const & g, string const output_dir)
 	{
 		cout << "Writing " << g.num_sequences() << " * 8 standalone transition gifs...   0%";
@@ -643,7 +635,6 @@ namespace
 			char const hc = code(ctx.view);
 
 			ctx.html << html5head("position: " + nlspace(desc(ctx.graph[ctx.n]))) << "<body style='text-align:center'><table style='margin:0px auto'><tr>";
-
 			write_incoming(ctx);
 			write_center(ctx);
 			write_outgoing(ctx);
@@ -777,7 +768,15 @@ int main(int const argc, char const * const * const argv)
 		write_lists(graph, output_dir);
 		write_todo(graph, output_dir);
 
-		ImageMaker mkimg(graph);
+		std::unordered_set<string> stored_initially;
+
+		for (fs::directory_iterator i(output_dir + "/images/store"), e; i != e; ++i)
+			stored_initially.insert(fs::path(*i).filename().native());
+
+		cout << "Found " << stored_initially.size() << " existing images.\n";
+
+
+		ImageMaker mkimg(graph, move(stored_initially));
 
 		mkimg.no_anim = config->no_anim;
 
