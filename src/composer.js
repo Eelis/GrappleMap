@@ -195,7 +195,7 @@ function refreshPostChoices()
 function node_link(node)
 {
 	var link = document.createElement("a");
-	link.href = "../position/" + node + "e.html";
+	link.href = "../res/p" + node + "e.html"; // todo: preserve mirroring
 	link.text = db.nodes[node].description[0].replace(/\\n/g, ' ');
 	return link;
 }

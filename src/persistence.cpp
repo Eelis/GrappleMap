@@ -249,7 +249,7 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 		if (highlight) o << "style=filled fillcolor=lightgreen";
 
 		o	<< " label=<<TABLE BORDER=\"0\"><TR>"
-			<< "<TD HREF=\"" << n.index <<  heading << ".html\">";
+			<< "<TD TARGET=\"_top\" HREF=\"p" << n.index <<  heading << ".html\">";
 
 		if (!graph[n].description.empty())
 			o << replace_all(replace_all(graph[n].description.front(), "\\n", "<BR/>"), "&", "&amp;");

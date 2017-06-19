@@ -78,7 +78,7 @@ int main(int const argc, char const * const * const argv)
 
 		Graph const graph = loadGraph(config->db);
 
-		ImageMaker mkImg(graph);
+		ImageMaker mkImg(graph, "TODO");
 
 		Frames fr;
 

@@ -12,6 +12,7 @@
 #include <thread>
 #include <mutex>
 #include <boost/filesystem.hpp>
+#include <gvc.h>
 
 template<typename Data>
 class concurrent_queue
@@ -130,6 +131,7 @@ class ImageMaker
 {
 	Graph const & graph;
 	OSMesaContextPtr ctx;
+	GVC_t *gvc = gvContext();
 	std::unordered_set<string> stored_initially;
 
 	void png(
@@ -145,18 +147,28 @@ class ImageMaker
 
 	ThreadPool<GifGenerationJob> gif_generators;
 
+	void store_gif(
+		string const & filename,
+		string const & linkname,
+		std::function<vector<Magick::Image>()>);
+
+public:
+
+	void store(
+			string const & filename,
+			string const & linkname,
+			std::function<void()> make_dst);
+
 	bool exists(fs::path const & p) const
 	{
 		return stored_initially.find(p.filename().native()) != stored_initially.end();
 	}
 
-	void add_job(fs::path const & path, std::function<vector<Magick::Image>()> make_frames);
-
-public:
+	string const res_dir;
 
 	bool no_anim = false;
 
-	explicit ImageMaker(Graph const &, std::unordered_set<string> stored_initially = {});
+	explicit ImageMaker(Graph const &, string res_dir /* e.g. path/to/GrappleMap/res */);
 
 	ImageMaker(ImageMaker const &) = delete;
 	ImageMaker & operator=(ImageMaker const &) = delete;
@@ -199,28 +211,28 @@ public:
 		string path, V3 bg_color,
 		vector<View> const &, unsigned grid_size = 2, unsigned grid_line_width = 2);
 
-	string png(
-		string output_dir, Position, double ymax, ImageView,
+	void png(
+		Position, double ymax, ImageView,
 		unsigned width, unsigned height, BgColor,
 		string base_linkname);
 
 	string rotation_gif(
-		string output_dir, Position, ImageView,
+		Position, ImageView,
 		unsigned width, unsigned height, BgColor,
 		string base_linkname);
 
 	string gif(
-		string output_dir,
 		vector<Position> const & frames,
 		ImageView,
 		unsigned width, unsigned height, BgColor,
 		string base_linkname);
 
 	string gifs(
-		string output_dir,
 		vector<Position> const & frames,
 		unsigned width, unsigned height, BgColor,
 		string base_linkname);
+
+	void make_svg(string const & filename, string const & dot) const;
 };
 
 }

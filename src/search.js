@@ -337,7 +337,7 @@ function update_position_pics()
 
 			var vc = view_code(view);
 
-			link.href = "position/" + n + vc + ".html";
+			link.href = "res/p" + n + vc + ".html";
 
 			var img = document.createElement("img");
 			img.src = image_url + "/p" + n + vc + "320x240.png";

@@ -8,8 +8,8 @@ output=./GrappleMap
 
 echo "Creating $output/."
 
-mkdir -p $output/{composer,search,explorer,position,editor}
-mkdir -p $output/images/store
+mkdir -p $output/{composer,search,explorer,editor}
+mkdir -p $output/res/store
 
 function download
 {

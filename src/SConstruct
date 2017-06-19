@@ -4,6 +4,7 @@ import os
 env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3 -DUSE_FTGL', LINKFLAGS='-lMagick++-6.Q16 -lMagickCore-6.Q16')
   # todo: shouldn't need magick++ in the above. the below should suffice
 env.ParseConfig('pkg-config --cflags --libs ImageMagick++')
+env.ParseConfig('pkg-config --cflags --libs libgvc')
 
 # profiling:
 # env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3 -pg', LINKFLAGS='-pg')
@@ -46,9 +47,9 @@ vr_playback   = env.Program('grapplemap-vr-playback', ['vr_playback.cpp', render
 todot         = env.Program('grapplemap-todot', ['todot.cpp', common], LIBS=cmdlibs)
 dbtojs        = env.Program('grapplemap-dbtojs', ['dbtojs.cpp', common], LIBS=cmdlibs)
 mkpospages    = env.Program('grapplemap-mkpospages', ['mkpospages.cpp', images, rendering, common],
-				LIBS = ['OSMesa', 'GLU', 'ftgl', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system', 'pthread'])
+				LIBS = ['OSMesa', 'GLU', 'ftgl', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system', 'pthread', 'gvc', 'cgraph'])
 mkvid      =env.Program('grapplemap-mkvid', ['makevideo.cpp', images, rendering, common],
-				LIBS = ['OSMesa', 'GLU', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system', 'ftgl'])
+				LIBS = ['OSMesa', 'GLU', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system', 'ftgl', 'gvc', 'cgraph'])
 
 em_editor = em_env.Program('grapplemap_editor.js', ['web_editor.cpp', 'graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp', 'rendering.cpp', 'playerdrawer.cpp'])
 
