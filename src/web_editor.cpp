@@ -838,7 +838,7 @@ void frame()
 		&& glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		do_edit(w, *w.cursor);
 
-	if (!w.edit_mode && !w.chosen_joint && !w.editor.playingBack())
+	if (!w.chosen_joint && !w.editor.playingBack())
 	{
 		V3 c = center(w.editor.current_position());
 		c.y *= 0.7;
