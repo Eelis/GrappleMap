@@ -594,7 +594,8 @@ namespace
 		{
 			map<NodeNum, bool> m;
 			m[ctx.n] = true;
-			foreach(nn : nodes_around(ctx.graph, set<NodeNum>{ctx.n}, 2)) m[nn] = false;
+			foreach(nn : nodes_around(ctx.graph, set<NodeNum>{ctx.n}, 2, true /* no taps */))
+				m[nn] = false;
 
 			std::ostringstream dotstream;
 			todot(ctx.graph, dotstream, m, code(ctx.view));

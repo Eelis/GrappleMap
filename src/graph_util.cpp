@@ -153,23 +153,32 @@ set<string> tags_in_desc(vector<string> const & desc)
 	return r;
 }
 
-bool connected(Graph const & g, NodeNum const a, set<NodeNum> const & s)
+bool connected(Graph const & g, NodeNum const a, set<NodeNum> const & s, bool const no_tap)
 {
 	foreach(b : s)
-		if (connected(g, a, b)) return true;
+		if (connected(g, a, b, no_tap)) return true;
 
 	return false;
 }
 
-bool connected(Graph const & g, NodeNum const a, NodeNum const b)
+bool is_tap(Sequence const & s)
+{
+	return s.description.front() == "tap";
+}
+
+bool connected(Graph const & g, NodeNum const a, NodeNum const b, bool const no_tap)
 {
 	foreach (s : g[a].in)
-		if (*from(g, s) == b)
-			return true;
+	{
+		if (no_tap && is_tap(g[*s])) continue;
+		if (*from(g, s) == b) return true;
+	}
 	
 	foreach (s : g[a].out)
-		if (*to(g, s) == b)
-			return true;
+	{
+		if (no_tap && is_tap(g[*s])) continue;
+		if (*to(g, s) == b) return true;
+	}
 
 	return false;
 }
@@ -179,7 +188,7 @@ std::set<NodeNum> grow(Graph const & g, std::set<NodeNum> const & nodes)
 	auto r = nodes;
 
 	foreach(n : nodenums(g))
-		if (connected(g, n, nodes)) { r.insert(n); break; }
+		if (connected(g, n, nodes, false)) { r.insert(n); break; }
 
 	return r;
 }
@@ -190,7 +199,7 @@ std::set<NodeNum> grow(Graph const & g, std::set<NodeNum> nodes, unsigned const 
 	return nodes;
 }
 
-set<NodeNum> nodes_around(Graph const & g, set<NodeNum> const & nodes, unsigned depth)
+set<NodeNum> nodes_around(Graph const & g, set<NodeNum> const & nodes, unsigned depth, bool const no_tap)
 {
 	set<NodeNum> all = nodes;
 	set<NodeNum> r;
@@ -200,7 +209,7 @@ set<NodeNum> nodes_around(Graph const & g, set<NodeNum> const & nodes, unsigned 
 		set<NodeNum> const prev = all;
 
 		foreach(n : nodenums(g))
-			if (connected(g, n, prev) && all.count(n) == 0)
+			if (connected(g, n, prev, no_tap) && all.count(n) == 0)
 			{
 				all.insert(n);
 				r.insert(n);

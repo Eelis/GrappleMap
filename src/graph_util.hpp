@@ -297,7 +297,7 @@ Reoriented<NodeNum> follow(Graph const &, Reoriented<NodeNum> const &, SeqNum);
 
 NodeNum follow(Graph const &, NodeNum, SeqNum);
 
-bool connected(Graph const &, NodeNum, NodeNum);
+bool connected(Graph const &, NodeNum, NodeNum, bool no_tap = false);
 
 inline optional<NodeNum> node_at(Graph const & g, PositionInSequence const pis)
 {
@@ -306,7 +306,7 @@ inline optional<NodeNum> node_at(Graph const & g, PositionInSequence const pis)
 	return boost::none;
 }
 
-set<NodeNum> nodes_around(Graph const &, set<NodeNum> const &, unsigned depth = 1);
+set<NodeNum> nodes_around(Graph const &, set<NodeNum> const &, unsigned depth = 1, bool no_tap = false);
 
 set<NodeNum> grow(Graph const &, set<NodeNum>, unsigned depth);
 
