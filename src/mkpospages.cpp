@@ -48,6 +48,14 @@ namespace
 		return "<img alt='" + alt + "' src='" + src + "' title='" + title + "'>";
 	}
 
+	string vid(string title, int width, int height, string src)
+	{
+		return "<video title='" + title + "' autoplay='autoplay' loop='loop' width='" + to_string(width) + "' height='" + to_string(height) + "'>"
+			+ "<source src='" + src + "' type='video/mp4'/>"
+			+ "</video>";
+		// todo: escape title
+	}
+
 	string link(string href, string content)
 	{
 		return "<a href='" + href + "'>" + content + "</a>";
@@ -465,9 +473,9 @@ namespace
 			return "<em>via</em> "
 				+ link(
 					"../composer/index.html?" + to_string(trans.step->index),
-					img(
-						transition_image_title(ctx.graph, *trans.step),
-						ctx.image_url + "/" + trans.base_filename + code(ctx.view) + ".gif", ""))
+					vid(
+						transition_image_title(ctx.graph, *trans.step), 200, 150,
+						ctx.image_url + "/" + trans.base_filename + code(ctx.view) + ".mp4"))
 				+ " <em>to</em>";
 		}
 
@@ -485,14 +493,14 @@ namespace
 					<< "<tr><td style='" << ImageMaker::css(bg_color(trans)) << "'>"
 					<< "<em>from</em> "
 					<< div("display:inline-block",
-						link(to_string(trans.other_node.index) + code(v) + ".html",
-							img(position_image_title(ctx.graph, trans.other_node),
+						link('p' + to_string(trans.other_node.index) + code(v) + ".html",
+							vid(position_image_title(ctx.graph, trans.other_node),
+								200, 150,
 								ctx.image_url + "/" + ctx.mkimg.rotation_gif(
 									translateNormal(trans.frames.front()),
 									ctx.view, 200, 150, bg_color(trans),
 									"rot" + to_string(ctx.n.index)
-									+ "in" + to_string(trans.step->index) + code(v)),
-								"")))
+									+ "in" + to_string(trans.step->index) + code(v)))))
 					<< ' ' << transition_card(ctx, trans) << "</td></tr>";
 			}
 
@@ -514,14 +522,13 @@ namespace
 					<< transition_card(ctx, trans)
 					<< " <div style='display:inline-block'>"
 					<< link(
-						to_string(trans.other_node.index) + code(v) + ".html",
-						img(position_image_title(ctx.graph, trans.other_node),
+						'p' + to_string(trans.other_node.index) + code(v) + ".html",
+						vid(position_image_title(ctx.graph, trans.other_node), 200, 150,
 							ctx.image_url + "/" + ctx.mkimg.rotation_gif(
 								translateNormal(trans.frames.back()),
 								ctx.view, 200, 150, bg_color(trans),
 								"rot" + to_string(ctx.n.index)
-								+ "out" + to_string(trans.step->index) + code(v)),
-							""))
+								+ "out" + to_string(trans.step->index) + code(v))))
 					<< "</a></div></td></tr>";
 			}
 
@@ -777,17 +784,16 @@ int main(int const argc, char const * const * const argv)
 
 		mkimg.no_anim = config->no_anim;
 
-		cout << '\n';
-		write_transition_gifs(mkimg, graph);
-
-		if (!keep_running) return 1;
-
 		ofstream(output_dir + "/config.js")
 			<< "image_url='"
 			<< (config->image_url
 					? *(config->image_url)
 					: "res/")
 			<< "';";
+
+		write_transition_gifs(mkimg, graph);
+
+		if (!keep_running) return 1;
 
 		cout << "Writing " << graph.num_nodes() << " position pages...   0%";
 

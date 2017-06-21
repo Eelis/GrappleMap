@@ -6,114 +6,13 @@
 #include "rendering.hpp"
 #include <GL/osmesa.h>
 #include <Magick++.h>
-#include <future>
-#include <queue>
 #include <unordered_set>
-#include <thread>
-#include <mutex>
 #include <boost/filesystem.hpp>
 #include <gvc.h>
-
-template<typename Data>
-class concurrent_queue
-{
-	std::queue<Data> q;
-	mutable std::mutex m;
-	std::condition_variable nonempty;
-	std::condition_variable nonfull;
-	bool nothing_new = false;
-
-	bool full() const
-	{
-		return q.size() > 16;
-	}
-
-public:
-
-	void finish()
-	{
-		std::unique_lock<std::mutex> lock(m);
-		nothing_new = true;
-		lock.unlock();
-		nonempty.notify_all();
-	}
-
-	void push(Data data)
-	{
-		assert(!nothing_new);
-
-		std::unique_lock<std::mutex> lock(m);
-		while (full()) nonfull.wait(lock);
-
-		q.push(std::move(data));
-
-		lock.unlock();
-		nonempty.notify_one();
-	}
-
-	bool pop(Data & out) // returns false if queue exhausted
-	{
-		std::unique_lock<std::mutex> lock(m);
-
-		while (q.empty())
-		{
-			if (nothing_new) return false;
-
-			nonempty.wait(lock);
-		}
-
-		out = std::move(q.front());
-		q.pop();
-
-		lock.unlock();
-		nonfull.notify_one();
-		return true;
-	}
-};
-
-
-template<typename Job>
-class ThreadPool
-{
-	concurrent_queue<Job> jobs;
-	std::vector<std::thread> workers;
-
-	void work()
-	{
-		Job job;
-		while (jobs.pop(job)) process(job);
-	}
-
-	public:
-
-		explicit ThreadPool(size_t const n)
-		{
-			for (size_t i = 0; i != n; ++i)
-				workers.emplace_back([this]{ work(); });
-		}
-
-		~ThreadPool()
-		{
-			jobs.finish();
-			foreach (w : workers) w.join();
-		}
-
-		ThreadPool(ThreadPool const &) = delete;
-
-		void add_job(Job j) { jobs.push(std::move(j)); }
-};
 
 namespace GrappleMap {
 
 namespace fs = boost::filesystem;
-
-struct GifGenerationJob
-{
-	fs::path path;
-	vector<Magick::Image> frames;
-};
-
-void process(GifGenerationJob &);
 
 struct OSMesaContextPtr
 {
@@ -144,13 +43,6 @@ class ImageMaker
 		unsigned width, unsigned height,
 		V3 bg_color,
 		View const &);
-
-	ThreadPool<GifGenerationJob> gif_generators;
-
-	void store_gif(
-		string const & filename,
-		string const & linkname,
-		std::function<vector<Magick::Image>()>);
 
 	void png(
 		pair<Position, Camera> const * pos_beg,
@@ -226,6 +118,14 @@ public:
 		vector<Position> const & frames,
 		unsigned width, unsigned height, BgColor,
 		string base_linkname);
+
+	void make_mp4(
+		string filename, string linkname,
+		size_t delay,
+		unsigned width, unsigned height,
+		V3 bg_color,
+		View const &,
+		function<vector<pair<Position, Camera>>()> make_pcs);
 
 	void make_svg(string const & filename, string const & dot) const;
 };

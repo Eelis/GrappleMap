@@ -362,11 +362,19 @@ function update_transition_pics()
 			var link = document.createElement("a");
 			link.href = "composer/index.html?" + e; // todo: preserve view
 
-			var img = document.createElement("img");
-			img.src = image_url + "/t" + e + "200x150" + view_code(view) + ".gif";
-			img.setAttribute('title', transition_image_title(db.transitions[e]));
-			link.appendChild(img);
+			var vid = document.createElement("video");
+			vid.autoplay = true;
+			vid.loop = true;
+			vid.width = 200;
+			vid.height = 150;
+			vid.setAttribute('title', transition_image_title(db.transitions[e]));
 
+			var vidsrc = document.createElement("source");
+			vidsrc.src = image_url + "/t" + e + "200x150" + view_code(view) + ".mp4";
+			vidsrc.type = "video/mp4";
+			vid.appendChild(vidsrc);
+
+			link.appendChild(vid);
 			target.appendChild(link);
 		});
 }

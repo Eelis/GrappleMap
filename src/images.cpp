@@ -117,6 +117,88 @@ void ImageMaker::png(
 	}
 }
 
+void ImageMaker::make_mp4(
+	string const filename,
+	string const linkname,
+	size_t const delay,
+	unsigned const width, unsigned const height,
+	V3 const bg_color,
+	View const & view,
+	function<vector<pair<Position, Camera>>()> make_pcs)
+{
+	store(filename, linkname, [&]
+		{
+			auto pcs = make_pcs();
+
+			size_t const
+				n = pcs.size(),
+				aawidth = width * 2,
+				aaheight = height * 2;
+
+			vector<boost::gil::rgb8_pixel_t> buf(aawidth * aaheight);
+
+			if (!OSMesaMakeCurrent(ctx.context, buf.data(), GL_UNSIGNED_BYTE, aawidth, aaheight))
+				error("OSMesaMakeCurrent");
+
+			Style style;
+			style.grid_size = 2;
+			style.grid_line_width = 2;
+			style.grid_color = bg_color * .8;
+			style.background_color = bg_color;
+
+			PlayerDrawer playerDrawer;
+
+			for (size_t i = 0; i != n; ++i)
+			{
+				std::ostringstream oss;
+				oss << "/tmp/frame" << std::setfill('0') << std::setw(3) << i << ".png";
+				string const tmpfile = oss.str();
+
+				renderBasic(
+					view,
+					graph, pcs[i].first, pcs[i].second,
+					{}, // default colors
+					0, 0, aawidth, aaheight,
+					style, playerDrawer);
+
+				glFlush();
+				glFinish();
+
+				foreach (p : buf) std::swap(p[0], p[2]);
+
+				vector<boost::gil::rgb8_pixel_t> buf2(width * height);
+
+				auto xy = [&](unsigned x, unsigned y){ return buf[y*width*2+x]; };
+
+				for (unsigned x = 0; x != width; ++x)
+				for (unsigned y = 0; y != height; ++y)
+				{
+					auto const & a = xy(x*2,  y*2  );
+					auto const & b = xy(x*2+1,y*2  );
+					auto const & c = xy(x*2,  y*2+1);
+					auto const & d = xy(x*2+1,y*2+1);
+
+					buf2[y*width+x][0] = (a[0] + b[0] + c[0] + d[0]) / 4;
+					buf2[y*width+x][1] = (a[1] + b[1] + c[1] + d[1]) / 4;
+					buf2[y*width+x][2] = (a[2] + b[2] + c[2] + d[2]) / 4;
+				}
+
+				boost::gil::png_write_view(tmpfile,
+					boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf2.data(), width*3)));
+			}
+
+			string command = "ffmpeg -y -loglevel panic -i '/tmp/frame%03d.png' -frames:v "
+				+ std::to_string(n) + "  -c:v libx264 -pix_fmt yuv420p -movflags +faststart "
+				+ res_dir + "/store/" + filename;
+
+			if (std::system(command.c_str()) != 0)
+				throw std::runtime_error("command failed: " + command);
+
+			cout << '.' << std::flush;
+
+		});
+}
+
 vector<Magick::Image> ImageMaker::make_frames(
 	vector<pair<Position, Camera>> const & pcs,
 	size_t const delay,
@@ -288,17 +370,6 @@ void ImageMaker::png(
 	png(pos, camera, width, height, path, bg_color, {{0, 0, 1, 1, none, 45}});
 }
 
-void ImageMaker::store_gif(
-	string const & filename,
-	string const & linkname,
-	std::function<vector<Magick::Image>()> make_frames)
-{
-	store(filename, linkname, [&]
-		{
-			gif_generators.add_job(GifGenerationJob{res_dir + "/store/" + filename, make_frames()});
-		});
-}
-
 void ImageMaker::store(
 	string const & filename,
 	string const & linkname,
@@ -314,10 +385,11 @@ void ImageMaker::store(
 	string const link_path = res_dir + "/" + linkname;
 
 	unlink(link_path.c_str());
+
+	write_file();
+
 	if (symlink(link_target.c_str(), link_path.c_str()))
 		perror("symlink");
-
-	if (!file_exists) write_file();
 }
 
 void ImageMaker::png(
@@ -361,14 +433,15 @@ string ImageMaker::rotation_gif(
 	if (view.mirror) p = mirror(p);
 
 	string const base_filename = to_string(hash_value(p)) + "rot" + to_string(bg_color);
-	string const gif_filename = base_filename + ".gif";
+	string const mp4_filename = base_filename + ".mp4";
 
 	string const linkname =
 		base_linkname +
 		to_string(width) + 'x' + to_string(height) +
-		'c' + to_string(bg_color) + ".gif";
+		'c' + to_string(bg_color) + ".mp4";
 
-	store_gif(gif_filename, linkname, [&]
+	make_mp4(mp4_filename, linkname, 8, width, height, color(bg_color), {0, 0, 1, 1, none, 45},
+		[&]
 		{
 			double const ymax = std::max(.8, std::max(p[player0][Head].y, p[player1][Head].y));
 
@@ -387,7 +460,7 @@ string ImageMaker::rotation_gif(
 				pcs.emplace_back(p, camera);
 			}
 
-			return make_frames(pcs, 8, width, height, color(bg_color), {0, 0, 1, 1, none, 45});
+			return pcs;
 		});
 
 	return linkname;
@@ -406,12 +479,13 @@ string ImageMaker::gif(
 
 	string filename
 		= to_string(boost::hash_value(frames))
-		+ attrs + '-' + to_string(bg_color) + ".gif";
+		+ attrs + '-' + to_string(bg_color) + ".mp4";
 
-	string const linkname = base_linkname + attrs + ".gif";
+	string const linkname = base_linkname + attrs + ".mp4";
 
 	if (view.heading)
-		store_gif(filename, linkname, [&]
+		make_mp4(filename, linkname, 3, width, height, color(bg_color), {0, 0, 1, 1, none, 45},
+			[&]
 			{
 				vector<double> ymaxes;
 				foreach (pos : frames)
@@ -440,7 +514,7 @@ string ImageMaker::gif(
 					++i;
 				}
 
-				return make_frames(pcs, 3, width, height, color(bg_color), {0, 0, 1, 1, none, 45});
+				return pcs;
 			});
 
 	return linkname;
@@ -459,12 +533,13 @@ string ImageMaker::gifs(
 	foreach (view : views())
 	{
 		string const
-			suffix = code(view) + string(".gif"),
+			suffix = code(view) + string(".mp4"),
 			filename = base_filename + suffix,
 			linkname = ext_linkbase + suffix;
 
 		if (view.heading)
-			store_gif(filename, linkname, [&]
+			make_mp4(filename, linkname, 3, width, height, color(bg_color), {0, 0, 1, 1, none, 45},
+				[&]
 				{
 					vector<double> ymaxes;
 					foreach (pos : frames)
@@ -493,7 +568,7 @@ string ImageMaker::gifs(
 						++i;
 					}
 
-					return make_frames(pcs, 3, width, height, color(bg_color), {0, 0, 1, 1, none, 45});
+					return pcs;
 				});
 	}
 
@@ -503,7 +578,6 @@ string ImageMaker::gifs(
 ImageMaker::ImageMaker(Graph const & g, string rd)
 	: graph(g)
 	, ctx(OSMesaCreateContextExt(OSMESA_RGB, 16, 0, 16, nullptr))
-	, gif_generators(8)
     , res_dir(rd)
 {
 	for (fs::directory_iterator i(res_dir + "/store"), e; i != e; ++i)
@@ -517,11 +591,6 @@ ImageMaker::ImageMaker(Graph const & g, string rd)
 		<< linked_initially.size() << " existing links in store.\n";
 
 	if (!ctx.context) error("OSMeseCreateContextExt failed");
-}
-
-void process(GifGenerationJob & job)
-{
-	Magick::writeImages(job.frames.begin(), job.frames.end(), job.path.native());
 }
 
 void ImageMaker::make_svg(string const & filename, string const & dot) const
