@@ -8,8 +8,15 @@ The GrappleMap is:
    animated with stick figures.
 2. A set of tools to build and explore this database.
 
-The main interface for the database is the [website](http://eel.is/GrappleMap/), which
-in addition to the search and position pages includes the following web applications:
+The main interface for the database is the [website](http://eel.is/GrappleMap/), which has:
+
+- A [search page](http://eel.is/GrappleMap/):
+
+ ![screenshot](http://eel.is/GrappleMap-extra/search.png)
+
+- Per-position pages:
+
+ ![screenshot](http://eel.is/GrappleMap-extra/pospage.png)
 
 - [Composer](http://eel.is/GrappleMap/composer/):
 
