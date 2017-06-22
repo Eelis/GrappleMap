@@ -179,7 +179,7 @@ namespace
 
 	void write_todo(Graph const & g, string const output_dir)
 	{
-		ofstream html(output_dir + "todo.html");
+		ofstream html(output_dir + "/todo.html");
 
 		html << "</ul><h2>Dead ends</h2><ul>";
 
@@ -204,7 +204,7 @@ namespace
 
 	void write_lists(Graph const & g, string const output_dir)
 	{
-		ofstream html(output_dir + "lists.html");
+		ofstream html(output_dir + "/lists.html");
 
 		html
 			<< html5head("GrappleMap: Index")
