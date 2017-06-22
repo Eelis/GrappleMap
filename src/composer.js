@@ -148,8 +148,11 @@ function refreshPreChoices()
 
 	choices.forEach(function(step)
 		{
+			var ndesc = db.nodes[step_from(step).node].description;
+			var nds = (ndesc.length == 0 ? "" : ndesc[0].replace(/\\n/g, ' '));
+
 			elem.appendChild(drillButton(
-				db.nodes[step_from(step).node].description[0].replace(/\\n/g, ' '),
+				nds,
 				db.transitions[step.transition].description[0].replace(/\\n/g, ' '),
 				function(c){ return function(){
 					steps = [c].concat(steps);
@@ -180,9 +183,12 @@ function refreshPostChoices()
 
 	choices.forEach(function(step)
 		{
+			var ndesc = db.nodes[step_to(step).node].description;
+			var nds = (ndesc.length == 0 ? "" : ndesc[0].replace(/\\n/g, ' '));
+
 			elem.appendChild(drillButton(
 				db.transitions[step.transition].description[0].replace(/\\n/g, ' '),
-				db.nodes[step_to(step).node].description[0].replace(/\\n/g, ' '),
+				nds,
 				function(c){ return function(){
 					steps.push(c);
 					resetFrames();
@@ -196,7 +202,8 @@ function node_link(node)
 {
 	var link = document.createElement("a");
 	link.href = "../res/p" + node + "e.html"; // todo: preserve mirroring
-	link.text = db.nodes[node].description[0].replace(/\\n/g, ' ');
+	var desc = db.nodes[node].description;
+	link.text = desc.length != 0 ? desc[0].replace(/\\n/g, ' ') : 'p' + node;
 	return link;
 }
 
