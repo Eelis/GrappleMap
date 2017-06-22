@@ -5,14 +5,117 @@
 #include "headings.hpp"
 #include "rendering.hpp"
 #include <GL/osmesa.h>
-#include <Magick++.h>
 #include <unordered_set>
 #include <boost/filesystem.hpp>
 #include <gvc.h>
+#include <future>
+#include <queue>
+#include <thread>
+#include <mutex>
+#include <boost/gil/gil_all.hpp>
+
+template<typename Data>
+class concurrent_queue
+{
+	std::queue<Data> q;
+	mutable std::mutex m;
+	std::condition_variable nonempty;
+	std::condition_variable nonfull;
+	bool nothing_new = false;
+
+	bool full() const
+	{
+		return q.size() > 16;
+	}
+
+public:
+
+	void finish()
+	{
+		std::unique_lock<std::mutex> lock(m);
+		nothing_new = true;
+		lock.unlock();
+		nonempty.notify_all();
+	}
+
+	void push(Data data)
+	{
+		assert(!nothing_new);
+
+		std::unique_lock<std::mutex> lock(m);
+		while (full()) nonfull.wait(lock);
+
+		q.push(std::move(data));
+
+		lock.unlock();
+		nonempty.notify_one();
+	}
+
+	bool pop(Data & out) // returns false if queue exhausted
+	{
+		std::unique_lock<std::mutex> lock(m);
+
+		while (q.empty())
+		{
+			if (nothing_new) return false;
+
+			nonempty.wait(lock);
+		}
+
+		out = std::move(q.front());
+		q.pop();
+
+		lock.unlock();
+		nonfull.notify_one();
+		return true;
+	}
+};
+
+template<typename Job>
+class ThreadPool
+{
+	concurrent_queue<Job> jobs;
+	std::vector<std::thread> workers;
+
+	void work(size_t const threadid)
+	{
+		Job job;
+		while (jobs.pop(job))
+			process(job, threadid);
+	}
+
+	public:
+
+		explicit ThreadPool(size_t const n)
+		{
+			for (size_t i = 0; i != n; ++i)
+				workers.emplace_back([this, i]{ work(i); });
+		}
+
+		~ThreadPool()
+		{
+			jobs.finish();
+			foreach (w : workers) w.join();
+		}
+
+		ThreadPool(ThreadPool const &) = delete;
+
+		void add_job(Job j) { jobs.push(std::move(j)); }
+};
 
 namespace GrappleMap {
 
 namespace fs = boost::filesystem;
+
+struct VideoGenerationJob
+{
+	fs::path output_file;
+	size_t num_frames;
+	unsigned width, height;
+	vector<boost::gil::rgb8_pixel_t> tiled_frames;
+};
+
+void process(VideoGenerationJob const &, size_t thread_id);
 
 struct OSMesaContextPtr
 {
@@ -32,17 +135,11 @@ class ImageMaker
 	OSMesaContextPtr ctx;
 	GVC_t *gvc = gvContext();
 	std::unordered_set<string> stored_initially, linked_initially;
+	ThreadPool<VideoGenerationJob> video_generators;
 
 	void png(
 		Position pos, double angle, double ymax, string filename,
 		unsigned width, unsigned height, V3 bg_color);
-
-	vector<Magick::Image> make_frames(
-		vector<pair<Position, Camera>> const &,
-		size_t delay,
-		unsigned width, unsigned height,
-		V3 bg_color,
-		View const &);
 
 	void png(
 		pair<Position, Camera> const * pos_beg,

@@ -1,9 +1,7 @@
 import os
 
 # release:
-env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3 -DUSE_FTGL', LINKFLAGS='-lMagick++-6.Q16 -lMagickCore-6.Q16')
-  # todo: shouldn't need magick++ in the above. the below should suffice
-env.ParseConfig('pkg-config --cflags --libs ImageMagick++')
+env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3 -DUSE_FTGL')
 env.ParseConfig('pkg-config --cflags --libs libgvc')
 
 # profiling:

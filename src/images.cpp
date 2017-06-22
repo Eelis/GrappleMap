@@ -117,6 +117,8 @@ void ImageMaker::png(
 	}
 }
 
+constexpr size_t columns = 10;
+
 void ImageMaker::make_mp4(
 	string const filename,
 	string const linkname,
@@ -132,12 +134,15 @@ void ImageMaker::make_mp4(
 
 			size_t const
 				n = pcs.size(),
+				rows = n / columns + 1,
 				aawidth = width * 2,
-				aaheight = height * 2;
+				aaheight = height * 2,
+				fullwidth = columns * aawidth,
+				fullheight = rows * aaheight;
 
-			vector<boost::gil::rgb8_pixel_t> buf(aawidth * aaheight);
+			vector<boost::gil::rgb8_pixel_t> buf(fullwidth * fullheight);
 
-			if (!OSMesaMakeCurrent(ctx.context, buf.data(), GL_UNSIGNED_BYTE, aawidth, aaheight))
+			if (!OSMesaMakeCurrent(ctx.context, buf.data(), GL_UNSIGNED_BYTE, fullwidth, fullheight))
 				error("OSMesaMakeCurrent");
 
 			Style style;
@@ -150,142 +155,78 @@ void ImageMaker::make_mp4(
 
 			for (size_t i = 0; i != n; ++i)
 			{
-				std::ostringstream oss;
-				oss << "/tmp/frame" << std::setfill('0') << std::setw(3) << i << ".png";
-				string const tmpfile = oss.str();
+				size_t const
+					row = i / columns,
+					column = i % columns;
 
 				renderBasic(
 					view,
 					graph, pcs[i].first, pcs[i].second,
 					{}, // default colors
-					0, 0, aawidth, aaheight,
+					column * aawidth, row * aaheight, aawidth, aaheight,
 					style, playerDrawer);
-
-				glFlush();
-				glFinish();
-
-				foreach (p : buf) std::swap(p[0], p[2]);
-
-				vector<boost::gil::rgb8_pixel_t> buf2(width * height);
-
-				auto xy = [&](unsigned x, unsigned y){ return buf[y*width*2+x]; };
-
-				for (unsigned x = 0; x != width; ++x)
-				for (unsigned y = 0; y != height; ++y)
-				{
-					auto const & a = xy(x*2,  y*2  );
-					auto const & b = xy(x*2+1,y*2  );
-					auto const & c = xy(x*2,  y*2+1);
-					auto const & d = xy(x*2+1,y*2+1);
-
-					buf2[y*width+x][0] = (a[0] + b[0] + c[0] + d[0]) / 4;
-					buf2[y*width+x][1] = (a[1] + b[1] + c[1] + d[1]) / 4;
-					buf2[y*width+x][2] = (a[2] + b[2] + c[2] + d[2]) / 4;
-				}
-
-				boost::gil::png_write_view(tmpfile,
-					boost::gil::flipped_up_down_view(boost::gil::interleaved_view(width, height, buf2.data(), width*3)));
 			}
 
-			string command = "ffmpeg -y -loglevel panic -i '/tmp/frame%03d.png' -frames:v "
-				+ std::to_string(n) + "  -c:v libx264 -pix_fmt yuv420p -movflags +faststart "
-				+ res_dir + "/store/" + filename;
+			glFlush();
+			glFinish();
 
-			if (std::system(command.c_str()) != 0)
-				throw std::runtime_error("command failed: " + command);
+			foreach (p : buf) std::swap(p[0], p[2]);
 
-			cout << '.' << std::flush;
-
+			VideoGenerationJob job{res_dir + "/store/" + filename, n, width, height};
+			job.tiled_frames = move(buf);
+			video_generators.add_job(move(job));
 		});
 }
 
-vector<Magick::Image> ImageMaker::make_frames(
-	vector<pair<Position, Camera>> const & pcs,
-	size_t const delay,
-	unsigned const width, unsigned const height,
-	V3 const bg_color,
-	View const & view)
+
+void process(VideoGenerationJob const & job, size_t const threadid)
 {
+	vector<boost::gil::rgb8_pixel_t> buf2(job.width * job.height);
+
 	size_t const
-		n = pcs.size(),
-		columns = 10,
-		rows = n / columns + 1,
-		aawidth = width * 2,
-		aaheight = height * 2,
-		fullwidth = columns * aawidth,
-		fullheight = rows * aaheight;
+		aawidth = job.width * 2,
+		aaheight = job.height * 2;
 
-	vector<boost::gil::rgb8_pixel_t> buf(fullwidth * fullheight);
-
-	if (!OSMesaMakeCurrent(ctx.context, buf.data(), GL_UNSIGNED_BYTE, fullwidth, fullheight))
-		error("OSMesaMakeCurrent");
-
-	Style style;
-	style.grid_size = 2;
-	style.grid_line_width = 2;
-	style.grid_color = bg_color * .8;
-	style.background_color = bg_color;
-
-	PlayerDrawer playerDrawer;
-
-	for (size_t i = 0; i != n; ++i)
+	for (size_t i = 0; i != job.num_frames; ++i)
 	{
 		size_t const
 			row = i / columns,
 			column = i % columns;
 
-		renderBasic(
-			view,
-			graph, pcs[i].first, pcs[i].second,
-			{}, // default colors
-			column * aawidth, row * aaheight, aawidth, aaheight,
-			style, playerDrawer);
-
-		if (no_anim) break;
-	}
-
-	glFlush();
-	glFinish();
-
-	vector<Magick::Image> frames;
-
-	for (size_t i = 0; i != n; ++i)
-	{
-		Magick::Image img(Magick::Geometry(width, height), "white");
-		img.animationDelay(delay);
-		img.modifyImage();
-		Magick::Pixels pixcache(img);
-		Magick::PixelPacket * pixels = pixcache.get(0, 0, width, height);
-
-		size_t const
-			row = i / columns,
-			column = i % columns;
+		std::ostringstream oss;
+		oss << "/tmp/t" << threadid << "frame" << std::setfill('0') << std::setw(3) << i << ".png";
+		string const tmpfile = oss.str();
 
 		auto xy = [&](unsigned x, unsigned y)
 			{
-				return buf[(row * aaheight + y) * (columns * aawidth) + (column * aawidth + x)];
+				return job.tiled_frames[(row * aaheight + y) * (columns * aawidth) + (column * aawidth + x)];
 			};
 
-		for (unsigned x = 0; x != width; ++x)
-		for (unsigned y = 0; y != height; ++y)
+		for (unsigned x = 0; x != job.width; ++x)
+		for (unsigned y = 0; y != job.height; ++y)
 		{
-			auto rgb0 = xy(x*2,y*2);
-			auto rgb1 = xy(x*2,y*2+1);
-			auto rgb2 = xy(x*2+1,y*2);
-			auto rgb3 = xy(x*2+1,y*2+1);
-			Magick::PixelPacket & pix = pixels[(height - 1 - y) * width + x];
-			pix.blue  = (rgb0[0] + rgb1[0] + rgb2[0] + rgb3[0]) << (8 - 2);
-			pix.green = (rgb0[1] + rgb1[1] + rgb2[1] + rgb3[1]) << (8 - 2);
-			pix.red   = (rgb0[2] + rgb1[2] + rgb2[2] + rgb3[2]) << (8 - 2);
+			auto const & a = xy(x*2,  y*2  );
+			auto const & b = xy(x*2+1,y*2  );
+			auto const & c = xy(x*2,  y*2+1);
+			auto const & d = xy(x*2+1,y*2+1);
+
+			buf2[y*job.width+x][0] = (a[0] + b[0] + c[0] + d[0]) / 4;
+			buf2[y*job.width+x][1] = (a[1] + b[1] + c[1] + d[1]) / 4;
+			buf2[y*job.width+x][2] = (a[2] + b[2] + c[2] + d[2]) / 4;
 		}
 
-		pixcache.sync();
-		frames.push_back(move(img));
-
-		if (no_anim) break;
+		boost::gil::png_write_view(tmpfile,
+			boost::gil::flipped_up_down_view(boost::gil::interleaved_view(job.width, job.height, buf2.data(), job.width*3)));
 	}
 
-	return frames;
+	string command = "ffmpeg -threads 1 -y -loglevel panic -i '/tmp/t" + to_string(threadid) + "frame%03d.png' -frames:v "
+		+ std::to_string(job.num_frames) + "  -c:v libx264 -pix_fmt yuv420p -movflags +faststart "
+		+ job.output_file.native();
+
+	if (std::system(command.c_str()) != 0)
+		throw std::runtime_error("command failed: " + command);
+
+	cout << '.' << std::flush;
 }
 
 void ImageMaker::png(
@@ -578,6 +519,7 @@ string ImageMaker::gifs(
 ImageMaker::ImageMaker(Graph const & g, string rd)
 	: graph(g)
 	, ctx(OSMesaCreateContextExt(OSMESA_RGB, 16, 0, 16, nullptr))
+	, video_generators(1)
     , res_dir(rd)
 {
 	for (fs::directory_iterator i(res_dir + "/store"), e; i != e; ++i)
