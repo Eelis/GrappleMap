@@ -132,6 +132,9 @@ void ImageMaker::make_mp4(
 		{
 			auto pcs = make_pcs();
 
+			assert(!pcs.empty());
+			if (no_anim) pcs.resize(1);
+
 			size_t const
 				n = pcs.size(),
 				rows = n / columns + 1,
@@ -172,9 +175,10 @@ void ImageMaker::make_mp4(
 
 			foreach (p : buf) std::swap(p[0], p[2]);
 
-			VideoGenerationJob job{res_dir + "/store/" + filename, n, width, height};
-			job.tiled_frames = move(buf);
-			video_generators.add_job(move(job));
+			video_generators.add_job(VideoGenerationJob
+				{ res_dir + "/store/" + filename
+				, n, width, height
+				, move(buf) });
 		});
 }
 
