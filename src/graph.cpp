@@ -274,7 +274,13 @@ void Graph::compute_in_out(NodeNum const n)
 Graph::Graph(vector<NamedPosition> pp, vector<Sequence> ss)
 {
 	foreach(p : pp)
+	{
+		foreach(x : data->nodes)
+			if (!x.description.empty() && x.description == p.description)
+				throw runtime_error("multiple positions named \"" + x.description[0] + "\"");
+
 		data[&Data::nodes].push_back(Node(move(p)));
+	}
 
 	foreach (s : ss)
 	{
