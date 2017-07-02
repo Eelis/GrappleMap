@@ -13,6 +13,20 @@ struct NamedPosition
 	optional<unsigned> line_nr;
 };
 
+inline string const * name(NamedPosition const & p)
+{
+	return p.description.empty() ? nullptr : &p.description.front();
+}
+
+inline optional<vector<string>> desc(NamedPosition const & p)
+{
+	if (p.description.size() < 2) return {};
+
+	vector<string> v = p.description;
+	v.erase(v.begin());
+	return v;
+}
+
 inline Position & follow(Sequence & s, PosNum p) // todo: move
 {
 	return s.positions[p.index];
