@@ -4,8 +4,5 @@ set -e
 
 commit=$1
 
-git show "${commit}:GrappleMap.txt" > /tmp/new.grapplemapdb
-git show "${commit}^:GrappleMap.txt" > /tmp/old.grapplemapdb
-
-src/grapplemap-diff /tmp/old.grapplemapdb /tmp/new.grapplemapdb | dot -Tpng -o /tmp/t.png
+src/grapplemap-diff <(git show "${commit}^:GrappleMap.txt") <(git show "${commit}:GrappleMap.txt") | dot -Tpng -o /tmp/t.png
 gwenview /tmp/t.png
