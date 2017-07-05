@@ -12,33 +12,40 @@ The main interface for the database is the [website](http://eel.is/GrappleMap/),
 
 - A [search page](http://eel.is/GrappleMap/):
 
- ![screenshot](http://eel.is/GrappleMap-extra/search.png)
+  ![screenshot](http://eel.is/GrappleMap-extra/search.png)
 
 - Per-position pages:
 
- ![screenshot](http://eel.is/GrappleMap-extra/pospage.png)
+  ![screenshot](http://eel.is/GrappleMap-extra/pospage.png)
 
 - [Composer](http://eel.is/GrappleMap/composer/):
 
- ![screenshot](http://eel.is/GrappleMap-extra/composer.png)
+  ![screenshot](http://eel.is/GrappleMap-extra/composer.png)
 
 - [Explorer](http://eel.is/GrappleMap/explorer/):
 
- ![screenshot](http://eel.is/GrappleMap-extra/explorer.png)
+  ![screenshot](http://eel.is/GrappleMap-extra/explorer.png)
 
 - [Editor](http://eel.is/GrappleMap/editor/):
 
- ![screenshot](http://eel.is/GrappleMap-extra/editor.png)
+  ![screenshot](http://eel.is/GrappleMap-extra/editor.png)
 
-In addition, there is an old native editor, and a VR interface (currently only on Linux):
+In addition, there is:
 
-[![screenshot](https://img.youtube.com/vi/MAeBgGZ1GdM/0.jpg)](https://www.youtube.com/watch?v=MAeBgGZ1GdM)
+- a native editor (only built and tested on Linux)
 
-And there are some utilities for making videos of
-scripted or randomly generated matches, like these:
+- a VR interface (only built and tested on Linux):
 
-[![demo](https://img.youtube.com/vi/sdygmrlm-ck/0.jpg)](https://www.youtube.com/watch?v=sdygmrlm-ck)
-[![blenderdemo](https://img.youtube.com/vi/rC7zTBMPj1Y/0.jpg)](https://www.youtube.com/watch?v=rC7zTBMPj1Y)
+  [![screenshot](https://img.youtube.com/vi/MAeBgGZ1GdM/0.jpg)](https://www.youtube.com/watch?v=MAeBgGZ1GdM)
+
+- some utilities for making videos of scripted or randomly generated matches, like these:
+
+  [![demo](https://img.youtube.com/vi/sdygmrlm-ck/0.jpg)](https://www.youtube.com/watch?v=sdygmrlm-ck)
+  [![blenderdemo](https://img.youtube.com/vi/rC7zTBMPj1Y/0.jpg)](https://www.youtube.com/watch?v=rC7zTBMPj1Y)
+
+- a diff utility for summarizing changesets, e.g.:
+
+  [![diff](http://eel.is/GrappleMap-extra/diff-small.png)](http://eel.is/GrappleMap-extra/diff-big.png)
 
 ## FAQ
 
