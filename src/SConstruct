@@ -55,4 +55,7 @@ em_editor = em_env.Program('grapplemap_editor.js', ['web_editor.cpp', 'graph.cpp
 
 db_loader = em_nogfx.Program('grapplemap_db_loader.js', ['web_db_loader.cpp', 'graph.cpp', 'graph_util.cpp', 'positions.cpp', 'persistence.cpp', 'paths.cpp', 'metadata.cpp'])
 
+Depends(em_editor, '../GrappleMap.txt')
+Depends(db_loader, '../GrappleMap.txt')
+
 env.Alias('noX', [dbtojs, mkpospages, diff, mkvid, em_editor, db_loader]);
