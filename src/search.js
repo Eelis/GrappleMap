@@ -569,10 +569,14 @@ function emscripten_loaded()
 	update_view_controls();
 
 	results_dirty = true;
+	recompute_results();
 
 	window.addEventListener('resize', function() { engine.resize(); });
 
 	tick_graph(svg);
+
+	document.getElementById('loading').style.display = 'none';
+	document.getElementById('realpage').style.display = 'block';
 }
 
 function on_view_change()

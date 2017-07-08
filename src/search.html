@@ -16,8 +16,14 @@
 		<script src='config.js'></script>
 		<script src='graphdisplay.js'></script>
 	</head>
-	<body style='margin:0px;text-align:center'>
+	<body style='margin:0px;text-align:center;overflow:scroll'>
+
 		<h1><a target='_blank' href='https://github.com/Eelis/GrappleMap/'>GrappleMap</a></h1>
+
+		<h2 id='loading'>Loading...</h2>
+
+		<div id='realpage' style='border:0;padding:0;margin:0;width:100%;height:100%;display:none'>
+
 		<h2>Search</h2>
 		<div style='border:1px solid black;display:inline-block;text-align:left;padding:15px'>
 			Show positions and transitions that have <em>all of</em> these tags:
@@ -71,6 +77,8 @@
 		</div>
 
 		<p id='no_neighbourhood'></p>
+
+		</div>
 
 		<script src='search.js'></script>
 		<script src='grapplemap_db_loader.js'></script>
