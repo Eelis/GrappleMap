@@ -37,7 +37,7 @@ function node_is_selected(node)
 			return false;
 
 	for (var i = 0; i != substrs.length; ++i)
-		if (node.description.join(" ").indexOf(substrs[i]) == -1 &&
+		if (!any_has_substr(node.description, substrs[i]) &&
 			!any_has_substr(node.tags, substrs[i]))
 			return false;
 
@@ -60,9 +60,8 @@ function trans_is_selected(trans)
 		if (trans_kinda_has_tag(trans, selected_tags[i][0]) != selected_tags[i][1])
 			return false;
 
-
 	for (var i = 0; i != substrs.length; ++i)
-		if (!any_has_substr(trans.description.join(" "), substrs[i]) && // todo: correct description?
+		if (!any_has_substr(trans.description, substrs[i]) &&
 			!any_has_substr(trans.tags, substrs[i]))
 			return false;
 
