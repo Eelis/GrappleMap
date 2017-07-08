@@ -79,19 +79,15 @@ function tag_refines(tag)
 		trans_in: 0,
 		trans_out: 0 };
 
-	db.nodes.forEach(function(n){
-		if (node_is_selected(n))
-			if (node_has_tag(n, tag)) ++r.nodes_in; else ++r.nodes_out;
+	selected_nodes.forEach(function(n){
+		if (node_has_tag(db.nodes[n], tag)) ++r.nodes_in; else ++r.nodes_out;
 	});
 
-	db.transitions.forEach(function(trans){
-		if (trans_is_selected(trans))
-		{
-			if (trans_kinda_has_tag(trans, tag))
-				++r.trans_in;
-			else
-				++r.trans_out;
-		}
+	selected_edges.forEach(function(trans){
+		if (trans_kinda_has_tag(db.transitions[trans], tag))
+			++r.trans_in;
+		else
+			++r.trans_out;
 	});
 
 	return r;
@@ -109,6 +105,8 @@ function remove_tag(t)
 	on_query_changed();
 }
 
+var selected_edges = [];
+
 function on_query_changed()
 {
 	selected_nodes = [];
@@ -118,6 +116,11 @@ function on_query_changed()
 
 	if (selected_nodes.length != 0)
 		set_selected_node(selected_nodes[0]);
+
+	selected_edges = [];
+	for (var n = 0; n != db.transitions.length; ++n)
+		if (trans_is_selected(db.transitions[n]))
+			selected_edges.push(n);
 
 	update_tag_list();
 	update_position_pics();
@@ -350,11 +353,6 @@ function update_position_pics()
 
 function update_transition_pics()
 {
-	var selected_edges = [];
-	for (var n = 0; n != db.transitions.length; ++n)
-		if (trans_is_selected(db.transitions[n]))
-			selected_edges.push(n);
-
 	document.getElementById('trans_count_label').innerHTML = selected_edges.length;
 
 	paged_transitions(selected_edges, function(e, target)
