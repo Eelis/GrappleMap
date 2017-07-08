@@ -93,43 +93,54 @@ function tag_refines(tag)
 	return r;
 }
 
+var results_dirty = false;
+
 function add_tag(t, b)
 {
 	selected_tags.push([t, b]);
-	on_query_changed();
+	results_dirty = true;
 }
 
 function remove_tag(t)
 {
 	selected_tags.splice(selected_tags.indexOf(t), 1);
-	on_query_changed();
+	results_dirty = true;
 }
 
 var selected_edges = [];
 
-function on_query_changed()
+function recompute_results()
 {
-	selected_nodes = [];
-	for (var n = 0; n != db.nodes.length; ++n)
-		if (node_is_selected(db.nodes[n]))
-			selected_nodes.push(n);
+	if (results_dirty)
+	{
+		results_dirty = false;
 
-	if (selected_nodes.length != 0)
-		set_selected_node(selected_nodes[0]);
+		selected_nodes = [];
+		for (var n = 0; n != db.nodes.length; ++n)
+			if (node_is_selected(db.nodes[n]))
+				selected_nodes.push(n);
 
-	selected_edges = [];
-	for (var n = 0; n != db.transitions.length; ++n)
-		if (trans_is_selected(db.transitions[n]))
-			selected_edges.push(n);
+		if (selected_nodes.length != 0)
+			set_selected_node(selected_nodes[0]);
 
-	update_tag_list();
-	update_position_pics();
-	update_transition_pics();
-	update_graph();
+		selected_edges = [];
+		for (var n = 0; n != db.transitions.length; ++n)
+			if (trans_is_selected(db.transitions[n]))
+				selected_edges.push(n);
 
-	history.replaceState(null, "", "index.html" + query_string_for_selection());
-		// todo: handle back nav
+		update_tag_list();
+		update_position_pics();
+		update_transition_pics();
+		update_graph();
+
+		history.replaceState(null, "", "index.html" + query_string_for_selection());
+			// todo: handle back nav
+	}
+
+	setTimeout(recompute_results, 1000);
 }
+
+recompute_results();
 
 function update_view_controls()
 {
@@ -521,7 +532,7 @@ function on_substrs()
 	for (var i = 0; i != substrs.length; ++i)
 		substrs[i] = substrs[i].toLowerCase();
 
-	on_query_changed();
+	results_dirty = true;
 }
 
 function emscripten_loaded()
@@ -558,7 +569,7 @@ function emscripten_loaded()
 
 	update_view_controls();
 
-	on_query_changed();
+	results_dirty = true;
 
 	window.addEventListener('resize', function() { engine.resize(); });
 
