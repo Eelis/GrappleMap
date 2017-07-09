@@ -1,5 +1,6 @@
 #include "persistence.hpp"
 #include "metadata.hpp"
+#include "md5.hpp"
 #include <fstream>
 #include <iterator>
 #include <cstring>
@@ -32,10 +33,12 @@ namespace
 		if (s.size() != 2 * joint_count * 3 * 2)
 			error("position string has incorrect size " + to_string(s.size()));
 
-		auto g = [&s]
+		size_t offset = 0;
+
+		auto g = [&]
 			{
-				double d = double(fromBase62(s[0]) * 62 + fromBase62(s[1])) / 1000;
-				s.erase(0, 2);
+				double d = double(fromBase62(s[offset]) * 62 + fromBase62(s[offset + 1])) / 1000;
+				offset += 2;
 				return d;
 			};
 
@@ -162,12 +165,66 @@ Graph loadGraph(std::istream & ff)
 	return Graph(move(pp), move(edges));
 }
 
+void writeIndex(string const filename, Graph const & g, string const & dbHash)
+{
+	std::ofstream f(filename);
+	f << dbHash << '\n';
+	foreach(n : seqnums(g))
+		f << g[n].from->index << ' ' << g[n].to->index << ' ';
+}
+
 Graph loadGraph(string const filename)
 {
-	vector<Sequence> edges;
 	std::ifstream ff(filename, std::ios::binary);
+
 	if (!ff) error(filename + ": " + std::strerror(errno));
-	return loadGraph(ff);
+
+	std::istreambuf_iterator<char> i(ff), e;
+	std::string const db(i, e);
+
+	auto const dbhash = MD5(db).hexdigest();//to_string(std::hash<string>()(db));
+
+	string const indexFile = filename + ".index";
+
+	vector<pair<NodeNum, NodeNum>> connections;
+
+	if (std::ifstream f{indexFile})
+	{
+		std::string indexHash;
+		std::getline(f, indexHash);
+		if (indexHash == dbhash)
+		{
+			NodeNum from, to;
+			while (f >> from.index >> to.index)
+				connections.emplace_back(from, to);
+		}
+	}
+
+	vector<Sequence> edges;
+
+	{ std::istringstream iss(db); iss >> edges; }
+
+	// nodes have been read as sequences of size 1
+
+	vector<NamedPosition> pp;
+
+	for (auto i = edges.begin(); i != edges.end(); )
+		if (i->positions.size() == 1)
+		{
+			pp.push_back(NamedPosition{i->positions.front(), i->description, i->line_nr});
+			i = edges.erase(i);
+		}
+		else ++i;
+
+	if (!connections.empty())
+	{
+		Graph g(move(pp), move(edges), connections);
+		return g;
+	}
+
+	Graph g(move(pp), move(edges));
+	writeIndex(indexFile, g, dbhash);
+	return g;
 }
 
 void save(Graph const & g, string const filename)

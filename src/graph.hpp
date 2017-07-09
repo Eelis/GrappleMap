@@ -92,7 +92,9 @@ private:
 
 	optional<ReorientedNode> is_reoriented_node(Position const &) const;
 
+	Reoriented<NodeNum> add_new(Position const &);
 	ReorientedNode find_or_add(Position const &);
+	ReorientedNode find_or_add_indexed(Position const &, NodeNum);
 
 	void compute_in_out(NodeNum);
 
@@ -105,6 +107,7 @@ private:
 public:
 
 	Graph(vector<NamedPosition>, vector<Sequence>);
+	Graph(vector<NamedPosition>, vector<Sequence>, vector<pair<NodeNum,NodeNum>> index);
 
 	Graph & operator=(Graph &&) = default;
 	Graph(Graph &&) = default;

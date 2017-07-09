@@ -219,11 +219,8 @@ optional<Reoriented<NodeNum>> Graph::is_reoriented_node(Position const & p) cons
 	return none;
 }
 
-Reoriented<NodeNum> Graph::find_or_add(Position const & p)
+Reoriented<NodeNum> Graph::add_new(Position const & p)
 {
-	if (auto m = is_reoriented_node(p))
-		return *m;
-
 	data[&Data::nodes].push_back(
 		Node(NamedPosition{p, vector<string>(), {}}));
 			// no need for dirty flag because these won't be persisted anyway
@@ -233,6 +230,29 @@ Reoriented<NodeNum> Graph::find_or_add(Position const & p)
 	compute_in_out(nn);
 
 	return nn * PositionReorientation{};
+}
+
+Reoriented<NodeNum> Graph::find_or_add(Position const & p)
+{
+	if (auto m = is_reoriented_node(p))
+		return *m;
+
+	return add_new(p);
+}
+
+Reoriented<NodeNum> Graph::find_or_add_indexed(Position const & p, NodeNum const n)
+{
+	if (n.index == num_nodes())
+	{
+		return add_new(p);
+	}
+	else if (n.index < num_nodes())
+	{
+		auto r = is_reoriented(data->nodes[n.index].position, p);
+		if (!r) abort();
+		return n * *r;
+	}
+	else abort();
 }
 
 void Graph::compute_in_out(NodeNum const n)
@@ -287,6 +307,33 @@ Graph::Graph(vector<NamedPosition> pp, vector<Sequence> ss)
 		ReorientedNode const
 			from = find_or_add(s.positions.front()),
 			to = find_or_add(s.positions.back());
+		data[&Data::edges].push_back(Edge{from, to, move(s)});
+	}
+
+	foreach (n : nodenums(*this))
+		compute_in_out(n);
+
+	data.forget_past();
+}
+
+Graph::Graph(vector<NamedPosition> pp, vector<Sequence> ss, vector<pair<NodeNum, NodeNum>> index)
+{
+	foreach(p : pp)
+	{
+		foreach(x : data->nodes)
+			if (!x.description.empty() && x.description == p.description)
+				throw runtime_error("multiple positions named \"" + x.description[0] + "\"");
+
+		data[&Data::nodes].push_back(Node(move(p)));
+	}
+
+	for (size_t i = 0; i != ss.size(); ++i)
+	{
+		auto & s = ss[i];
+	
+		ReorientedNode const
+			from = find_or_add_indexed(s.positions.front(), index[i].first),
+			to = find_or_add_indexed(s.positions.back(), index[i].second);
 		data[&Data::edges].push_back(Edge{from, to, move(s)});
 	}
 
