@@ -142,6 +142,7 @@ function sync_resolution()
 function emscripten_loaded()
 {
 	sync_resolution();
+	Module.editor_main();
 }
 
 function make_save_link()

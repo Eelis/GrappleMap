@@ -37,10 +37,11 @@ cp src/explorer.html $output/explorer/index.html
 cp src/explorer.js $output/explorer/
 cp src/example-drills.html $output/
 cp src/editor.html $output/editor/index.html
-cp src/editor.{css,js} src/grapplemap_editor.{data,js,js.mem} $output/editor/
-cp src/grapplemap_db_loader.{data,js,js.mem} $output/
-cp src/grapplemap_db_loader.{data,js,js.mem} $output/composer/
-cp src/grapplemap_db_loader.{data,js,js.mem} $output/explorer/
+cp src/editor.{css,js} $output/editor/
+cp src/libgrapplemap.{data,js,js.mem} $output/
+cp src/libgrapplemap.{data,js,js.mem} $output/editor/
+cp src/libgrapplemap.{data,js,js.mem} $output/composer/
+cp src/libgrapplemap.{data,js,js.mem} $output/explorer/
 	# todo: copying this thrice is stupid but i dunno how to make the relative paths work otherwise
 
 #echo "Converting database to javascript."

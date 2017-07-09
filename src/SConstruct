@@ -51,11 +51,8 @@ mkvid     = env.Program('grapplemap-mkvid', ['makevideo.cpp', images, rendering,
               LIBS = ['OSMesa', 'GLU', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system', 'ftgl', 'gvc', 'cgraph'])
 diff      = env.Program('grapplemap-diff', ['diff.cpp', common], LIBS=cmdlibs)
 
-em_editor = em_env.Program('grapplemap_editor.js', ['web_editor.cpp', 'graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'md5.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp', 'rendering.cpp', 'playerdrawer.cpp'])
+weblib = em_env.Program('libgrapplemap.js', ['web_editor.cpp', 'web_db_loader.cpp', 'graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'md5.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp', 'rendering.cpp', 'playerdrawer.cpp'])
 
-db_loader = em_nogfx.Program('grapplemap_db_loader.js', ['web_db_loader.cpp', 'graph.cpp', 'graph_util.cpp', 'positions.cpp', 'persistence.cpp', 'md5.cpp', 'paths.cpp', 'metadata.cpp'])
+Depends(weblib, ['../GrappleMap.txt', '../GrappleMap.txt.index'])
 
-Depends(em_editor, ['../GrappleMap.txt', '../GrappleMap.txt.index'])
-Depends(db_loader, ['../GrappleMap.txt', '../GrappleMap.txt.index'])
-
-env.Alias('noX', [dbtojs, mkpospages, diff, mkvid, em_editor, db_loader])
+env.Alias('noX', [dbtojs, mkpospages, diff, mkvid, weblib])

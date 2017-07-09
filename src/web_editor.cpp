@@ -273,8 +273,12 @@ void ensure_nonempty_selection(Editor & editor)
 	editor.toggle_lock(true);
 }
 
-EMSCRIPTEN_BINDINGS(GrappleMap_engine)
+void web_editor_main();
+
+EMSCRIPTEN_BINDINGS(GrappleMap_web_editor)
 {
+	emscripten::function("editor_main", web_editor_main);
+
 	emscripten::function("loadDB", +[](std::string const & s)
 	{
 		std::istringstream iss(s);
@@ -958,7 +962,7 @@ void fatal_error(std::string const & msg)
 	emscripten_force_exit(EXIT_FAILURE);
 }
 
-int main()
+void web_editor_main()
 {
 	glfwSetErrorCallback(output_error);
 
