@@ -136,7 +136,7 @@ function recompute_results()
 			// todo: handle back nav
 	}
 
-	setTimeout(recompute_results, 1000);
+	setTimeout(recompute_results, 100);
 }
 
 recompute_results();
