@@ -240,21 +240,6 @@ Reoriented<NodeNum> Graph::find_or_add(Position const & p)
 	return add_new(p);
 }
 
-Reoriented<NodeNum> Graph::find_or_add_indexed(Position const & p, NodeNum const n)
-{
-	if (n.index == num_nodes())
-	{
-		return add_new(p);
-	}
-	else if (n.index < num_nodes())
-	{
-		auto r = is_reoriented(data->nodes[n.index].position, p);
-		if (!r) abort();
-		return n * *r;
-	}
-	else abort();
-}
-
 void Graph::compute_in_out(NodeNum const n)
 {
 	vector<Reversible<SeqNum>> in, out, in_out;
@@ -297,7 +282,7 @@ Graph::Graph(vector<NamedPosition> pp, vector<Sequence> ss)
 	{
 		foreach(x : data->nodes)
 			if (!x.description.empty() && x.description == p.description)
-				throw runtime_error("multiple positions named \"" + x.description[0] + "\"");
+				error("multiple positions named \"" + x.description[0] + "\"");
 
 		data[&Data::nodes].push_back(Node(move(p)));
 	}
@@ -322,10 +307,29 @@ Graph::Graph(vector<NamedPosition> pp, vector<Sequence> ss, vector<pair<NodeNum,
 	{
 		foreach(x : data->nodes)
 			if (!x.description.empty() && x.description == p.description)
-				throw runtime_error("multiple positions named \"" + x.description[0] + "\"");
+				error("multiple positions named \"" + x.description[0] + "\"");
 
 		data[&Data::nodes].push_back(Node(move(p)));
 	}
+
+	auto find_or_add_indexed =
+		[&](Position const & p, NodeNum const n) -> Reoriented<NodeNum>
+		{
+			if (n.index == num_nodes())
+			{
+				data[&Data::nodes].push_back(
+					Node(NamedPosition{p, vector<string>(), {}}));
+
+				return n * PositionReorientation{};
+			}
+			else if (n.index < num_nodes())
+			{
+				auto r = is_reoriented(data->nodes[n.index].position, p);
+				if (!r) abort();
+				return n * *r;
+			}
+			else abort();
+		};
 
 	for (size_t i = 0; i != ss.size(); ++i)
 	{

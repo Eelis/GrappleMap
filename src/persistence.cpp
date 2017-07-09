@@ -19,20 +19,31 @@ namespace
 		if (c >= 'A' && c <= 'Z') return (c - 'A') + 26;
 		if (c >= '0' && c <= '9') return (c - '0') + 52;
 
-		throw std::runtime_error("not a base 62 digit: " + std::string(1, c));
+		error("not a base 62 digit: " + std::string(1, c));
 	}
 
-	Position decodePosition(string s)
+	string desc(Graph::Node const & n) // TODO: bad, tojs should not alter description strings
 	{
-		if (s.size() != 2 * joint_count * 3 * 2)
-			error("position string has incorrect size " + to_string(s.size()));
+		auto desc = n.description;
+		return desc.empty() ? "?" : desc.front();
+	}
 
+	constexpr size_t encoded_pos_size = 2 * joint_count * 3 * 2 + 4 * 5;
+
+	Position decodePosition(char const * const s)
+	{
 		size_t offset = 0;
+
+		auto nextdigit = [&]
+			{
+				while (std::isspace(s[offset])) ++offset;
+				return fromBase62(s[offset++]);
+			};
 
 		auto g = [&]
 			{
-				double d = double(fromBase62(s[offset]) * 62 + fromBase62(s[offset + 1])) / 1000;
-				offset += 2;
+				int const d0 = nextdigit() * 62;
+				double d = double(d0 + nextdigit()) / 1000;
 				return d;
 			};
 
@@ -44,9 +55,10 @@ namespace
 		return p;
 	}
 
-	istream & operator>>(istream & i, vector<Sequence> & v)
+	vector<Sequence> readSeqs(char const * b, char const * e)
 	{
-		string line;
+		vector<Sequence> v;
+
 		vector<string> desc;
 		bool last_was_position = false;
 
@@ -54,42 +66,43 @@ namespace
 
 		try
 		{
-			while (std::getline(i, line))
+			while (b < e)
 			{
-				++line_nr;
-				bool const is_position = line.front() == ' ';
+				bool const is_position = *b == ' ';
 
 				if (is_position)
 				{
 					if (!last_was_position)
 					{
 						assert(!desc.empty());
+						auto const props = properties_in_desc(desc);
+
 						v.push_back(Sequence
-							{ desc
+							{ move(desc)
 							, vector<Position>{}
 							, line_nr - desc.size()
-							, properties_in_desc(desc).count("detailed") != 0
-							, properties_in_desc(desc).count("bidirectional") != 0 });
+							, props.count("detailed") != 0
+							, props.count("bidirectional") != 0 });
 						desc.clear();
 					}
 
-					boost::algorithm::trim(line);
+					if (e - b < encoded_pos_size) abort();
 
-					for (int j = 0; j != 3; ++j)
-					{
-						++line_nr;
-						string more;
-						if (!std::getline(i, more))
-							error("could not read position at line " + to_string(line_nr));
-						boost::algorithm::trim(more);
-						line += more;
-					}
+					v.back().positions.push_back(decodePosition(b));
 
-					if (v.empty()) error("malformed file");
-
-					v.back().positions.push_back(decodePosition(line));
+					b += encoded_pos_size;
+					line_nr += 4;
 				}
-				else desc.push_back(line);
+				else
+				{
+					char const * t = b;
+					while (b != e && *b != '\n') ++b;
+					
+					desc.push_back(string(t, b));
+					++line_nr;
+
+					if (b != e) ++b;
+				}
 
 				last_was_position = is_position;
 			}
@@ -99,7 +112,7 @@ namespace
 			error("at line " + to_string(line_nr) + ": " + e.what());
 		}
 
-		return i;
+		return v;
 	}
 
 	ostream & operator<<(ostream & o, Position const & p)
@@ -138,13 +151,9 @@ namespace
 	}
 }
 
-Graph loadGraph(std::istream & ff)
+Graph loadGraph(char const * const b, char const * const e)
 {
-	vector<Sequence> edges;
-
-	ff >> edges;
-
-	// nodes have been read as sequences of size 1
+	vector<Sequence> edges = readSeqs(b, e);
 
 	vector<NamedPosition> pp;
 
@@ -157,6 +166,13 @@ Graph loadGraph(std::istream & ff)
 		else ++i;
 
 	return Graph(move(pp), move(edges));
+}
+
+Graph loadGraph(std::istream & ff)
+{
+	std::istreambuf_iterator<char> i(ff), e;
+	std::string const db(i, e);
+	return loadGraph(db.data(), db.data() + db.size());
 }
 
 void writeIndex(string const filename, Graph const & g, string const & dbHash)
@@ -176,7 +192,7 @@ Graph loadGraph(string const filename)
 	std::istreambuf_iterator<char> i(ff), e;
 	std::string const db(i, e);
 
-	auto const dbhash = MD5(db).hexdigest();//to_string(std::hash<string>()(db));
+	auto const dbhash = MD5(db).hexdigest();
 
 	string const indexFile = filename + ".index";
 
@@ -194,27 +210,22 @@ Graph loadGraph(string const filename)
 		}
 	}
 
-	vector<Sequence> edges;
-
-	{ std::istringstream iss(db); iss >> edges; }
+	vector<Sequence> edges = readSeqs(db.data(), db.data() + db.size());
 
 	// nodes have been read as sequences of size 1
 
 	vector<NamedPosition> pp;
 
-	for (auto i = edges.begin(); i != edges.end(); )
-		if (i->positions.size() == 1)
-		{
-			pp.push_back(NamedPosition{i->positions.front(), i->description, i->line_nr});
-			i = edges.erase(i);
-		}
-		else ++i;
+	auto const is_pos = [&](Sequence const & s){ return s.positions.size() == 1; };
+
+	foreach (e : edges)
+		if (is_pos(e))
+			pp.push_back(NamedPosition{e.positions.front(), e.description, e.line_nr});
+	
+	edges.erase(std::remove_if(edges.begin(), edges.end(), is_pos), edges.end());
 
 	if (!connections.empty())
-	{
-		Graph g(move(pp), move(edges), connections);
-		return g;
-	}
+		return Graph(move(pp), move(edges), connections);
 
 	Graph g(move(pp), move(edges));
 	writeIndex(indexFile, g, dbhash);

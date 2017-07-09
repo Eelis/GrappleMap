@@ -94,7 +94,6 @@ private:
 
 	Reoriented<NodeNum> add_new(Position const &);
 	ReorientedNode find_or_add(Position const &);
-	ReorientedNode find_or_add_indexed(Position const &, NodeNum);
 
 	void compute_in_out(NodeNum);
 
