@@ -11,10 +11,6 @@ namespace GrappleMap
 	void save(Graph const &, std::ostream &);
 	Path readScene(Graph const &, string filename);
 	void todot(Graph const &, std::ostream &, std::map<NodeNum, bool /* highlight */> const &, char heading);
-	void tojs(vector<string> const &, std::ostream &);
-	void tojs(PositionReorientation const &, std::ostream &);
-	void tojs(SeqNum, Graph const & graph, std::ostream &);
-	void tojs(Graph const &, std::ostream &);
 }
 
 #endif

@@ -1,17 +1,278 @@
+var selected_nodes = [];
+var db;
+
+function add_markers(svg)
+{
+	svg.append('svg:defs').append('svg:marker')
+		.attr('id', 'red-arrow')
+		.attr('viewBox', '0 -50 100 100')
+		.attr('refX', 100)
+		.attr('markerWidth', 25)
+		.attr('markerHeight', 25)
+		.attr('orient', 'auto')
+		.style("fill", "red")
+		.append('svg:path')
+		.attr('d', 'M0,-10L37,0L0,10');
+
+	svg.append('svg:defs').append('svg:marker')
+		.attr('id', 'blue-arrow')
+		.attr('viewBox', '0 -50 100 100')
+		.attr('refX', 100)
+		.attr('markerWidth', 25)
+		.attr('markerHeight', 25)
+		.attr('orient', 'auto')
+		.style("fill", "blue")
+		.append('svg:path')
+		.attr('d', 'M0,-10L37,0L0,10');
+
+	svg.append('svg:defs').append('svg:marker')
+		.attr('id', 'black-arrow')
+		.attr('viewBox', '0 -50 100 100')
+		.attr('refX', 100)
+		.attr('markerWidth', 25)
+		.attr('markerHeight', 25)
+		.attr('orient', 'auto')
+		.style("fill", "black")
+		.append('svg:path')
+		.attr('d', 'M0,-10L37,0L0,10');
+
+	svg.append('svg:defs').append('svg:marker')
+		.attr('id', 'red-arrow-nonsel')
+		.attr('viewBox', '-50 -50 50 100')
+		.attr('markerWidth', 25)
+		.attr('markerHeight', 25)
+		.attr('orient', 'auto')
+		.style("fill", "red")
+		.append('svg:path')
+		.attr('d', 'M-46,-10L-9,0L-46,10');
+
+	svg.append('svg:defs').append('svg:marker')
+		.attr('id', 'blue-arrow-nonsel')
+		.attr('viewBox', '-50 -50 50 100')
+		.attr('markerWidth', 25)
+		.attr('markerHeight', 25)
+		.attr('orient', 'auto')
+		.style("fill", "blue")
+		.append('svg:path')
+		.attr('d', 'M-46,-10L-9,0L-46,10');
+
+	svg.append('svg:defs').append('svg:marker')
+		.attr('id', 'black-arrow-nonsel')
+		.attr('viewBox', '-50 -50 50 100')
+		.attr('markerWidth', 25)
+		.attr('markerHeight', 25)
+		.attr('orient', 'auto')
+		.style("fill", "black")
+		.append('svg:path')
+		.attr('d', 'M-46,-10L-9,0L-46,10');
+	
+	// todo: this is horrible and gross, clean up
+	// todo: can't we make markers that inherit the line color?
+}
+
+function get_id(x) { return x.id; }
+
+function tick_graph(svg)
+{
+	svg.select("#links").selectAll(".link")
+		.attr("x1", function(d) { return d.source.x; })
+		.attr("y1", function(d) { return d.source.y; })
+		.attr("x2", function(d) { return d.target.x; })
+		.attr("y2", function(d) { return d.target.y; });
+
+	svg.select("#nodes").selectAll(".node")
+		.attr("cx", function(d) { return d.x; })
+		.attr("cy", function(d) { return d.y; })
+		.style("fill", function(d) {
+				if (d.id == selected_node) return "lightgreen";
+				return "white";
+		});
+
+	svg.select("#labels").selectAll(".link_label_group")
+		.attr("transform", function(d) {
+			return "translate(" +
+				((d.source.x + d.target.x) / 2) + "," +
+				((d.source.y + d.target.y) / 2) + ")";
+		});
+
+	svg.select("#labels").selectAll(".node_label_group")
+		.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+}
+
+function mouse_over_transition(d)
+{
+/*
+	d3.select("#infos").selectAll(".link_info").style("display", function(dd)
+		{
+			return (dd == d ? "inline" : "none");
+		});
+*/
+}
+
+function mouse_not_over_transition(d)
+{
+//	d3.select("#infos").selectAll(".link_info").style("display", "none");
+}
+
+function mouse_over_position(d)
+{
+/*
+	d3.select("#infos").selectAll(".node_info").style("display", function(dd)
+		{
+			return (dd == d ? "inline" : "none");
+		});
+*/
+	mouse_over_node(d);
+}
+
+function mouse_not_over_position(d)
+{
+//	d3.select("#infos").selectAll(".node_info").style("display", "none");
+}
+
+function make_svg_graph_elems(svg, G, force)
+{
+	var node_shapes = svg.select("#nodes").selectAll(".node").data(G.nodes, get_id);
+	var link_shapes = svg.select("#links").selectAll(".link").data(G.links, get_id);
+	var node_labels = svg.select("#labels").selectAll(".node_label_group").data(G.nodes, get_id);
+	var link_labels = svg.select("#labels").selectAll(".link_label_group").data(G.links, get_id);
+	var node_infos = d3.select("#infos").selectAll(".node_info").data(G.nodes, get_id);
+	var link_infos = d3.select("#infos").selectAll(".link_info").data(G.links, get_id);
+
+	{
+		var s = link_labels.enter().append('g')
+			.attr("class", "link_label_group")
+			.on('mouseover', mouse_over_transition)
+			.on('mouseout', mouse_not_over_transition);
+
+		s	.append("text")
+			.attr("class", "link_label")
+			.attr("y", function(d){
+				return db.transitions[d.id].desc_lines.length > 1 ? -5 : 0; })
+			.text(function(d){
+				var l = db.transitions[d.id].desc_lines[0];
+				return (l != "..." ? l : ""); });
+
+		s	.append("text")
+			.attr("class", "link_label")
+			.attr("y", 13)
+			.text(function(d){
+				var l = db.transitions[d.id].desc_lines;
+				return (l.length > 1 ? l[1] : ''); });
+	}
+
+	link_shapes.enter()
+		.append("line")
+		.attr("class", "link")
+		.style("stroke", function(d){ return d.color; })
+		.on('mouseover', mouse_over_transition)
+		.on('mouseout', mouse_not_over_transition);
+
+	link_shapes.attr("marker-end", function(d){
+			var sel = (selected_nodes.indexOf(d.target.id) != -1);
+			return "url(#" + d.color + "-arrow" + (sel ? "" : "-nonsel") + ")";
+		});
+
+	node_infos.enter()
+		.append("div")
+		.attr("class", "node_info")
+		.style("display", "none")
+		.html(function(d){
+				var n = db.nodes[d.id];
+				return n.description + "<br>" +
+					"tags: " + n.tags.join(", ") + "<br>" +
+					"(p" + d.id + ")"; // todo: line #
+			});
+
+	link_infos.enter()
+		.append("div")
+		.attr("class", "link_info")
+		.style("display", "none")
+		.html(function(d){
+				var trans = db.transitions[d.id];
+				return trans.description.join("<br>") +
+					"<br>(t" + d.id + " @ line " + trans.line_nr + ")";
+			});
+
+	node_shapes.enter().append("circle")
+		.attr("class", "node")
+		.on('click', node_clicked)
+		.on('mouseover', mouse_over_position)
+		.on('mouseout', mouse_not_over_position)
+		.call(force.drag);
+
+	node_shapes.attr("r", function(d)
+			{
+				return selected_nodes.indexOf(d.id) == -1 ? 7 : 50;
+			});
+
+	node_shapes.style("stroke-width", function(d)
+			{
+				return (selected_nodes.indexOf(d.id) == -1 ? 1.5 : 2) + "px";
+			});
+
+	{
+		var s = node_labels.enter().append("g")
+			.attr("class", "node_label_group")
+			.on('click', node_clicked)
+			.on('mouseover', mouse_over_position)
+			.on('mouseout', mouse_not_over_position)
+			.call(force.drag);
+
+		s	.append("text")
+			.attr("class", "node_label")
+			.text(function(d){return d.desc_lines[0];})
+			.attr("y", function(d){return [5,-5,-12][d.desc_lines.length-1];});
+
+		s	.append("text")
+			.attr("class", "node_label")
+			.text(function(d){return d.desc_lines.length > 1 ? d.desc_lines[1] : '';})
+			.attr("y", function(d){return [0,17,7][d.desc_lines.length-1];});
+
+		s	.append("text")
+			.attr("class", "node_label")
+			.text(function(d){return d.desc_lines.length > 2 ? d.desc_lines[2] : '';})
+			.attr("y", 26);
+	}
+
+	node_shapes.exit().remove();
+	node_labels.exit().remove();
+	link_shapes.exit().remove();
+	link_labels.exit().remove();
+}
+
+function make_graph()
+{
+	svg = d3.select("#mynetwork");
+	add_markers(svg);
+
+	force = d3.layout.force()
+		.charge(function(d)
+			{
+				if (selected_nodes.indexOf(d.id) != -1)
+					return -1000;
+				return -300;
+				// todo: if this is not cached, cache it
+			})
+		.gravity(0.01)
+		.linkDistance(200)
+		.size([document.body.clientWidth, document.body.clientHeight]);
+
+	svg.on("mouseup", function(){ force.alpha(0.01); });
+
+	force.on("tick", function(){ tick_graph(svg); });
+}
+
 var selected_tags = [];
 var drag = 0.20;
 var view = [1, false];
-var last_keyframe = null;
 var selected_node = null;
 var selected_nodes = [];
 var substrs = [];
-var reo = zero_reo();
-var kf = 0;
 var svg;
 var force;
 var paged_positions;
 var paged_transitions;
-var db;
 
 function node_has_tag(node, tag)
 {
@@ -26,8 +287,8 @@ function trans_has_tag(trans, tag)
 function trans_kinda_has_tag(trans, tag)
 {
 	return (trans_has_tag(trans, tag) ||
-		(node_has_tag(db.nodes[trans.from.node], tag)
-		&& node_has_tag(db.nodes[trans.to.node], tag)));
+		(node_has_tag(db.nodes[trans.from], tag)
+		&& node_has_tag(db.nodes[trans.to], tag)));
 }
 
 function node_is_selected(node)
@@ -120,7 +381,7 @@ function recompute_results()
 				selected_nodes.push(n);
 
 		if (selected_nodes.length != 0)
-			set_selected_node(selected_nodes[0]);
+			Module.cursor_canvas_goto(selected_nodes[0]);
 
 		selected_edges = [];
 		for (var n = 0; n != db.transitions.length; ++n)
@@ -138,8 +399,6 @@ function recompute_results()
 
 	setTimeout(recompute_results, 100);
 }
-
-recompute_results();
 
 function update_view_controls()
 {
@@ -415,11 +674,11 @@ function prepare_graph(frugal, ignore_selected_transitions)
 		function frugal_op(x, y) { return frugal ? (x && y) : (x || y); }
 
 		if ((!ignore_selected_transitions && trans_is_selected(t))
-			|| frugal_op(node_is_selected(db.nodes[t.to.node]),
-			             node_is_selected(db.nodes[t.from.node])))
+			|| frugal_op(node_is_selected(db.nodes[t.to]),
+			             node_is_selected(db.nodes[t.from])))
 			G.links.push(
-				{ source: addnode(t.from.node)
-				, target: addnode(t.to.node)
+				{ source: addnode(t.from)
+				, target: addnode(t.to)
 				, id: i
 				, color: color
 				});
@@ -472,23 +731,6 @@ function update_graph()
 
 var targetpos;
 
-function updateCamera()
-{
-	var vv = document.getElementById("view_select").value;
-	if (vv == "external") return;
-	var pl = parseInt(vv);
-	var opp = 1 - pl;
-
-	firstPersonCamera.upVector = thepos[pl][Head].subtract(thepos[pl][Neck]);
-
-	firstPersonCamera.setTarget(
-		thepos[pl][LeftFingers]
-		.add(thepos[pl][RightFingers])
-		.scale(0.5));
-
-	firstPersonCamera.position = thepos[pl][Head];
-}
-
 function node_clicked()
 {
 }
@@ -504,24 +746,15 @@ function goto_explorer()
 	window.location.href = "explorer/index.html?" + connected_env.join(",");
 }
 
-function set_selected_node(n)
-{
-	selected_node = n;
-	targetpos = thepos = last_keyframe = db.nodes[selected_node].position;
-	queued_frames = [];
-}
-
 function mouse_over_node(d)
 {
 	if (d.id == selected_node) return;
 
-	if (!try_move(d.id))
+	if (Module.cursor_canvas_goto(d.id))
 	{
-		set_selected_node(d.id);
-		reo = zero_reo();
+		selected_node = d.id;
+		tick_graph(svg);
 	}
-
-	tick_graph(svg);
 }
 
 function on_substrs()
@@ -536,7 +769,29 @@ function on_substrs()
 
 function emscripten_loaded()
 {
-	loadAndPrepDB();
+	db = Module.cursor_canvas_main();
+
+	var canvas = document.getElementById('canvas');
+	canvas.style.width = '100%';
+	canvas.style.height = '100%';
+		// because GLFW appears to override these
+	canvas.style.backgroundColor = "black";
+
+	db.transitions.forEach(function(t)
+		{
+			t.desc_lines = t.description[0].split('\\n'); // todo: really necessary?
+		});
+
+	db.nodes.forEach(function(n)
+		{
+			if (n.description.length == 0)
+				n.desc_lines = "?";
+			else
+				n.desc_lines = n.description[0].split('\\n');
+
+			n.x = Math.random() * 1000;
+			n.y = Math.random() * 1000;
+		});
 
 	var s = window.location.href;
 	var qmark = s.lastIndexOf('?');
@@ -552,44 +807,36 @@ function emscripten_loaded()
 			});
 	}
 
-	thepos = last_keyframe = db.nodes[0].position;
-
 	paged_positions = add_paged_elems(document.getElementById('position_pics'), 9);
 	paged_transitions = add_paged_elems(document.getElementById('transition_pics'), 12);
 
-	canvas = document.getElementById('renderCanvas');
-	engine = new BABYLON.Engine(canvas, true);
-
-	makeScene(thepos);
-
 	make_graph();
-
-	scene.activeCamera = externalCamera;
 
 	update_view_controls();
 
 	results_dirty = true;
+
 	recompute_results();
 
-	window.addEventListener('resize', function() { engine.resize(); });
+//	window.addEventListener('resize', function() { engine.resize(); });
 
 	tick_graph(svg);
 
-	document.getElementById('loading').style.display = 'none';
-	document.getElementById('realpage').style.display = 'block';
+	sync_resolution();
+}
+
+function sync_resolution()
+{
+	var canvas = document.getElementById('canvas');
+	Module.resolution(canvas.clientWidth, canvas.clientHeight);
+	setTimeout(sync_resolution, 1000);
 }
 
 function on_view_change()
 {
 	var vv = document.getElementById("view_select").value;
 
-	scene.activeCamera = (vv == "external" ? externalCamera : firstPersonCamera);
-}
-
-function on_mirror_button_clicked()
-{
-	mirror(targetpos);
-	reo.mirror = !reo.mirror;
+	//scene.activeCamera = (vv == "external" ? externalCamera : firstPersonCamera);
 }
 
 var Module = {
@@ -608,6 +855,7 @@ var Module = {
 		if (text == "") emscripten_loaded();
 		// todo: this is surely not the proper way to notice that emscripten is done loading
 	},
+	canvas: document.getElementById('canvas'),
 	monitorRunDependencies: function(left) {}
 };
 
@@ -617,3 +865,7 @@ window.onerror = function(event)
 				if (text) Module.printErr('[post-exception status] ' + text);
 			};
 	};
+
+function highlight_segment(seq, seg, pos)
+{
+}

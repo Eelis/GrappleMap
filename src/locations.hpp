@@ -163,6 +163,22 @@ inline Location start_loc(SeqNum const & s)
 	return start_loc(first_segment(s));
 }
 
+template<typename T, typename... A>
+inline auto from(Reversible<T> const & s, A && ... a)
+{
+	return s.reverse
+		? to(*s, std::forward<A>(a)...)
+		: from(*s, std::forward<A>(a)...);
+}
+
+template<typename T, typename... A>
+inline auto to(Reversible<T> const & s, A && ... a)
+{
+	return s.reverse
+		? from(*s, std::forward<A>(a)...)
+		: to(*s, std::forward<A>(a)...);
+}
+
 }
 
 #endif

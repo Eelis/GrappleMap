@@ -30,7 +30,7 @@ em_nogfx = Environment(
 	OBJSUFFIX=".webnogfx.o",
 	LINKFLAGS=emscripten_compile_flags + ' --bind --preload-file ../GrappleMap.txt@GrappleMap.txt --preload-file ../GrappleMap.txt.index@GrappleMap.txt.index')
 
-common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp', 'md5.cpp'])
+common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp', 'md5.cpp', 'js_conversions.cpp'])
 rendering = env.Object(['rendering.cpp', 'playerdrawer.cpp'])
 images = env.Object('images.cpp')
 cmdlibs = ['boost_program_options']
@@ -51,7 +51,7 @@ mkvid     = env.Program('grapplemap-mkvid', ['makevideo.cpp', images, rendering,
               LIBS = ['OSMesa', 'GLU', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system', 'ftgl', 'gvc', 'cgraph'])
 diff      = env.Program('grapplemap-diff', ['diff.cpp', common], LIBS=cmdlibs)
 
-weblib = em_env.Program('libgrapplemap.js', ['web_editor.cpp', 'web_db_loader.cpp', 'graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'md5.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp', 'rendering.cpp', 'playerdrawer.cpp'])
+weblib = em_env.Program('libgrapplemap.js', ['web_db_loader.cpp', 'editor_canvas.cpp', 'cursor_canvas.cpp', 'graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'md5.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp', 'rendering.cpp', 'playerdrawer.cpp', 'js_conversions.cpp'])
 
 Depends(weblib, ['../GrappleMap.txt', '../GrappleMap.txt.index'])
 

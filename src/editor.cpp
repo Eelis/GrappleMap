@@ -457,8 +457,8 @@ namespace GrappleMap
 		OrientedPath const & sel = e.getSelection();
 
 		if (!sel.empty() &&
-			(*g[seq].to == *from(g, *sel.front()) ||
-			 *g[seq].from == *to(g, *sel.back())))
+			(*g[seq].to == *from(*sel.front(), g) ||
+			 *g[seq].from == *to(*sel.back(), g)))
 			e.set_selected(seq, true);
 			// todo: also try reverse
 
@@ -477,7 +477,7 @@ namespace GrappleMap
 		e.setLocation({start_loc(seq), PositionReorientation{}});
 	}
 
-	void go_to(NodeNum n, Editor & e)
+	optional<Reoriented<Step>> go_to(NodeNum n, Editor & e)
 	{
 		Graph const & g = e.getGraph();
 		if (g[n].in_out.empty()) error("cannot go to unconnected node");
@@ -486,13 +486,22 @@ namespace GrappleMap
 			if (n == *g[**s].from)
 			{
 				e.setLocation(from_loc(first_segment(s, g)));
-				return;
+				return boost::none;
 			}
 			else if (n == *g[**s].to)
 			{
 				e.setLocation(to_loc(last_segment(s, g)));
-				return;
+				return boost::none;
 			}
+
+		if (optional<Reoriented<NodeNum>> cur = node(e.getGraph(), e.getLocation()))
+			foreach (trans : g[n].in_out)
+				if (*to(trans, g) == **cur)
+				{
+					Reoriented<Step> const ding = follow2(g, *cur, *trans);
+					e.setLocation(to_loc(last_segment(ding, g)));
+					return ding;
+				}
 
 		// for other nodes, we cannot ensure a matching
 		// selection orientation, so we clear the selection
@@ -501,6 +510,7 @@ namespace GrappleMap
 		clear_selection(e);
 		auto const & t = g[n].out.empty() ? g[n].in : g[n].out;
 		e.setLocation({start_loc(t.front(), g), PositionReorientation{}});
+		return boost::none;
 	}
 
 	void go_to(SegmentInSequence const sis, Editor & editor)

@@ -7,22 +7,13 @@
 		<style>
 			a{text-decoration:none}
 		</style>
-		<script>
-			function v3(x,y,z){return [x,y,z];}
-		</script>
 		<script src='https://d3js.org/d3.v3.min.js' charset='utf-8'></script>
-		<script src='babylon.js'></script>
 		<script src='gm.js'></script>
 		<script src='config.js'></script>
-		<script src='graphdisplay.js'></script>
 	</head>
 	<body style='margin:0px;text-align:center;overflow:scroll'>
 
 		<h1><a target='_blank' href='https://github.com/Eelis/GrappleMap/'>GrappleMap</a></h1>
-
-		<h2 id='loading'>Loading...</h2>
-
-		<div id='realpage' style='border:0;padding:0;margin:0;width:100%;height:100%;display:none'>
 
 		<h2>Search</h2>
 		<div style='border:1px solid black;display:inline-block;text-align:left;padding:15px'>
@@ -60,25 +51,27 @@
 					<option value="0">red</option>
 					<option value="1">blue</option>
 				</select>
-				<button onclick='on_mirror_button_clicked()'>mirror</button>
+				<button onclick='Module.mirror_view()'>mirror</button>
 				&nbsp;(<a href='#' onclick='goto_explorer();return false;'>explorer</a>)
 			</p>
 
-			<div style='position:absolute;width:100%;height:100%'>
-				<canvas style='width:100%;height:100%;position:absolute;left:0px;top:0px' id='renderCanvas'></canvas>
-				<svg id="mynetwork" style='position:absolute;width:100%;height:100%;background:rgba(255,255,255,0.45);left:0px;top:0px'>
+			<div style='position:absolute;width:40%;height:100%'>
+				<canvas style='width:100%;height:100%' id='canvas'>
+				</canvas>
+			</div>
+
+			<div style='position:absolute;width:60%;height:100%;left:40%'>
+				<svg id="mynetwork" style='width:100%;height:100%'>
 					<g id="links"></g>
 					<g id="nodes"></g>
 					<g id="labels"></g>
 				</svg>
 			</div>
 
-			<div id='infos' style='text-align:left'></div>
+<!--			<div id='infos' style='text-align:left'></div> -->
 		</div>
 
 		<p id='no_neighbourhood'></p>
-
-		</div>
 
 		<script src='search.js'></script>
 		<script src='libgrapplemap.js'></script>

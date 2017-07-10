@@ -1,4 +1,5 @@
 #include "persistence.hpp"
+#include "js_conversions.hpp"
 #include <boost/program_options.hpp>
 
 using namespace GrappleMap;

@@ -132,14 +132,14 @@ inline optional<PositionInSequence> next(PositionInSequence const pis, Graph con
 	return pis.sequence * next(pis.position);
 }
 
-inline Reoriented<NodeNum> const & from(Graph const & g, Reversible<SeqNum> const s)
+inline auto const & to(SeqNum const s, Graph const & g)
 {
-	return s.reverse ? g[*s].to : g[*s].from;
+	return g[s].to;
 }
 
-inline Reoriented<NodeNum> const & to(Graph const & g, Reversible<SeqNum> const s)
+inline auto const & from(SeqNum const s, Graph const & g)
 {
-	return from(g, reverse(s));
+	return g[s].from;
 }
 
 inline Reoriented<NodeNum> from(Reoriented<SeqNum> const & s, Graph const & g)
@@ -196,6 +196,22 @@ inline auto positions(Reoriented<SeqNum> const & s, Graph const & g)
 inline auto segments(Reoriented<SeqNum> const & seq, Graph const & g)
 {
 	return segments(g[*seq]) | transformed([seq](SegmentNum seg){ return seq * seg; });
+}
+
+inline vector<Reoriented<Reversible<SegmentInSequence>>>
+	segments(Reoriented<Step> const & step, Graph const & g)
+{
+	vector<Reoriented<Reversible<SegmentInSequence>>> v;
+
+	foreach (seg : segments(g[**step]))
+		v.push_back(Reoriented<Reversible<SegmentInSequence>>
+			{ {{**step, seg}, step->reverse}
+			, step.reorientation
+			});
+	
+	if (step->reverse) std::reverse(v.begin(), v.end());
+
+	return v;
 }
 
 // in/out
@@ -295,6 +311,8 @@ pair<vector<Position>, Reoriented<NodeNum>> follow(
 
 Reoriented<NodeNum> follow(Graph const &, Reoriented<NodeNum> const &, SeqNum);
 
+Reoriented<Step> follow2(Graph const &, ReorientedNode const &, SeqNum);
+
 NodeNum follow(Graph const &, NodeNum, SeqNum);
 
 bool connected(Graph const &, NodeNum, NodeNum, bool no_tap = false);
@@ -303,6 +321,19 @@ inline optional<NodeNum> node_at(Graph const & g, PositionInSequence const pis)
 {
 	if (pis == first_pos_in(pis.sequence)) return *g[pis.sequence].from;
 	if (pis == last_pos_in(pis.sequence, g)) return *g[pis.sequence].to;
+	return boost::none;
+}
+
+inline optional<Reoriented<NodeNum>> node_at(Graph const & g, Reoriented<PositionInSequence> const pis)
+{
+	if (*pis == first_pos_in(pis->sequence)) return from(sequence(pis), g);
+	if (*pis == last_pos_in(pis->sequence, g)) return to(sequence(pis), g);
+	return boost::none;
+}
+
+inline optional<Reoriented<NodeNum>> node(Graph const & g, Reoriented<Location> l)
+{
+	if (auto p = position(l)) return node_at(g, *p);
 	return boost::none;
 }
 

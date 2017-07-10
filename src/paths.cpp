@@ -34,7 +34,7 @@ Frames frames(Graph const & g, Path const & path, unsigned const frames_per_pos)
 		};
 
 	Frames r;
-	Reoriented<NodeNum> n = from(g, path.front());
+	Reoriented<NodeNum> n = from(path.front(), g);
 
 	foreach (step : path)
 	{
@@ -87,7 +87,7 @@ class PathFinder
 		{
 			if (std::find(scene.end() - std::min(scene.size(), Path::size_type(15ul)), scene.end(), s) != scene.end()) continue;
 
-			if (!scene.empty() && *from(graph, scene.back()) == *to(graph, s)) continue;
+			if (!scene.empty() && *from(scene.back(), graph) == *to(s, graph)) continue;
 
 			*(choices_end++) = std::make_pair(
 				(s.reverse ? in_seq_counts : out_seq_counts)[s->index] * 1000 + (rand()%1000),
@@ -231,8 +231,8 @@ vector<Path> paths_through(Graph const & g, Step s, unsigned in_size, unsigned o
 {
 	vector<Path> v;
 
-	foreach (pre : in_paths(g, *from(g, s), in_size))
-	foreach (post : out_paths(g, *to(g, s), out_size))
+	foreach (pre : in_paths(g, *from(s, g), in_size))
+	foreach (post : out_paths(g, *to(s, g), out_size))
 	{
 		Path path = pre;
 		path.push_back(s);
@@ -277,7 +277,7 @@ vector<Path> in_paths(Graph const & g, NodeNum const node, unsigned size)
 	vector<Path> r;
 
 	foreach (x : is)
-		foreach (e : in_paths(g, *from(g, x), size - 1))
+		foreach (e : in_paths(g, *from(x, g), size - 1))
 		{
 			e.push_back(x);
 			r.push_back(e);
@@ -297,7 +297,7 @@ vector<Path> out_paths(Graph const & g, NodeNum const node, unsigned size)
 	vector<Path> r;
 
 	foreach (x : os)
-		foreach (e : out_paths(g, *to(g, x), size - 1))
+		foreach (e : out_paths(g, *to(x, g), size - 1))
 		{
 			e.insert(e.begin(), x);
 			r.push_back(e);

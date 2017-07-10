@@ -669,8 +669,8 @@ namespace
 			{
 				auto v = frames_for_step(graph, step);
 
-				auto const this_side = to(graph, step);
-				auto const other_side = from(graph, step);
+				auto const this_side = to(step, graph);
+				auto const other_side = from(step, graph);
 
 				foreach (p : v) p = reo(inverse(this_side.reorientation)(p));
 				assert(basicallySame(v.back(), reo(pos)));
@@ -705,8 +705,8 @@ namespace
 			{
 				auto v = frames_for_step(graph, step);
 
-				auto const this_side = from(graph, step);
-				auto const other_side = to(graph, step);
+				auto const this_side = from(step, graph);
+				auto const other_side = to(step, graph);
 
 				foreach (p : v) p = reo(inverse(this_side.reorientation)(p));
 				assert(basicallySame(v.front(), reo(pos)));

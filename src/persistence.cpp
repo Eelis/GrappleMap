@@ -22,12 +22,6 @@ namespace
 		throw std::runtime_error("not a base 62 digit: " + std::string(1, c));
 	}
 
-	string desc(Graph::Node const & n) // TODO: bad, tojs should not alter description strings
-	{
-		auto desc = n.description;
-		return desc.empty() ? "?" : desc.front();
-	}
-
 	Position decodePosition(string s)
 	{
 		if (s.size() != 2 * joint_count * 3 * 2)
@@ -264,7 +258,7 @@ Path readScene(Graph const & graph, string const filename)
 				if (prev_node)
 				{
 					foreach (step : graph[*prev_node].out)
-						if (*to(graph, step) == *n)
+						if (*to(step, graph) == *n)
 						{
 							path.push_back(step);
 							goto found;
@@ -280,7 +274,7 @@ Path readScene(Graph const & graph, string const filename)
 			else if (auto const step = step_by_desc(graph, desc, prev_node))
 			{
 				path.push_back(*step);
-				prev_node = *to(graph, *step);
+				prev_node = *to(*step, graph);
 			}
 			else error("unknown: \"" + desc + '"');
 		}
@@ -336,142 +330,6 @@ void todot(Graph const & graph, std::ostream & o, std::map<NodeNum, bool /* high
 	}
 
 	o << "}\n";
-}
-
-void tojs(V3 const v, std::ostream & js)
-{
-	js << "v3(" << v.x << "," << v.y << "," << v.z << ")";
-}
-
-void tojs(PositionReorientation const & reo, std::ostream & js)
-{
-	js
-		<< "{mirror:" << reo.mirror
-		<< ",swap_players:" << reo.swap_players
-		<< ",angle:" << reo.reorientation.angle
-		<< ",offset:";
-		
-	tojs(reo.reorientation.offset, js);
-
-	js << "}\n";
-}
-
-void tojs(Position const & p, std::ostream & js)
-{
-	js << '[';
-
-	foreach (n : playerNums())
-	{
-		js << '[';
-
-		foreach (j : joints)
-		{
-			tojs(p[n][j], js);
-			js << ',';
-		}
-
-		js << "],";
-	}
-
-	js << ']';
-}
-
-void tojs(Step const s, std::ostream & js)
-{
-	js << "{transition:" << s->index << ",reverse:" << s.reverse << '}';
-}
-
-void tojs(ReorientedNode const & n, std::ostream & js)
-{
-	js << "{node:" << n->index;
-	js << ",reo:";
-	tojs(n.reorientation, js);
-	js << '}';
-}
-
-void tojs(vector<string> const & v, std::ostream & js)
-{
-	js << '[';
-	foreach(s : v)
-	{
-		js << '\'' << replace_all(replace_all(s, "\\", "\\\\"), "'", "\\'") << "',";
-	}
-	js << ']';
-}
-
-void tojs(set<string> const & v, std::ostream & js)
-{
-	js << '[';
-	bool first = true;
-	foreach(s : v)
-	{
-		if (first) first = false; else js << ',';
-		js << '\'' << replace_all(s, "'", "\\'") << '\'';
-	}
-	js << ']';
-}
-
-void tojs(SeqNum const s, Graph const & graph, std::ostream & js)
-{
-	Graph::Edge const & edge = graph[s];
-
-	js << "{id:" << s.index;
-	js << ",from:"; tojs(edge.from, js);
-	js << ",to:"; tojs(edge.to, js);
-	js << ",frames:[";
-	foreach (pos : edge.positions)
-	{
-		tojs(pos, js);
-		js << ',';
-	}
-	js << "],description:";
-	tojs(edge.description, js);
-	js << ",tags:";
-	tojs(tags(edge), js);
-	js << ",properties:";
-	tojs(properties_in_desc(edge.description), js);
-	if (edge.line_nr)
-		js << ",line_nr:" << *edge.line_nr;
-	js << "}";
-}
-
-void tojs(Graph const & graph, std::ostream & js)
-{
-	js << "nodes=[";
-	foreach (n : nodenums(graph))
-	{
-		set<string> disc;
-		foreach (p : query_for(graph, n))
-			if (!p.second) disc.insert(p.first);
-
-		js << "{id:" << n.index << ",incoming:[";
-		foreach (s : graph[n].in) { tojs(s, js); js << ','; }
-		js << "],outgoing:[";
-		foreach (s : graph[n].out) { tojs(s, js); js << ','; }
-		js << "],position:";
-		tojs(graph[n].position, js);
-		js << ",description:'" << replace_all(desc(graph[n]), "'", "\\'") << "'";
-		js << ",tags:";
-		tojs(tags(graph[n]), js);
-		js << ",discriminators:";
-		tojs(disc, js);
-		if (graph[n].line_nr)
-			js << ",line_nr:" << *graph[n].line_nr;
-		js << "},\n";
-	}
-	js << "];\n\n";
-
-	js << "transitions=[";
-	foreach (s : seqnums(graph))
-	{
-		tojs(s, graph, js);
-		js << ",\n";
-	}
-	js << "];\n\n";
-
-	js << "tags=";
-	tojs(tags(graph), js);
-	js << ";\n\n";
 }
 
 }

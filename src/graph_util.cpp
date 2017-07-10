@@ -126,6 +126,16 @@ ReorientedNode follow(Graph const & g, ReorientedNode const & n, SeqNum const s)
 		"node " + std::to_string(n->index) + " is not connected to sequence " + std::to_string(s.index));
 }
 
+Reoriented<Step> follow2(Graph const & g, ReorientedNode const & n, SeqNum const s)
+{
+	if (*g[s].from == *n)
+		return nonreversed(s) * compose(inverse(g[s].from.reorientation), n.reorientation);
+	else if (*g[s].to == *n)
+		return reversed(s) * compose(inverse(g[s].to.reorientation), n.reorientation);
+	else throw std::runtime_error(
+		"node " + std::to_string(n->index) + " is not connected to sequence " + std::to_string(s.index));
+}
+
 NodeNum follow(Graph const & g, NodeNum const n, SeqNum const s)
 {
 	if (*g[s].from == n) return *g[s].to;
@@ -171,13 +181,13 @@ bool connected(Graph const & g, NodeNum const a, NodeNum const b, bool const no_
 	foreach (s : g[a].in)
 	{
 		if (no_tap && is_tap(g[*s])) continue;
-		if (*from(g, s) == b) return true;
+		if (*from(s, g) == b) return true;
 	}
 	
 	foreach (s : g[a].out)
 	{
 		if (no_tap && is_tap(g[*s])) continue;
-		if (*to(g, s) == b) return true;
+		if (*to(s, g) == b) return true;
 	}
 
 	return false;
@@ -225,10 +235,10 @@ Reoriented<Reversible<SeqNum>> gp_connect(
 {
 	Reoriented<Reversible<SeqNum>> r;
 
-	if (*from(g, s) == *n)
-		r = {s, compose(inverse(from(g, s).reorientation), n.reorientation)};
-	else if (*to(g, s) == *n)
-		r = {s, compose(inverse(to(g, s).reorientation), n.reorientation)};
+	if (*from(s, g) == *n)
+		r = {s, compose(inverse(from(s, g).reorientation), n.reorientation)};
+	else if (*to(s, g) == *n)
+		r = {s, compose(inverse(to(s, g).reorientation), n.reorientation)};
 	else assert(!"gp_connect");
 
 	return r;
