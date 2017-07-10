@@ -750,11 +750,10 @@ function mouse_over_node(d)
 {
 	if (d.id == selected_node) return;
 
-	if (Module.cursor_canvas_goto(d.id))
-	{
-		selected_node = d.id;
-		tick_graph(svg);
-	}
+	Module.cursor_canvas_goto(d.id);
+
+	selected_node = d.id;
+	tick_graph(svg);
 }
 
 function on_substrs()

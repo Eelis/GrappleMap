@@ -6,6 +6,11 @@ namespace
 {
 	struct Application: EditorCanvas
 	{
+		Application()
+		{
+			camera.zoom(0.5);
+		}
+
 		std::deque<Reoriented<Reversible<SegmentInSequence>>> queue;
 		double howFar = 0;
 		Position chaser;
@@ -16,6 +21,19 @@ namespace
 		}
 
 		bool renderPlain() const override { return true; }
+
+		void reset()
+		{
+			queue.clear();
+			auto const seg = segment(editor.getLocation());
+			queue.push_back(Reoriented<Reversible<SegmentInSequence>>{
+				{*seg, false},
+				seg.reorientation});
+
+			Reoriented<Location> const rl = Location{*seg, howFar} * seg.reorientation;
+
+			chaser = at(rl, editor.getGraph());
+		}
 
 		void progress(double elapsed) override
 		{
@@ -56,15 +74,18 @@ namespace
 	};
 }
 
+unique_ptr<Application> app;
+
 EMSCRIPTEN_BINDINGS(GrappleMap_cursor_canvas)
 {
 	emscripten::function("cursor_canvas_main", +[]
 		{
 			app.reset(new Application);
+			editor_canvas = app.get();
 			return to_elaborate_jsval(app->editor.getGraph());
 		});
 
-	emscripten::function("cursor_canvas_goto", +[](uint16_t nodeid) -> bool
+	emscripten::function("cursor_canvas_goto", +[](uint16_t nodeid)
 	{
 		Graph const & g = app->editor.getGraph();
 
@@ -74,19 +95,13 @@ EMSCRIPTEN_BINDINGS(GrappleMap_cursor_canvas)
 			foreach (sis : segments(*step, g))
 				w.queue.push_back(sis);
 		else
-		{
-			w.queue.clear();
-			auto const seg = segment(app->editor.getLocation());
-			w.queue.push_back(Reoriented<Reversible<SegmentInSequence>>{
-				{*seg, false},
-				seg.reorientation});
+			w.reset();
+	});
 
-			Reoriented<Location> const rl = Location{*seg, w.howFar} * seg.reorientation;
-
-			w.chaser = at(rl, app->editor.getGraph());
-		}
-
-		return true;
+	emscripten::function("cursor_canvas_mirror_view", +[]
+	{
+		app->editor.mirror();
+		app->reset();
 	});
 }
 

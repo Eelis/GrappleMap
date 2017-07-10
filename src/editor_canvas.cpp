@@ -2,6 +2,8 @@
 
 namespace GrappleMap
 {
+	EditorCanvas * editor_canvas;
+
 	namespace
 	{
 		double whereBetween(V2 const v, V2 const w, V2 const cursor)
@@ -474,9 +476,9 @@ namespace GrappleMap
 			return renderWindow(w.views(), viables, w.editor.getGraph(), w.displayPos(), w.camera, special_joint,
 				colors, 0, 0, width, height, selection, w.editor.getLocation()->segment, w.style, w.playerDrawer, []{}, out);
 		}
-	}
 
-	unique_ptr<EditorCanvas> app;
+		void do_frame() { editor_canvas->frame(); }
+	}
 
 	size_t EditorCanvas::makeVertices()
 	{
@@ -583,8 +585,6 @@ namespace GrappleMap
 
 		lastTime = now;
 	}
-
-	void do_frame() { app->frame(); }
 
 	EditorCanvas::EditorCanvas()
 	{
@@ -698,27 +698,32 @@ namespace GrappleMap
 		return external_view; // player0_view;
 	}
 
+	unique_ptr<EditorCanvas> web_editor;
+
 	EMSCRIPTEN_BINDINGS(GrappleMap_editor_canvas)
 	{
 		emscripten::function("editor_main", +[]
 			{
-				app.reset(new EditorCanvas);
-				update_selection_gui(*app);
+				web_editor.reset(new EditorCanvas);
+				editor_canvas = web_editor.get();
+				update_selection_gui(*editor_canvas);
 			});
 
 		emscripten::function("loadDB", +[](std::string const & s)
 		{
 			std::istringstream iss(s);
 
-			app->editor = Editor(loadGraph(iss));
-			app->editor.set_selected(app->editor.getLocation()->segment.sequence, true);
-			app->editor.toggle_lock(true);
+			EditorCanvas & app = *editor_canvas;
 
-			foreach (c : app->candidates.values)
+			app.editor = Editor(loadGraph(iss));
+			app.editor.set_selected(app.editor.getLocation()->segment.sequence, true);
+			app.editor.toggle_lock(true);
+
+			foreach (c : app.candidates.values)
 				foreach (x : c) x.clear();
 
-			app->chosen_joint = none;
-			update_selection_gui(*app);
+			app.chosen_joint = none;
+			update_selection_gui(app);
 		});
 
 		emscripten::function("getDB", +[]
@@ -726,7 +731,7 @@ namespace GrappleMap
 			std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
 
 			std::ostringstream oss;
-			save(app->editor.getGraph(), oss);
+			save(editor_canvas->editor.getGraph(), oss);
 			return convert.from_bytes(oss.str());
 
 			// Goddamn wstring seems to be the only way to preserve fancy chars...
@@ -736,15 +741,15 @@ namespace GrappleMap
 		{
 			auto a = emscripten::val::array();
 			int i = 0;
-			foreach (seq : app->editor.getSelection())
-				a.set(i++, tojsval(**seq, app->editor.getGraph()));
+			foreach (seq : editor_canvas->editor.getSelection())
+				a.set(i++, tojsval(**seq, editor_canvas->editor.getGraph()));
 			return a;
 		});
 
 		emscripten::function("get_pre_choices", +[]
 		{
-			Graph const & g = app->editor.getGraph();
-			auto const & selection = app->editor.getSelection();
+			Graph const & g = editor_canvas->editor.getGraph();
+			auto const & selection = editor_canvas->editor.getSelection();
 			vector<emscripten::val> items;
 			if (!selection.empty())
 				foreach (i : g[*from(selection.front(), g)].in)
@@ -754,8 +759,8 @@ namespace GrappleMap
 
 		emscripten::function("get_post_choices", +[]
 		{
-			Graph const & g = app->editor.getGraph();
-			auto const & selection = app->editor.getSelection();
+			Graph const & g = editor_canvas->editor.getGraph();
+			auto const & selection = editor_canvas->editor.getSelection();
 			vector<emscripten::val> items;
 			if (!selection.empty())
 				foreach (o : g[*to(selection.back(), g)].out)
@@ -765,15 +770,15 @@ namespace GrappleMap
 
 		emscripten::function("get_dirty", +[]
 		{
-			Graph const & g = app->editor.getGraph();
+			Graph const & g = editor_canvas->editor.getGraph();
 
 			vector<emscripten::val>
 				nodes_added, nodes_changed, edges_added, edges_changed;
 
-			foreach(n : app->dirty.nodes_added) nodes_added.push_back(tojsval(n, g));
-			foreach(n : app->dirty.nodes_changed) nodes_changed.push_back(tojsval(n, g));
-			foreach(s : app->dirty.edges_added) edges_added.push_back(tojsval(s, g));
-			foreach(s : app->dirty.edges_changed) edges_changed.push_back(tojsval(s, g));
+			foreach(n : editor_canvas->dirty.nodes_added) nodes_added.push_back(tojsval(n, g));
+			foreach(n : editor_canvas->dirty.nodes_changed) nodes_changed.push_back(tojsval(n, g));
+			foreach(s : editor_canvas->dirty.edges_added) edges_added.push_back(tojsval(s, g));
+			foreach(s : editor_canvas->dirty.edges_changed) edges_changed.push_back(tojsval(s, g));
 
 			auto d = emscripten::val::object();
 			d.set("nodes_added", tojsval(nodes_added));
@@ -785,170 +790,170 @@ namespace GrappleMap
 
 		emscripten::function("insert_keyframe", +[]
 		{
-			app->editor.insert_keyframe();
-			update_selection_gui(*app);
-			update_modified(*app);
+			editor_canvas->editor.insert_keyframe();
+			update_selection_gui(*editor_canvas);
+			update_modified(*editor_canvas);
 		});
 
 		emscripten::function("delete_keyframe", +[]
 		{
-			app->editor.delete_keyframe();
-			update_selection_gui(*app);
-			update_modified(*app);
+			editor_canvas->editor.delete_keyframe();
+			update_selection_gui(*editor_canvas);
+			update_modified(*editor_canvas);
 		});
 
 		emscripten::function("swap_players", +[]
 		{
-			swap_players(app->editor);
-			update_modified(*app);
+			swap_players(editor_canvas->editor);
+			update_modified(*editor_canvas);
 		});
 
 		emscripten::function("prepend_new", +[](uint16_t const n)
 		{
-			app->editor.prepend_new(NodeNum{n});
-			update_selection_gui(*app);
-			update_modified(*app);
+			editor_canvas->editor.prepend_new(NodeNum{n});
+			update_selection_gui(*editor_canvas);
+			update_modified(*editor_canvas);
 		});
 
 		emscripten::function("append_new", +[](uint16_t const n)
 		{
-			app->editor.append_new(NodeNum{n});
-			update_selection_gui(*app);
-			update_modified(*app);
+			editor_canvas->editor.append_new(NodeNum{n});
+			update_selection_gui(*editor_canvas);
+			update_modified(*editor_canvas);
 		});
 
 		emscripten::function("browseto", +[](string const & desc)
 		{
-			if (auto start = named_entity(app->editor.getGraph(), desc))
+			if (auto start = named_entity(editor_canvas->editor.getGraph(), desc))
 			{
 				if (Step const * step = boost::get<Step>(&*start))
-					go_to(**step, app->editor);
+					go_to(**step, editor_canvas->editor);
 				else if (NodeNum const * node = boost::get<NodeNum>(&*start))
-					go_to(*node, app->editor);
+					go_to(*node, editor_canvas->editor);
 				else EM_ASM({ alert('todo'); });
 			}
 			else EM_ASM({ alert('Error: No such thing'); });
 
-			ensure_nonempty_selection(app->editor);
-			update_selection_gui(*app);
+			ensure_nonempty_selection(editor_canvas->editor);
+			update_selection_gui(*editor_canvas);
 		});
 
 		emscripten::function("goto_segment", +[](uint32_t const seq, uint16_t const seg)
 		{
-			go_to(SegmentInSequence{SeqNum{seq}, SegmentNum{uint8_t(seg)}}, app->editor);
+			go_to(SegmentInSequence{SeqNum{seq}, SegmentNum{uint8_t(seg)}}, editor_canvas->editor);
 		});
 
 		emscripten::function("goto_position", +[](uint32_t const seq, uint16_t const pos)
 		{
-			go_to(PositionInSequence{SeqNum{seq}, PosNum{uint8_t(pos)}}, app->editor);
+			go_to(PositionInSequence{SeqNum{seq}, PosNum{uint8_t(pos)}}, editor_canvas->editor);
 		});
 
 		emscripten::function("set_node_desc", +[](string const & desc)
 		{
-			if (auto pis = position(app->editor.getLocation()))
-				if (auto n = node_at(app->editor.getGraph(), **pis))
+			if (auto pis = position(editor_canvas->editor.getLocation()))
+				if (auto n = node_at(editor_canvas->editor.getGraph(), **pis))
 				{
-					app->editor.set_description(*n, desc);
-					update_selection_gui(*app);
-					update_modified(*app, true);
+					editor_canvas->editor.set_description(*n, desc);
+					update_selection_gui(*editor_canvas);
+					update_modified(*editor_canvas, true);
 				}
 		});
 
 		emscripten::function("set_seq_desc", +[](string const & desc)
 		{
-			app->editor.set_description(app->editor.getLocation()->segment.sequence, desc);
-			update_selection_gui(*app);
-			update_modified(*app, true);
+			editor_canvas->editor.set_description(editor_canvas->editor.getLocation()->segment.sequence, desc);
+			update_selection_gui(*editor_canvas);
+			update_modified(*editor_canvas, true);
 		});
 
 		emscripten::function("mirror_view", +[]
 		{
-			app->editor.mirror();
+			editor_canvas->editor.mirror();
 		});
 
 		emscripten::function("mirror_frame", +[]
 		{
-			mirror_position(app->editor);
-			update_modified(*app);
+			mirror_position(editor_canvas->editor);
+			update_modified(*editor_canvas);
 		});
 
 		emscripten::function("ignore_keyboard", +[](bool const b)
 		{
-			app->ignore_keyboard = b;
+			editor_canvas->ignore_keyboard = b;
 		});
 
 		emscripten::function("confine", +[](bool const b)
 		{
-			app->editor.toggle_lock(b);
+			editor_canvas->editor.toggle_lock(b);
 		});
 
 		emscripten::function("mode", +[](string const & m)
 		{
-			set_playing(app->editor, m == "playback");
-			app->edit_mode = (m == "edit");
+			set_playing(editor_canvas->editor, m == "playback");
+			editor_canvas->edit_mode = (m == "edit");
 		});
 
 		emscripten::function("confine_interpolation", +[](bool const b)
 		{
-			app->confine_interpolation = b;
+			editor_canvas->confine_interpolation = b;
 		});
 
 		emscripten::function("confine_horizontal", +[](bool const b)
 		{
-			app->confine_horizontal = b;
+			editor_canvas->confine_horizontal = b;
 		});
 
 		emscripten::function("confine_local_edits", +[](bool const b)
 		{
-			app->confine_local_edits = b;
+			editor_canvas->confine_local_edits = b;
 		});
 
 		emscripten::function("joints_to_edit", +[](string const & s)
 		{
-			app->joints_to_edit = s;
+			editor_canvas->joints_to_edit = s;
 		});
 
 		emscripten::function("transform", +[](string const & s)
 		{
-			app->transform_rotate = (s == "rotate");
+			editor_canvas->transform_rotate = (s == "rotate");
 		});
 
 		emscripten::function("resolution", +[](int w, int h)
 		{
 			if (w > 128 && h > 128)
-				glfwSetWindowSize(app->window, w, h);
+				glfwSetWindowSize(editor_canvas->window, w, h);
 		});
 		
 		emscripten::function("undo", +[]
 		{
-			app->editor.undo();
-			update_selection_gui(*app);
-			update_modified(*app);
+			editor_canvas->editor.undo();
+			update_selection_gui(*editor_canvas);
+			update_modified(*editor_canvas);
 		});
 
 		emscripten::function("set_selected", +[](uint32_t const seq, bool const b)
 		{
 			SeqNum const sn{seq};
 
-			Editor & editor = app->editor;
+			Editor & editor = editor_canvas->editor;
 			Graph const & graph = editor.getGraph();
 			OrientedPath const & selection = editor.getSelection();
 
-			app->editor.set_selected(sn, b);
+			editor_canvas->editor.set_selected(sn, b);
 
 			if (auto pos = position(editor.getLocation()))
 			if (auto node = node_at(graph, **pos))
 				if (!selection.empty() && *node == *from(*selection.front(), graph))
 					editor.setLocation(from_loc(first_segment(selection.front(), graph)));
 
-			update_selection_gui(*app);
+			update_selection_gui(*editor_canvas);
 		});
 
 		emscripten::function("split_seq", +[]
 		{
-			app->editor.branch();
-			update_modified(*app);
-			update_selection_gui(*app);
+			editor_canvas->editor.branch();
+			update_modified(*editor_canvas);
+			update_selection_gui(*editor_canvas);
 		});
 	}
 }

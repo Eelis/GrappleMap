@@ -81,5 +81,5 @@ namespace GrappleMap
 		virtual ~EditorCanvas() {}
 	};
 
-	extern unique_ptr<EditorCanvas> app;
+	extern EditorCanvas * editor_canvas;
 }
