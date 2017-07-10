@@ -45,13 +45,13 @@ namespace GrappleMap
 			return best->loc;
 		}
 
-		vector<View> const
+		View const
 			external_view
-				{ {0, 0, 1, 1, none, 60} },
+				{0, 0, 1, 1, none, 60},
 			player0_view
-				{ {0, 0, 1, 1, player0, 60} },
+				{0, 0, 1, 1, player0, 120},
 			player1_view
-				{ {0, 0, 1, 1, player1, 60} };
+				{0, 0, 1, 1, player1, 120};
 
 		bool operator!=(Dirty const & a, Dirty const & b)
 		{
@@ -138,12 +138,6 @@ namespace GrappleMap
 		void output_error(int /*error*/, const char * msg)
 		{
 			fprintf(stderr, "Error: %s\n", msg);
-		}
-
-		View const * main_view(std::vector<View> const & vv)
-		{
-			foreach (v : vv) if (!v.first_person) return &v;
-			return nullptr;
 		}
 
 		int check_compiled(int shader)
@@ -343,6 +337,8 @@ namespace GrappleMap
 				m[12],m[13],m[14],m[15]);
 		}
 
+		glm::vec3 to_glm(V3 v) { return {v.x, v.y, v.z}; }
+
 		void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double yoffset)
 		{
 			EditorCanvas & w = *reinterpret_cast<EditorCanvas *>(glfwGetWindowUserPointer(glfwWindow));
@@ -376,11 +372,9 @@ namespace GrappleMap
 			int width, height;
 			glfwGetFramebufferSize(w.window, &width, &height);
 
-			auto & views = w.views();
+			if (w.view != &external_view) return;
+			View const * const v = w.view;
 
-			View const * v = main_view(views);
-			if (!v) return;
-			
 			double const
 				x = xpos / width,
 				y = 1 - (ypos / height);
@@ -473,7 +467,7 @@ namespace GrappleMap
 				selection = w.editor.getSelection();
 			}
 
-			return renderWindow(w.views(), viables, w.editor.getGraph(), w.displayPos(), w.camera, special_joint,
+			return renderWindow({*w.view}, viables, w.editor.getGraph(), w.displayPos(), w.camera, special_joint,
 				colors, 0, 0, width, height, selection, w.editor.getLocation()->segment, w.style, w.playerDrawer, []{}, out);
 		}
 
@@ -510,9 +504,8 @@ namespace GrappleMap
 		glViewport(0, 0, width, height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		if (View const * v = main_view(views()))
-			camera.setViewportSize(v->fov, v->w * width, v->h * height);
-				// todo: only do when viewport size actually changes?
+		camera.setViewportSize(view->fov, view->w * width, view->h * height);
+			// todo: only do when viewport size actually changes?
 
 		OrientedPath const
 			tempSel{nonreversed(sequence(editor.getLocation()))},
@@ -545,16 +538,27 @@ namespace GrappleMap
 
 		if (!chosen_joint && !editor.playingBack())
 		{
-			V3 c = center(editor.current_position());
+			V3 c = center(displayPos());
 			c.y *= 0.7;
 			camera.setOffset(c);
 		}
 
 		size_t non_hud_elems = makeVertices();
 
+		auto make_first_person_matrix = [&]
+			{
+				auto const p = displayPos()[*view->first_person];
+				return glm::lookAt(
+					to_glm(p[Head]),
+					to_glm((p[LeftHand] + p[RightHand]) / 2.),
+					to_glm(p[Head] - p[Neck]));
+			};
+
 		glm::mat4
 			ProjectionMatrix = to_glm(camera.projection()),
-			ViewMatrix = to_glm(camera.model_view()),
+			ViewMatrix = view->first_person
+				? make_first_person_matrix()
+				: to_glm(camera.model_view()),
 			ModelMatrix = glm::mat4(1.0),
 			MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
@@ -587,6 +591,7 @@ namespace GrappleMap
 	}
 
 	EditorCanvas::EditorCanvas()
+		: view(&external_view)
 	{
 		glfwSetErrorCallback(output_error);
 
@@ -691,11 +696,6 @@ namespace GrappleMap
 			if (highlightable_loc(**loc_before) != loc_now)
 				gui_highlight_segment(loc_now);
 		}
-	}
-
-	vector<View> const & EditorCanvas::views() const
-	{
-		return external_view; // player0_view;
 	}
 
 	unique_ptr<EditorCanvas> web_editor;
@@ -954,6 +954,16 @@ namespace GrappleMap
 			editor_canvas->editor.branch();
 			update_modified(*editor_canvas);
 			update_selection_gui(*editor_canvas);
+		});
+
+		emscripten::function("set_view", +[](int i)
+		{
+			switch (i)
+			{
+				case 0: editor_canvas->view = &player0_view; break;
+				case 1: editor_canvas->view = &player1_view; break;
+				case 2: editor_canvas->view = &external_view; break;
+			}
 		});
 	}
 }

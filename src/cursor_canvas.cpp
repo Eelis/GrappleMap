@@ -9,6 +9,7 @@ namespace
 		Application()
 		{
 			camera.zoom(0.5);
+			ignore_keyboard = true;
 		}
 
 		std::deque<Reoriented<Reversible<SegmentInSequence>>> queue;

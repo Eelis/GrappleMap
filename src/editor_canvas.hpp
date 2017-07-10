@@ -68,8 +68,7 @@ namespace GrappleMap
 		bool transform_rotate = false;
 		Dirty dirty;
 		bool ignore_keyboard = false;
-
-		vector<View> const & views() const;
+		View const * view;
 
 		virtual void progress(double elapsed);
 		virtual bool renderPlain() const { return bool(editor.playingBack()); }
