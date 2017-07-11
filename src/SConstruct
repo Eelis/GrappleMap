@@ -42,6 +42,7 @@ glfw_editor   = env.Program('grapplemap-glfw-editor', ['glfw_editor.cpp', render
 vr_editor     = env.Program('grapplemap-vr-editor', ['vr_editor.cpp', 'vr_joint_editor.cpp', 'vr_joint_browser.cpp', 'VruiXine.cpp', rendering, common, video], LIBS=vruilibs+['xine', 'boost_regex'])
 glfw_playback = env.Program('grapplemap-glfw-playback', ['glfw_playback.cpp', rendering, common], LIBS=guilibs)
 vr_playback   = env.Program('grapplemap-vr-playback', ['vr_playback.cpp', rendering, common], LIBS=vruilibs)
+indexer       = env.Program('grapplemap-indexer', ['indexer.cpp', common], LIBS=cmdlibs)
 todot         = env.Program('grapplemap-todot', ['todot.cpp', common], LIBS=cmdlibs)
 dbtojs        = env.Program('grapplemap-dbtojs', ['dbtojs.cpp', common], LIBS=cmdlibs)
 mkpospages    = env.Program('grapplemap-mkpospages', ['mkpospages.cpp', images, rendering, common],
@@ -53,6 +54,8 @@ diff      = env.Program('grapplemap-diff', ['diff.cpp', common], LIBS=cmdlibs)
 
 weblib = em_env.Program('libgrapplemap.js', ['web_db_loader.cpp', 'editor_canvas.cpp', 'cursor_canvas.cpp', 'graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'md5.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp', 'rendering.cpp', 'playerdrawer.cpp', 'js_conversions.cpp'])
 
-Depends(weblib, ['../GrappleMap.txt', '../GrappleMap.txt.index'])
+db = env.File('../GrappleMap.txt')
+dbindex = env.Command('../GrappleMap.txt.index', db, "./grapplemap-indexer $SOURCE")
+Depends(weblib, [db, dbindex])
 
-env.Alias('noX', [dbtojs, mkpospages, diff, mkvid, weblib])
+env.Alias('noX', [dbtojs, mkpospages, diff, mkvid, weblib, indexer])
