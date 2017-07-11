@@ -611,8 +611,8 @@ namespace GrappleMap
 		style.grid_size = 4;
 		style.grid_color = V3{.25, .25, .25};
 
-		Location l;
-		l.segment.sequence = SeqNum{1383};
+		Location const l{SegmentInSequence{SeqNum{1383}, SegmentNum{0}}, 0};
+		editor.toggle_lock(false);
 		editor.setLocation({l, {}});
 		editor.set_selected(l.segment.sequence, true);
 		editor.toggle_lock(true);
