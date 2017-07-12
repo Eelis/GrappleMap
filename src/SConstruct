@@ -56,6 +56,8 @@ weblib = em_env.Program('libgrapplemap.js', ['web_db_loader.cpp', 'editor_canvas
 
 db = env.File('../GrappleMap.txt')
 dbindex = env.Command('../GrappleMap.txt.index', db, "./grapplemap-indexer $SOURCE")
+Depends(dbindex, indexer)
+
 Depends(weblib, [db, dbindex])
 
 env.Alias('noX', [dbtojs, mkpospages, diff, mkvid, weblib, indexer])
