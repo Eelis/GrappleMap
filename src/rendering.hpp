@@ -45,7 +45,7 @@ namespace GrappleMap
 	void grid(V3 color, unsigned size = 2, unsigned line_width = 2);
 
 	void renderBasic(
-		View const &, Graph const &, Position const &, Camera,
+		View const &, Position const &, Camera,
 		PerPlayerJoint<optional<V3>> colors,
 		int left, int bottom, int width, int height,
 		Style const &, PlayerDrawer const &);

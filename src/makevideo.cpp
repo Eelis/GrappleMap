@@ -121,14 +121,14 @@ int main(int const argc, char const * const * const argv)
 			{
 				camera.rotateHorizontal(-0.012);
 				camera.setOffset(cameraOffsetFor(pos));
-
+/* todo:
 				int const
 					width = config->dimensions.first,
 					height = config->dimensions.second;
 
 				std::ostringstream fn;
 				fn << "vidframes/frame" << std::setw(5) << std::setfill('0') << frameindex << ".png";
-/* todo:
+
 				mkImg.png(pos, camera, width, height, fn.str(),
 					white, // background
 //					{{0, 0, 1, 1, none, 50}}, // view

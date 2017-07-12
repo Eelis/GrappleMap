@@ -65,7 +65,7 @@ namespace GrappleMap
 
 	#define foreach(...) for(auto && __VA_ARGS__)
 
-	inline void error(string const & s) { throw runtime_error(s); }
+	[[noreturn]] inline void error(string const & s) { throw runtime_error(s); }
 
 	inline string replace_all(string s, string what, string with)
 	{

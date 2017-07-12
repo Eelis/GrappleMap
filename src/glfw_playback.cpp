@@ -52,6 +52,7 @@ namespace GrappleMap
 
 			for (auto i = fr.begin(); i != fr.end(); ++i)
 			{
+				/*
 				#ifdef USE_FTGL
 					double const textwidth = style.font.Advance((i->first + separator).c_str(), -1);
 					V2 textpos{10,20};
@@ -60,6 +61,7 @@ namespace GrappleMap
 					for (auto j = i+1; j != i + std::min(fr.end() - i, 6l); ++j)
 						caption += separator + j->first;
 				#endif
+				*/
 
 				foreach (pos : i->second)
 				{

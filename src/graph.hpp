@@ -27,11 +27,6 @@ inline optional<vector<string>> desc(NamedPosition const & p)
 	return v;
 }
 
-inline Position & follow(Sequence & s, PosNum p) // todo: move
-{
-	return s.positions[p.index];
-}
-
 enum Modified
 {
 	original,

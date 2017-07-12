@@ -6,6 +6,7 @@ namespace GrappleMap
 {
 	namespace
 	{
+	/*
 		Path path_from_desc(std::string const & desc)
 		{
 			Path p;
@@ -22,6 +23,7 @@ namespace GrappleMap
 
 			return p;
 		}
+	*/
 
 		unsigned segmentsPerSecond(Sequence const & s) // todo: move
 		{

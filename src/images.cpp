@@ -164,7 +164,7 @@ void ImageMaker::make_mp4(
 
 				renderBasic(
 					view,
-					graph, pcs[i].first, pcs[i].second,
+					pcs[i].first, pcs[i].second,
 					{}, // default colors
 					column * aawidth, row * aaheight, aawidth, aaheight,
 					style, playerDrawer);

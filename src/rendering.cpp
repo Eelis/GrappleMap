@@ -106,7 +106,7 @@ namespace
 		SphereDrawer const & sphereDrawer,
 		Graph const & g, OrientedPath const & path, PlayerJoint const j,
 		SegmentInSequence const current_segment,
-		Camera const * const camera, Style const & style,
+		Style const &,
 		vector<BasicVertex> & out)
 	{
 		foreach (sn : path)
@@ -142,7 +142,7 @@ namespace
 		Graph const & graph, vector<Viable> const & viables,
 		OrientedPath const & selection,
 		optional<SegmentInSequence> const current_segment,
-		Camera const * camera, Style const & style)
+		Style const &)
 	{
 		glNormal3d(0, 1, 0);
 		glDisable(GL_DEPTH_TEST);
@@ -191,11 +191,9 @@ namespace
 	#endif
 
 	void drawViables(
-		SphereDrawer const & sphereDrawer,
 		Graph const & graph, vector<Viable> const & viables,
 		OrientedPath const & selection,
-		optional<SegmentInSequence> const current_segment,
-		Camera const * camera, Style const & style,
+		Style const &,
 		vector<BasicVertex> & out)
 	{
 		foreach (v : viables)
@@ -215,13 +213,13 @@ namespace
 						out);
 				}
 
+/* todo:
 				foreach (i : PosNum::range(v.begin, v.end))
 				{
-/* todo:
 					glColor4f(1, 1, 0, std::max(0.0, 0.3 - v.depth(i) * 0.05));
 					glVertex(at(v.sequence * i, v.joint, graph));
-*/
 				}
+ */
 			}
 		}
 	}
@@ -312,7 +310,6 @@ Style::Style()
 
 void renderBasic(
 	View const & v,
-	Graph const & graph,
 	Position const & position,
 	Camera camera,
 	PerPlayerJoint<optional<V3>> colors,
@@ -384,7 +381,7 @@ void renderWindow(
 {
 	foreach (v : views)
 	{
-		renderBasic(v, graph, position, camera, colors,
+		renderBasic(v, position, camera, colors,
 			left, bottom, width, height, style, playerDrawer);
 
 		if (extraRender) extraRender();
@@ -394,7 +391,7 @@ void renderWindow(
 				graph, selection, *highlight_joint,
 				boost::none, &camera, style);
 
-		drawViables(graph, viables, selection, {}, &camera, style);
+		drawViables(graph, viables, selection, {}, style);
 
 		if (highlight_joint)
 		{
@@ -418,7 +415,7 @@ size_t renderWindow(
 	Camera camera,
 	optional<PlayerJoint> const highlight_joint,
 	PerPlayerJoint<optional<V3>> colors,
-	int const left, int const bottom,
+	int /*left*/, int /*bottom*/,
 	int const width, int const height,
 	OrientedPath const & selection,
 	SegmentInSequence const current_segment,
@@ -432,8 +429,8 @@ size_t renderWindow(
 	foreach (v : views)
 	{
 		int
-			x = left + v.x * width,
-			y = bottom + v.y * height,
+			//x = left + v.x * width,
+			//y = bottom + v.y * height,
 			w = v.w * width,
 			h = v.h * height;
 
@@ -451,9 +448,9 @@ size_t renderWindow(
 			drawSelection(
 				playerDrawer.sphereDrawer,
 				graph, selection, *highlight_joint,
-				current_segment, &camera, style, out);
+				current_segment, style, out);
 
-		drawViables(playerDrawer.sphereDrawer, graph, viables, selection, current_segment, &camera, style, out);
+		drawViables(graph, viables, selection, style, out);
 	}
 
 	return num;
@@ -499,7 +496,7 @@ void renderScene(
 	if (browse_joint)
 		drawSelection(graph, selection, *browse_joint, current_segment, nullptr, style);
 
-	drawViables(graph, viables, selection, current_segment, nullptr, style);
+	drawViables(graph, viables, selection, current_segment, style);
 
 	glDisable(GL_DEPTH_TEST);
 	glPointSize(20);

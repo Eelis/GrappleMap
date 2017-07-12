@@ -293,7 +293,7 @@ Position orient_canonically_with_mirror(Position const & p)
 pair<PlayerJoint, double> closest_joint(Position const & p, V3 const v)
 {
 	double d = 100000;
-	PlayerJoint r;
+	PlayerJoint r{};
 
 	foreach(j : playerJoints)
 	{

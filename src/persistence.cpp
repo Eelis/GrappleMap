@@ -86,7 +86,7 @@ namespace
 						desc.clear();
 					}
 
-					if (e - b < encoded_pos_size) abort();
+					if (size_t(e - b) < encoded_pos_size) abort();
 
 					v.back().positions.push_back(decodePosition(b));
 
