@@ -33,9 +33,7 @@ namespace GrappleMap
 	val tojsval(NodeNum, Graph const &);
 	val tojsval(SeqNum, Graph const &);
 
-	val to_elaborate_jsval(SeqNum, Graph const &);
-	val to_elaborate_jsval(NodeNum, Graph const &);
-	val to_elaborate_jsval(Graph const &);
+	val to_elaborate_jsval(Graph const &, bool light);
 
 	#endif
 

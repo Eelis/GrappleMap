@@ -111,7 +111,7 @@ function loadDB(f)
 	var reader = new FileReader();
 	reader.onload = function(e)
 		{
-			Module.loadDB(e.target.result);
+			Module.editor_loadDB(e.target.result);
 			document.getElementById('save_link').download = f.name + ".new";
 			update_modified([], []);
 		};

@@ -83,7 +83,7 @@ EMSCRIPTEN_BINDINGS(GrappleMap_cursor_canvas)
 		{
 			app.reset(new Application);
 			editor_canvas = app.get();
-			return to_elaborate_jsval(app->editor.getGraph());
+			return to_elaborate_jsval(app->editor.getGraph(), true);
 		});
 
 	emscripten::function("cursor_canvas_goto", +[](uint16_t nodeid)

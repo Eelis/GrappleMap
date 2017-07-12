@@ -101,33 +101,30 @@ function tick_graph(svg)
 
 function mouse_over_transition(d)
 {
-/*
 	d3.select("#infos").selectAll(".link_info").style("display", function(dd)
 		{
 			return (dd == d ? "inline" : "none");
 		});
-*/
 }
 
 function mouse_not_over_transition(d)
 {
-//	d3.select("#infos").selectAll(".link_info").style("display", "none");
+	d3.select("#infos").selectAll(".link_info").style("display", "none");
 }
 
 function mouse_over_position(d)
 {
-/*
 	d3.select("#infos").selectAll(".node_info").style("display", function(dd)
 		{
 			return (dd == d ? "inline" : "none");
 		});
-*/
+
 	mouse_over_node(d);
 }
 
 function mouse_not_over_position(d)
 {
-//	d3.select("#infos").selectAll(".node_info").style("display", "none");
+	d3.select("#infos").selectAll(".node_info").style("display", "none");
 }
 
 function make_svg_graph_elems(svg, G, force)
@@ -179,9 +176,8 @@ function make_svg_graph_elems(svg, G, force)
 		.style("display", "none")
 		.html(function(d){
 				var n = db.nodes[d.id];
-				return n.description + "<br>" +
-					"tags: " + n.tags.join(", ") + "<br>" +
-					"(p" + d.id + ")"; // todo: line #
+				return n.description.join("<br>").replace(/\\n/g, ' ') +
+					"<br>(p" + d.id + ")"; // todo: line #
 			});
 
 	link_infos.enter()
@@ -190,7 +186,7 @@ function make_svg_graph_elems(svg, G, force)
 		.style("display", "none")
 		.html(function(d){
 				var trans = db.transitions[d.id];
-				return trans.description.join("<br>") +
+				return trans.description.join("<br>").replace(/\\n/g, ' ') +
 					"<br>(t" + d.id + " @ line " + trans.line_nr + ")";
 			});
 
@@ -612,6 +608,8 @@ function update_position_pics()
 			link.href = "res/p" + n + vc + ".html";
 
 			var img = document.createElement("img");
+			img.width = 320;
+			img.height = 240;
 			img.src = image_url + "/p" + n + vc + "320x240.png";
 			img.setAttribute('title', position_image_title(db.nodes[n]));
 			link.appendChild(img);
@@ -829,13 +827,6 @@ function sync_resolution()
 	var canvas = document.getElementById('canvas');
 	Module.resolution(canvas.clientWidth, canvas.clientHeight);
 	setTimeout(sync_resolution, 1000);
-}
-
-function on_view_change()
-{
-	var vv = document.getElementById("view_select").value;
-
-	//scene.activeCamera = (vv == "external" ? externalCamera : firstPersonCamera);
 }
 
 var Module = {

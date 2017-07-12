@@ -1,6 +1,10 @@
 #include "js_conversions.hpp"
 #include "metadata.hpp"
 
+#ifdef EMSCRIPTEN
+#include <codecvt>
+#endif
+
 namespace GrappleMap
 {
 	#ifdef EMSCRIPTEN
@@ -15,23 +19,110 @@ namespace GrappleMap
 		return r;
 	}
 
-	val to_elaborate_jsval(SeqNum const s, Graph const & graph)
+	val tojsval(V3 const v)
+	{
+		auto r = val::object();
+		r.set("x", v.x);
+		r.set("y", v.y);
+		r.set("z", v.z);
+		return r;
+	}
+
+	val tojsval(PositionReorientation const & reo)
+	{
+		auto r = val::object();
+		r.set("mirror", reo.mirror);
+		r.set("swap_players", reo.swap_players);
+		r.set("angle", reo.reorientation.angle);
+		r.set("offset", tojsval(reo.reorientation.offset));
+		return r;
+	}
+
+	val tojsval(ReorientedNode const & n)
+	{
+		auto r = val::object();
+		r.set("node", n->index);
+		r.set("reo", tojsval(n.reorientation));
+		return r;
+	}
+
+	val tojsval(Position const & p)
+	{
+		vector<val> pl;
+
+		foreach (n : playerNums())
+		{
+			vector<val> v;
+
+			foreach (j : joints)
+				v.push_back(tojsval(p[n][j]));
+
+			pl.push_back(tojsval(v));
+		}
+
+		return tojsval(pl);
+	}
+
+	val desc_tojsval(vector<string> const & desc)
+	{
+		vector<std::wstring> lines;
+
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
+
+		foreach (l : desc) lines.push_back(convert.from_bytes(l));
+
+		return range_tojsval(lines);
+	}
+
+	val tojsval(SeqNum const sn, Graph const & g)
+	{
+		Graph::Edge const & edge = g[sn];
+
+		auto v = emscripten::val::object();
+		v.set("id", sn.index);
+		v.set("from", tojsval(*edge.from, g));
+		v.set("to", tojsval(*edge.to, g));
+		v.set("frames", edge.positions.size());
+		v.set("description", desc_tojsval(edge.description));
+		if (edge.line_nr) v.set("line_nr", *edge.line_nr);
+		return v;
+	}
+
+	val to_elaborate_jsval(SeqNum const s, Graph const & graph, bool const light)
 	{
 		Graph::Edge const & edge = graph[s];
 
+		vector<val> frames;
+		if (!light)
+			foreach (pos : edge.positions) frames.push_back(tojsval(pos));
+
 		auto r = val::object();
 		r.set("id", s.index);
-		r.set("from", edge.from->index);
-		r.set("to", edge.to->index);
-		r.set("description", tojsval(edge.description));
+		if (light)
+		{
+			r.set("from", edge.from->index);
+			r.set("to", edge.to->index);
+		}
+		else
+		{
+			r.set("from", tojsval(edge.from));
+			r.set("to", tojsval(edge.to));
+		}
+		if (!light) r.set("frames", tojsval(frames));
+		r.set("description", desc_tojsval(edge.description));
 		r.set("tags", tojsval(tags(edge)));
 		r.set("properties", tojsval(properties_in_desc(edge.description)));
 		if (edge.line_nr) r.set("line_nr", *edge.line_nr);
 		return r;
 	}
 
-	val to_elaborate_jsval(NodeNum const n, Graph const & graph)
+	val to_elaborate_jsval(NodeNum const n, Graph const & graph, bool const light)
 	{
+	/*
+		set<string> disc;
+		foreach (p : query_for(graph, n))
+			if (!p.second) disc.insert(p.first);
+	*/
 		vector<val> incoming, outgoing;
 		foreach (s : graph[n].in) incoming.push_back(tojsval(s));
 		foreach (s : graph[n].out) outgoing.push_back(tojsval(s));
@@ -41,21 +132,32 @@ namespace GrappleMap
 		node.set("id", n.index);
 		node.set("incoming", tojsval(incoming));
 		node.set("outgoing", tojsval(outgoing));
-		node.set("description", tojsval(graph[n].description));
+		if (!light) node.set("position", tojsval(graph[n].position));
+		node.set("description", desc_tojsval(graph[n].description));
 		node.set("tags", tojsval(tags(graph[n])));
+	//	js << ",discriminators:";
+	//	tojs(disc, js);
 		if (graph[n].line_nr) node.set("line_nr", *graph[n].line_nr);
 
 		return node;
 	}
 
-	val to_elaborate_jsval(Graph const & g)
+	val tojsval(NodeNum const n, Graph const & g)
+	{
+		auto v = emscripten::val::object();
+		v.set("node", n.index);
+		v.set("description", desc_tojsval(g[n].description));
+		return v;
+	}
+
+	val to_elaborate_jsval(Graph const & g, bool const light)
 	{
 		vector<val> nodes, transitions;
 
 		foreach (n : nodenums(g))
-			nodes.push_back(to_elaborate_jsval(n, g));
+			nodes.push_back(to_elaborate_jsval(n, g, light));
 		foreach (s : seqnums(g))
-			transitions.push_back(to_elaborate_jsval(s, g));
+			transitions.push_back(to_elaborate_jsval(s, g, light));
 
 		auto db = emscripten::val::object();
 		db.set("nodes", tojsval(nodes));
@@ -63,28 +165,6 @@ namespace GrappleMap
 		db.set("tags", tojsval(tags(g)));
 
 		return db;
-	}
-
-	val tojsval(NodeNum const n, Graph const & g)
-	{
-		auto v = emscripten::val::object();
-		v.set("node", n.index);
-		v.set("description", GrappleMap::tojsval(g[n].description));
-		return v;
-	}
-
-	val tojsval(SeqNum const sn, Graph const & g)
-	{
-		Graph::Edge const & edge = g[sn];
-
-		auto v = emscripten::val::object();
-		v.set("id", sn.index);
-		v.set("from", GrappleMap::tojsval(*edge.from, g));
-		v.set("to", GrappleMap::tojsval(*edge.to, g));
-		v.set("frames", edge.positions.size());
-		v.set("description", GrappleMap::tojsval(edge.description));
-		if (edge.line_nr) v.set("line_nr", *edge.line_nr);
-		return v;
 	}
 
 	#endif

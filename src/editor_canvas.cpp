@@ -709,7 +709,7 @@ namespace GrappleMap
 				update_selection_gui(*editor_canvas);
 			});
 
-		emscripten::function("loadDB", +[](std::string const & s)
+		emscripten::function("editor_loadDB", +[](std::string const & s)
 		{
 			std::istringstream iss(s);
 
