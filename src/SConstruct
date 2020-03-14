@@ -2,7 +2,7 @@ import os
 
 # release:
 env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -Wno-missing-field-initializers -std=c++1y -DNDEBUG -O3 -DUSE_FTGL')
-env.ParseConfig('pkg-config --cflags --libs libgvc')
+env.ParseConfig('pkg-config --cflags --libs libgvc freetype2')
 
 # profiling:
 # env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3 -pg', LINKFLAGS='-pg')
