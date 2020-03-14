@@ -6,7 +6,6 @@
 #include "viables.hpp"
 #include "rendering.hpp"
 #include "graph_util.hpp"
-#include "video_player.hpp"
 #include <GLFW/glfw3.h>
 #include <boost/program_options.hpp>
 #include <cmath>
@@ -16,7 +15,6 @@
 #include <algorithm>
 #include <iterator>
 #include <stack>
-#include <GL/GLExtensionManager.h>
 
 using namespace GrappleMap;
 
@@ -85,25 +83,8 @@ struct Application
 	Style style;
 	PlayerDrawer playerDrawer;
 	PerPlayerJoint<vector<Reoriented<SegmentInSequence>>> candidates;
-	unique_ptr<VideoMonitor> monitor;
-	unique_ptr<VideoPlayer> videoPlayer;
-	int videoOffset = 0;
-	vector<VideoFrame> videoFrames;
 	GLFWwindow * const window;
 };
-
-void sync_video(Application & app)
-{
-	if (!app.videoFrames.empty() && app.monitor)
-		if (auto t = timeInSelection(app.editor))
-		{
-			unsigned const i = *t * 30 + app.videoOffset; // todo: get fps
-
-			auto & output = app.monitor->videoFrames;
-			output.startNewValue() = app.videoFrames[i % app.videoFrames.size()];
-			output.postNewValue();
-		}
-}
 
 void print_status(Application const & w)
 {
@@ -145,9 +126,6 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					if (w.clipboard) w.editor.replace(*w.clipboard, Graph::NodeModifyPolicy::local);
 					return;
 
-				case GLFW_KEY_KP_ADD: { w.videoOffset += 10; sync_video(w); break; }
-				case GLFW_KEY_KP_SUBTRACT: { w.videoOffset -= 10; sync_video(w); break; }
-
 				default: return;
 			}
 		else
@@ -155,15 +133,12 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 			{
 				case GLFW_KEY_X: { swap_players(w.editor); break; }
 				case GLFW_KEY_M: { mirror_position(w.editor); break; }
-				case GLFW_KEY_P: { w.editor.toggle_playback(); sync_video(w); break; }
+				case GLFW_KEY_P: { w.editor.toggle_playback(); break; }
 				case GLFW_KEY_L: { w.editor.toggle_lock(!w.editor.lockedToSelection()); break; }
 				// todo: case GLFW_KEY_SPACE: { w.editor.toggle_selected(); break; }
 				case GLFW_KEY_INSERT: { w.editor.insert_keyframe(); break; }
 				case GLFW_KEY_DELETE: { w.editor.delete_keyframe(); break; }
 				case GLFW_KEY_I: w.editor.mirror(); break;
-
-				case GLFW_KEY_COMMA: if (w.monitor) w.monitor->rotate(5); break;
-				case GLFW_KEY_PERIOD: if (w.monitor) w.monitor->rotate(-5); break;
 
 				// set position to center
 /*
@@ -234,9 +209,6 @@ void key_callback(GLFWwindow * const glfwWindow, int key, int /*scancode*/, int 
 					break;
 				}
 
-				case GLFW_KEY_KP_ADD: { ++w.videoOffset; sync_video(w); break; }
-				case GLFW_KEY_KP_SUBTRACT: { --w.videoOffset; sync_video(w); break; }
-
 				// new sequence
 /*
 				case GLFW_KEY_N:
@@ -284,7 +256,6 @@ void scroll_callback(GLFWwindow * const glfwWindow, double /*xoffset*/, double y
 	else if (yoffset == 1) advance(w.editor);
 	else return;
 
-	sync_video(w);
 	print_status(w);
 }
 
@@ -484,7 +455,7 @@ void do_render(Application const & w)
 
 	renderWindow(views, viables, w.editor.getGraph(), w.editor.current_position(), w.camera, special_joint,
 		colors, 0, 0, width, height, selection, w.style, w.playerDrawer,
-		[&]{ if (w.monitor) w.monitor->display(); });
+		[&]{ });
 }
 
 double lastTime{};
@@ -495,8 +466,6 @@ void frame()
 	glfwPollEvents();
 
 	Application & w = *app;
-
-	if (w.monitor) w.monitor->frame();
 
 	update_camera(*app);
 
@@ -541,10 +510,7 @@ void frame()
 				w.candidates[special_joint], w.camera, *cursor))
 		{
 			w.editor.setLocation(*best_next_pos);
-			sync_video(w);
 		}
-
-	if (w.editor.playingBack()) sync_video(w);
 
 	if (!w.editor.playingBack() && cursor && w.chosen_joint && w.edit_mode
 		&& glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
@@ -591,9 +557,6 @@ int main(int const argc, char const * const * const argv)
 
 		glfwMakeContextCurrent(window);
 
-		GLExtensionManager glExtMan;
-		glExtMan.makeCurrent(&glExtMan);
-
 		app.reset(new Application(*vm, window));
 
 		glfwSetWindowUserPointer(window, app.get());
@@ -605,13 +568,6 @@ int main(int const argc, char const * const * const argv)
 		glfwSwapInterval(1);
 
 		lastTime = glfwGetTime();
-
-		if (vm->count("video"))
-		{
-			app->monitor.reset(new VideoMonitor);
-			app->videoFrames = loadVideoFrames(videoTimeFromArg((*vm)["video"].as<string>()));
-			sync_video(*app);
-		}
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
