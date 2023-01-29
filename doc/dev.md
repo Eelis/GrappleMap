@@ -13,3 +13,13 @@ To build the GLFW-based editor, do:
 Once the build completes, the editor can be run with e.g.:
 
     ./grapplemap-glfw-editor --db ../GrappleMap.txt p34
+
+To run all scons build configurations requires emscripten. The apt-get version is not modern enough.
+
+    Get the emsdk repo
+        git clone https://github.com/emscripten-core/emsdk.git
+
+    Enter that directory
+        cd emsdk
+
+    use emsdk to install/activate latest
