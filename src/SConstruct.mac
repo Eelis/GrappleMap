@@ -1,0 +1,66 @@
+import os
+
+# release:
+env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -Wno-missing-field-initializers -std=c++1y -DNDEBUG -O3 -DUSE_FTGL -I /usr/local/include -I /usr/local/include/boost -I /usr/local/include/boost/gil -I /opt/osmesa/include -I /opt/llvm/include -v')
+
+
+# profiling:
+# env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -DNDEBUG -O3 -pg', LINKFLAGS='-pg')
+
+# consistency testing:
+# env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -O3 -DUSE_FTGL')
+
+# debugging:
+# env = Environment(ENV=os.environ, CCFLAGS='-Wall -Wextra -pedantic -std=c++1y -g')
+
+env.ParseConfig('pkg-config --cflags --libs libgvc freetype2')
+
+emscripten_compile_flags = '-Wall -Wextra -Wno-dollar-in-identifier-extension -Wno-vla-extension -pedantic -std=c++1y -DNDEBUG -O3 -s TOTAL_MEMORY=134217728 -I /usr/local/include -I /usr/local/include/boost -I /usr/local/include/boost/gil -I /opt/osmesa/include -I /opt/llvm/include'
+emscripten_gfx_flags = '-s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3'
+emscripten_mac_framework_flags = '-framework -lGLU -lglut'
+
+em_env = Environment(
+	ENV=os.environ,
+	CC='emcc', CXX='em++',
+	CCFLAGS=emscripten_compile_flags + ' ' + emscripten_gfx_flags + ' ' + emscripten_mac_framework_flags,
+	OBJSUFFIX=".web.o",
+	LINKFLAGS=emscripten_compile_flags + ' ' + emscripten_gfx_flags + ' ' + emscripten_mac_framework_flags + ' --bind --preload-file triangle.vertexshader --preload-file triangle.fragmentshader --preload-file ../GrappleMap.txt@GrappleMap.txt --preload-file ../GrappleMap.txt.index@GrappleMap.txt.index')
+
+em_nogfx = Environment(
+	ENV=os.environ,
+	CC='emcc', CXX='em++',
+	CCFLAGS=emscripten_compile_flags,
+	OBJSUFFIX=".webnogfx.o",
+	LINKFLAGS=emscripten_compile_flags + ' --bind --preload-file ../GrappleMap.txt@GrappleMap.txt --preload-file ../GrappleMap.txt.index@GrappleMap.txt.index')
+
+common = env.Object(['graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp', 'md5.cpp', 'js_conversions.cpp'])
+rendering = env.Object(['rendering.cpp', 'playerdrawer.cpp'])
+images = env.Object('images.cpp')
+cmdlibs = ['boost_program_options']
+guilibs = ['GL', 'GLU', 'glfw', 'ftgl'] + cmdlibs
+vruilibs = ["GL", "GLU", "ftgl", "Vrui.g++-3", "Geometry.g++-3", "GLGeometry.g++-3", "GLSupport.g++-3", "Threads.g++-3", "Misc.g++-3", "Math.g++-3", "Plugins.g++-3", "GLMotif.g++-3"] + cmdlibs
+video = env.Object(['video_player.cpp', 'video_monitor.cpp'])
+mkpospageslibs = ['OSMesa', 'GLU', 'ftgl', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system', 'pthread', 'gvc', 'cgraph']
+mkvidlibs = ['OSMesa', 'GLU', 'boost_program_options', 'png', 'boost_filesystem', 'boost_system', 'ftgl', 'gvc', 'cgraph']
+
+# vr_editor     = env.Program('grapplemap-vr-editor', ['vr_editor.cpp', 'vr_joint_editor.cpp', 'vr_joint_browser.cpp', 'VruiXine.cpp', rendering, common, video], LIBS=vruilibs+['xine', 'boost_regex'])
+# vr_playback   = env.Program('grapplemap-vr-playback', ['vr_playback.cpp', rendering, common], LIBS=vruilibs)
+glfw_editor   = env.Program('grapplemap-glfw-editor', ['glfw_editor.cpp', rendering, common], LIBS=guilibs+['boost_regex'])
+glfw_playback = env.Program('grapplemap-glfw-playback', ['glfw_playback.cpp', rendering, common], LIBS=guilibs)
+indexer       = env.Program('grapplemap-indexer', ['indexer.cpp', common], LIBS=cmdlibs)
+todot         = env.Program('grapplemap-todot', ['todot.cpp', common], LIBS=cmdlibs)
+dbtojs        = env.Program('grapplemap-dbtojs', ['dbtojs.cpp', common], LIBS=cmdlibs)
+mkpospages    = env.Program('grapplemap-mkpospages', ['mkpospages.cpp', images, rendering, common], LIBS=mkpospageslibs)
+mkvid     = env.Program('grapplemap-mkvid', ['makevideo.cpp', images, rendering, common], LIBS=mkvidlibs)
+diff      = env.Program('grapplemap-diff', ['diff.cpp', common], LIBS=cmdlibs)
+
+weblib = em_env.Program('libgrapplemap.js', ['web_db_loader.cpp', 'editor_canvas.cpp', 'cursor_canvas.cpp', 'graph.cpp', 'graph_util.cpp', 'positions.cpp', 'viables.cpp', 'persistence.cpp', 'md5.cpp', 'paths.cpp', 'playback.cpp', 'icosphere.cpp', 'editor.cpp', 'metadata.cpp', 'rendering.cpp', 'playerdrawer.cpp', 'js_conversions.cpp'])
+
+db = env.File('../GrappleMap.txt')
+dbindex = env.Command('../GrappleMap.txt.index', db, "./grapplemap-indexer $SOURCE")
+Depends(dbindex, indexer)
+
+Depends(weblib, [db, dbindex])
+
+# env.Alias('noX', [dbtojs, mkpospages, diff, mkvid, weblib, indexer])
+env.Alias('noX', [dbtojs, mkpospages])

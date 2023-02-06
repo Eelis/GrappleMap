@@ -9,7 +9,13 @@
 #include "paths.hpp"
 #include <unistd.h>
 #include <GLFW/glfw3.h>
+
+#if defined(__APPLE__)
+#include <OpenGL/glu.h>
+#else
 #include <GL/glu.h>
+#endif
+
 #include <iostream>
 #include <vector>
 #include <fstream>

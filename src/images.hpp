@@ -4,7 +4,10 @@
 #include "graph.hpp"
 #include "headings.hpp"
 #include "rendering.hpp"
+
+
 #include <GL/osmesa.h>
+
 #include <unordered_set>
 #include <boost/filesystem.hpp>
 #include <gvc.h>
@@ -12,7 +15,14 @@
 #include <queue>
 #include <thread>
 #include <mutex>
-#include <boost/gil/gil_all.hpp>
+
+#include <boost/version.hpp>
+#if (BOOST_VERSION < 106800)
+#   include <boost/gil/gil_all.hpp>
+#else
+#   include <boost/gil.hpp>
+#endif
+
 
 template<typename Data>
 class concurrent_queue

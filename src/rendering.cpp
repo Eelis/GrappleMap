@@ -1,7 +1,13 @@
 #include "rendering.hpp"
 #include "graph_util.hpp"
 #include "camera.hpp"
+
+#if defined(__APPLE__)
+#include <OpenGL/glu.h>
+#else
 #include <GL/glu.h>
+#endif
+
 #ifdef USE_FTGL
 #include <FTGL/ftgl.h>
 #endif

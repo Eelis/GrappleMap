@@ -23,8 +23,18 @@ namespace GrappleMap
 	#define int_p_NULL (int*)NULL // https://github.com/ignf/gilviewer/issues/8
 #endif
 
-#include <boost/gil/extension/io/png_io.hpp>
-#include <boost/gil/gil_all.hpp>
+
+
+#include <boost/version.hpp>
+#if (BOOST_VERSION < 106800)
+#   include <boost/gil/gil_all.hpp>
+#		include <boost/gil/extension/io/png_io.hpp>
+#else
+#   include <boost/gil.hpp>
+#		include <boost/gil/extension/io/png.hpp>
+# 	include <boost/gil/extension/io/png/old.hpp>
+#endif
+
 #include <boost/filesystem.hpp>
 
 namespace GrappleMap {
